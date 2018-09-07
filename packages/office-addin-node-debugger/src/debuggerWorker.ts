@@ -13,6 +13,7 @@
 
 import * as fetch from 'node-fetch';
 declare var __fbBatchedBridge: any;
+declare var __platformBundles: any; 
 
 process.on('message', message => {
   let shouldQueueMessages = false;
@@ -50,6 +51,17 @@ process.on('message', message => {
         }
       }
 
+      // load platform bundles
+      if (__platformBundles != undefined) {
+        const platformBundles = __platformBundles.concat();
+        __platformBundles = null;
+        for (const [index, pb] of platformBundles.entries()) {
+          //console.log(`PB start ${index + 1}/${platformBundles.length}`);
+          eval(pb);
+          //console.log(`PB done  ${index + 1}/${platformBundles.length}`);
+        }
+      }
+      
       fetch
         .default(message.url)
         .then(resp => resp.text())
