@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "declaration": true,
+        "outDir": "lib",
+        "strict": true,
+        "alwaysStrict": false,
+        "noImplicitUseStrict": true,
+        "types": [
+            "node",
+            "ws",
+            "node-fetch",
+            "es6-promise"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "lib"
+    ]
+}
