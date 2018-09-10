@@ -1,7 +1,7 @@
 {
   "name": "office-addin-start-debug",
-  "version": "0.0.3",
-  "description": "This package enables the required functionality when pressing F5, i.e., this package is referenced in the launch.json in VS Code and then handles all the required steps in order to start a debugging session.",
+  "version": "0.0.1",
+  "description": "This package helps to start an Office Add-in debugging session.",
   "main": "./lib/start-debugging.js",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "node-debugger": "office-addin-node-debugger"
   },
-  "author": "",
+  "author": "Office Dev",
   "license": "MIT",
   "bin": {
     "office-addin-start-debug": "./lib/start-debugging.js"
@@ -23,7 +23,7 @@
     "child_process": "^1.0.2",
     "node-fetch": "^2.2.0",
     "commander": "^2.9.0",
-    "office-addin-node-debugger": "^0.0.2"
+    "office-addin-node-debugger": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^10.5.7",
@@ -32,5 +32,12 @@
     "@types/commander": "^2.3.31",
     "rimraf": "^2.6.1",
     "concurrently": "^3.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   }
 }
