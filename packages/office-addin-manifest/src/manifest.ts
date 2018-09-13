@@ -50,8 +50,8 @@ function parseManifest(xml: any): ManifestInfo {
 }
   
 commander
-    .command('info [path]', 'Display manifest info')
-    .action(async function (_command: string, path: string) {
+    .command('info [path]')
+    .action(async function (path: string) {
         const manifest = await readManifestFile(path);
         console.log(`Manifest: ${path}`);
         console.log(`  Id: ${manifest.id}`)
