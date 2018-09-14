@@ -22,39 +22,53 @@ export function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
         try {
            fs.readFile(manifestPath, function (err, fileData) {  
                 if (err) {
-                    reject(`Failed to read the manifest file: ${manifestPath}`);          
+                    reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`);          
                 } else {
                     xml2js.parseString(fileData, function (err, result) {
                         if (err) {
-                            reject(`Failed to parse the manifest file: ${manifestPath}`);
+                            reject(`Unable to parse the manifest file: ${manifestPath}. \n${err}`);
                         } else {
                             try {
                                 const manifest: ManifestInfo = parseManifest(result);
                                 resolve (manifest);
-                            } catch(exception) {
-                                reject(`Failed to parse the manifest file: ${manifestPath}`);
+                            } catch(err) {
+                                reject(`Unable to parse the manifest file: ${manifestPath}. \n${err}`);
                             }
                         }
                     });
                 }
             });            
         } catch (err) {
-          return reject(['Failed to read the manifest file: ', manifestPath]);
+          return reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`);
         }
     });
 }
 
-function xmlAttributeValue(xml: any, name: string): string {    
-    return xml['$'][name];
+function xmlAttributeValue(xml: any, name: string): string | undefined {    
+    try {
+        return xml['$'][name];
+    } catch (err) {
+        console.warn(`Unable to get xml attribute value '${name}'. ${err}`);
+    }
 }
 
-function xmlElementAttributeValue(xml: any, elementName: string, attributeName: string = 'DefaultValue'): string {
+function xmlElementAttributeValue(xml: any, elementName: string, attributeName: string = 'DefaultValue'): string | undefined {
     const element = xmlElementValue(xml, elementName);
-    return xmlAttributeValue(element, attributeName);
+    if (element) {
+        return xmlAttributeValue(element, attributeName);
+    }
 }
 
-function xmlElementValue(xml: any, name: string): string {
-    return xml[name][0];
+function xmlElementValue(xml: any, name: string): string | undefined {
+    try {
+        const element = xml[name];
+
+        if (element) {
+            return element[0];
+        }
+    } catch (err) {
+        console.warn(`Unable to get xml element value '${name}'. ${err}`);
+    }
 }
 
 function parseManifest(xml: any): ManifestInfo {    
@@ -73,16 +87,20 @@ function parseManifest(xml: any): ManifestInfo {
 }
   
 async function infoCommandAction(path: string) {
-    const manifest = await readManifestFile(path);
+    try {
+        const manifest = await readManifestFile(path);
 
-    console.log(`Manifest: ${path}`);
-    console.log(`  Id: ${manifest.id}`)
-    console.log(`  Name: ${manifest.displayName}`)
-    console.log(`  Provider: ${manifest.providerName}`)
-    console.log(`  Type: ${manifest.officeAppType}`)
-    console.log(`  Version: ${manifest.version}`)
-    console.log(`  Default Locale: ${manifest.defaultLocale}`)
-    console.log(`  Description: ${manifest.description}`)
+        console.log(`Manifest: ${path}`);
+        console.log(`  Id: ${manifest.id}`)
+        console.log(`  Name: ${manifest.displayName}`)
+        console.log(`  Provider: ${manifest.providerName}`)
+        console.log(`  Type: ${manifest.officeAppType}`)
+        console.log(`  Version: ${manifest.version || ""}`)
+        console.log(`  Default Locale: ${manifest.defaultLocale}`)
+        console.log(`  Description: ${manifest.description}`)
+    } catch (err) {
+        console.error(`Error: ${err}`);
+    }
 }
 
 commander
