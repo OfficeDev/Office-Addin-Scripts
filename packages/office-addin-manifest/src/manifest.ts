@@ -19,28 +19,32 @@ export class ManifestInfo {
 
 export function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
     return new Promise(async function(resolve, reject) {
-        try {
-           fs.readFile(manifestPath, function(readError, fileData) {
-                if (readError) {
-                    reject(`Unable to read the manifest file: ${manifestPath}. \n${readError}`);
-                } else {
-                    // tslint:disable-next-line:only-arrow-functions
-                    xml2js.parseString(fileData, function(parseError, result) {
-                        if (parseError) {
-                            reject(`Unable to parse the manifest file: ${manifestPath}. \n${parseError}`);
-                        } else {
-                            try {
-                                const manifest: ManifestInfo = parseManifest(result);
-                                resolve (manifest);
-                            } catch (err) {
-                                reject(`Unable to parse the manifest file: ${manifestPath}. \n${err}`);
+        if (manifestPath) {
+            try {
+            fs.readFile(manifestPath, function(readError, fileData) {
+                    if (readError) {
+                        reject(`Unable to read the manifest file: ${manifestPath}. \n${readError}`);
+                    } else {
+                        // tslint:disable-next-line:only-arrow-functions
+                        xml2js.parseString(fileData, function(parseError, result) {
+                            if (parseError) {
+                                reject(`Unable to parse the manifest file: ${manifestPath}. \n${parseError}`);
+                            } else {
+                                try {
+                                    const manifest: ManifestInfo = parseManifest(result);
+                                    resolve (manifest);
+                                } catch (err) {
+                                    reject(`Unable to parse the manifest file: ${manifestPath}. \n${err}`);
+                                }
                             }
-                        }
-                    });
-                }
-            });
-        } catch (err) {
-          return reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`);
+                        });
+                    }
+                });
+            } catch (err) {
+            return reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`);
+            }
+        } else {
+            reject(`Please provide the path to the manifest file.`);
         }
     });
 }
