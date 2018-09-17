@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
         "target": "es6",
         "module": "commonjs",
         "moduleResolution": "node",
@@ -13,10 +12,12 @@
         "noImplicitUseStrict": true,
         "types": [
             "node",
-            "node-fetch",
             "es6-promise"
         ]
     },
+    "include": [
+        "src/**/*",
+    ],
     "exclude": [
         "node_modules",
         "lib"
