@@ -65,8 +65,16 @@ commander
     .action(commands.disableDebugging);
 
 commander
+    .command("disable-live-reload [manifestPath]")
+    .action(commands.disableLiveReload);
+
+commander
     .command("enable-debugging [manifestPath]")
     .option("--debug-method <method>", "Specify the debug method: 'direct' or 'web'.")
     .action(commands.enableDebugging);
+
+commander
+    .command("enable-live-reload [manifestPath]")
+    .action(commands.enableLiveReload);
 
 commander.parse(process.argv);

@@ -23,12 +23,30 @@
             ]
         },
         {
+            "name": "Command Line: disable-live-reload",
+            "type": "node",
+            "request": "launch",            
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "disable-live-reload", "${workspaceFolder}\\test\\manifest.xml"
+            ]
+        },
+        {
             "name": "Command Line: enable-debugging",
             "type": "node",
             "request": "launch",            
             "program": "${workspaceFolder}/lib/dev-settings.js",
             "args": [
                 "enable-debugging", "${workspaceFolder}\\test\\manifest.xml"
+            ]
+        },
+        {
+            "name": "Command Line: enable-live-reload",
+            "type": "node",
+            "request": "launch",            
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "enable-live-reload", "${workspaceFolder}\\test\\manifest.xml"
             ]
         }
     ]

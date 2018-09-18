@@ -30,6 +30,18 @@ export async function disableDebugging(manifestPath: string) {
     }
 }
 
+export async function disableLiveReload(manifestPath: string) {
+    try {
+        const manifest = await readManifestFile(manifestPath);
+
+        validateManifestId(manifest);
+
+        devSettings.disableLiveReload(manifest.id!);
+    } catch (err) {
+        logErrorMessage(err);
+    }
+}
+
 export async function enableDebugging(manifestPath: string, command: commander.Command) {
     try {
         const manifest = await readManifestFile(manifestPath);
@@ -37,6 +49,18 @@ export async function enableDebugging(manifestPath: string, command: commander.C
         validateManifestId(manifest);
 
         devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
+    } catch (err) {
+        logErrorMessage(err);
+    }
+}
+
+export async function enableLiveReload(manifestPath: string) {
+    try {
+        const manifest = await readManifestFile(manifestPath);
+
+        validateManifestId(manifest);
+
+        devSettings.enableLiveReload(manifest.id!);
     } catch (err) {
         logErrorMessage(err);
     }
