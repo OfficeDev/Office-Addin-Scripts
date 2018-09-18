@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as commander from "commander";
 import { ManifestInfo, readManifestFile } from "office-addin-manifest";
 import * as devSettings from "./dev-settings";
 
@@ -13,7 +14,7 @@ export async function clear(manifestPath: string) {
 
         devSettings.clearDevSettings(manifest.id!);
     } catch (err) {
-        console.error(`Error: ${err}`);
+        logErrorMessage(err);
     }
 }
 
@@ -25,19 +26,39 @@ export async function disableDebugging(manifestPath: string) {
 
         devSettings.disableDebugging(manifest.id!);
     } catch (err) {
-        console.error(`Error: ${err}`);
+        logErrorMessage(err);
     }
 }
 
-export async function enableDebugging(manifestPath: string) {
+export async function enableDebugging(manifestPath: string, command: commander.Command) {
     try {
         const manifest = await readManifestFile(manifestPath);
 
         validateManifestId(manifest);
 
-        devSettings.enableDebugging(manifest.id!);
+        devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
     } catch (err) {
-        console.error(`Error: ${err}`);
+        logErrorMessage(err);
+    }
+}
+
+function logErrorMessage(err: any) {
+    console.error(`Error: ${err instanceof Error ? err.message : err}`);
+}
+
+function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
+    switch (text) {
+        case "direct":
+            return devSettings.DebuggingMethod.Direct;
+        case "web":
+            return devSettings.DebuggingMethod.Web;
+        case "":
+        case null:
+        case undefined:
+            // preferred debug method
+            return devSettings.DebuggingMethod.Web;
+        default:
+            throw new Error(`Please provide a valid debug method instead of '${text}'.`);
     }
 }
 

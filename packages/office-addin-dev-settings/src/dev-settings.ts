@@ -66,6 +66,7 @@ commander
 
 commander
     .command("enable-debugging [manifestPath]")
+    .option("--debug-method <method>", "Specify the debug method: 'direct' or 'web'.")
     .action(commands.enableDebugging);
 
 commander.parse(process.argv);
