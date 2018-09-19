@@ -92,8 +92,10 @@ function xmlElementValue(xml: any, name: string): string | undefined {
   }
 }
 
-commander
-  .command("info [path]")
-  .action(commands.info);
+if (process.argv[1].endsWith("\\manifest.js")) {
+  commander
+    .command("info [path]")
+    .action(commands.info);
 
-commander.parse(process.argv);
+  commander.parse(process.argv);
+}
