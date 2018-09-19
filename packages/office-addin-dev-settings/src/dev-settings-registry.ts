@@ -12,7 +12,7 @@ export function clearDevSettings(addinId: string): void {
   deleteDeveloperSettingsRegistryKey(addinId);
 }
 
-export function configureSourceBundleUrl(addinId: string, host: string, port: string, path: string, extension: string): void {
+export function configureSourceBundleUrl(addinId: string, host?: string, port?: string, path?: string, extension?: string): void {
   const key: string = getDeveloperSettingsRegistryKey(addinId);
 
   if (host) {

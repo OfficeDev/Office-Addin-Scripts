@@ -48,6 +48,15 @@
             "args": [
                 "enable-live-reload", "${workspaceFolder}\\test\\manifest.xml"
             ]
+        },
+        {
+            "name": "Command Line: source-bundle-url",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "source-bundle-url", "${workspaceFolder}\\test\\manifest.xml", "--host", "HOST", "--port", "PORT", "--path", "index.win32", "--extension", "EXT"
+            ]
         }
     ]
 }
