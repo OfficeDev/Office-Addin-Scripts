@@ -68,6 +68,32 @@ describe("DevSettings", function() {
     });
   });
 
+  describe("can specify debug method", function() {
+    before("debugging should be disabled", async function() {
+      await devSettings.disableDebugging(addinId);
+      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
+      assert.strictEqual(methods.length, 0);
+    }),
+    it("direct debugging can be enabled", async function() {
+      await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
+      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
+      assert.strictEqual(methods.length, 1);
+      assert.strictEqual(methods[0], devSettings.DebuggingMethod.Direct);
+    });
+    it("web debugging can be enabled, and turns off direct debugging", async function() {
+      await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Web);
+      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
+      assert.strictEqual(methods.length, 1);
+      assert.strictEqual(methods[0], devSettings.DebuggingMethod.Web);
+    });
+    it("enabling direct debugging turns off web debugging", async function() {
+      await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
+      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
+      assert.strictEqual(methods.length, 1);
+      assert.strictEqual(methods[0], devSettings.DebuggingMethod.Direct);
+    });
+  });
+
   describe("when live reload is enabled", function() {
     it("live reload can be disabled", async function() {
       assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);

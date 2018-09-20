@@ -79,6 +79,15 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
   }
 }
 
+export async function getEnabledDebuggingMethods(addinId: string): Promise<DebuggingMethod[]> {
+  switch (process.platform) {
+    case "win32":
+      return registry.getEnabledDebuggingMethods(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":

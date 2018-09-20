@@ -40,6 +40,21 @@ export function getDeveloperSettingsRegistryKey(addinId: string): registry.Regis
   return new registry.RegistryKey(`${DeveloperSettingsRegistryKey}\\${addinId}`);
 }
 
+export async function getEnabledDebuggingMethods(addinId: string): Promise<DebuggingMethod[]> {
+  const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
+  const methods: DebuggingMethod[] = [];
+
+  if (isRegistryValueTrue(await registry.getValue(key, "UseDirectDebugger"))) {
+    methods.push(DebuggingMethod.Direct);
+  }
+
+  if (isRegistryValueTrue(await registry.getValue(key, "UseWebDebugger"))) {
+    methods.push(DebuggingMethod.Web);
+  }
+
+  return methods;
+}
+
 export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const components = new SourceBundleUrlComponents(
