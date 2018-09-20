@@ -1,0 +1,49 @@
+{
+  "name": "office-addin-dev-settings",
+  "version": "0.0.1",
+  "description": "Configure developer settings for Office Add-ins.",
+  "main": "./lib/dev-settings.js",
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json",
+    "tsc-watch": "tsc -p tsconfig.json -w",
+    "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
+    "test": "mocha -r ts-node/register test/**/*.ts"
+  },
+  "author": "Office Dev",
+  "license": "MIT",
+  "bin": {
+    "office-addin-dev-settings": "./lib/dev-settings.js"
+  },
+  "keywords": [
+    "Office",
+    "Office Add-in"
+  ],
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "commander": "^2.18.0",
+    "fs": "0.0.1-security",
+    "office-addin-manifest": "^0.0.1",
+    "winreg": "^1.2.4"
+  },
+  "devDependencies": {
+    "@types/es6-promise": "^3.3.0",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.5.7",
+    "@types/node-fetch": "^2.1.2",
+    "@types/winreg": "^1.2.30",
+    "concurrently": "^3.6.1",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  }
+}
