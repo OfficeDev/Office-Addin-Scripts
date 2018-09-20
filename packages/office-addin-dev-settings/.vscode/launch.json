@@ -50,6 +50,24 @@
             ]
         },
         {
+            "name": "Command Line: is-debugging-enabled",
+            "type": "node",
+            "request": "launch",            
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "is-debugging-enabled", "${workspaceFolder}\\test\\manifest.xml"
+            ]
+        },
+        {
+            "name": "Command Line: is-live-reload-enabled",
+            "type": "node",
+            "request": "launch",            
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "is-live-reload-enabled", "${workspaceFolder}\\test\\manifest.xml"
+            ]
+        },
+        {
             "name": "Command Line: source-bundle-url",
             "type": "node",
             "request": "launch",

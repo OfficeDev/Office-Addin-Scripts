@@ -56,27 +56,59 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
   }
 }
 
+export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
+  switch (process.platform) {
+    case "win32":
+      return registry.isDebuggingEnabled(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
+  switch (process.platform) {
+    case "win32":
+      return registry.isLiveReloadEnabled(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
 if (process.argv[1].endsWith("\\dev-settings.js")) {
   commander
     .command("clear [manifestPath]")
+    .description("Clear all dev settings for the add-in.")
     .action(commands.clear);
 
   commander
     .command("disable-debugging [manifestPath]")
+    .description("Disable debugging of the add-in.")
     .action(commands.disableDebugging);
 
   commander
     .command("disable-live-reload [manifestPath]")
+    .description("Disable live reload for the add-in.")
     .action(commands.disableLiveReload);
 
   commander
     .command("enable-debugging [manifestPath]")
+    .description("Enable debugging for the add-in.")
     .option("--debug-method <method>", "Specify the debug method: 'direct' or 'web'.")
     .action(commands.enableDebugging);
 
   commander
     .command("enable-live-reload [manifestPath]")
+    .description("Enable live reload for the add-in.")
     .action(commands.enableLiveReload);
+
+  commander
+    .command("is-debugging-enabled [manifestPath]")
+    .description("Display whether debugging is enabled for the add-in.")
+    .action(commands.isDebuggingEnabled);
+
+  commander
+    .command("is-live-reload-enabled [manifestPath]")
+    .description("Display whether live reload is enabled.")
+    .action(commands.isDebuggingEnabled);
 
   commander
     .command("source-bundle-url <manifestPath>")

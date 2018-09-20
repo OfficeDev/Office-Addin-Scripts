@@ -42,7 +42,7 @@ export async function disableDebugging(manifestPath: string) {
 
     await devSettings.disableDebugging(manifest.id!);
 
-    console.log("Debugging is disabled.");
+    console.log("Debugging has been disabled.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -56,7 +56,7 @@ export async function disableLiveReload(manifestPath: string) {
 
     await devSettings.disableLiveReload(manifest.id!);
 
-    console.log("Live reload is disabled.");
+    console.log("Live reload has been disabled.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -70,7 +70,7 @@ export async function enableDebugging(manifestPath: string, command: commander.C
 
     await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
 
-    console.log("Debugging is enabled.");
+    console.log("Debugging has been enabled.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -84,7 +84,39 @@ export async function enableLiveReload(manifestPath: string) {
 
     await devSettings.enableLiveReload(manifest.id!);
 
-    console.log("Live reload is enabled.");
+    console.log("Live reload has been enabled.");
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function isDebuggingEnabled(manifestPath: string, command: commander.Command) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    const enabled: boolean = await devSettings.isDebuggingEnabled(manifest.id!);
+
+    console.log(enabled
+      ? "Debugging is enabled."
+      : "Debugging is not enabled.");
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function isLiveReloadEnabled(manifestPath: string, command: commander.Command) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    const enabled: boolean = await devSettings.isLiveReloadEnabled(manifest.id!);
+
+    console.log(enabled
+      ? "Live reload is enabled."
+      : "Live reload is not enabled.");
   } catch (err) {
     logErrorMessage(err);
   }
