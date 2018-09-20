@@ -1,5 +1,26 @@
 import * as winreg from "winreg";
 
+export class RegistryKey {
+  public winreg: winreg.Registry;
+
+  get path(): string {
+    return this.winreg.path;
+  }
+
+  constructor(path: string) {
+    if (!path) { throw new Error("Please provide a registry key path."); }
+
+    const index = path.indexOf("\\");
+
+    if (index <= 0) { throw new Error(`The registry key path is not valid: "${path}".`); }
+
+    const hive = path.substring(0, index);
+    const subpath = path.substring(index);
+
+    this.winreg = new winreg({ hive: normalizeRegistryHive(hive), key: subpath });
+  }
+}
+
 export class RegistryTypes {
   public static readonly REG_BINARY: string = winreg.REG_BINARY;
   public static readonly REG_DWORD: string = winreg.REG_DWORD;
@@ -16,6 +37,14 @@ export class RegistryValue {
   public type: string;
   public data: string;
 
+  public get isNumberType(): boolean {
+    return isNumberType(this.type);
+  }
+
+  public get isStringType(): boolean {
+    return isStringType(this.type);
+  }
+
   constructor(key: string, name: string, type: string, data: string) {
     this.key = key;
     this.name = name;
@@ -24,124 +53,155 @@ export class RegistryValue {
   }
 }
 
-async function addValue(path: string, value: string, type: string, data: string): Promise<void> {
+async function addValue(key: RegistryKey, value: string, type: string, data: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to set registry value "${value}" to "${data}" (${type}) for key "${path}".\n${err}`));
+        reject(new Error(`Unable to set registry value "${value}" to "${data}" (${type}) for key "${key.path}".\n${err}`));
       } else {
         resolve();
       }
     };
 
     try {
-      registryKey(path).set(value, type, data, onError);
+      key.winreg.set(value, type, data, onError);
     } catch (err) {
       onError(err);
     }
   });
 }
 
-export async function addBooleanValue(path: string, value: string, data: boolean): Promise<void> {
-  return addValue(path, value, winreg.REG_DWORD, data ? "1" : "0");
+export async function addBooleanValue(key: RegistryKey, value: string, data: boolean): Promise<void> {
+  return addValue(key, value, winreg.REG_DWORD, data ? "1" : "0");
 }
 
-export async function addNumberValue(path: string, value: string, data: number): Promise<void> {
-  return addValue(path, value, winreg.REG_DWORD, data.toString());
+export async function addNumberValue(key: RegistryKey, value: string, data: number): Promise<void> {
+  return addValue(key, value, winreg.REG_DWORD, data.toString());
 }
 
-export async function addStringValue(path: string, value: string, data: string): Promise<void> {
-  return addValue(path, value, winreg.REG_SZ, data);
+export async function addStringValue(key: RegistryKey, value: string, data: string): Promise<void> {
+  return addValue(key, value, winreg.REG_SZ, data);
 }
 
-export async function deleteKey(path: string): Promise<void> {
+export async function deleteKey(key: RegistryKey): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to delete registry key "${path}".\n${err}`));
+        reject(new Error(`Unable to delete registry key "${key.path}".\n${err}`));
       } else {
         resolve();
       }
     };
 
     try {
-      registryKey(path).destroy(onError);
+      key.winreg.destroy(onError);
     } catch (err) {
       onError(err);
     }
   });
 }
 
-export async function deleteValue(path: string, value: string): Promise<void> {
+export async function deleteValue(key: RegistryKey, value: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to delete registry value "${value}" in key "${path}".\n${err}`));
+        // it's not an error if the key or value does not exist
+        if (err instanceof Error && err.message.match("unable to find the specified registry key or value")) {
+          resolve();
+        } else {
+          reject(new Error(`Unable to delete registry value "${value}" in key "${key.path}".\n${err}`));
+        }
       } else {
         resolve();
       }
     };
 
     try {
-      registryKey(path).remove(value, onError);
+      key.winreg.remove(value, onError);
     } catch (err) {
       onError(err);
     }
   });
 }
 
-export async function doesKeyExist(path: string): Promise<boolean> {
+export async function doesKeyExist(key: RegistryKey): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const onError = (err: any, exists: boolean = false) => {
       if (err) {
-        reject(new Error(`Unable to determine if registry key exists: "${path}".\n${err}`));
+        reject(new Error(`Unable to determine if registry key exists: "${key.path}".\n${err}`));
       } else {
         resolve(exists);
       }
     };
 
     try {
-      registryKey(path).keyExists(onError);
+      key.winreg.keyExists(onError);
     } catch (err) {
       onError(err);
     }
   });
 }
 
-export async function doesValueExist(path: string, value: string): Promise<boolean> {
+export async function doesValueExist(key: RegistryKey, value: string): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const onError = (err: any, exists: boolean = false) => {
       if (err) {
-        reject(new Error(`Unable to determine if registry value "${value}" exists for key "${path}".\n${err}`));
+        reject(new Error(`Unable to determine if registry value "${value}" exists for key "${key.path}".\n${err}`));
       } else {
         resolve(exists);
       }
     };
 
     try {
-      registryKey(path).valueExists(value, onError);
+      key.winreg.valueExists(value, onError);
     } catch (err) {
       onError(err);
     }
   });
 }
 
-export async function getValue(path: string, value: string): Promise<RegistryValue | undefined> {
+export async function getNumberValue(key: RegistryKey, value: string): Promise<number | undefined> {
+  const registryValue: RegistryValue | undefined = await getValue(key, value);
+
+  return (registryValue && registryValue.isNumberType) ? parseInt(registryValue.data, undefined) : undefined;
+}
+
+export async function getStringValue(key: RegistryKey, value: string): Promise<string | undefined> {
+  const registryValue: RegistryValue | undefined = await getValue(key, value);
+
+  return (registryValue && registryValue.isStringType) ? registryValue.data : undefined;
+}
+
+export async function getValue(key: RegistryKey, value: string): Promise<RegistryValue | undefined> {
   return new Promise<RegistryValue>((resolve, reject) => {
     const onError = (err: any, item?: winreg.RegistryItem) => {
       if (err) {
         resolve(undefined);
       } else {
-        resolve(new RegistryValue(path, item!.name, item!.type, item!.value));
+        resolve(item ? new RegistryValue(key.path, item.name, item.type, item.value) : undefined);
       }
     };
 
     try {
-      registryKey(path).get(value, onError);
+      key.winreg.get(value, onError);
     } catch (err) {
       onError(err);
     }
   });
+}
+
+export function isNumberType(registryType: string) {
+  // NOTE: REG_QWORD is not included as a number type since it cannot be returned as a "number".
+  return (registryType === RegistryTypes.REG_DWORD);
+}
+
+export function isStringType(registryType: string) {
+  switch (registryType) {
+    case RegistryTypes.REG_SZ:
+      return true;
+    default:
+      return false;
+  }
 }
 
 function normalizeRegistryHive(hive: string): string {
@@ -159,19 +219,4 @@ function normalizeRegistryHive(hive: string): string {
     default:
       return hive;
   }
-}
-
-export function registryKey(path: string) {
-  if (!path) { throw new Error("Please provide a registry key path."); }
-
-  const index = path.indexOf("\\");
-
-  if (index <= 0) { throw new Error(`The registry key path is not valid: "${path}".`); }
-
-  const hive = path.substring(0, index);
-  const subpath = path.substring(index);
-
-  const key = new winreg({ hive: normalizeRegistryHive(hive), key: subpath });
-
-  return key;
 }

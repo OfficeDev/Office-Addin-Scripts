@@ -3,7 +3,7 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
-import { DebuggingMethod } from "./dev-settings";
+import { DebuggingMethod, SourceBundleUrlComponents } from "./dev-settings";
 import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
@@ -12,38 +12,13 @@ export async function clearDevSettings(addinId: string): Promise<void> {
   return deleteDeveloperSettingsRegistryKey(addinId);
 }
 
-export async function configureSourceBundleUrl(addinId: string, host?: string, port?: string, path?: string, extension?: string): Promise<void> {
-  const key: string = getDeveloperSettingsRegistryKey(addinId);
-
-  if (host) {
-    await registry.addStringValue(key, "SourceBundleHost", host);
-  } else {
-    await registry.deleteValue(key, "SourceBundleHost");
-  }
-
-  if (port) {
-    await registry.addStringValue(key, "SourceBundlePort", port);
-  }
-
-  if (path) {
-    await registry.addStringValue(key, "SourceBundlePath", path);
-
-    // for now, include old name
-    await registry.addStringValue(key, "DebugBundlePath", path);
-  }
-
-  if (extension) {
-    await registry.addStringValue(key, "SourceBundleExtension", extension);
-  }
-}
-
 export async function deleteDeveloperSettingsRegistryKey(addinId: string): Promise<void> {
-  const key: string = getDeveloperSettingsRegistryKey(addinId);
+  const key = getDeveloperSettingsRegistryKey(addinId);
   return registry.deleteKey(key);
 }
 
 export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
-  const key: string = getDeveloperSettingsRegistryKey(addinId);
+  const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
   const useWebDebugger: boolean = enable && (method === DebuggingMethod.Web);
 
@@ -55,12 +30,29 @@ export async function enableDebugging(addinId: string, enable: boolean = true, m
 }
 
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
-  const key: string = getDeveloperSettingsRegistryKey(addinId);
+  const key = getDeveloperSettingsRegistryKey(addinId);
   return registry.addBooleanValue(key, "UseLiveReload", enable);
 }
 
+export function getDeveloperSettingsRegistryKey(addinId: string): registry.RegistryKey {
+  if (!addinId) { throw new Error("addinId is required."); }
+  if (typeof addinId !== "string") { throw new Error("addinId should be a string."); }
+  return new registry.RegistryKey(`${DeveloperSettingsRegistryKey}\\${addinId}`);
+}
+
+export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
+  const key = getDeveloperSettingsRegistryKey(addinId);
+  const components = new SourceBundleUrlComponents(
+    await registry.getStringValue(key, "SourceBundleHost"),
+    await registry.getStringValue(key, "SourceBundlePort"),
+    await registry.getStringValue(key, "SourceBundlePath"),
+    await registry.getStringValue(key, "SourceBundleExtension"),
+  );
+  return components;
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
-  const key: string = getDeveloperSettingsRegistryKey(addinId);
+  const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
 
   const useDirectDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, "UseDirectDebugger"));
   const useWebDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, "UseWebDebugger"))
@@ -70,7 +62,7 @@ export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
 }
 
 export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
-  const key: string = getDeveloperSettingsRegistryKey(addinId);
+  const key = getDeveloperSettingsRegistryKey(addinId);
 
   const enabled: boolean = isRegistryValueTrue(await registry.getValue(key, "UseLiveReload"));
 
@@ -91,8 +83,36 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
   return false;
 }
 
-export function getDeveloperSettingsRegistryKey(addinId: string): string {
-  if (!addinId) { throw new Error("addinId is required."); }
-  if (typeof addinId !== "string") { throw new Error("addinId should be a string."); }
-  return `${DeveloperSettingsRegistryKey}\\${addinId}`;
+export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
+  const key = getDeveloperSettingsRegistryKey(addinId);
+
+  if (components.host) {
+    await registry.addStringValue(key, "SourceBundleHost", components.host);
+  } else {
+    await registry.deleteValue(key, "SourceBundleHost");
+  }
+
+  if (components.port) {
+    await registry.addStringValue(key, "SourceBundlePort", components.port);
+  } else {
+    await registry.deleteValue(key, "SourceBundlePort");
+  }
+
+  if (components.path) {
+    await registry.addStringValue(key, "SourceBundlePath", components.path);
+
+    // for now, include old name
+    await registry.addStringValue(key, "DebugBundlePath", components.path);
+  } else {
+    await registry.deleteValue(key, "SourceBundlePath");
+
+    // for now include old name
+    await registry.deleteValue(key, "DebugBundlePath");
+  }
+
+  if (components.extension !== undefined) {
+    await registry.addStringValue(key, "SourceBundleExtension", components.extension);
+  } else {
+    await registry.deleteValue(key, "SourceBundleExtension");
+  }
 }

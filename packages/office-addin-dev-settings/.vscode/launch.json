@@ -50,6 +50,15 @@
             ]
         },
         {
+            "name": "Command Line: get-source-bundle-url",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "get-source-bundle-url", "${workspaceFolder}\\test\\manifest.xml", 
+            ]
+        },
+        {
             "name": "Command Line: is-debugging-enabled",
             "type": "node",
             "request": "launch",            
@@ -68,12 +77,12 @@
             ]
         },
         {
-            "name": "Command Line: source-bundle-url",
+            "name": "Command Line: set-source-bundle-url",
             "type": "node",
             "request": "launch",
             "program": "${workspaceFolder}/lib/dev-settings.js",
             "args": [
-                "source-bundle-url", "${workspaceFolder}\\test\\manifest.xml", "--host", "HOST", "--port", "PORT", "--path", "index.win32", "--extension", "EXT"
+                "set-source-bundle-url", "${workspaceFolder}\\test\\manifest.xml", "--host", "HOST", "--port", "PORT", "--path", "PATH", "--extension", ".EXT"
             ]
         }
     ]

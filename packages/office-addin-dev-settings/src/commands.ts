@@ -20,18 +20,14 @@ export async function clear(manifestPath: string) {
   }
 }
 
-export async function configureSourceBundleUrl(manifestPath: string, command: commander.Command) {
-  try {
-    const manifest = await readManifestFile(manifestPath);
-
-    validateManifestId(manifest);
-
-    await devSettings.configureSourceBundleUrl(manifest.id!, command.host, command.port, command.path, command.extension);
-
-    console.log("Configured source bundle url.");
-  } catch (err) {
-    logErrorMessage(err);
-  }
+function displaySourceBundleUrl(components: devSettings.SourceBundleUrlComponents) {
+  console.log(`host: ${components.host !== undefined ? `"${components.host}"` : '(default: "localhost")'}`);
+  console.log(`port: ${components.port !== undefined ? `"${components.port}"` : '(default: "8081")'}`);
+  console.log(`path: ${components.path !== undefined ? `"${components.path}"` : "(default)"}`);
+  console.log(`extension: ${components.extension !== undefined ? `"${components.extension}"` : '(default: ".bundle")'}`);
+  console.log();
+  console.log(`Source bundle url: ${components.url}`);
+  console.log();
 }
 
 export async function disableDebugging(manifestPath: string) {
@@ -90,6 +86,20 @@ export async function enableLiveReload(manifestPath: string) {
   }
 }
 
+export async function getSourceBundleUrl(manifestPath: string, command: commander.Command) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(manifest.id!);
+
+    displaySourceBundleUrl(components);
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 export async function isDebuggingEnabled(manifestPath: string, command: commander.Command) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -124,6 +134,30 @@ export async function isLiveReloadEnabled(manifestPath: string, command: command
 
 function logErrorMessage(err: any) {
   console.error(`Error: ${err instanceof Error ? err.message : err}`);
+}
+
+export async function setSourceBundleUrl(manifestPath: string, command: commander.Command) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+    // If the --extension option specifies a value, then command.extension will be a string;
+    // otherwise if not value is specified, it will be the boolean "true".
+    // Therefore use 'undefined' to denote to use the default value if not of type string.
+    // Only --extension allows an empty string as a value; for the others the default is used.
+    const host = (typeof(command.host) === "string") && command.host ? command.host : undefined;
+    const port = (typeof(command.port) === "string") && command.port ? command.port : undefined;
+    const path = (typeof(command.path) === "string") && command.path ? command.path : undefined;
+    const extension = (typeof(command.extension) === "string") ? command.extension : undefined;
+    const components = new devSettings.SourceBundleUrlComponents(host, port, path, extension);
+
+    validateManifestId(manifest);
+
+    await devSettings.setSourceBundleUrl(manifest.id!, components);
+
+    console.log("Configured source bundle url.");
+    displaySourceBundleUrl(components);
+  } catch (err) {
+    logErrorMessage(err);
+  }
 }
 
 function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
