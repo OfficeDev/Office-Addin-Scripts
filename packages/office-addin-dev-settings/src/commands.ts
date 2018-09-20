@@ -12,7 +12,9 @@ export async function clear(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    devSettings.clearDevSettings(manifest.id!);
+    await devSettings.clearDevSettings(manifest.id!);
+
+    console.log("Developer settings have been cleared.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -24,7 +26,9 @@ export async function configureSourceBundleUrl(manifestPath: string, command: co
 
     validateManifestId(manifest);
 
-    devSettings.configureSourceBundleUrl(manifest.id!, command.host, command.port, command.path, command.extension);
+    await devSettings.configureSourceBundleUrl(manifest.id!, command.host, command.port, command.path, command.extension);
+
+    console.log("Configured source bundle url.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -36,7 +40,9 @@ export async function disableDebugging(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    devSettings.disableDebugging(manifest.id!);
+    await devSettings.disableDebugging(manifest.id!);
+
+    console.log("Debugging is disabled.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -48,7 +54,9 @@ export async function disableLiveReload(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    devSettings.disableLiveReload(manifest.id!);
+    await devSettings.disableLiveReload(manifest.id!);
+
+    console.log("Live reload is disabled.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -60,7 +68,9 @@ export async function enableDebugging(manifestPath: string, command: commander.C
 
     validateManifestId(manifest);
 
-    devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
+    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
+
+    console.log("Debugging is enabled.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -72,7 +82,9 @@ export async function enableLiveReload(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    devSettings.enableLiveReload(manifest.id!);
+    await devSettings.enableLiveReload(manifest.id!);
+
+    console.log("Live reload is enabled.");
   } catch (err) {
     logErrorMessage(err);
   }

@@ -8,53 +8,53 @@ import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
 
-export function clearDevSettings(addinId: string): void {
-  deleteDeveloperSettingsRegistryKey(addinId);
+export async function clearDevSettings(addinId: string): Promise<void> {
+  return deleteDeveloperSettingsRegistryKey(addinId);
 }
 
-export function configureSourceBundleUrl(addinId: string, host?: string, port?: string, path?: string, extension?: string): void {
+export async function configureSourceBundleUrl(addinId: string, host?: string, port?: string, path?: string, extension?: string): Promise<void> {
   const key: string = getDeveloperSettingsRegistryKey(addinId);
 
   if (host) {
-    registry.addStringValue(key, "SourceBundleHost", host);
+    await registry.addStringValue(key, "SourceBundleHost", host);
   }
 
   if (port) {
-    registry.addStringValue(key, "SourceBundlePort", port);
+    await registry.addStringValue(key, "SourceBundlePort", port);
   }
 
   if (path) {
-    registry.addStringValue(key, "SourceBundlePath", path);
+    await registry.addStringValue(key, "SourceBundlePath", path);
 
     // for now, include old name
-    registry.addStringValue(key, "DebugBundlePath", path);
+    await registry.addStringValue(key, "DebugBundlePath", path);
   }
 
   if (extension) {
-    registry.addStringValue(key, "SourceBundleExtension", extension);
+    await registry.addStringValue(key, "SourceBundleExtension", extension);
   }
 }
 
-export function deleteDeveloperSettingsRegistryKey(addinId: string): void {
+export async function deleteDeveloperSettingsRegistryKey(addinId: string): Promise<void> {
   const key: string = getDeveloperSettingsRegistryKey(addinId);
-  registry.deleteKey(key);
+  return registry.deleteKey(key);
 }
 
-export function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): void {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
   const key: string = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
   const useWebDebugger: boolean = enable && (method === DebuggingMethod.Web);
 
-  registry.addBooleanValue(key, "UseDirectDebugger", useDirectDebugger);
-  registry.addBooleanValue(key, "UseWebDebugger", useWebDebugger);
+  await registry.addBooleanValue(key, "UseDirectDebugger", useDirectDebugger);
+  await registry.addBooleanValue(key, "UseWebDebugger", useWebDebugger);
 
   // for now, include old name
-  registry.addBooleanValue(key, "EnableDebugging", useWebDebugger);
+  await registry.addBooleanValue(key, "Debugging", useWebDebugger);
 }
 
-export function enableLiveReload(addinId: string, enable: boolean = true): void {
+export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
   const key: string = getDeveloperSettingsRegistryKey(addinId);
-  registry.addBooleanValue(key, "UseLiveReload", enable);
+  return registry.addBooleanValue(key, "UseLiveReload", enable);
 }
 
 export function getDeveloperSettingsRegistryKey(addinId: string): string {

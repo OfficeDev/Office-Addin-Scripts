@@ -12,7 +12,7 @@ export enum DebuggingMethod {
   Web,
 }
 
-export function clearDevSettings(addinId: string): void {
+export async function clearDevSettings(addinId: string): Promise<void> {
   switch (process.platform) {
     case "win32":
       return registry.clearDevSettings(addinId);
@@ -21,7 +21,7 @@ export function clearDevSettings(addinId: string): void {
   }
 }
 
-export function configureSourceBundleUrl(addinId: string, host?: string, port?: string, path?: string, extension?: string): void {
+export async function configureSourceBundleUrl(addinId: string, host?: string, port?: string, path?: string, extension?: string): Promise<void> {
   switch (process.platform) {
     case "win32":
       return registry.configureSourceBundleUrl(addinId, host, port, path, extension);
@@ -30,15 +30,15 @@ export function configureSourceBundleUrl(addinId: string, host?: string, port?: 
   }
 }
 
-export function disableDebugging(addinId: string): void {
-  enableDebugging(addinId, false);
+export async function disableDebugging(addinId: string): Promise<void> {
+  return enableDebugging(addinId, false);
 }
 
-export function disableLiveReload(addinId: string): void {
-  enableLiveReload(addinId, false);
+export async function disableLiveReload(addinId: string): Promise<void> {
+  return enableLiveReload(addinId, false);
 }
 
-export function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): void {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
   switch (process.platform) {
     case "win32":
       return registry.enableDebugging(addinId, enable, method);
@@ -47,7 +47,7 @@ export function enableDebugging(addinId: string, enable: boolean = true, method:
   }
 }
 
-export function enableLiveReload(addinId: string, enable: boolean = true): void {
+export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
   switch (process.platform) {
     case "win32":
       return registry.enableLiveReload(addinId, enable);
