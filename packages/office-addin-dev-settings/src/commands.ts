@@ -140,12 +140,12 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
   try {
     const manifest = await readManifestFile(manifestPath);
     // If the --extension option specifies a value, then command.extension will be a string;
-    // otherwise if not value is specified, it will be the boolean "true".
-    // Therefore use 'undefined' to denote to use the default value if not of type string.
+    // otherwise if a value is not specified, command.extension will be the boolean "true".
+    // Use the string value (when option value is given); otherwise use 'undefined'.
     // Only --extension allows an empty string as a value; for the others the default is used.
-    const host = (typeof(command.host) === "string") && command.host ? command.host : undefined;
-    const port = (typeof(command.port) === "string") && command.port ? command.port : undefined;
-    const path = (typeof(command.path) === "string") && command.path ? command.path : undefined;
+    const host = command.host ? command.host : undefined;
+    const port = command.port ? command.port : undefined;
+    const path = command.path ? command.path : undefined;
     const extension = (typeof(command.extension) === "string") ? command.extension : undefined;
     const components = new devSettings.SourceBundleUrlComponents(host, port, path, extension);
 
