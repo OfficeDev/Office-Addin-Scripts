@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-settings",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Configure developer settings for Office Add-ins.",
   "main": "./lib/dev-settings.js",
   "scripts": {
