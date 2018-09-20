@@ -87,7 +87,12 @@ export async function deleteKey(key: RegistryKey): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to delete registry key "${key.path}".\n${err}`));
+        // it's not an error if the key does not exist
+        if (err instanceof Error && err.message.match("unable to find the specified registry key")) {
+          resolve();
+        } else {
+          reject(new Error(`Unable to delete registry key "${key.path}".\n${err}`));
+        }
       } else {
         resolve();
       }

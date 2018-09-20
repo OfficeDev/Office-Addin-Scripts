@@ -19,7 +19,7 @@ describe("DevSettings", function() {
     await devSettings.clearDevSettings(addinId);
   });
 
-  this.afterAll(async function() {
+  this.afterAll (async function() {
     await devSettings.clearDevSettings(addinId);
   });
 
@@ -37,6 +37,9 @@ describe("DevSettings", function() {
       assert.strictEqual(components.path, undefined);
       assert.strictEqual(components.port, undefined);
       assert.strictEqual(components.url, "http://localhost:8081/{path}.bundle");
+    });
+    it("clear dev settings when no dev settings", async function() {
+      await devSettings.clearDevSettings(addinId);
     });
     it("debugging can be enabled", async function() {
       assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
