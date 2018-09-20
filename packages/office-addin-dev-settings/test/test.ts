@@ -15,8 +15,12 @@ async function testSetSourceBundleUrlComponents(host?: string, port?: string, pa
 }
 
 describe("DevSettings", function() {
-  this.beforeAll(function() {
-    devSettings.clearDevSettings(addinId);
+  this.beforeAll(async function() {
+    await devSettings.clearDevSettings(addinId);
+  });
+
+  this.afterAll(async function() {
+    await devSettings.clearDevSettings(addinId);
   });
 
   describe ("when no dev settings", function() {
