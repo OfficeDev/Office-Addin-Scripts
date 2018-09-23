@@ -23,7 +23,9 @@
     "child_process": "^1.0.2",
     "commander": "^2.9.0",
     "node-fetch": "^2.2.0",
-    "office-addin-dev-settings": "^1.0.0"
+    "office-addin-dev-settings": "^1.0.0",
+    "office-addin-manifest": "^1.0.0",
+    "office-addin-node-debugger": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^10.5.7",

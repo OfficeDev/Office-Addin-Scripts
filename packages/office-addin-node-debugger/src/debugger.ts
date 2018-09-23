@@ -11,22 +11,15 @@ import * as commander from 'commander';
 import { fork } from 'child_process';
 import WebSocket = require('ws');
 
-commander
-  .option('-h, --hostname <hostname>', 'The hostname where the packager is running.')
-  .option('-p, --port <port>', 'The port where the packager is running.')
-  .parse(process.argv);
+export function run(host: string = "localhost", port: string = "8081", 
+  role: string = "debugger", debuggerName: string = "OfficeAddinDebugger") {
+    
+  const debuggerWorkerRelativePath: string = '\\debuggerWorker.js';
+  const debuggerWorkerFullPath: string = `${__dirname}${debuggerWorkerRelativePath}`;
+  const websocketRetryTimeout: number = 500;
 
-const hostName: string = commander.hostname ? commander.hostname : 'localhost';
-const port: string = commander.port ? commander.port : '8081';
-const role: string = 'debugger';
-const debuggerName: string = 'OfficeAddinDebugger';
-const debuggerWorkerRelativePath: string = '\\debuggerWorker.js';
-const debuggerWorkerFullPath: string = `${__dirname}${debuggerWorkerRelativePath}`;
-const websocketRetryTimeout: number = 500;
-
-(function() {
   function connectToDebuggerProxy(): void {
-    var ws = new WebSocket(`ws://${hostName}:${port}/debugger-proxy?role=${role}&name=${debuggerName}`);
+    var ws = new WebSocket(`ws://${host}:${port}/debugger-proxy?role=${role}&name=${debuggerName}`);
     var worker: child.ChildProcess;
 
     function createJSRuntime(): void {
@@ -90,4 +83,15 @@ const websocketRetryTimeout: number = 500;
     };
   }
   connectToDebuggerProxy();
-})();
+}
+
+if (process.argv[1].endsWith("\\debugger.js")) {
+  commander
+  .option('-h, --host <host>', 'The hostname where the packager is running.')
+  .option('-p, --port <port>', 'The port where the packager is running.')  
+  .parse(process.argv);
+
+  run(commander.host, commander.port);
+}
+
+
