@@ -11,6 +11,7 @@ import * as devSettings from "office-addin-dev-settings";
 import { DebuggingMethod } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
+import * as commands from "./commands";
 
 function delay(milliseconds: number): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -212,7 +213,7 @@ export async function startDebugging(manifestPath: string,
     console.log("Debugging started.");
 }
 
-function parseDebuggingMethod(text: string): DebuggingMethod {
+export function parseDebuggingMethod(text: string): DebuggingMethod {
     switch (text) {
         case "direct":
             return DebuggingMethod.Direct;
@@ -223,7 +224,7 @@ function parseDebuggingMethod(text: string): DebuggingMethod {
 
 if (process.argv[1].endsWith("\\debugging.js")) {
     commander
-        .option("-m, --manifest <path>", "Manifest file path.")
+        .command("start <manifestPath>")
         .option("-h, --host <host>", "The host where the packager is running.")
         .option("-p, --port <port>", "The port where the packager is running.")
         .option("--debug-method <method>", "The debug method to use")
@@ -234,17 +235,7 @@ if (process.argv[1].endsWith("\\debugging.js")) {
         .option("--dev-server [command]", "Run the dev server.")
         .option("--dev-server-url <url>")
         .option("--packager [command]", "Run the packager")
-        .parse(process.argv);
+        .action(commands.start);
 
-    try {
-        const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
-            commander.sourceBundleUrlHost, commander.sourceBundleUrlPort,
-            commander.sourceBundleUrlPath, commander.sourceBundleUrlExtension);
-        const debuggingMethod = parseDebuggingMethod(commander.debugMethod);
-
-        startDebugging(commander.manifest, debuggingMethod, sourceBundleUrlComponents,
-            commander.devServer, commander.devServerUrl, commander.packager);
-    } catch (err) {
-        console.log(`Unable to start debugging.\n${err}`);
-    }
+    commander.parse(process.argv);
 }
