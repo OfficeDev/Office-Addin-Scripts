@@ -76,18 +76,7 @@ export async function runDevServer(commandLine: string, url?: string): Promise<v
 }
 
 export async function runNodeDebugger(host?: string, port?: string): Promise<void> {
-    console.log(`Starting the node debugger...`);
-    let command = `office-addin-node-debugger`;
-    
-    if (host) {
-        command += ` -h ${host}`;
-    }
-
-    if (port) {
-        command += ` -p ${port}`;
-    }
-
-    startProcess(command);
+    nodeDebugger.run(host, port);
 }
 
 export async function runPackager(commandLine: string, host: string = "localhost", port: string = "8081"): Promise<void> {
@@ -166,9 +155,9 @@ export async function startDebugging(manifestPath: string,
     }
 
     if (devServerCommandLine) {
-        let devServerPromise = runDevServer(devServerCommandLine, devServerUrl);
+        devServerPromise = runDevServer(devServerCommandLine, devServerUrl);
     }
-    
+
     const manifestInfo = await manifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
