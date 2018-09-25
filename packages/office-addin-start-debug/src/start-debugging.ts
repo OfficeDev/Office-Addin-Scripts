@@ -53,19 +53,6 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     }    
 }
 
-async function startProcess(commandLine: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        console.log(`Starting process: ${commandLine}`);
-        childProcess.exec(commandLine, (error: ExecException | null, stdout: string, stderr: string) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve();
-            }
-        });
-    });
-}
-
 export async function runDevServer(commandLine: string, url?: string): Promise<void> {
     if (commandLine) {
         // if the dev server is running
@@ -126,6 +113,19 @@ export async function runPackager(commandLine: string, host: string = "localhost
     }
 }
 
+async function startProcess(commandLine: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        console.log(`Starting process: ${commandLine}`);
+        childProcess.exec(commandLine, (error: ExecException | null, stdout: string, stderr: string) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
 export async function waitUntil(callback: (() => Promise<boolean>), retryCount: number, retryDelay: number): Promise<boolean> {
     let done: boolean = await callback();
 
@@ -151,14 +151,13 @@ export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: 
 }
 
 export async function startDebugging(manifestPath: string,
-    method: DebuggingMethod = defaultDebuggingMethod(), 
+    debuggingMethod: DebuggingMethod = defaultDebuggingMethod(), 
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerUrl?: string, 
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
     sideloadCommandLine: string = "npm run sideload") {
-    let packagerPromise: Promise<void> = Promise.resolve();
-    let devServerPromise: Promise<void> = Promise.resolve();
-    let nodeDebuggerPromise: Promise<void> = Promise.resolve();
+    let packagerPromise: Promise<void> | undefined;
+    let devServerPromise: Promise<void> | undefined;
 
     console.log("Debugging is being started...");
 
@@ -170,37 +169,46 @@ export async function startDebugging(manifestPath: string,
         let devServerPromise = runDevServer(devServerCommandLine, devServerUrl);
     }
     
-
     const manifestInfo = await manifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
         throw new Error("Manifest does not contain the id for the Office Add-in.");
     }
 
-    await devSettings.enableDebugging(manifestInfo.id);
+    // enable debugging
+    await devSettings.enableDebugging(manifestInfo.id, true, debuggingMethod);
+    console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod}`);
+
+    // set source bundle url
     if (sourceBundleUrlComponents) {
         await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
     }
 
-    try {
-        await packagerPromise;
-        console.log(`Started the packager.`);
-    } catch (err) {
-        console.log(`Unable to start the packager. ${err}`);
+    if (packagerPromise !== undefined) {
+        try {
+            await packagerPromise;
+            console.log(`Started the packager.`);
+        } catch (err) {
+            console.log(`Unable to start the packager. ${err}`);
+        }
     }
 
-    try {
-        await devServerPromise;
-        console.log(`Started the dev server.`);
-    } catch (err) {
-        console.log(`Unable to start the dev server. ${err}`);
+    if (devServerPromise !== undefined) {
+        try {
+            await devServerPromise;
+            console.log(`Started the dev server.`);
+        } catch (err) {
+            console.log(`Unable to start the dev server. ${err}`);
+        }
     }
 
-    try {
-        await runNodeDebugger();
-        console.log(`Started the node debugger.`);
-    } catch (err) {
-        console.log(`Unable to start the node debugger. ${err}`);
+    if (debuggingMethod == DebuggingMethod.Web) {
+        try {
+            await runNodeDebugger();
+            console.log(`Started the node debugger.`);
+        } catch (err) {
+            console.log(`Unable to start the node debugger. ${err}`);
+        }
     }
     
     try {
@@ -213,6 +221,14 @@ export async function startDebugging(manifestPath: string,
     console.log("Debugging started.");
 }
 
+function parseDebuggingMethod(text: string): DebuggingMethod {
+    switch (text) {
+        case "direct":
+            return DebuggingMethod.Direct;
+        default:
+            return DebuggingMethod.Web;
+    }
+}
 
 if (process.argv[1].endsWith("\\start-debugging.js")) {
     commander
@@ -233,8 +249,9 @@ if (process.argv[1].endsWith("\\start-debugging.js")) {
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
             commander.sourceBundleUrlHost, commander.sourceBundleUrlPort, 
             commander.sourceBundleUrlPath, commander.sourceBundleUrlExtension);
+        const debuggingMethod = parseDebuggingMethod(commander.debugMethod);
 
-        startDebugging(commander.manifest, commander.debugMethod, sourceBundleUrlComponents, 
+        startDebugging(commander.manifest, debuggingMethod, sourceBundleUrlComponents, 
             commander.devServer, commander.devServerUrl, commander.packager);
     } catch (err) {
         console.log(`Unable to start debugging.\n${err}`);
