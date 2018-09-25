@@ -3,16 +3,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fetch from 'node-fetch';
-import * as commander from 'commander';
-import * as childProcess from 'child_process';
-import { ExecException } from 'child_process';
-import * as manifest from 'office-addin-manifest';
-import * as devSettings from 'office-addin-dev-settings';
-import { DebuggingMethod } from 'office-addin-dev-settings';
+import * as childProcess from "child_process";
+import { ExecException } from "child_process";
+import * as commander from "commander";
+import * as fetch from "node-fetch";
+import * as devSettings from "office-addin-dev-settings";
+import { DebuggingMethod } from "office-addin-dev-settings";
+import * as manifest from "office-addin-manifest";
+import * as nodeDebugger from "office-addin-node-debugger";
 
 function delay(milliseconds: number): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
         setTimeout(resolve, milliseconds);
     });
 }
@@ -20,7 +21,7 @@ function delay(milliseconds: number): Promise<void> {
 function defaultDebuggingMethod(): DebuggingMethod {
     switch (process.platform) {
         case "win32":
-            return DebuggingMethod.Web; // will change to Direct later 
+            return DebuggingMethod.Web; // will change to Direct later
         default:
             return DebuggingMethod.Web;
     }
@@ -28,29 +29,29 @@ function defaultDebuggingMethod(): DebuggingMethod {
 
 export async function isDevServerRunning(url: string): Promise<boolean> {
     try {
-        console.log(`Is dev server running? (${url})`)
+        console.log(`Is dev server running? (${url})`);
         const response = await fetch.default(url);
-        console.log(`devServer: ${response.status} ${response.statusText}`)
+        console.log(`devServer: ${response.status} ${response.statusText}`);
         return response.ok;
     } catch (err) {
         console.log(`Unable to connect to dev server.\n${err}`);
         return false;
-    }    
+    }
 }
 
 export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const statusRunningResponse = `packager-status:running`;
 
     try {
-        console.log(`Is packager running? (${statusUrl})`)
+        console.log(`Is packager running? (${statusUrl})`);
         const response = await fetch.default(statusUrl);
-        console.log(`packager: ${response.status} ${response.statusText}`)
+        console.log(`packager: ${response.status} ${response.statusText}`);
         const text = await response.text();
-        console.log(`packager: ${text}`)
+        console.log(`packager: ${text}`);
         return (statusRunningResponse === text);
     } catch (err) {
         return false;
-    }    
+    }
 }
 
 export async function runDevServer(commandLine: string, url?: string): Promise<void> {
@@ -128,23 +129,24 @@ export async function waitUntil(callback: (() => Promise<boolean>), retryCount: 
 }
 
 export async function waitUntilDevServerIsRunning(url: string, retryCount: number = 10, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => { 
-        return isDevServerRunning(url) 
+    return waitUntil(() => {
+        return isDevServerRunning(url);
     }, retryCount, retryDelay);
 }
 
 export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => { 
-        return isPackagerRunning(statusUrl)
+    return waitUntil(() => {
+        return isPackagerRunning(statusUrl);
     }, retryCount, retryDelay);
 }
 
 export async function startDebugging(manifestPath: string,
-    debuggingMethod: DebuggingMethod = defaultDebuggingMethod(), 
+    debuggingMethod: DebuggingMethod = defaultDebuggingMethod(),
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
-    devServerCommandLine?: string, devServerUrl?: string, 
+    devServerCommandLine?: string, devServerUrl?: string,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
     sideloadCommandLine: string = "npm run sideload") {
+
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
 
@@ -191,7 +193,7 @@ export async function startDebugging(manifestPath: string,
         }
     }
 
-    if (debuggingMethod == DebuggingMethod.Web) {
+    if (debuggingMethod === DebuggingMethod.Web) {
         try {
             await runNodeDebugger();
             console.log(`Started the node debugger.`);
@@ -199,7 +201,7 @@ export async function startDebugging(manifestPath: string,
             console.log(`Unable to start the node debugger. ${err}`);
         }
     }
-    
+
     try {
         console.log(`Sideloading the Office Add-in...`);
         await startProcess(sideloadCommandLine);
@@ -221,26 +223,26 @@ function parseDebuggingMethod(text: string): DebuggingMethod {
 
 if (process.argv[1].endsWith("\\start-debugging.js")) {
     commander
-        .option('-m, --manifest <path>', 'Manifest file path.')
-        .option('-h, --host <host>', 'The host where the packager is running.')
-        .option('-p, --port <port>', 'The port where the packager is running.')
-        .option('--debug-method <method>', 'The debug method to use')
-        .option('--source-bundle-url-host <host>')
-        .option('--source-bundle-url-port <port>')
-        .option('--source-bundle-url-path <path>')
-        .option('--source-bundle-url-extension <extension>')
-        .option('--dev-server [command]', 'Run the dev server.')
-        .option('--dev-server-url <url>')
-        .option('--packager [command]', 'Run the packager')
+        .option("-m, --manifest <path>", "Manifest file path.")
+        .option("-h, --host <host>", "The host where the packager is running.")
+        .option("-p, --port <port>", "The port where the packager is running.")
+        .option("--debug-method <method>", "The debug method to use")
+        .option("--source-bundle-url-host <host>")
+        .option("--source-bundle-url-port <port>")
+        .option("--source-bundle-url-path <path>")
+        .option("--source-bundle-url-extension <extension>")
+        .option("--dev-server [command]", "Run the dev server.")
+        .option("--dev-server-url <url>")
+        .option("--packager [command]", "Run the packager")
         .parse(process.argv);
 
     try {
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
-            commander.sourceBundleUrlHost, commander.sourceBundleUrlPort, 
+            commander.sourceBundleUrlHost, commander.sourceBundleUrlPort,
             commander.sourceBundleUrlPath, commander.sourceBundleUrlExtension);
         const debuggingMethod = parseDebuggingMethod(commander.debugMethod);
 
-        startDebugging(commander.manifest, debuggingMethod, sourceBundleUrlComponents, 
+        startDebugging(commander.manifest, debuggingMethod, sourceBundleUrlComponents,
             commander.devServer, commander.devServerUrl, commander.packager);
     } catch (err) {
         console.log(`Unable to start debugging.\n${err}`);
