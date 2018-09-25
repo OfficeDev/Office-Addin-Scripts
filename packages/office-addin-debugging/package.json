@@ -1,8 +1,8 @@
 {
-  "name": "office-addin-start-debug",
+  "name": "office-addin-debugging",
   "version": "0.0.1",
-  "description": "This package helps to start an Office Add-in debugging session.",
-  "main": "./lib/start-debugging.js",
+  "description": "For debugging Office Add-ins.",
+  "main": "./lib/debugging.js",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
@@ -14,7 +14,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-start-debug": "./lib/start-debugging.js"
+    "office-addin-debugging": "./lib/debugging.js"
   },
   "keywords": [
     "Office"

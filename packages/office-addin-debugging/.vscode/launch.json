@@ -8,7 +8,7 @@
             "name": "Command Line",
             "type": "node",
             "request": "launch",            
-            "program": "${workspaceFolder}/lib/start-debugging.js",
+            "program": "${workspaceFolder}/lib/debugging.js",
             "args": [                
             ],
             "autoAttachChildProcesses": true

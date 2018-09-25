@@ -221,7 +221,7 @@ function parseDebuggingMethod(text: string): DebuggingMethod {
     }
 }
 
-if (process.argv[1].endsWith("\\start-debugging.js")) {
+if (process.argv[1].endsWith("\\debugging.js")) {
     commander
         .option("-m, --manifest <path>", "Manifest file path.")
         .option("-h, --host <host>", "The host where the packager is running.")
