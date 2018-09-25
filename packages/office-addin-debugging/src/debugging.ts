@@ -61,7 +61,7 @@ export async function runDevServer(commandLine: string, url?: string): Promise<v
         if (url && await isDevServerRunning(url)) {
             console.log(`The dev server is already running. ${url}`);
         } else {
-            // start the packager
+            // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
             startProcess(commandLine);
 
