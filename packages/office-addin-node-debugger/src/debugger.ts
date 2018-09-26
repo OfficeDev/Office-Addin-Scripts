@@ -61,7 +61,7 @@ export function run(host: string = "localhost", port: string = "8081",
       // Special message that asks for a new JS runtime
       if (object.method === 'prepareJSRuntime') {
         shutdownJSRuntime();
-        console.clear();
+        //console.clear();
 
         createJSRuntime();
         ws.send(JSON.stringify({ replyID: object.id }));
