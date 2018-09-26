@@ -1,10 +1,18 @@
-import * as childProcess from "child_process";
-import { ExecException } from "child_process";
-import * as fetch from "node-fetch";
-import * as devSettings from "office-addin-dev-settings";
-import { DebuggingMethod } from "office-addin-dev-settings";
-import * as manifest from "office-addin-manifest";
-import * as nodeDebugger from "office-addin-node-debugger";
+#!/usr/bin/env node
+
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+import * as commander from "commander";
+import * as commands from "./commands";
+
+<<<<<<< HEAD
+=======
+function delay(milliseconds: number): Promise<void> {
+    return new Promise<void>((resolve) => {
+        setTimeout(resolve, milliseconds);
+    });
+}
 
 function defaultDebuggingMethod(): DebuggingMethod {
     switch (process.platform) {
@@ -13,12 +21,6 @@ function defaultDebuggingMethod(): DebuggingMethod {
         default:
             return DebuggingMethod.Web;
     }
-}
-
-function delay(milliseconds: number): Promise<void> {
-    return new Promise<void>((resolve) => {
-        setTimeout(resolve, milliseconds);
-    });
 }
 
 export async function isDevServerRunning(url: string): Promise<boolean> {
@@ -45,15 +47,6 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
         return (statusRunningResponse === text);
     } catch (err) {
         return false;
-    }
-}
-
-export function parseDebuggingMethod(text: string): DebuggingMethod {
-    switch (text) {
-        case "direct":
-            return DebuggingMethod.Direct;
-        default:
-            return DebuggingMethod.Web;
     }
 }
 
@@ -106,6 +99,43 @@ export async function runPackager(commandLine: string, host: string = "localhost
     }
 }
 
+async function startProcess(commandLine: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        console.log(`Starting process: ${commandLine}`);
+        childProcess.exec(commandLine, (error: ExecException | null, stdout: string, stderr: string) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+export async function waitUntil(callback: (() => Promise<boolean>), retryCount: number, retryDelay: number): Promise<boolean> {
+    let done: boolean = await callback();
+
+    while (!done && retryCount) {
+        --retryCount;
+        delay(retryDelay);
+        done = await callback();
+    }
+
+    return done;
+}
+
+export async function waitUntilDevServerIsRunning(url: string, retryCount: number = 10, retryDelay: number = 1000): Promise<boolean> {
+    return waitUntil(() => {
+        return isDevServerRunning(url);
+    }, retryCount, retryDelay);
+}
+
+export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
+    return waitUntil(() => {
+        return isPackagerRunning(statusUrl);
+    }, retryCount, retryDelay);
+}
+
 export async function startDebugging(manifestPath: string,
     debuggingMethod: DebuggingMethod = defaultDebuggingMethod(),
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
@@ -134,7 +164,7 @@ export async function startDebugging(manifestPath: string,
 
     // enable debugging
     await devSettings.enableDebugging(manifestInfo.id, true, debuggingMethod);
-    console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+    console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod}`);
 
     // set source bundle url
     if (sourceBundleUrlComponents) {
@@ -178,39 +208,30 @@ export async function startDebugging(manifestPath: string,
     console.log("Debugging started.");
 }
 
-async function startProcess(commandLine: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        console.log(`Starting process: ${commandLine}`);
-        childProcess.exec(commandLine, (error: ExecException | null, stdout: string, stderr: string) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve();
-            }
-        });
-    });
-}
-
-export async function waitUntil(callback: (() => Promise<boolean>), retryCount: number, retryDelay: number): Promise<boolean> {
-    let done: boolean = await callback();
-
-    while (!done && retryCount) {
-        --retryCount;
-        delay(retryDelay);
-        done = await callback();
+export function parseDebuggingMethod(text: string): DebuggingMethod {
+    switch (text) {
+        case "direct":
+            return DebuggingMethod.Direct;
+        default:
+            return DebuggingMethod.Web;
     }
-
-    return done;
 }
 
-export async function waitUntilDevServerIsRunning(url: string, retryCount: number = 10, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => {
-        return isDevServerRunning(url);
-    }, retryCount, retryDelay);
-}
+>>>>>>> 02eec6d3b7f4bcf53375a5668ffcaa1421a1e72f
+if (process.argv[1].endsWith("\\debugging.js")) {
+    commander
+        .command("start <manifestPath>")
+        .option("--debug-method <method>", "The debug method to use.")
+        .option("--dev-server <command>", "Run the dev server.")
+        .option("--dev-server-url <url>", "Verify dev server is running using this url.")
+        .option("--packager <command>", "Run the packager.")
+        .option("--packager-host <host>")
+        .option("--packager-port <port>")
+        .option("--source-bundle-url-host <host>")
+        .option("--source-bundle-url-port <port>")
+        .option("--source-bundle-url-path <path>")
+        .option("--source-bundle-url-extension <extension>")
+        .action(commands.start);
 
-export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => {
-        return isPackagerRunning(statusUrl);
-    }, retryCount, retryDelay);
+    commander.parse(process.argv);
 }
