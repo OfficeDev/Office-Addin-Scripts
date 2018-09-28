@@ -178,9 +178,12 @@ export async function startDebugging(manifestPath: string,
     console.log("Debugging started.");
 }
 
-async function startProcess(commandLine: string): Promise<void> {
+export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-        console.log(`Starting process: ${commandLine}`);
+        if (verbose) {
+            console.log(`Starting process: ${commandLine}`);
+        }
+
         childProcess.exec(commandLine, (error: ExecException | null, stdout: string, stderr: string) => {
             if (error) {
                 reject(error);

@@ -1,6 +1,7 @@
 import * as commander from "commander";
 import * as devSettings from "office-addin-dev-settings";
 import { parseDebuggingMethod, startDebugging} from "./start";
+import { stopDebugging} from "./stop";
 
 export async function start(manifestPath: string, command: commander.Command) {
     try {
@@ -14,5 +15,13 @@ export async function start(manifestPath: string, command: commander.Command) {
             command.packager, command.packagerHost, command.PackagerPort);
     } catch (err) {
         console.log(`Unable to start debugging.\n${err}`);
+    }
+}
+
+export async function stop(manifestPath: string, command: commander.Command) {
+    try {
+        stopDebugging(manifestPath);
+    } catch (err) {
+        console.log(`Unable to stop debugging.\n${err}`);
     }
 }

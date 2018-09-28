@@ -21,5 +21,9 @@ if (process.argv[1].endsWith("\\debugging.js")) {
         .option("--source-bundle-url-extension <extension>")
         .action(commands.start);
 
+    commander
+        .command("stop <manifestPath>")
+        .action(commands.stop);
+
     commander.parse(process.argv);
 }
