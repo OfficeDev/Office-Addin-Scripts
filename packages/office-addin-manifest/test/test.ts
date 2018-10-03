@@ -43,16 +43,15 @@ describe('Manifest', function() {
 });
 
 describe('Manifest', function() {
-  // this.beforeEach(async function() {
-  //   await _createManifestFilesFolder()
-  // });
-  // this.afterEach(async function() {
-  //   await _deleteManifestTestFolder(manifestTestFolder);
-  // });
+  this.beforeEach(async function() {
+    await _createManifestFilesFolder()
+  });
+  this.afterEach(async function() {
+    await _deleteManifestTestFolder(manifestTestFolder);
+  });
   describe('personalizeManifestFile', function() {
     it('should handle a specified valid guid and displayName', async function() { 
       let testManifest = manifestTestFolder + '/manifest.xml';
-      await _createManifestFilesFolder();
 
       // get original manifest info
       const originalInfo = await manifestInfo.readManifestFile(testManifest);
@@ -66,29 +65,23 @@ describe('Manifest', function() {
       const updatedInfo = await manifestInfo.readManifestFile(testManifest);
       assert.notStrictEqual(originalInfo.id, updatedInfo.id);      
       assert.notStrictEqual(originalInfo.displayName, updatedInfo.displayName);
-
-      await _deleteManifestTestFolder(manifestTestFolder);
     });
     it('should handle specifying \'random\' form guid parameter', async function() {
       let testManifest = manifestTestFolder + '/manifest.xml';
-      await _createManifestFilesFolder();
 
       // get original manifest info and create copy of manifest that we can overwrite in this test
       const originalInfo = await manifestInfo.readManifestFile(testManifest);
 
       // call personalizeManifestFile, specifying 'random' parameter
       await manifestInfo.personalizeManifestFile(testManifest, 'random', undefined);
-
+      
       // verify guid displayName updated
       const updatedInfo = await manifestInfo.readManifestFile(testManifest);
       assert.notStrictEqual(originalInfo.id, updatedInfo.id);      
       assert.strictEqual(originalInfo.displayName, updatedInfo.displayName);
-
-      await _deleteManifestTestFolder(manifestTestFolder);
     });
     it('should handle specifying displayName only', async function() {
       let testManifest = manifestTestFolder + '/manifest.xml';
-      await manifestInfo.personalizeManifestFile(testManifest, 'random', undefined);
 
       // get original manifest info and create copy of manifest that we can overwrite in this test
       const originalInfo = await manifestInfo.readManifestFile(testManifest);
@@ -102,8 +95,6 @@ describe('Manifest', function() {
       assert.notStrictEqual(originalInfo.displayName, updatedInfo.displayName);
       assert.strictEqual(updatedInfo.displayName, testDisplayName);
       assert.strictEqual(originalInfo.id, updatedInfo.id);
-
-      await _deleteManifestTestFolder(manifestTestFolder);
     });
   });
 });

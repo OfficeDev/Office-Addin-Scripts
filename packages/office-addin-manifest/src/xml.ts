@@ -37,18 +37,18 @@ export function xmlElementValue(xml: any, name: string): string | undefined {
     }
     xml.OfficeApp[element] = input;
     } catch (err) {
-    console.error(`Unable to write value to xml: ${err}`);
+    console.error(`Unable to write value to xml element: ${err}`);
   }
   return xml;
 }
 
 export function setElementAttributeValue(xml: any, elementName: string, input: string, attributeName: string = "DefaultValue")
 {
-  const element = xmlElementAttributeValue(xml.OfficeApp, elementName);
+  const element = xmlElementValue(xml.OfficeApp, elementName);
 
   if (element) {
     try{
-      xml.OfficeApp[element].$[attributeName] = input;
+      xml.OfficeApp[elementName][0].$[attributeName] = input;
     }
     catch (err) {
       console.error(`Unable to write attribute to xml: ${err}`);
