@@ -129,15 +129,21 @@ export class ManifestInfo {
   export function writePersonalizedManifestData(manifestPath: string, manifestData: any) : Promise<void> {
     return new Promise(async function(resolve, reject) {
       // Regenerate xml from manifestData and write xml back to the manifest
-      let builder = new xml2js.Builder();
-      let xml = builder.buildObject(manifestData);
-      await fs.writeFile(manifestPath, xml, function(err) {
-        if(err) {
-            reject(`Unable to write to the manifest file:  ${manifestPath}. \n${err}`)
-        }
-        else{
-          resolve();
-        }
-    }); 
+      try{
+        let builder = new xml2js.Builder();
+        let xml = builder.buildObject(manifestData);
+
+        await fs.writeFile(manifestPath, xml, function(err) {
+          if(err) {
+              reject(`Unable to write to the manifest file:  ${manifestPath}. \n${err}`)
+          }
+          else{
+            resolve();
+          }
+      });
+      }
+      catch {
+        reject(`Unable to write to the manifest file:  ${manifestPath}.`)
+      } 
     });
   }
