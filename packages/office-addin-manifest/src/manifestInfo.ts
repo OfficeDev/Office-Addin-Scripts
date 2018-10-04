@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as xml2js from "xml2js";
 import * as xmlMethods from './xml'
-const uuid = require('uuid/v1');
 
 export class ManifestInfo {
     public id?: string;
@@ -59,53 +58,86 @@ export class ManifestInfo {
       }
     });
   }
-  
-  export function personalizeManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<void> {  
+
+  export function personalizeManifest(manifestPath: string, guid?: string, displayName?: string): Promise<ManifestInfo> {
     return new Promise(async function(resolve, reject) {
+      let manifestData: any = undefined;
+      let manifestInfo = undefined;
+
       if (manifestPath) {
         try {
-          await fs.readFile(manifestPath, function(readError, fileData) {
-            if (readError) {
-              reject(`Unable to read the manifest file: ${manifestPath}. \n${readError}`);
-            } else {
-              // tslint:disable-next-line:only-arrow-functions
-                xml2js.parseString(fileData, function(parseError, manifestData) {
-                if (parseError) {
-                  reject(`Unable to parse the manifest file: ${manifestPath}. \n${parseError}`);
-                } else {
-                  try {
-                    // set the guid in the xml
-                    if (guid){
-                      xmlMethods.setXmlElementValue(manifestData, "Id", guid);
-                    }
-                    if (displayName){
-                      xmlMethods.setElementAttributeValue(manifestData, "DisplayName", displayName); 
-                    }
-                    // Regenerate xml from manifestData and write xml back to the manifest
-                    let builder = new xml2js.Builder();
-                    let xml = builder.buildObject(manifestData);
-                    const util = require('util');
-                    const fs_writeFile = util.promisify(fs.writeFile);
-                    fs_writeFile(manifestPath, xml, function(err: string) {
-                      if(err) {
-                          return console.log(err);
-                      }                      
-                  });
-                 
-                  resolve();
-                    // resolve (personalizedManifest);                        
-                  } catch (err) {
-                    reject(`Unable to write to the manifest file: ${manifestPath}. \n${err}`);
-                  }
-                }
-              });                                      
+          if (guid == undefined && displayName == undefined) {
+            reject(`Please provide either a guid or displayName parameter.`);
+          }
+          else {
+            try {
+              manifestData = await personalizeManifestXml(manifestPath, guid, displayName);
             }
-          });
-        } catch (err) {
-          return reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`);
+            catch {
+              reject('Unable to generate personalized manifest xml.')            
+            }
+
+            try {
+              await writePersonalizedManifestData(manifestPath, manifestData);
+            }
+            catch {
+              reject(`Unable to write peronalized manifest XML to manifest file: ${manifestPath}`);
+            }
+            try {
+              manifestInfo = await readManifestFile(manifestPath);
+              if (manifestInfo) {
+                resolve(manifestInfo);
+              }
+            }
+            catch {
+              reject(`Unable to read info from manifest file: ${manifestPath}`);
+            }
+          }
         }
-      } else {
-        reject(`Please provide the path to the manifest file.`);
+        catch {
+          reject(`Please provide the path to the manifest file.`);
+        }
       }
+    });
+  }
+  
+  export function personalizeManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<any> {  
+    return new Promise(async function(resolve, reject) {
+      try {
+        await fs.readFile(manifestPath, function(readError, fileData) {
+          if (readError) {
+            reject(`Unable to read the manifest file: ${manifestPath}. \n${readError}`);
+          } else {
+            // tslint:disable-next-line:only-arrow-functions
+              xml2js.parseString(fileData, function(parseError, manifestData) {
+              if (parseError) {
+                reject(`Unable to parse the manifest file: ${manifestPath}. \n${parseError}`);
+              } else {
+                // set the guid and displayName in the xml
+                xmlMethods.setPersonalizedXmlData(manifestData.OfficeApp, guid, displayName);
+                resolve(manifestData);
+              }
+            });
+          }
+        });
+      } catch (err) {
+        return reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`);
+      }
+  });
+  }
+
+  export function writePersonalizedManifestData(manifestPath: string, manifestData: any) : Promise<void> {
+    return new Promise(async function(resolve, reject) {
+      // Regenerate xml from manifestData and write xml back to the manifest
+      let builder = new xml2js.Builder();
+      let xml = builder.buildObject(manifestData);
+      await fs.writeFile(manifestPath, xml, function(err) {
+        if(err) {
+            reject(`Unable to write to the manifest file:  ${manifestPath}. \n${err}`)
+        }
+        else{
+          resolve();
+        }
+    }); 
     });
   }

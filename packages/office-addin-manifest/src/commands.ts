@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 
 import * as commnder from "commander";
-import { readManifestFile, personalizeManifestFile, ManifestInfo } from "./manifestInfo";
+import * as manifestInfo from "./manifestInfo";
 
 export async function info(path: string) {
   try {
-    const manifest = await readManifestFile(path);
+    const manifest = await manifestInfo.readManifestFile(path);
 
     console.log(`Manifest: ${path}`);
     console.log(`  Id: ${manifest.id || ""}`);
@@ -31,8 +31,7 @@ export async function personalize(path: string, command: commnder.Command) {
       throw('No parameters passed with personalize command - exiting command.')
     }
 
-    await personalizeManifestFile(path, guid, displayName);
-    const manifest = await readManifestFile(path);
+    const manifest = await manifestInfo.personalizeManifest(path, guid, displayName);
 
     console.log(`Manifest: ${path}`);
     console.log(`  Id: ${manifest.id || ""}`);

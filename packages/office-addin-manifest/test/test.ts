@@ -59,10 +59,9 @@ describe('Manifest', function() {
       // call personalizeManifestFile, specifying guid and displayName  parameters
       const testGuid = uuid.v1();
       const testDisplayName = 'TestDisplayName';
-      await manifestInfo.personalizeManifestFile(testManifest, testGuid, testDisplayName);
+      const updatedInfo = await manifestInfo.personalizeManifest(testManifest, testGuid, testDisplayName);
 
       // verify guid displayName updated
-      const updatedInfo = await manifestInfo.readManifestFile(testManifest);
       assert.notStrictEqual(originalInfo.id, updatedInfo.id);      
       assert.notStrictEqual(originalInfo.displayName, updatedInfo.displayName);
     });
@@ -73,10 +72,9 @@ describe('Manifest', function() {
       const originalInfo = await manifestInfo.readManifestFile(testManifest);
 
       // call personalizeManifestFile, specifying 'random' parameter
-      await manifestInfo.personalizeManifestFile(testManifest, 'random', undefined);
+      const updatedInfo = await manifestInfo.personalizeManifest(testManifest, 'random', undefined);
       
       // verify guid displayName updated
-      const updatedInfo = await manifestInfo.readManifestFile(testManifest);
       assert.notStrictEqual(originalInfo.id, updatedInfo.id);      
       assert.strictEqual(originalInfo.displayName, updatedInfo.displayName);
     });
@@ -88,13 +86,34 @@ describe('Manifest', function() {
 
       // call  personalizeManifestFile, specifying a displayName parameter
       const testDisplayName = 'TestDisplayName';
-      await manifestInfo.personalizeManifestFile(testManifest, undefined, testDisplayName);
+      const updatedInfo = await manifestInfo.personalizeManifest(testManifest, undefined, testDisplayName);
 
       // verify displayName updated and guid not updated
-      const updatedInfo = await manifestInfo.readManifestFile(testManifest);
       assert.notStrictEqual(originalInfo.displayName, updatedInfo.displayName);
       assert.strictEqual(updatedInfo.displayName, testDisplayName);
       assert.strictEqual(originalInfo.id, updatedInfo.id);
+    });
+    it('should handle not specifying either a guid or displayName', async function() {
+      let testManifest = manifestTestFolder + '/manifest.xml';
+      let result;
+        try {
+          await manifestInfo.personalizeManifest(testManifest, undefined, undefined);
+        } catch (err) {          
+          result = err;
+        };
+        assert.equal(result, "Please provide either a guid or displayName parameter.");
+    });
+    it('should handle an invalid manifest file path', async function() {
+      let result;
+      let testManifest = manifestTestFolder + '/foo/manifest.xml';
+      const testGuid = uuid.v1();
+      const testDisplayName = 'TestDisplayName';
+        try {
+          await manifestInfo.personalizeManifest(testManifest, testGuid, testDisplayName);
+        } catch (err) {          
+          result = err;
+        };
+        assert.equal(result, "Unable to generate personalized manifest xml.");
     });
   });
 });
@@ -125,20 +144,4 @@ async function _createManifestFilesFolder() : Promise<void>
 
   let fsExtra = require('fs-extra');
   await fsExtra.copy(manifestOriginalFolder, manifestTestFolder);
-}
-
-async function _copyTestFile(testFileFrom: string, testFileTo: string) : Promise<void>
-{
-  // if (fs.existsSync('testManifests')){
-  //   _deleteManifestTestFolder(manifestTestFolder);
-  // }
-
-  await fs.createReadStream(testFileFrom).pipe(fs.createWriteStream(testFileTo));
-
-  try {
-    fs.statSync(testFileTo);
-  }
-  catch (e) {
-    console.log("File was not successfully copied.");
-  }
 }
