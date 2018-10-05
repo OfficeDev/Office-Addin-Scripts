@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [        
         {
-            "name": "Command Line Info",
+            "name": "Command Line: Info",
             "type": "node",
             "request": "launch",            
             "program": "${workspaceFolder}/lib/src/manifest.js",
@@ -14,12 +14,12 @@
             ]
         },
         {
-            "name": "Command Line Personalize",
+            "name": "Command Line: Modify",
             "type": "node",
             "request": "launch",            
             "program": "${workspaceFolder}/lib/manifest.js",
             "args": [
-                "personalize", "${workspaceFolder}\\test\\manifests\\manifest.xml", "-g", "bfb2fbf0-c71c-11e8-9c8a-d321d86ae926", "-d", "TestDisplayName"
+                "modify", "${workspaceFolder}\\test\\manifests\\manifest.xml", "-g", "bfb2fbf0-c71c-11e8-9c8a-d321d86ae926", "-d", "TestDisplayName"
             ]
         }
     ]

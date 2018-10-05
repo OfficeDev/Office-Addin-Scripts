@@ -21,17 +21,16 @@ export async function info(path: string) {
   }
 }
 
-
-export async function personalize(path: string, command: commnder.Command) {
+export async function modify(path: string, command: commnder.Command) {
   try {
     const guid: string | undefined = (command.guid) ? command.guid : undefined;
-    const displayName: string | undefined = (command.displayName) ? command.displayName: undefined;
+    const displayName: string | undefined = (command.displayName) ? command.displayName : undefined;
 
-    if (guid == undefined && displayName == undefined) {
-      throw('No parameters passed with personalize command - exiting command.')
+    if (guid === undefined && displayName === undefined) {
+      throw new Error("You need to specify something to change in the manifest.");
     }
 
-    const manifest = await manifestInfo.personalizeManifest(path, guid, displayName);
+    const manifest = await manifestInfo.modifyManifest(path, guid, displayName);
 
     console.log(`Manifest: ${path}`);
     console.log(`  Id: ${manifest.id || ""}`);
