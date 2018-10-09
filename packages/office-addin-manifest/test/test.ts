@@ -56,7 +56,7 @@ describe("Manifest", function() {
       // call modify, specifying guid and displayName  parameters
       const testGuid = uuid.v1();
       const testDisplayName = "TestDisplayName";
-      const updatedInfo = await manifestInfo.modifyManifest(testManifest, testGuid, testDisplayName);
+      const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, testGuid, testDisplayName);
 
       // verify guid displayName updated
       assert.strictEqual(updatedInfo.id, testGuid);
@@ -67,7 +67,7 @@ describe("Manifest", function() {
       const originalInfo = await manifestInfo.readManifestFile(testManifest);
 
       // call modify, specifying "random" parameter
-      const updatedInfo = await manifestInfo.modifyManifest(testManifest, "random", undefined);
+      const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, "random", undefined);
 
       // verify guid updated, that it"s a valid guid and that the displayName is not updated
       assert.notStrictEqual(originalInfo.id, updatedInfo.id);
@@ -80,14 +80,14 @@ describe("Manifest", function() {
 
       // call  modify, specifying a displayName parameter
       const testDisplayName = "TestDisplayName";
-      const updatedInfo = await manifestInfo.modifyManifest(testManifest, undefined, testDisplayName);
+      const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, undefined, testDisplayName);
 
       // verify displayName updated and guid not updated
       assert.notStrictEqual(originalInfo.displayName, updatedInfo.displayName);
       assert.strictEqual(originalInfo.id, updatedInfo.id);
     });
     it("should handle not specifying either a guid or displayName", async function() {
-      const result =  await manifestInfo.modifyManifest(testManifest, undefined, undefined);
+      const result =  await manifestInfo.modifyManifestFile(testManifest, undefined, undefined);
       assert.equal(result, "Error: Please provide either a guid or displayName parameter.");
     });
     it("should handle an invalid manifest file path", async function() {
@@ -95,7 +95,7 @@ describe("Manifest", function() {
       const invalidManifest = manifestTestFolder + "\\foo\\manifest.xml";
       const testGuid = uuid.v1();
       const testDisplayName = "TestDisplayName";
-      const  result = await manifestInfo.modifyManifest(invalidManifest, testGuid, testDisplayName);
+      const  result = await manifestInfo.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
       assert.strictEqual(result, `Unable to read and parse the manifest file: ${invalidManifest}.`);
     });
   });

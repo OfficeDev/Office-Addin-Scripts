@@ -30,7 +30,7 @@ export async function modify(path: string, command: commnder.Command) {
       throw new Error("You need to specify something to change in the manifest.");
     }
 
-    const manifest = await manifestInfo.modifyManifest(path, guid, displayName);
+    const manifest = await manifestInfo.modifyManifestFile(path, guid, displayName);
 
     console.log(`Manifest: ${path}`);
     console.log(`  Id: ${manifest.id || ""}`);
