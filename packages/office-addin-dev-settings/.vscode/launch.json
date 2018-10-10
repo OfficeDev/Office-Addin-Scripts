@@ -32,6 +32,15 @@
             ]
         },
         {
+            "name": "Command Line: disable-runtime-logging",
+            "type": "node",
+            "request": "launch",            
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "disable-runtime-logging"
+            ]
+        },
+        {
             "name": "Command Line: enable-debugging",
             "type": "node",
             "request": "launch",            
@@ -47,6 +56,15 @@
             "program": "${workspaceFolder}/lib/dev-settings.js",
             "args": [
                 "enable-live-reload", "${workspaceFolder}\\test\\manifest.xml"
+            ]
+        },
+        {
+            "name": "Command Line: enable-runtime-logging",
+            "type": "node",
+            "request": "launch",            
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "enable-runtime-logging"
             ]
         },
         {
@@ -74,6 +92,15 @@
             "program": "${workspaceFolder}/lib/dev-settings.js",
             "args": [
                 "is-live-reload-enabled", "${workspaceFolder}\\test\\manifest.xml"
+            ]
+        },
+        {
+            "name": "Command Line: is-runtime-logging-enabled",
+            "type": "node",
+            "request": "launch",            
+            "program": "${workspaceFolder}/lib/dev-settings.js",
+            "args": [
+                "is-runtime-logging-enabled"
             ]
         },
         {

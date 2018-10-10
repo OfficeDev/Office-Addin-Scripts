@@ -52,6 +52,15 @@ export async function disableLiveReload(addinId: string): Promise<void> {
   return enableLiveReload(addinId, false);
 }
 
+export async function disableRuntimeLogging(): Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      return registry.disableRuntimeLogging();
+  default:
+    throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
   switch (process.platform) {
     case "win32":
@@ -65,6 +74,19 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
   switch (process.platform) {
     case "win32":
       return registry.enableLiveReload(addinId, enable);
+  default:
+    throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function enableRuntimeLogging(path?: string): Promise<string> {
+  switch (process.platform) {
+    case "win32":
+      if (!path) {
+        path = `${process.env.TEMP}\\OfficeAddins.log.txt`;
+      }
+      await registry.enableRuntimeLogging(path);
+      return path;
   default:
     throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -106,6 +128,15 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   }
 }
 
+export async function isRuntimeLoggingEnabled(): Promise<string | undefined> {
+  switch (process.platform) {
+    case "win32":
+      return registry.isRuntimeLoggingEnabled();
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
   switch (process.platform) {
     case "win32":
@@ -132,6 +163,11 @@ if (process.argv[1].endsWith("\\dev-settings.js")) {
     .action(commands.disableLiveReload);
 
   commander
+    .command("disable-runtime-logging")
+    .description("Disables runtime logging.")
+    .action(commands.disableRuntimeLogging);
+
+  commander
     .command("enable-debugging [manifestPath]")
     .description("Enable debugging for the add-in.")
     .option("--debug-method <method>", "Specify the debug method: 'direct' or 'web'.")
@@ -141,6 +177,11 @@ if (process.argv[1].endsWith("\\dev-settings.js")) {
     .command("enable-live-reload [manifestPath]")
     .description("Enable live reload for the add-in.")
     .action(commands.enableLiveReload);
+
+  commander
+    .command("enable-runtime-logging [path]")
+    .description("Enable runtime logging.")
+    .action(commands.enableRuntimeLogging);
 
   commander
     .command("get-source-bundle-url <manifestPath>")
@@ -156,6 +197,11 @@ if (process.argv[1].endsWith("\\dev-settings.js")) {
     .command("is-live-reload-enabled [manifestPath]")
     .description("Display whether live reload is enabled.")
     .action(commands.isDebuggingEnabled);
+
+  commander
+    .command("is-runtime-logging-enabled")
+    .description("Display whether runtime logging is enabled.")
+    .action(commands.isRuntimeLoggingEnabled);
 
   commander
     .command("set-source-bundle-url <manifestPath>")

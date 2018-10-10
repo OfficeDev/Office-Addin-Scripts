@@ -14,7 +14,7 @@ async function testSetSourceBundleUrlComponents(host?: string, port?: string, pa
   assert.strictEqual(components.url, `http://${host || "localhost"}:${port || "8081"}/${path || "{path}"}${(extension === undefined) ? ".bundle" : extension}`);
 }
 
-describe("DevSettings", function() {
+describe("DevSettingsForAddIn", function() {
   this.beforeAll(async function() {
     await devSettings.clearDevSettings(addinId);
   });
@@ -23,7 +23,7 @@ describe("DevSettings", function() {
     await devSettings.clearDevSettings(addinId);
   });
 
-  describe ("when no dev settings", function() {
+  describe("when no dev settings", function() {
     it("debugging should not be enabled", async function() {
       assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
     });
@@ -114,6 +114,34 @@ describe("DevSettings", function() {
       assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
       await devSettings.enableLiveReload(addinId);
       assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
+    });
+  });
+});
+
+describe("RuntimeLogging", function() {
+  const defaultRuntimeLoggingPath = `${process.env.TEMP}\\OfficeAddins.log.txt`;
+  const validRuntimeLoggingPath = `c:\\OfficeAddins.log.txt`;
+
+  this.beforeAll(async function() {
+    await devSettings.disableRuntimeLogging();
+  });
+
+  describe("when no runtime logging", function() {
+    it("runtime logging should not be enabled", async function() {
+      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), undefined);
+    });
+    it("runtime logging can be enabled to the default path", async function() {
+      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), undefined);
+      await devSettings.enableRuntimeLogging(undefined);
+      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), defaultRuntimeLoggingPath);
+    });
+    it("runtime logging can be disabled", async function() {
+      await devSettings.disableRuntimeLogging();
+      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), undefined);
+    });
+    it("runtime logging can be enabled to the specified path", async function() {
+      await devSettings.enableRuntimeLogging(validRuntimeLoggingPath);
+      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), validRuntimeLoggingPath);
     });
   });
 });

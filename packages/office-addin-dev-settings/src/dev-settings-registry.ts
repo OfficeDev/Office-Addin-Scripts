@@ -8,7 +8,7 @@ import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
 
-// registry value names
+const RuntimeLogging: string = "RuntimeLogging";
 const SourceBundleExtension: string = "SourceBundleExtension";
 const SourceBundleHost: string = "SourceBundleHost";
 const SourceBundlePath: string = "SourceBundlePath";
@@ -26,6 +26,11 @@ export async function deleteDeveloperSettingsRegistryKey(addinId: string): Promi
   return registry.deleteKey(key);
 }
 
+export async function disableRuntimeLogging() {
+  const key = getDeveloperSettingsRegistryKey(RuntimeLogging);
+
+  return registry.deleteKey(key);
+}
 export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
@@ -38,6 +43,12 @@ export async function enableDebugging(addinId: string, enable: boolean = true, m
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   return registry.addBooleanValue(key, UseLiveReload, enable);
+}
+
+export async function enableRuntimeLogging(path: string): Promise<void> {
+  const key = getDeveloperSettingsRegistryKey(RuntimeLogging);
+
+  return registry.addStringValue(key, "", path); // empty string for the default value
 }
 
 export function getDeveloperSettingsRegistryKey(addinId: string): registry.RegistryKey {
@@ -87,6 +98,12 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   const enabled: boolean = isRegistryValueTrue(await registry.getValue(key, UseLiveReload));
 
   return enabled;
+}
+
+export async function isRuntimeLoggingEnabled(): Promise<string | undefined> {
+  const key = getDeveloperSettingsRegistryKey(RuntimeLogging);
+
+  return registry.getStringValue(key, ""); // empty string for the default value
 }
 
 function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
