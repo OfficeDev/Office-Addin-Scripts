@@ -72,6 +72,12 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
   return methods;
 }
 
+export async function getRuntimeLoggingPath(): Promise<string | undefined> {
+  const key = getDeveloperSettingsRegistryKey(RuntimeLogging);
+
+  return registry.getStringValue(key, ""); // empty string for the default value
+}
+
 export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const components = new SourceBundleUrlComponents(
@@ -98,12 +104,6 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   const enabled: boolean = isRegistryValueTrue(await registry.getValue(key, UseLiveReload));
 
   return enabled;
-}
-
-export async function isRuntimeLoggingEnabled(): Promise<string | undefined> {
-  const key = getDeveloperSettingsRegistryKey(RuntimeLogging);
-
-  return registry.getStringValue(key, ""); // empty string for the default value
 }
 
 function isRegistryValueTrue(value?: registry.RegistryValue): boolean {

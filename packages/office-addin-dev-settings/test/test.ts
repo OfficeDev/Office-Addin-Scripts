@@ -128,24 +128,24 @@ describe("RuntimeLogging", function() {
 
   describe("when no runtime logging", function() {
     it("runtime logging should not be enabled", async function() {
-      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), undefined);
+      assert.strictEqual(await devSettings.getRuntimeLoggingPath(), undefined);
     });
     it("runtime logging can be enabled to the default path", async function() {
-      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), undefined);
+      assert.strictEqual(await devSettings.getRuntimeLoggingPath(), undefined);
       await devSettings.enableRuntimeLogging(undefined);
-      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), defaultRuntimeLoggingPath);
+      assert.strictEqual(await devSettings.getRuntimeLoggingPath(), defaultRuntimeLoggingPath);
     });
     it("runtime logging can be disabled", async function() {
       await devSettings.disableRuntimeLogging();
-      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), undefined);
+      assert.strictEqual(await devSettings.getRuntimeLoggingPath(), undefined);
     });
     it("runtime logging can be enabled to the specified path", async function() {
       await devSettings.enableRuntimeLogging(validRuntimeLoggingPath);
-      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), validRuntimeLoggingPath);
+      assert.strictEqual(await devSettings.getRuntimeLoggingPath(), validRuntimeLoggingPath);
     });
     it("runtime logging can be disabled", async function() {
       await devSettings.enableRuntimeLogging(validRuntimeLoggingPath);
-      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), validRuntimeLoggingPath);
+      assert.strictEqual(await devSettings.getRuntimeLoggingPath(), validRuntimeLoggingPath);
     });
   });
 });

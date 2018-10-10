@@ -114,6 +114,15 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
   }
 }
 
+export async function getRuntimeLoggingPath(): Promise<string | undefined> {
+  switch (process.platform) {
+    case "win32":
+      return registry.getRuntimeLoggingPath();
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":
@@ -127,15 +136,6 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":
       return registry.isLiveReloadEnabled(addinId);
-    default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
-  }
-}
-
-export async function isRuntimeLoggingEnabled(): Promise<string | undefined> {
-  switch (process.platform) {
-    case "win32":
-      return registry.isRuntimeLoggingEnabled();
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

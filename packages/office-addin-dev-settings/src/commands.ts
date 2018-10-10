@@ -154,7 +154,7 @@ export async function isLiveReloadEnabled(manifestPath: string, command: command
 
 export async function isRuntimeLoggingEnabled(command: commander.Command) {
   try {
-    const path = await devSettings.isRuntimeLoggingEnabled();
+    const path = await devSettings.getRuntimeLoggingPath();
 
     console.log(path
       ? `Runtime logging is enabled. File: ${path}`
