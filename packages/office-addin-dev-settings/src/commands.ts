@@ -100,7 +100,7 @@ export async function enableRuntimeLogging(path?: string) {
   try {
     const logPath = await devSettings.enableRuntimeLogging(path);
 
-    console.log(`Runtime logging has been enabled. Log file: ${logPath}`);
+    console.log(`Runtime logging has been enabled. File: ${logPath}`);
   } catch (err) {
     logErrorMessage(err);
   }
