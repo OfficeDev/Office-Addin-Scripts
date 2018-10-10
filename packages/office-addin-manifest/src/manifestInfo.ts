@@ -1,18 +1,19 @@
 import * as fs from "fs";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
+type Xml = any;
 
 export class ManifestInfo {
-    public id?: string;
-    public defaultLocale?: string;
-    public description?: string;
-    public displayName?: string;
-    public officeAppType?: string;
-    public providerName?: string;
-    public version?: string;
-  }
+  public id?: string;
+  public defaultLocale?: string;
+  public description?: string;
+  public displayName?: string;
+  public officeAppType?: string;
+  public providerName?: string;
+  public version?: string;
+}
 
-function parseManifest(xml: any): ManifestInfo {
+function parseManifest(xml: Xml): ManifestInfo {
 const manifest: ManifestInfo = { };
 const officeApp = xml.OfficeApp;
 
@@ -27,7 +28,7 @@ manifest.version = xmlMethods.getXmlElementValue(officeApp, "Version");
 return manifest;
 }
 
-export function readParseManifestXml(manifestPath: string): Promise<any> {
+export function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
   return new Promise(async function(resolve, reject) {
     try {
       fs.readFile(manifestPath, function(readError, fileData) {
@@ -35,10 +36,10 @@ export function readParseManifestXml(manifestPath: string): Promise<any> {
           reject(`Unable to read the manifest file: ${manifestPath}. \n${readError}`);
         } else {
           // tslint:disable-next-line:only-arrow-functions
-          xml2js.parseString(fileData, function(parseError, result) {
+          xml2js.parseString(fileData, function(parseError, xml) {
             if (parseError) {
               reject(`Unable to parse the manifest file: ${manifestPath}. \n${parseError}`);
-            } else { resolve(result); }
+            } else { resolve(xml); }
           });
         }
       });
@@ -49,9 +50,9 @@ export function readParseManifestXml(manifestPath: string): Promise<any> {
 export function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
   return new Promise(async function(resolve, reject) {
     if (manifestPath) {
-      let result;
+      let result: Xml;
       try {
-        result = await readParseManifestXml(manifestPath);
+        result = await readXmlFromManifestFile(manifestPath);
       } catch (err) { reject(err); }
 
       if (result) {
@@ -69,19 +70,19 @@ export function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
 }
 
 export async function modifyManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<any> {
-    let manifestData: ManifestInfo = {};
-    if (manifestPath) {
-      try {
-        if (!guid && !displayName) {
-          throw new Error(`Please provide either a guid or displayName parameter.`);
-        } else {
-          manifestData = await modifyManifestXml(manifestPath, guid, displayName);
-          await writeModifiedManifestData(manifestPath, manifestData);
-          return await readManifestFile(manifestPath);
-        }
-        } catch (err) { return err; }
+  let manifestData: ManifestInfo = {};
+  if (manifestPath) {
+    try {
+      if (!guid && !displayName) {
+        throw new Error("You need to specify something to change in the manifest.");
+      } else {
+        manifestData = await modifyManifestXml(manifestPath, guid, displayName);
+        await writeModifiedManifestData(manifestPath, manifestData);
+        return await readManifestFile(manifestPath);
       }
-    return manifestData;
+      } catch (err) { return err; }
+    }
+  return manifestData;
 }
 
 export function modifyManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<any> {
@@ -89,7 +90,7 @@ export function modifyManifestXml(manifestPath: string, guid?: string, displayNa
     try {
       let manifestData;
       try {
-        manifestData = await readParseManifestXml(manifestPath);
+        manifestData = await readXmlFromManifestFile(manifestPath);
       } catch { reject(`Unable to read and parse the manifest file: ${manifestPath}.`); }
       // set the guid and displayName in the xml
       xmlMethods.setModifiedXmlData(manifestData.OfficeApp, guid, displayName);
