@@ -28,7 +28,7 @@ manifest.version = xmlMethods.getXmlElementValue(officeApp, "Version");
 return manifest;
 }
 
-export function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
+function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
   return new Promise(async function(resolve, reject) {
     try {
       fs.readFile(manifestPath, function(readError, fileData) {
@@ -43,7 +43,7 @@ export function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
           });
         }
       });
-    } catch (err) {reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`); }
+    } catch (err) {reject(`Unable to read Xml from the manifest file: ${manifestPath}. \n${err}`); }
   });
 }
 
@@ -59,7 +59,7 @@ export async function readManifestFile(manifestPath: string): Promise<ManifestIn
   }
 }
 
-export async function modifyManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<any> {
+export async function modifyManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<ManifestInfo> {
   let manifestData: ManifestInfo = {};
   if (manifestPath) {
     try {
@@ -75,21 +75,15 @@ export async function modifyManifestFile(manifestPath: string, guid?: string, di
   return manifestData;
 }
 
-export function modifyManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<any> {
-  return new Promise(async function(resolve, reject) {
-    try {
-      let manifestData;
-      try {
-        manifestData = await readXmlFromManifestFile(manifestPath);
-      } catch { reject(`Unable to read and parse the manifest file: ${manifestPath}.`); }
-      // set the guid and displayName in the xml
-      xmlMethods.setModifiedXmlData(manifestData.OfficeApp, guid, displayName);
-      resolve(manifestData);
-    } catch (err) { reject(`Unable to read the manifest file: ${manifestPath}. \n${err}`); }
-  });
+async function modifyManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
+  let manifestXml: Xml = await readXmlFromManifestFile(manifestPath);
+  try {
+    xmlMethods.setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
+    return manifestXml;
+  } catch { throw new Error(`Unable to modify xml data.`); }
 }
 
-export function writeModifiedManifestData(manifestPath: string, manifestData: any): Promise<void> {
+function writeModifiedManifestData(manifestPath: string, manifestData: any): Promise<void> {
   return new Promise(async function(resolve, reject) {
     // Regenerate xml from manifestData and write xml back to the manifest
     try {

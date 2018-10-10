@@ -96,7 +96,7 @@ describe("Manifest", function() {
       const testGuid = uuid.v1();
       const testDisplayName = "TestDisplayName";
       const  result = await manifestInfo.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
-      assert.strictEqual(result, `Unable to read and parse the manifest file: ${invalidManifest}.`);
+      assert.strictEqual(result, `Unable to read the manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
     });
   });
 });
