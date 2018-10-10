@@ -34,7 +34,7 @@
         {
             "name": "Command Line: disable-runtime-logging",
             "type": "node",
-            "request": "launch",            
+            "request": "launch",
             "program": "${workspaceFolder}/lib/dev-settings.js",
             "args": [
                 "disable-runtime-logging"
@@ -97,7 +97,7 @@
         {
             "name": "Command Line: is-runtime-logging-enabled",
             "type": "node",
-            "request": "launch",            
+            "request": "launch",
             "program": "${workspaceFolder}/lib/dev-settings.js",
             "args": [
                 "is-runtime-logging-enabled"
