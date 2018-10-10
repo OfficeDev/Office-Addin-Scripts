@@ -143,5 +143,9 @@ describe("RuntimeLogging", function() {
       await devSettings.enableRuntimeLogging(validRuntimeLoggingPath);
       assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), validRuntimeLoggingPath);
     });
+    it("runtime logging can be disabled", async function() {
+      await devSettings.enableRuntimeLogging(validRuntimeLoggingPath);
+      assert.strictEqual(await devSettings.isRuntimeLoggingEnabled(), validRuntimeLoggingPath);
+    });
   });
 });
