@@ -47,26 +47,16 @@ export function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
   });
 }
 
-export function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
-  return new Promise(async function(resolve, reject) {
-    if (manifestPath) {
-      let result: Xml;
-      try {
-        result = await readXmlFromManifestFile(manifestPath);
-      } catch (err) { reject(err); }
-
-      if (result) {
-        try {
-          const manifest: ManifestInfo = parseManifest(result);
-          resolve (manifest);
-        } catch (err) {
-          reject(`Unable to parse the manifest file: ${manifestPath}. \n${err}`);
-        }
-      }
-    } else {
-      reject(`Please provide the path to the manifest file.`);
-    }
-  });
+export async function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
+  if (manifestPath) {
+    const xml: Xml = await readXmlFromManifestFile(manifestPath);
+    try {
+      const manifest: ManifestInfo = parseManifest(xml);
+      return manifest;
+      } catch { throw new Error(`Unable to parse manifest xml.`); }
+  } else {
+    throw new Error(`Please provide the path to the manifest file.`);
+  }
 }
 
 export async function modifyManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<any> {
@@ -80,8 +70,8 @@ export async function modifyManifestFile(manifestPath: string, guid?: string, di
         await writeModifiedManifestData(manifestPath, manifestData);
         return await readManifestFile(manifestPath);
       }
-      } catch (err) { return err; }
-    }
+    } catch (err) { return err; }
+  }
   return manifestData;
 }
 

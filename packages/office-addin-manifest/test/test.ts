@@ -88,7 +88,7 @@ describe("Manifest", function() {
     });
     it("should handle not specifying either a guid or displayName", async function() {
       const result =  await manifestInfo.modifyManifestFile(testManifest, undefined, undefined);
-      assert.equal(result, "Error: Please provide either a guid or displayName parameter.");
+      assert.equal(result, "Error: You need to specify something to change in the manifest.");
     });
     it("should handle an invalid manifest file path", async function() {
       // call  modify, specifying an invalid manifest path with a valid guid and displayName
