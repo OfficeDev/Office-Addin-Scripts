@@ -83,7 +83,11 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
   switch (process.platform) {
     case "win32":
       if (!path) {
-        path = `${process.env.TEMP}\\OfficeAddins.log.txt`;
+        const tempDir = process.env.TEMP;
+        if (!tempDir) {
+          throw new Error("The TEMP environment variable is not defined.");
+        }
+        path = `${tempDir}\\OfficeAddins.log.txt`;
       }
       await registry.enableRuntimeLogging(path);
       return path;
