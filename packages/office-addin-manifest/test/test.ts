@@ -24,11 +24,11 @@ describe("Manifest", function() {
     it("should throw an error if there is a bad xml end tag", async function() {
         let result;
         try {
-          const info = await manifestInfo.readManifestFile("test/manifests/manifest.incorrect-end-tag.xml");
+          await manifestInfo.readManifestFile("test/manifests/manifest.incorrect-end-tag.xml");
         } catch (err) {
           result = err;
         }
-        assert.equal(result, "Unable to parse the manifest file: test/manifests/manifest.incorrect-end-tag.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");        
+        assert.equal(result, "Unable to parse the xml for manifest file: test/manifests/manifest.incorrect-end-tag.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
     });
     it("should handle a missing description", async function() {
       const info = await manifestInfo.readManifestFile("test/manifests/manifest.no-description.xml");
@@ -87,7 +87,12 @@ describe("Manifest", function() {
       assert.strictEqual(originalInfo.id, updatedInfo.id);
     });
     it("should handle not specifying either a guid or displayName", async function() {
-      const result =  await manifestInfo.modifyManifestFile(testManifest, undefined, undefined);
+      let result;
+      try {
+        await manifestInfo.modifyManifestFile(testManifest, undefined, undefined);
+      } catch (err) {
+        result = err;
+      }
       assert.equal(result, "Error: You need to specify something to change in the manifest.");
     });
     it("should handle an invalid manifest file path", async function() {
@@ -95,8 +100,14 @@ describe("Manifest", function() {
       const invalidManifest = manifestTestFolder + "\\foo\\manifest.xml";
       const testGuid = uuid.v1();
       const testDisplayName = "TestDisplayName";
-      const  result = await manifestInfo.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
-      assert.strictEqual(result, `Unable to read the manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      let result;
+      try {
+        await manifestInfo.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
+      } catch (err) {
+        result = err.message;
+      }
+
+      assert.equal(result, `Unable to modify xml data for manifest file: ${invalidManifest} \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
     });
   });
 });
