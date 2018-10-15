@@ -53,6 +53,7 @@ export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[
                 if (isCustomFunction(func)) {
                     const jsDocParamInfo = getJSDocParams(func);
                     const jsDocParamTypeInfo = getJSDocParamsType(func);
+                    const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(func);
 
                     const [lastParameter] = func.parameters.slice(-1);
                     const isStreamingFunction = isLastParameterStreaming(lastParameter);
@@ -60,7 +61,7 @@ export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[
                         ? func.parameters.slice(0, func.parameters.length - 1)
                         : func.parameters.slice(0, func.parameters.length);
 
-                    const parameters = getParameters(paramsToParse,jsDocParamTypeInfo,jsDocParamInfo);
+                    const parameters = getParameters(paramsToParse,jsDocParamTypeInfo,jsDocParamInfo,jsDocsParamOptionalInfo);
 
                     const description = getDescription(func);
                     const helpUrl = getHelpUrl(func);
@@ -181,7 +182,7 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }): ICFParameterMetadata[] {
+function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }): ICFParameterMetadata[] {
     const parameterMetadata: ICFParameterMetadata[] = [];
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
@@ -201,7 +202,8 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             name,
             description: jsDocParamInfo[name],
             type: ptype,
-            dimensionality: getParamDim(p.type)
+            dimensionality: getParamDim(p.type),
+            optional: getParamOptional(p, jsDocParamOptionalInfo)
         };
 
         //Only return dimensionality = matrix.  Default assumed scalar
@@ -393,6 +395,22 @@ function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
 }
 
 /**
+* This method will parse out all of the @param tags of a JSDoc and return a dictionary
+* @param node - The function to parse the JSDoc params from
+*/
+function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
+    const jsDocParamOptionalTypeInfo = {};
+
+    ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
+        (tag: ts.JSDocParameterTag) => {
+            jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = tag.isBracketed;
+        }
+    );
+
+    return jsDocParamOptionalTypeInfo;
+}
+
+/**
  * Determines if the last parameter is streaming
  * @param param ParameterDeclaration
  */
@@ -465,6 +483,20 @@ function getParamDim(t: ts.TypeNode): string {
         }
     }
     return dimensionality;
+}
+
+function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { [key: string]: string }): string {
+    let optional: CustomFunctionsOptionalParameter = false;
+    const name = (p.name as ts.Identifier).text;
+    const isOptional = p.questionToken != null || p.initializer != null || p.dotDotDotToken != null;
+    //If parameter is found to be optional in ts
+    if (isOptional) {
+        optional = true;
+    //Else check the comments section for [name] format
+    } else {
+        optional = jsDocParamOptionalInfo[name];
+    }
+    return optional;
 }
 
 /**
