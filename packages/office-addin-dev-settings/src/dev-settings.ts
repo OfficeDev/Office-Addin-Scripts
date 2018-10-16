@@ -4,6 +4,8 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import * as fs from "fs";
+import * as fspath from "path";
 import * as commands from "./commands";
 import * as registry from "./dev-settings-registry";
 
@@ -89,6 +91,23 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
         }
         path = `${tempDir}\\OfficeAddins.log.txt`;
       }
+
+      const pathExists: boolean = fs.existsSync(path);
+      if (pathExists) {
+        const stat = fs.statSync(path);
+        if (stat.isDirectory) {
+          throw new Error(`You need to specify the path to a file. This is a directory: "${path}".`);
+        }
+      }
+      try {
+        const file = fs.openSync(path, "a+");
+        fs.closeSync(file);
+      } catch (err) {
+        throw new Error(pathExists
+          ? `You need to specify the path to a writable file. Unable to write to: "${path}".`
+          : `You need to specify the path where the file can be written. Unable to write to: "${path}".`);
+      }
+
       await registry.enableRuntimeLogging(path);
       return path;
   default:
