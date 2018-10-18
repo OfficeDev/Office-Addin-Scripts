@@ -93,7 +93,7 @@ export function generate(inputFile: string, outputFileName: string) {
         }
     }
 }
-
+//@ts-check
 /**
  * Takes the sourcefile and attempts to parse the functions information
  * @param sourceFile source file containing the custom functions
@@ -153,6 +153,7 @@ export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[
                 else {
                     //Function was skipped
                     if (func.name) {
+                        // @ts-ignore
                         skippedFunctions.push(func.name.text);
                     }
                 }
@@ -207,9 +208,12 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
         if (func.type.kind === ts.SyntaxKind.TypeReference &&
             (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
             (func.type as ts.TypeReferenceNode).typeArguments &&
+            // @ts-ignore
             (func.type as ts.TypeReferenceNode).typeArguments.length === 1
         ) {
+            // @ts-ignore
             resultType = getParamType((func.type as ts.TypeReferenceNode).typeArguments[0]);
+            // @ts-ignore
             resultDim = getParamDim((func.type as ts.TypeReferenceNode).typeArguments[0]);
         }
         else {
@@ -223,6 +227,7 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
     //Check the code comments for @return parameter
     if (resultType == "any") {
         const resultFromComment = getReturnType(func);
+        // @ts-ignore
         const checktype = TYPE_MAPPINGS_COMMENT[resultFromComment];
             if (!checktype) {
                 logError("Unsupported type in code comment:" + resultFromComment);
@@ -261,6 +266,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         //Try setting type from parameter in code comment
         if (ptype == 'any'){
             ptype = jsDocParamTypeInfo[name];
+            // @ts-ignore
             const checktype = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
             if (!checktype) {
                 logError("Unsupported type in code comment:" + ptype);
@@ -402,7 +408,9 @@ function getReturnType(node: ts.Node): string {
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
             if ((tag.tagName.escapedText as string).toLowerCase() === RETURN) {
+                // @ts-ignore
                 if (tag.typeExpression){
+                    // @ts-ignore
                     type = tag.typeExpression.getFullText().slice(1,tag.typeExpression.getFullText().length-1).toLowerCase();
                 }
             }
@@ -426,11 +434,12 @@ function getJSDocParams(node: ts.Node): { [key: string]: string } {
                     ? tag.comment.slice(1)
                     : tag.comment
                 ).trim();
-
+                // @ts-ignore
                 jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = comment;
             }
             else {
                 //Description is missing so add empty string
+                // @ts-ignore
                 jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "";
             }
         }
@@ -447,14 +456,17 @@ function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
     const jsDocParamTypeInfo = {};
 
     ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
+        // @ts-ignore
         (tag: ts.JSDocParameterTag) => {
             if (tag.typeExpression) {
                 //Should be in the form {string}, so removing the {} around type
                 const paramType = tag.typeExpression.getFullText().slice(1,tag.typeExpression.getFullText().length-1);
+                // @ts-ignore
                 jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = paramType;
             }
             else {
                 //Set as any
+                // @ts-ignore
                 jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "any";
             }
         }
@@ -471,7 +483,9 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
     const jsDocParamOptionalTypeInfo = {};
 
     ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
+        // @ts-ignore
         (tag: ts.JSDocParameterTag) => {
+            // @ts-ignore
             jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = tag.isBracketed;
         }
     );
@@ -535,7 +549,7 @@ function getParamType(t: ts.TypeNode): string {
             // However, if not, the TYPE_MAPPINGS check below will fail.
             kind = inner.elementType.kind;
         }
-
+        // @ts-ignore
         type = TYPE_MAPPINGS[kind];
         if (!type) {
             logError("Type doesn't match mappings");
@@ -567,6 +581,7 @@ function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { 
         optional = true;
     //Else check the comments section for [name] format
     } else {
+        // @ts-ignore
         optional = jsDocParamOptionalInfo[name];
     }
     return optional;
@@ -587,6 +602,7 @@ function validateArray(a: ts.TypeReferenceNode) {
  * @param error Error string to add to the log
  */
 export function logError(error: string) {
+    // @ts-ignore
     errorLogFile.push(error);
     errorFound = true;
 }

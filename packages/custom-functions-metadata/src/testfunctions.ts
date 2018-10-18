@@ -20,6 +20,7 @@ function add(first: number, second: number, optional?: number): number {
  * @CustomFunction
  */
 function bad(one: string[][], x: Array<Array<number>>): string[][] {
+    // @ts-ignore
     return [""][""];
 }
 
