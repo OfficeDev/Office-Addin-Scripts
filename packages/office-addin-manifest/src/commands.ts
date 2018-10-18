@@ -7,15 +7,7 @@ import * as manifestInfo from "./manifestInfo";
 export async function info(path: string) {
   try {
     const manifest = await manifestInfo.readManifestFile(path);
-
-    console.log(`Manifest: ${path}`);
-    console.log(`  Id: ${manifest.id || ""}`);
-    console.log(`  Name: ${manifest.displayName || ""}`);
-    console.log(`  Provider: ${manifest.providerName || ""}`);
-    console.log(`  Type: ${manifest.officeAppType || ""}`);
-    console.log(`  Version: ${manifest.version || ""}`);
-    console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
-    console.log(`  Description: ${manifest.description || ""}`);
+    logManifestInfo(path, manifest);
   } catch (err) {
     console.error(`Error: ${err}`);
   }
@@ -31,16 +23,19 @@ export async function modify(path: string, command: commnder.Command) {
     }
 
     const manifest = await manifestInfo.modifyManifestFile(path, guid, displayName);
-
-    console.log(`Manifest: ${path}`);
-    console.log(`  Id: ${manifest.id || ""}`);
-    console.log(`  Name: ${manifest.displayName || ""}`);
-    console.log(`  Provider: ${manifest.providerName || ""}`);
-    console.log(`  Type: ${manifest.officeAppType || ""}`);
-    console.log(`  Version: ${manifest.version || ""}`);
-    console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
-    console.log(`  Description: ${manifest.description || ""}`);
+    logManifestInfo(path, manifest);
   } catch (err) {
     console.error(`Error: ${err}`);
   }
+}
+
+function logManifestInfo(path: string, manifest: manifestInfo.ManifestInfo) {
+  console.log(`Manifest: ${path}`);
+  console.log(`  Id: ${manifest.id || ""}`);
+  console.log(`  Name: ${manifest.displayName || ""}`);
+  console.log(`  Provider: ${manifest.providerName || ""}`);
+  console.log(`  Type: ${manifest.officeAppType || ""}`);
+  console.log(`  Version: ${manifest.version || ""}`);
+  console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
+  console.log(`  Description: ${manifest.description || ""}`);
 }

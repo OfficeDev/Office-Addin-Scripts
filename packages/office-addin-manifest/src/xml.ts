@@ -1,5 +1,4 @@
-const uuid = require('uuid/v1');
-
+// reading xml values is resilient to errors but you can uncomment the next line for debugging if attributes are missing
 export function getXmlAttributeValue(xml: any, name: string): string | undefined {
     try {
       return xml.$[name];
@@ -15,6 +14,7 @@ export function getXmlElementAttributeValue(xml: any, elementName: string, attri
   }
 }
 
+// reading xml values is resilient to errors but you can uncomment the next line for debugging if elements are missing
 export function getXmlElementValue(xml: any, name: string): string | undefined {
   try {
     const element = xml[name];
@@ -26,19 +26,6 @@ export function getXmlElementValue(xml: any, name: string): string | undefined {
       // console.error(`Unable to get xml element value "${name}". ${err}`);
     }
   }
-
-export function setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined) {
-  if (guid) {
-    if (guid === "random") {
-      guid = uuid();
-    }
-    setXmlElementValue(xml, "Id", guid);
-  }
-
-  if (displayName) {
-    setElementAttributeValue(xml, "DisplayName", displayName);
-  }
-}
 
 export function setXmlElementValue(xml: any, elementName: string, input: any) {
   const element = getXmlElementValue(xml, elementName);

@@ -8,7 +8,7 @@
             "name": "Command Line: Info",
             "type": "node",
             "request": "launch",            
-            "program": "${workspaceFolder}/lib/src/manifest.js",
+            "program": "${workspaceFolder}/lib/manifest.js",
             "args": [
                 "info", "${workspaceFolder}\\test\\manifests\\manifest.xml"
             ]

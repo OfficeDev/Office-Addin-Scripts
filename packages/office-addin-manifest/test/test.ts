@@ -28,7 +28,7 @@ describe("Manifest", function() {
         } catch (err) {
           result = err;
         }
-        assert.equal(result, "Unable to parse the xml for manifest file: test/manifests/manifest.incorrect-end-tag.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
+        assert.equal(result.message, "Unable to parse the xml for manifest file: test/manifests/manifest.incorrect-end-tag.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
     });
     it("should handle a missing description", async function() {
       const info = await manifestInfo.readManifestFile("test/manifests/manifest.no-description.xml");
@@ -107,7 +107,7 @@ describe("Manifest", function() {
         result = err.message;
       }
 
-      assert.equal(result, `Unable to modify xml data for manifest file: ${invalidManifest} \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      assert.equal(result, `Unable to modify xml data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
     });
   });
 });
