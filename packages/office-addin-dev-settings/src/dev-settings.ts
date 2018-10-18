@@ -95,7 +95,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       const pathExists: boolean = fs.existsSync(path);
       if (pathExists) {
         const stat = fs.statSync(path);
-        if (stat.isDirectory) {
+        if (stat.isDirectory()) {
           throw new Error(`You need to specify the path to a file. This is a directory: "${path}".`);
         }
       }
