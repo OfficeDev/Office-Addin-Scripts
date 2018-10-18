@@ -21,12 +21,15 @@ const TYPE_MAPPINGS = {
     [ts.SyntaxKind.NumberKeyword]: 'number',
     [ts.SyntaxKind.StringKeyword]: 'string',
     [ts.SyntaxKind.BooleanKeyword]: 'boolean',
+    [ts.SyntaxKind.AnyKeyword]: 'any',
+    [ts.SyntaxKind.UnionType]: 'any',
 };
 
 const TYPE_MAPPINGS_COMMENT = {
     ['number']:1,
     ['string']:2,
-    ['boolean']:3
+    ['boolean']:3,
+    ['any']:4
 };
 
 interface ICFRootFunctions {
@@ -72,7 +75,7 @@ export function generate(inputFile: string, outputFileName: string) {
 
     if (!errorFound) {
 
-        fs.writeFile(outputFileName, JSON.stringify(rootObject), (err) => {
+        fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => {
             if (err) {
                 console.error(err);
                 return;
@@ -221,7 +224,7 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
             resultDim = getParamDim(func.type);
         }
     } else {
-        console.log("No return type specificed. This could be .js filetype, so continue.");
+        console.log("No return type specified. This could be .js filetype, so continue.");
     }
 
     //Check the code comments for @return parameter

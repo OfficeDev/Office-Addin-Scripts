@@ -4,6 +4,7 @@
 
 import * as commander from "commander";
 import * as customjson from "./custom-functions-metadata";
+import * as jsongenerate from "./json-generate";
 
 export async function generate(inputfile: string, outputfile: string) {
   try {
@@ -11,6 +12,6 @@ export async function generate(inputfile: string, outputfile: string) {
       customjson.generate(inputfile,outputfile);
   }
   catch (err){
-    console.log('Error: ${err}');
+    console.log('Error: ' + err);
   }
 }
