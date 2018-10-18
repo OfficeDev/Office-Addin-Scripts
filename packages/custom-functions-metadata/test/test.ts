@@ -1,119 +1,40 @@
-import * as assert from "assert";
-import * as mocha from "mocha";
-import * as devSettings from "../src/dev-settings";
+import * as assert from "assert"; 
+import * as mocha from "mocha"; 
+import * as fs from "fs";
+import * as ts from "typescript";
+import * as jsongenerator from "../src/custom-functions-metadata";
+//import * as mini from "minimist";
 
-const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
+var path = require("path");
+var argv = require("optimist").demand('config').argv;
+var configFilePath = argv.config;
 
-async function testSetSourceBundleUrlComponents(host?: string, port?: string, path?: string, extension?: string) {
-  await devSettings.setSourceBundleUrl(addinId, new devSettings.SourceBundleUrlComponents(host, port, path, extension));
-  const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(addinId);
-  assert.strictEqual(components.extension, extension);
-  assert.strictEqual(components.host, host);
-  assert.strictEqual(components.path, path);
-  assert.strictEqual(components.port, port);
-  assert.strictEqual(components.url, `http://${host || "localhost"}:${port || "8081"}/${path || "{path}"}${(extension === undefined) ? ".bundle" : extension}`);
-}
+assert.ok(fs.existsSync(configFilePath), 'config file not found:' + configFilePath);
+var config = require('nconf').env().argv().file({file: configFilePath});
 
-describe("DevSettings", function() {
-  this.beforeAll(async function() {
-    await devSettings.clearDevSettings(addinId);
-  });
+var goodString:string = "functions.json created for file: src/testfunctions.ts";
 
-  this.afterAll (async function() {
-    await devSettings.clearDevSettings(addinId);
-  });
+var pathKey = config.get('jsonfile');
+var pathlocation = pathKey.path;
 
-  describe ("when no dev settings", function() {
-    it("debugging should not be enabled", async function() {
-      assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
+describe("test json file created", function() {
+    describe("generate test", function(){
+        it("test it", function() {
+            assert.strictEqual("test","test");
+            var inputFile = "../custom-functions-metadata/test/testfunctions.ts";
+            var output = "./test.json";
+            jsongenerator.generate(inputFile,output);
+            jsongenerator.logError("testError");
+            assert.strictEqual(jsongenerator.errorFound, true, "error not created");
+            var skipped = 'notadded';
+            assert.strictEqual(jsongenerator.skippedFunctions[0],skipped, "skipped function not found");
+            //var e = jsongenerator.errorFound;
+            //console.log(e);
+            //console.log(jsongenerator.skippedFunctions)
+            //console.log(fs.existsSync(output));
+            //assert.equal(fs.existsSync(output), "json file not created");
+            //assert.ok(fs.existsSync(output), "json file not created2");
+            assert.strictEqual(fs.existsSync(output), true, "json file not created");
+        });
     });
-    it("live reload should not be enabled", async function() {
-      assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
-    });
-    it("have defaults for source bundle url components", async function() {
-      const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(addinId);
-      assert.strictEqual(components.extension, undefined);
-      assert.strictEqual(components.host, undefined);
-      assert.strictEqual(components.path, undefined);
-      assert.strictEqual(components.port, undefined);
-      assert.strictEqual(components.url, "http://localhost:8081/{path}.bundle");
-    });
-    it("clear dev settings when no dev settings", async function() {
-      await devSettings.clearDevSettings(addinId);
-    });
-    it("debugging can be enabled", async function() {
-      assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
-      await devSettings.enableDebugging(addinId);
-      assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), true);
-    });
-    it("live reload can be enabled", async function() {
-      assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
-      await devSettings.enableLiveReload(addinId);
-      assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
-    });
-    it("source bundle url components can be set", async function() {
-      await testSetSourceBundleUrlComponents("HOST", "PORT", "PATH", ".EXT");
-    });
-    it("source bundle url components can be cleared", async function() {
-      await testSetSourceBundleUrlComponents(undefined, undefined, undefined, undefined);
-    });
-  });
-
-  describe("when debugging is enabled", function() {
-    it("debugging can be disabled", async function() {
-      assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), true);
-      await devSettings.disableDebugging(addinId);
-      assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
-    });
-  });
-
-  describe("when debugging is not enabled", function() {
-    it("debugging can be enabled", async function() {
-      assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
-      await devSettings.enableDebugging(addinId);
-      assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), true);
-    });
-  });
-
-  describe("can specify debug method", function() {
-    before("debugging should be disabled", async function() {
-      await devSettings.disableDebugging(addinId);
-      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
-      assert.strictEqual(methods.length, 0);
-    }),
-    it("direct debugging can be enabled", async function() {
-      await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
-      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
-      assert.strictEqual(methods.length, 1);
-      assert.strictEqual(methods[0], devSettings.DebuggingMethod.Direct);
-    });
-    it("web debugging can be enabled, and turns off direct debugging", async function() {
-      await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Web);
-      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
-      assert.strictEqual(methods.length, 1);
-      assert.strictEqual(methods[0], devSettings.DebuggingMethod.Web);
-    });
-    it("enabling direct debugging turns off web debugging", async function() {
-      await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
-      const methods = await devSettings.getEnabledDebuggingMethods(addinId);
-      assert.strictEqual(methods.length, 1);
-      assert.strictEqual(methods[0], devSettings.DebuggingMethod.Direct);
-    });
-  });
-
-  describe("when live reload is enabled", function() {
-    it("live reload can be disabled", async function() {
-      assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
-      await devSettings.disableLiveReload(addinId);
-      assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
-    });
-  });
-
-  describe("when live reload is not enabled", function() {
-    it("live reload can be disabled", async function() {
-      assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
-      await devSettings.enableLiveReload(addinId);
-      assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
-    });
-  });
 });

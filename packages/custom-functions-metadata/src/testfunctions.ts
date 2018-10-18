@@ -1,7 +1,8 @@
 /**
  * Test comments
  * @param {number} first - the first number
- * @param {number} second 
+ * @param {number} [second]
+ * @param {number} [optional] - an optional number 
  * @helpUrl https://dev.office.com
  * @CustomFunction
  * @notfound test123
@@ -9,7 +10,7 @@
  * @streaming cancelable
  * @return {returntypetest}
  */
-function add(first: number, second: number): number {
+function add(first: number, second: number, optional?: number): number {
     return first + second;
 }
 
@@ -36,6 +37,6 @@ function testbool(abc: boolean): string {
 /**
  * @CustomFunction
  */
-function testdatetime(d: number): string {
+function testdatetime(d?: number): string {
     return "";
 }

@@ -6,22 +6,16 @@
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
-let inputFile = process.argv[2];
+export let errorFound = false;
+export let errorLogFile = [];
+export let skippedFunctions = [];
 
-export const sourceCode = fs.readFileSync(inputFile, 'utf-8');
-export const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
-
-/* tslint:disable:no-reserved-keywords */
 const CUSTOM_FUNCTION = 'customfunction'; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
 const HELPURL_PARAM = 'helpurl';
 const VOLATILE = "volatile";
 const STREAMING = "streaming";
 const RETURN = "return";
 const CANCELABLE = "cancelable";
-
-let errorFound = false;
-let errorLogFile = [];
-let skippedFunctions = [];
 
 const TYPE_MAPPINGS = {
     [ts.SyntaxKind.NumberKeyword]: 'number',
@@ -35,13 +29,78 @@ const TYPE_MAPPINGS_COMMENT = {
     ['boolean']:3
 };
 
+interface ICFRootFunctions {
+    functions: ICFVisualFunctionMetadata[];
+}
+
+interface ICFVisualFunctionMetadata {
+    name: string;
+    id: string;
+    helpUrl: string;
+    description: string;
+    parameters: ICFParameterMetadata[];
+    result: ICFResultsMetadata;
+    options: ICFOptionsMetadata;
+}
+
+interface ICFOptionsMetadata {
+    volatile: boolean;
+    stream: boolean;
+    cancelable: boolean;
+}
+
+interface ICFParameterMetadata {
+    name: string;
+    description?: string;
+    type: string;
+    dimensionality: string;
+    optional: boolean;
+}
+
+interface ICFResultsMetadata {
+    type: string;
+    dimensionality: string;
+}
+
+type CustomFunctionsSchemaDimensionality = 'invalid' | 'scalar' | 'matrix';
+
+export function generate(inputFile: string, outputFileName: string) {
+    const sourceCode = fs.readFileSync(inputFile, 'utf-8');
+    const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
+
+    var rootObject: ICFRootFunctions = {functions: parseTree(sourceFile)};
+
+    if (!errorFound) {
+
+        fs.writeFile(outputFileName, JSON.stringify(rootObject), (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            };
+            console.log(outputFileName + " created for file: " + inputFile);
+        }
+        );
+        if (skippedFunctions.length > 0) {
+            console.log("The following functions were skipped.");
+            for (let func in skippedFunctions) {
+                console.log(skippedFunctions[func]);
+            }
+        }
+    } else {
+        console.log("There was one of more errors. We couldn't parse your file: " + inputFile);
+        for (let err in errorLogFile) {
+            console.log(errorLogFile[err]);
+        }
+    }
+}
+
 /**
  * Takes the sourcefile and attempts to parse the functions information
  * @param sourceFile source file containing the custom functions
  */
 export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[] {
     const metadata: ICFVisualFunctionMetadata[] = [];
-    console.log("Starting json generation of file: " + inputFile);
+
     visit(sourceFile);
     return metadata;
 
@@ -70,7 +129,11 @@ export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[
 
                     const options = getOptions(func, isStreamingFunction);
 
-                    const funcName = func.name.text;
+                    let funcName:string = "";
+                    if (func.name) {
+                        funcName = func.name.text;
+                    }
+
                     const metadataItem: ICFVisualFunctionMetadata = {
                         id: funcName,
                         name: funcName.toUpperCase(),
@@ -89,7 +152,9 @@ export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[
                 }
                 else {
                     //Function was skipped
-                    skippedFunctions.push(func.name.text);
+                    if (func.name) {
+                        skippedFunctions.push(func.name.text);
+                    }
                 }
             }
         }
@@ -120,17 +185,21 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean):
 function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastParameter: ts.ParameterDeclaration): ICFResultsMetadata {
     let resultType = "any";
     let resultDim = "scalar";
+    const defaultResultItem: ICFResultsMetadata = {
+        type: resultType,
+        dimensionality: resultDim
+    };
 
     if (isStreaming) {
         const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
             logError("The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >')");
-            return;
+            return defaultResultItem;
         }
         let returnType = func.type as ts.TypeReferenceNode;
         if (returnType && returnType.getFullText().trim() !== 'void') {
             logError(`A streaming function should not have a return type.  Instead, its type should be based purely on what's inside "CustomFunctions.StreamingHandler<T>".`);
-            return;
+            return defaultResultItem;
         }
         resultType = getParamType(lastParameterType.typeArguments[0]);
         resultDim = getParamDim(lastParameterType.typeArguments[0]);
@@ -187,7 +256,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
         const name = (p.name as ts.Identifier).text;
-        let ptype = getParamType(p.type);
+        let ptype = getParamType(p.type as ts.TypeNode);
         
         //Try setting type from parameter in code comment
         if (ptype == 'any'){
@@ -198,11 +267,11 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             }
         }
 
-        const pmetadataitem: ICFParameterMetadata[] = {
+        const pmetadataitem: ICFParameterMetadata = {
             name,
             description: jsDocParamInfo[name],
             type: ptype,
-            dimensionality: getParamDim(p.type),
+            dimensionality: getParamDim(p.type as ts.TypeNode),
             optional: getParamOptional(p, jsDocParamOptionalInfo)
         };
 
@@ -253,7 +322,7 @@ function isCustomFunction(node: ts.Node): boolean {
  * @param node Node
  */
 function getHelpUrl(node: ts.Node): string {
-    let helpurl;
+    let helpurl:string = "";
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
             if ((tag.tagName.escapedText as string).toLowerCase() === HELPURL_PARAM) {
@@ -351,7 +420,7 @@ function getJSDocParams(node: ts.Node): { [key: string]: string } {
     const jsDocParamInfo = {};
 
     ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
-        (tag: ts.JSDocParameterTag) => {
+        (tag: ts.JSDocTag) => {
             if (tag.comment) {
                 const comment = (tag.comment.startsWith('-')
                     ? tag.comment.slice(1)
@@ -414,7 +483,7 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
  * Determines if the last parameter is streaming
  * @param param ParameterDeclaration
  */
-function isLastParameterStreaming(param?: ts.ParameterDeclaration): boolean {
+function isLastParameterStreaming(param: ts.ParameterDeclaration): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
     if (!isTypeReferenceNode) {
         return false;
@@ -440,23 +509,27 @@ function getParamType(t: ts.TypeNode): string {
             const arrTr = t as ts.TypeReferenceNode;
             if (arrTr.typeName.getText() !== 'Array') {
                 logError("Invalid type: " + arrTr.typeName.getText());
-                return;
+                return type;
             }
+            if (arrTr.typeArguments) {
             const isArrayWithTypeRefWithin = validateArray(t) && ts.isTypeReferenceNode(arrTr.typeArguments[0]);
-            if (isArrayWithTypeRefWithin) {
-                const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
-                if (!validateArray(inner)) {
-                    logError("Invalid type array: " + inner.getText());
-                    return;
+                if (isArrayWithTypeRefWithin) {
+                    const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
+                    if (!validateArray(inner)) {
+                        logError("Invalid type array: " + inner.getText());
+                        return type;
+                    }
+                    if (inner.typeArguments) {
+                        kind = inner.typeArguments[0].kind;
+                    }
                 }
-                kind = inner.typeArguments[0].kind;
             }
         }
         else if (ts.isArrayTypeNode(t)) {
             const inner = (t as ts.ArrayTypeNode).elementType;
             if (!ts.isArrayTypeNode(inner)) {
                 logError("Invalid array type node: " + inner.getText());
-                return;
+                return type;
             }
             // Expectation is that at this point, "kind" is a primitive type (not 3D array).
             // However, if not, the TYPE_MAPPINGS check below will fail.
@@ -485,8 +558,8 @@ function getParamDim(t: ts.TypeNode): string {
     return dimensionality;
 }
 
-function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { [key: string]: string }): string {
-    let optional: CustomFunctionsOptionalParameter = false;
+function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { [key: string]: string }): boolean {
+    let optional = false;
     const name = (p.name as ts.Identifier).text;
     const isOptional = p.questionToken != null || p.initializer != null || p.dotDotDotToken != null;
     //If parameter is found to be optional in ts
@@ -516,32 +589,5 @@ function validateArray(a: ts.TypeReferenceNode) {
 export function logError(error: string) {
     errorLogFile.push(error);
     errorFound = true;
-}
-
-var rootObject = new Object();
-//Parse the source file
-rootObject.functions = parseTree(sourceFile);
-
-if (!errorFound) {
-
-    fs.writeFile("./functions.json", JSON.stringify(rootObject), (err) => {
-        if (err) {
-            console.error(err);
-            return;
-        };
-        console.log("functions.json created for file: " + inputFile);
-    }
-    );
-    if (skippedFunctions.length > 0) {
-        console.log("The following functions were skipped.");
-        for (let func in skippedFunctions) {
-            console.log(skippedFunctions[func]);
-        }
-    }
-} else {
-    console.log("There was one of more errors. We couldn't parse your file: " + inputFile);
-    for (let err in errorLogFile) {
-        console.log(errorLogFile[err]);
-    }
 }
 

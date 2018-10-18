@@ -8,13 +8,13 @@
     "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
     "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
-    "test": "mocha -r ts-node/register test/**/*.ts",
-    "generate-json": "node ./src/custom-functions-metadata.js"
+    "test": "mocha -r ts-node/register test/test.ts --config=test/config.json",
+    "generate-json": "node ./lib/json-generate.js generate"
   },
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "custom-functions-metadata": "./lib/custom-functions-metadata.js"
+    "custom-functions-metadata": "./lib/json-generate.js generate"
   },
   "keywords": [
     "Office",
@@ -22,14 +22,18 @@
     "Excel Custom Funtions"
   ],
   "dependencies": {
-    "commander": "^2.18.0",
-    "fs": "0.0.1-security"
+    "@types/assert": "^1.4.0",
+    "assert": "^1.4.1",
+    "commander": "^2.19.0",
+    "fs": "0.0.1-security",
+    "nconf": "^0.10.0",
+    "optimist": "^0.6.1"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
     "@types/es6-promise": "^3.3.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.5.7",
+    "@types/node": "^10.12.0",
     "@types/node-fetch": "^2.1.2",
     "concurrently": "^3.6.1",
     "mocha": "^5.2.0",
