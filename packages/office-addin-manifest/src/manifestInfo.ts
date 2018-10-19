@@ -97,7 +97,7 @@ async function writeManifestData(manifestPath: string, manifestData: any): Promi
   }
 
   try {
-    // Write modified xml back to the manifest.
+    // Write the xml back to the manifest file.
     await writeFileAsync(manifestPath, xml);
     } catch (err) {
       throw new Error(`Unable to write to file. ${manifestPath} \n${err}`);

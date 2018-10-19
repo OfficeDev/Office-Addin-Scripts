@@ -84,6 +84,7 @@ describe("Manifest", function() {
 
       // verify displayName updated and guid not updated
       assert.notStrictEqual(originalInfo.displayName, updatedInfo.displayName);
+      assert.strictEqual(updatedInfo.displayName, testDisplayName);
       assert.strictEqual(originalInfo.id, updatedInfo.id);
     });
     it("should handle not specifying either a guid or displayName", async function() {
