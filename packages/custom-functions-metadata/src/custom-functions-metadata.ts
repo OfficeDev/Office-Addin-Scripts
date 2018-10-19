@@ -23,6 +23,7 @@ const TYPE_MAPPINGS = {
     [ts.SyntaxKind.BooleanKeyword]: 'boolean',
     [ts.SyntaxKind.AnyKeyword]: 'any',
     [ts.SyntaxKind.UnionType]: 'any',
+    [ts.SyntaxKind.TupleType]: 'any'
 };
 
 const TYPE_MAPPINGS_COMMENT = {
@@ -269,10 +270,12 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         //Try setting type from parameter in code comment
         if (ptype == 'any'){
             ptype = jsDocParamTypeInfo[name];
-            // @ts-ignore
-            const checktype = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
-            if (!checktype) {
-                logError("Unsupported type in code comment:" + ptype);
+            if (ptype) {
+                // @ts-ignore
+                const checktype = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
+                if (!checktype) {
+                    logError("Unsupported type in code comment:" + ptype);
+                }
             }
         }
 
