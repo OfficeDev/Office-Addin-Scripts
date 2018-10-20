@@ -3,10 +3,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+/// <reference path="custom-functions-data.ts"/> 
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
-export let errorFound = false;
 export let errorLogFile = [];
 export let skippedFunctions = [];
 
@@ -33,48 +33,24 @@ const TYPE_MAPPINGS_COMMENT = {
     ['any']:4
 };
 
-interface ICFRootFunctions {
-    functions: ICFVisualFunctionMetadata[];
-}
-
-interface ICFVisualFunctionMetadata {
-    name: string;
-    id: string;
-    helpUrl: string;
-    description: string;
-    parameters: ICFParameterMetadata[];
-    result: ICFResultsMetadata;
-    options: ICFOptionsMetadata;
-}
-
-interface ICFOptionsMetadata {
-    volatile: boolean;
-    stream: boolean;
-    cancelable: boolean;
-}
-
-interface ICFParameterMetadata {
-    name: string;
-    description?: string;
-    type: string;
-    dimensionality: string;
-    optional: boolean;
-}
-
-interface ICFResultsMetadata {
-    type: string;
-    dimensionality: string;
-}
-
 type CustomFunctionsSchemaDimensionality = 'invalid' | 'scalar' | 'matrix';
+
+export function isErrorFound():boolean {
+    if (errorLogFile[0]){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 export function generate(inputFile: string, outputFileName: string) {
     const sourceCode = fs.readFileSync(inputFile, 'utf-8');
     const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
-    var rootObject: ICFRootFunctions = {functions: parseTree(sourceFile)};
+    var rootObject: CustomFunctionMetadata.Metadata = {functions: parseTree(sourceFile)};
 
-    if (!errorFound) {
+    if (!isErrorFound()) {
 
         fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => {
             if (err) {
@@ -97,13 +73,13 @@ export function generate(inputFile: string, outputFileName: string) {
         }
     }
 }
-//@ts-check
+
 /**
  * Takes the sourcefile and attempts to parse the functions information
  * @param sourceFile source file containing the custom functions
  */
-export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[] {
-    const metadata: ICFVisualFunctionMetadata[] = [];
+export function parseTree(sourceFile: ts.SourceFile): CustomFunctionMetadata.Function[] {
+    const metadata: CustomFunctionMetadata.Function[] = [];
 
     visit(sourceFile);
     return metadata;
@@ -138,7 +114,7 @@ export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[
                         funcName = func.name.text;
                     }
 
-                    const metadataItem: ICFVisualFunctionMetadata = {
+                    const metadataItem: CustomFunctionMetadata.Function = {
                         id: funcName,
                         name: funcName.toUpperCase(),
                         helpUrl,
@@ -172,8 +148,8 @@ export function parseTree(sourceFile: ts.SourceFile): ICFVisualFunctionMetadata[
  * @param func - Function
  * @param isStreamingFunction - Is is a steaming function
  */
-function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean): ICFOptionsMetadata {
-    const optionsItem: ICFOptionsMetadata = {
+function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean): CustomFunctionMetadata.FunctionOptions {
+    const optionsItem: CustomFunctionMetadata.FunctionOptions = {
         volatile: isVolatile(func),
         cancelable: isStreamCancelable(func),
         stream: isStreaming(func, isStreamingFunction)
@@ -187,10 +163,10 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean):
  * @param isStreaming - Is a streaming function
  * @param lastParameter - Last parameter of the function signature
  */
-function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastParameter: ts.ParameterDeclaration): ICFResultsMetadata {
+function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastParameter: ts.ParameterDeclaration): CustomFunctionMetadata.FunctionResult {
     let resultType = "any";
     let resultDim = "scalar";
-    const defaultResultItem: ICFResultsMetadata = {
+    const defaultResultItem: CustomFunctionMetadata.FunctionResult = {
         type: resultType,
         dimensionality: resultDim
     };
@@ -241,7 +217,7 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
             }
     }
 
-    const resultItem: ICFResultsMetadata = {
+    const resultItem: CustomFunctionMetadata.FunctionResult = {
         type: resultType,
         dimensionality: resultDim
     };
@@ -260,8 +236,8 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }): ICFParameterMetadata[] {
-    const parameterMetadata: ICFParameterMetadata[] = [];
+function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }): CustomFunctionMetadata.FunctionParameter[] {
+    const parameterMetadata: CustomFunctionMetadata.FunctionParameter[] = [];
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
         const name = (p.name as ts.Identifier).text;
@@ -279,7 +255,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             }
         }
 
-        const pmetadataitem: ICFParameterMetadata = {
+        const pmetadataitem: CustomFunctionMetadata.FunctionParameter = {
             name,
             description: jsDocParamInfo[name],
             type: ptype,
@@ -610,6 +586,5 @@ function validateArray(a: ts.TypeReferenceNode) {
 export function logError(error: string) {
     // @ts-ignore
     errorLogFile.push(error);
-    errorFound = true;
 }
 

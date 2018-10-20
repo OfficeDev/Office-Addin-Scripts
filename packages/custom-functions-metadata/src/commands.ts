@@ -3,13 +3,19 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import * as customjson from "./custom-functions-metadata";
+import * as metadata from "./custom-functions-metadata";
 import * as jsongenerate from "./json-generate";
 
-export async function generate(inputfile: string, outputfile: string) {
+export async function generate(inputFile: string, outputFile: string) {
   try {
+      if (!inputFile) {
+        throw new Error("You need to provide the path to the source file for custom functions.");
+      }
+      if (!outputFile) {
+        throw new Error("You need to provide the path to the output file for the custom functions metadata.");
+      }
       console.log("Begin json generation")
-      customjson.generate(inputfile,outputfile);
+      metadata.generate(inputFile,outputFile);
   }
   catch (err){
     console.log('Error: ' + err);

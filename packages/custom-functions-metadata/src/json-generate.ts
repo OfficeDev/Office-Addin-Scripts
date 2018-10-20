@@ -5,16 +5,16 @@
 
 import * as commander from "commander";
 import * as commands from "./commands";
-import * as cfm from "./custom-functions-metadata";
+import * as metadata from "./custom-functions-metadata";
 
-export async function generate(inputfile:string, outputfile:string) {
-    cfm.generate(inputfile,outputfile);
+export async function generate(inputFile:string, outputFile:string) {
+    metadata.generate(inputFile,outputFile);
 }
 
 if (process.argv[1].endsWith("\\json-generate.js")) {
     commander
-      .command("generate <inputfile> <outputfile>")
-      .description("Generate the custom functions json.")
+      .command("generate <jsourceFile> <metadataFile>")
+      .description("Generate the metadata for the custom functions from the source code.")
       .action(commands.generate);
   
     commander.parse(process.argv);
