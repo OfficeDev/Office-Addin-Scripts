@@ -124,7 +124,7 @@ export async function startDebugging(manifestPath: string,
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerUrl?: string,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    sideloadCommandLine?: string, enableDebugging: boolean = true) {
+    sideloadCommandLine?: string, enableDebugging: boolean = true, enableLiveReload: boolean = true) {
 
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
@@ -151,6 +151,12 @@ export async function startDebugging(manifestPath: string,
     await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod);
     if (enableDebugging) {
         console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+    }
+
+    // enable live reload
+    await devSettings.enableLiveReload(manifestInfo.id, enableLiveReload);
+    if (enableLiveReload) {
+        console.log(`Enabled live-reload for add-in ${manifestInfo.id}.`);
     }
 
     // set source bundle url

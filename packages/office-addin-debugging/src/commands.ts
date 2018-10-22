@@ -13,7 +13,7 @@ export async function start(manifestPath: string, command: commander.Command) {
         startDebugging(manifestPath, debuggingMethod, sourceBundleUrlComponents,
             command.devServer, command.devServerUrl,
             command.packager, command.packagerHost, command.PackagerPort,
-            command.sideload, command.debug);
+            command.sideload, command.debug, command.liveReload);
     } catch (err) {
         console.log(`Unable to start debugging.\n${err}`);
     }
