@@ -13,6 +13,17 @@ export async function info(path: string) {
   }
 }
 
+function logManifestInfo(path: string, manifest: manifestInfo.ManifestInfo) {
+  console.log(`Manifest: ${path}`);
+  console.log(`  Id: ${manifest.id || ""}`);
+  console.log(`  Name: ${manifest.displayName || ""}`);
+  console.log(`  Provider: ${manifest.providerName || ""}`);
+  console.log(`  Type: ${manifest.officeAppType || ""}`);
+  console.log(`  Version: ${manifest.version || ""}`);
+  console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
+  console.log(`  Description: ${manifest.description || ""}`);
+}
+
 export async function modify(path: string, command: commnder.Command) {
   try {
     const guid: string | undefined = (command.guid) ? command.guid : undefined;
@@ -27,15 +38,4 @@ export async function modify(path: string, command: commnder.Command) {
   } catch (err) {
     console.error(`Error: ${err}`);
   }
-}
-
-function logManifestInfo(path: string, manifest: manifestInfo.ManifestInfo) {
-  console.log(`Manifest: ${path}`);
-  console.log(`  Id: ${manifest.id || ""}`);
-  console.log(`  Name: ${manifest.displayName || ""}`);
-  console.log(`  Provider: ${manifest.providerName || ""}`);
-  console.log(`  Type: ${manifest.officeAppType || ""}`);
-  console.log(`  Version: ${manifest.version || ""}`);
-  console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
-  console.log(`  Description: ${manifest.description || ""}`);
 }
