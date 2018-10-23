@@ -208,8 +208,8 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
     if (resultType == "any") {
         const resultFromComment = getReturnType(func);
         // @ts-ignore
-        const checktype = TYPE_MAPPINGS_COMMENT[resultFromComment];
-            if (!checktype) {
+        const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
+            if (!checkType) {
                 logError("Unsupported type in code comment:" + resultFromComment);
             }
             else {
@@ -281,9 +281,11 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
  * @param node - jsDoc node
  */
 export function getDescription(node: ts.Node): string {
-    let description;
-    if ((node as any).jsDoc) {
-        description = (node as any).jsDoc[0].comment;
+    let description:string = "";
+    //@ts-ignore
+    if (node.jsDoc[0]) {
+        //@ts-ignore
+        description = node.jsDoc[0].comment;
     }
     return description;
 }
@@ -293,16 +295,16 @@ export function getDescription(node: ts.Node): string {
  * @param node - jsDocs node
  */
 function isCustomFunction(node: ts.Node): boolean {
-    let customFunction = false;
+    let isCustomFunction = false;
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
-            if ((tag.tagName.escapedText as string).toLowerCase() === CUSTOM_FUNCTION) {
-                customFunction = true;
+            if (containsTag(tag, CUSTOM_FUNCTION)) {
+                isCustomFunction = true;
             }
         }
     );
 
-    return customFunction;
+    return isCustomFunction;
 }
 
 /**
@@ -310,17 +312,17 @@ function isCustomFunction(node: ts.Node): boolean {
  * @param node Node
  */
 function getHelpUrl(node: ts.Node): string {
-    let helpurl:string = "";
+    let helpUrl:string = "";
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
-            if ((tag.tagName.escapedText as string).toLowerCase() === HELPURL_PARAM) {
+            if (containsTag(tag, HELPURL_PARAM)) {
                 if (tag.comment) {
-                    helpurl = tag.comment;
+                    helpUrl = tag.comment;
                 }
             }
         }
     );
-    return helpurl;
+    return helpUrl;
 }
 
 /**
@@ -328,32 +330,40 @@ function getHelpUrl(node: ts.Node): string {
  * @param node jsDocs node
  */
 function isVolatile(node: ts.Node): boolean {
-    let volatile = false;
+    let isVolatile = false;
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
-            if ((tag.tagName.escapedText as string).toLowerCase() === VOLATILE) {
-                volatile = true;
+            if(containsTag(tag, VOLATILE)){
+                isVolatile = true;
             }
         }
     );
-    return volatile;
+    return isVolatile;
+}
+
+function containsTag(tag: ts.JSDocTag, tagName:string):boolean {
+    let containsTag:boolean = false;
+    if ((tag.tagName.escapedText as string).toLowerCase() === tagName) {
+        containsTag = true;
+    }
+    return containsTag;
 }
 
 /**
  * Returns true if function is streaming
  * @param node - jsDocs node
- * @param streamfunction - Is streaming function already determined by signature
+ * @param streamFunction - Is streaming function already determined by signature
  */
-function isStreaming(node: ts.Node, streamfunction: boolean): boolean {
+function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
     //If streaming already determined by function signature then return true
-    if (streamfunction){
-        return streamfunction;
+    if (streamFunction){
+        return streamFunction;
     }
   
     let streaming = false;
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
-            if ((tag.tagName.escapedText as string).toLowerCase() === STREAMING) {
+            if (containsTag(tag, STREAMING)) {
                 streaming = true;
             }
         }
@@ -366,19 +376,19 @@ function isStreaming(node: ts.Node, streamfunction: boolean): boolean {
  * @param node - jsDocs node
  */
 function isStreamCancelable(node: ts.Node): boolean {
-    let streamcancel = false;
+    let streamCancel = false;
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
-            if ((tag.tagName.escapedText as string).toLowerCase() === STREAMING) {
+            if (containsTag(tag, STREAMING)) {
                 if (tag.comment){
                     if (tag.comment.toLowerCase() === CANCELABLE) {
-                        streamcancel = true;
+                        streamCancel = true;
                     }
                 }
             }
         }
     );
-    return streamcancel;
+    return streamCancel;
 }
 
 /**
@@ -389,7 +399,7 @@ function getReturnType(node: ts.Node): string {
     let type = 'any';
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
-            if ((tag.tagName.escapedText as string).toLowerCase() === RETURN) {
+            if (containsTag(tag, RETURN)) {
                 // @ts-ignore
                 if (tag.typeExpression){
                     // @ts-ignore
@@ -447,7 +457,7 @@ function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
                 jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = paramType;
             }
             else {
-                //Set as any
+                // Set as any
                 // @ts-ignore
                 jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "any";
             }

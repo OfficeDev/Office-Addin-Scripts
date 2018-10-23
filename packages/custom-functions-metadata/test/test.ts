@@ -50,4 +50,22 @@ describe("test errors", function() {
         });
     });
 });
+describe("test bad file paths", function() {
+    describe("failure to generate bad file path", function(){
+        it("test error file path", function() {
+            var inputFile = "doesnotexist.ts";
+            var output = "./nofile.json";
+            var testError = "ENOENT: no such file or directory"
+            try {
+                jsongenerator.generate(inputFile,output);
+            }
+            catch (error) {
+                assert.ok(error.message.startsWith(testError), "Error message not found");
+                assert.ok(error.message.includes(inputFile), "File name not found in error message");
+
+            }
+            assert.strictEqual(fs.existsSync(output), false, "json file created");
+        });
+    });
+});
 
