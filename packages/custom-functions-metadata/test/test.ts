@@ -16,8 +16,8 @@ describe("test json file created", function() {
         });
     });
 });
-describe("verify json created in file", function() {
-    describe("test json", function(){
+describe("verify json created in file by typescript", function() {
+    describe("verify metadata from typescript", function(){
         it("test json", function() {
             var output = "./test/test.json";
             let jsonCreated = fs.readFileSync(output);
@@ -34,6 +34,33 @@ describe("verify json created in file", function() {
             assert.strictEqual(j.functions[0].options.volatile,true, "options volatile not created properly");
             assert.strictEqual(j.functions[0].options.stream,true, "options stream not created properly");
             assert.strictEqual(j.functions[0].options.cancelable,true, "options cancelable not created properly");
+        });
+    });
+});
+describe("test javascript file as input", function() {
+    describe("js test", function(){
+        it("basic test", function() {
+            var inputFile = "../custom-functions-metadata/test/testjs.js";
+            var output = "./test/testjs.json";
+            jsongenerator.generate(inputFile,output);
+            assert.strictEqual(fs.existsSync(output), true, "json file not created");
+        });
+    });
+});
+describe("verify json created in file by javascript", function() {
+    describe("test javascript json", function(){
+        it("test json", function() {
+            var output = "./test/testjs.json";
+            let jsonCreated = fs.readFileSync(output);
+            var j = JSON.parse(jsonCreated.toString());
+            assert.strictEqual(j.functions[0].id,"testAdd", "id not created properly");
+            assert.strictEqual(j.functions[0].name,"TESTADD", "name not created properly");
+            assert.strictEqual(j.functions[0].description,"This function is testing add", "description not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].name,"number1", "parameter name not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].description,"first number", "description not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].type,"number", "type not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].optional,false, "optional not created properly");
+            assert.strictEqual(j.functions[0].result.type,"number", "result type not created properly");
         });
     });
 });
