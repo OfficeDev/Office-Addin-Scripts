@@ -57,11 +57,11 @@ async function modifyManifestXml(manifestPath: string, guid?: string, displayNam
   }
 }
 
-async function parseXmlAsync(xmlString: string, manifestPath: string): Promise<Xml> {
+async function parseXmlAsync(xmlString: string): Promise<Xml> {
   return new Promise(async function(resolve, reject) {
     xml2js.parseString(xmlString, function(parseError, xml) {
       if (parseError) {
-        reject(new Error(`Unable to parse the xml for manifest file: ${manifestPath}. \n${parseError}`));
+        reject(new Error(`Unable to parse the xml for manifest file:\n${parseError}`));
       } else {
         resolve(xml);
       }
@@ -81,7 +81,7 @@ export async function readManifestFile(manifestPath: string): Promise<ManifestIn
 
 async function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
   const fileData: string = await readFileAsync(manifestPath, {encoding: "utf8"});
-  const xml = await parseXmlAsync(fileData, manifestPath);
+  const xml = await parseXmlAsync(fileData);
   return xml;
 }
 
