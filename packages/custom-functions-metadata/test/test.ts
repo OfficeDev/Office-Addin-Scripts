@@ -2,16 +2,16 @@ import * as assert from "assert";
 import * as mocha from "mocha"; 
 import * as fs from "fs";
 import * as ts from "typescript";
-import * as jsongenerator from "../src/custom-functions-metadata";
+import * as customFunctionsMetadata from "../src/custom-functions-metadata";
 
 describe("test json file created", function() {
     describe("generate test", function(){
         it("test it", function() {
             var inputFile = "../custom-functions-metadata/test/testfunctions.ts";
             var output = "./test/test.json";
-            jsongenerator.generate(inputFile,output);
+            customFunctionsMetadata.generate(inputFile,output);
             var skipped = 'notAdded';
-            assert.strictEqual(jsongenerator.skippedFunctions[0],skipped, "skipped function not found");
+            assert.strictEqual(customFunctionsMetadata.skippedFunctions[0],skipped, "skipped function not found");
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
     });
@@ -42,7 +42,7 @@ describe("test javascript file as input", function() {
         it("basic test", function() {
             var inputFile = "../custom-functions-metadata/test/testjs.js";
             var output = "./test/testjs.json";
-            jsongenerator.generate(inputFile,output);
+            customFunctionsMetadata.generate(inputFile,output);
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
     });
@@ -69,8 +69,8 @@ describe("test errors", function() {
         it("test error", function() {
              var inputFile = "../custom-functions-metadata/test/errorfunctions.js";
             var output = "./errortest.json";
-            jsongenerator.generate(inputFile,output);
-            var errorlog = jsongenerator.errorLogFile[0];
+            customFunctionsMetadata.generate(inputFile,output);
+            var errorlog = customFunctionsMetadata.errorLogFile[0];
             var errorstring = "Unsupported type in code comment:badtype";
             assert.strictEqual(errorlog, errorstring, "Error string not found.");
             assert.strictEqual(fs.existsSync(output), false, "json file created");
@@ -84,7 +84,7 @@ describe("test bad file paths", function() {
             var output = "./nofile.json";
             var testError = "ENOENT: no such file or directory"
             try {
-                jsongenerator.generate(inputFile,output);
+                customFunctionsMetadata.generate(inputFile,output);
             }
             catch (error) {
                 assert.ok(error.message.startsWith(testError), "Error message not found");

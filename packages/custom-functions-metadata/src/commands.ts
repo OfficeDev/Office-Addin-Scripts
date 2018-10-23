@@ -4,7 +4,6 @@
 
 import * as commander from "commander";
 import * as metadata from "./custom-functions-metadata";
-import * as jsongenerate from "./json-generate";
 
 export async function generate(inputFile: string, outputFile: string) {
   try {
@@ -15,7 +14,7 @@ export async function generate(inputFile: string, outputFile: string) {
         throw new Error("You need to provide the path to the output file for the custom functions metadata.");
       }
       console.log("Begin json generation")
-      metadata.generate(inputFile,outputFile);
+      await metadata.generate(inputFile,outputFile);
   }
   catch (err){
     console.log('Error: ' + err);
