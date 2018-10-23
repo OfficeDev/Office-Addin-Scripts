@@ -10,7 +10,7 @@ describe("test json file created", function() {
             var inputFile = "../custom-functions-metadata/test/testfunctions.ts";
             var output = "./test/test.json";
             jsongenerator.generate(inputFile,output);
-            var skipped = 'notadded';
+            var skipped = 'notAdded';
             assert.strictEqual(jsongenerator.skippedFunctions[0],skipped, "skipped function not found");
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });

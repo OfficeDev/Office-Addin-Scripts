@@ -8,7 +8,7 @@ import * as commands from "./commands";
 import * as metadata from "./custom-functions-metadata";
 
 export async function generate(inputFile:string, outputFile:string) {
-    metadata.generate(inputFile,outputFile);
+    await metadata.generate(inputFile,outputFile);
 }
 
 if (process.argv[1].endsWith("\\json-generate.js")) {

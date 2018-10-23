@@ -35,6 +35,9 @@ const TYPE_MAPPINGS_COMMENT = {
 
 type CustomFunctionsSchemaDimensionality = 'invalid' | 'scalar' | 'matrix';
 
+/**
+ * Check the error log and return true if any errors found
+ */
 export function isErrorFound():boolean {
     if (errorLogFile[0]){
         return true;
@@ -44,7 +47,12 @@ export function isErrorFound():boolean {
     }
 }
 
-export function generate(inputFile: string, outputFileName: string) {
+/**
+ * Generate the metadata of the custom functions
+ * @param inputFile - File that contains the custom functions
+ * @param outputFileName - Name of the file to create (i.e functions.json)
+ */
+export async function generate(inputFile: string, outputFileName: string): Promise<void> {
     const sourceCode = fs.readFileSync(inputFile, 'utf-8');
     const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -248,8 +256,8 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             ptype = jsDocParamTypeInfo[name];
             if (ptype) {
                 // @ts-ignore
-                const checktype = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
-                if (!checktype) {
+                const checkType = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
+                if (!checkType) {
                     logError("Unsupported type in code comment:" + ptype);
                 }
             }

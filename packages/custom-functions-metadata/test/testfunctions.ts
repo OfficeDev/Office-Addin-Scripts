@@ -18,18 +18,18 @@ function add(first: number, second: number): number {
  * @param {number} x - x arraynumber
  * @CustomFunction
  */
-function bad(one: string[][], x: Array<Array<number>>): string[][] {
+function complexFunction(one: string[][], x: Array<Array<number>>): string[][] {
     return [""][""];
 }
 
-function notadded() {
+function notAdded() {
 }
 
 /**
  * Testing boolean
  * @CustomFunction
  */
-function testbool(abc: boolean): string {
+function testBool(abc: boolean): string {
     return "";
 }
 
