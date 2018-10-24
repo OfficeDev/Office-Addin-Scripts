@@ -9,8 +9,12 @@ export async function info(manifestPath: string) {
     const manifest = await manifestInfo.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
   } catch (err) {
-    console.error(`Error: ${err}`);
+    logErrorMessage(err);
   }
+}
+
+function logErrorMessage(err: any) {
+  console.error(`Error: ${err instanceof Error ? err.message : err}`);
 }
 
 function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestInfo) {
@@ -36,6 +40,6 @@ export async function modify(manifestPath: string, command: commnder.Command) {
     const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
   } catch (err) {
-    console.error(`Error: ${err}`);
+    logErrorMessage(err);
   }
 }
