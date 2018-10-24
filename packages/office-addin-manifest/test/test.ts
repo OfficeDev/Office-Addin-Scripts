@@ -1,9 +1,9 @@
 import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
+import * as uuid from "uuid";
+import { isUUID } from "validator";
 import * as manifestInfo from "../src/manifestInfo";
-const uuid = require('uuid');
-const validator = require("validator");
 const manifestOriginalFolder = process.cwd() + "/test/manifests";
 const manifestTestFolder = process.cwd() + "\\testExecution\\testManifests";
 const testManifest = manifestTestFolder + "\\manifest.xml";
@@ -70,9 +70,9 @@ describe("Manifest", function() {
       const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, "random", undefined);
 
       // verify guid updated, that it"s a valid guid and that the displayName is not updated
-      assert.notStrictEqual(originalInfo.id, updatedInfo.id);
-      assert.equal(true, validator.isUUID(updatedInfo.id));
-      assert.strictEqual(originalInfo.displayName, updatedInfo.displayName);
+      assert.notStrictEqual(updatedInfo.id, originalInfo.id);
+      assert.strictEqual(updatedInfo.id && isUUID(updatedInfo.id), true);
+      assert.strictEqual(updatedInfo.displayName, originalInfo.displayName);
     });
     it("should handle specifying displayName only", async function() {
       // get original manifest info and create copy of manifest that we can overwrite in this test
@@ -83,18 +83,18 @@ describe("Manifest", function() {
       const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, undefined, testDisplayName);
 
       // verify displayName updated and guid not updated
-      assert.notStrictEqual(originalInfo.displayName, updatedInfo.displayName);
+      assert.notStrictEqual(updatedInfo.displayName, originalInfo.displayName);
       assert.strictEqual(updatedInfo.displayName, testDisplayName);
-      assert.strictEqual(originalInfo.id, updatedInfo.id);
+      assert.strictEqual( updatedInfo.id, originalInfo.id);
     });
     it("should handle not specifying either a guid or displayName", async function() {
       let result;
       try {
-        await manifestInfo.modifyManifestFile(testManifest, undefined, undefined);
+        await manifestInfo.modifyManifestFile(testManifest);
       } catch (err) {
-        result = err;
+        result = err.message;
       }
-      assert.equal(result, "Error: You need to specify something to change in the manifest.");
+      assert.strictEqual(result, `You need to specify something to change in the manifest.`);
     });
     it("should handle an invalid manifest file path", async function() {
       // call  modify, specifying an invalid manifest path with a valid guid and displayName
@@ -108,7 +108,7 @@ describe("Manifest", function() {
         result = err.message;
       }
 
-      assert.equal(result, `Unable to modify xml data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      assert.strictEqual(result, `Unable to modify xml data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
     });
   });
 });

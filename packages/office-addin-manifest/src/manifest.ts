@@ -13,8 +13,8 @@ if (process.argv[1].endsWith("\\manifest.js")) {
 
   commander
     .command("modify <manifest-path>")
-    .option("-g,--guid [guid]", "Change the guid. Specify \"random\" for a random guid.")
-    .option("-d, --displayName [name]", "Display name for the add-in.")
+    .option("-g,--guid [guid]", "Change the guid. A random guid is used if one is not provided.")
+    .option("-d, --displayName <name>", "Change the display name.")
     .action(commands.modify);
 
   commander.parse(process.argv);

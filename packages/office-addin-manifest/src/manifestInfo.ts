@@ -35,7 +35,7 @@ function parseManifest(xml: Xml): ManifestInfo {
 export async function modifyManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<ManifestInfo> {
   let manifestData: ManifestInfo = {};
   if (manifestPath) {
-    if (!guid && !displayName) {
+    if (guid === undefined && displayName === undefined) {
       throw new Error("You need to specify something to change in the manifest.");
     } else {
       manifestData = await modifyManifestXml(manifestPath, guid, displayName);
@@ -85,15 +85,15 @@ async function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
   return xml;
 }
 
-function setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined) {
-  if (guid) {
-    if (guid === "random") {
+function setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void {
+  if (typeof(guid) !== "undefined") {
+    if (!guid || guid === "random") {
       guid = uuid();
     }
     xmlMethods.setXmlElementValue(xml, "Id", guid);
   }
 
-  if (displayName) {
+  if (typeof(displayName) !== "undefined") {
     xmlMethods.setXmlElementAttributeValue(xml, "DisplayName", displayName);
   }
 }

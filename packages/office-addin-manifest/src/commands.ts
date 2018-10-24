@@ -4,6 +4,13 @@
 import * as commnder from "commander";
 import * as manifestInfo from "./manifestInfo";
 
+function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
+  // For a command option defined with an optional value, e.g. "--option [value]",
+  // when the option is provided with a value, it will be of type "string", return the specified value;
+  // when the option is provided without a value, it will be of type "boolean", return undefined.
+  return (typeof(option) === "boolean") ? defaultValue : option;
+}
+
 export async function info(manifestPath: string) {
   try {
     const manifest = await manifestInfo.readManifestFile(manifestPath);
@@ -30,12 +37,9 @@ function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestIn
 
 export async function modify(manifestPath: string, command: commnder.Command) {
   try {
-    const guid: string | undefined = (command.guid) ? command.guid : undefined;
-    const displayName: string | undefined = (command.displayName) ? command.displayName : undefined;
-
-    if (guid === undefined && displayName === undefined) {
-      throw new Error("You need to specify something to change in the manifest.");
-    }
+    // if the --guid command option is provided without a value, use "" to specify to change to a random guid value.
+    const guid: string | undefined = getCommandOptionString(command.guid, "");
+    const displayName: string | undefined = getCommandOptionString(command.displayName);
 
     const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);

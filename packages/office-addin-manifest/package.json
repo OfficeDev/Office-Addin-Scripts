@@ -33,6 +33,7 @@
     "@types/node": "^10.5.7",
     "@types/node-fetch": "^2.1.2",
     "@types/uuid": "^3.4.4",
+    "@types/validator": "^9.4.2",
     "@types/xml2js": "^0.4.3",
     "concurrently": "^3.6.1",
     "copy-dir": "^0.4.0",
