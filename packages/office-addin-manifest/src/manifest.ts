@@ -8,11 +8,11 @@ import * as commands from "./commands";
 
 if (process.argv[1].endsWith("\\manifest.js")) {
   commander
-    .command("info <path>")
+    .command("info <manifest-path>")
     .action(commands.info);
 
   commander
-    .command("modify <path>")
+    .command("modify <manifest-path>")
     .option("-g,--guid [guid]", "Change the guid. Specify \"random\" for a random guid.")
     .option("-d, --displayName [name]", "Display name for the add-in.")
     .action(commands.modify);
