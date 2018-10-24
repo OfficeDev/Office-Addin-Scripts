@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as util from "util";
+import * as uuid from "uuid";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
 const readFileAsync = util.promisify(fs.readFile);
-const uuid = require('uuid/v1');
 const writeFileAsync = util.promisify(fs.writeFile);
 type Xml = any;
 
