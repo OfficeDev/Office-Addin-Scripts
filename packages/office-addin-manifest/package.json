@@ -1,6 +1,6 @@
 {
   "name": "office-addin-manifest",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Read and modify Office Add-in manifest files.",
   "main": "./lib/manifest.js",
   "scripts": {
