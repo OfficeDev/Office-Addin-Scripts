@@ -6,6 +6,8 @@
 import * as commander from "commander";
 import * as commands from "./commands";
 
+export * from "./manifestInfo";
+
 if (process.argv[1].endsWith("\\manifest.js")) {
   commander
     .command("info <manifest-path>")
