@@ -21,17 +21,17 @@
   ],
   "dependencies": {
     "child_process": "^1.0.2",
+    "commander": "^2.19.0",
     "node-fetch": "^2.2.0",
-    "ws": "^6.0.0",
-    "commander": "^2.9.0"
+    "ws": "^6.1.0"
   },
   "devDependencies": {
-    "@types/node": "^10.5.7",
-    "@types/ws": "^5.1.2",
-    "@types/node-fetch": "^2.1.2",
     "@types/es6-promise": "0.0.32",
-    "rimraf": "^2.6.1",
-    "concurrently": "^3.5.0"
+    "@types/node": "^10.12.0",
+    "@types/node-fetch": "^2.1.2",
+    "@types/ws": "^5.1.2",
+    "concurrently": "^3.5.0",
+    "rimraf": "^2.6.1"
   },
   "repository": {
     "type": "git",
