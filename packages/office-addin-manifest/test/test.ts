@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import * as fs from "fs";
+import * as fsextra from "fs";
 import * as mocha from "mocha";
 import * as uuid from "uuid";
 import { isUUID } from "validator";

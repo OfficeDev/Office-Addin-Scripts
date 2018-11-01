@@ -4,6 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Build",
             "type": "npm",
             "script": "build",
             "group": {
@@ -12,12 +13,19 @@
             }
         },
         {
+            "label": "Watch",
             "type": "npm",
             "script": "tsc-watch",
             "problemMatcher": [
                 "$tsc-watch"
             ],
             "isBackground": true
+        },
+        {
+            "label": "Run Tests",
+            "type": "npm",
+            "script": "test",
+            "problemMatcher": []
         }
     ]
 }
