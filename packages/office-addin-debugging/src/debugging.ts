@@ -6,6 +6,9 @@
 import * as commander from "commander";
 import * as commands from "./commands";
 
+export * from "./start";
+export * from "./stop";
+
 if (process.argv[1].endsWith("\\debugging.js")) {
     commander
         .command("start <manifestPath>")
