@@ -12,7 +12,8 @@ export async function start(manifestPath: string, command: commander.Command) {
 
         startDebugging(manifestPath, debuggingMethod, sourceBundleUrlComponents,
             command.devServer, command.devServerUrl,
-            command.packager, command.packagerHost, command.PackagerPort);
+            command.packager, command.packagerHost, command.PackagerPort,
+            command.sideload);
     } catch (err) {
         console.log(`Unable to start debugging.\n${err}`);
     }
@@ -20,7 +21,7 @@ export async function start(manifestPath: string, command: commander.Command) {
 
 export async function stop(manifestPath: string, command: commander.Command) {
     try {
-        stopDebugging(manifestPath);
+        stopDebugging(manifestPath, command.unload);
     } catch (err) {
         console.log(`Unable to stop debugging.\n${err}`);
     }
