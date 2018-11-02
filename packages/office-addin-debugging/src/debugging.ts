@@ -15,11 +15,17 @@ if (process.argv[1].endsWith("\\debugging.js")) {
         .option("--packager <command>", "Run the packager.")
         .option("--packager-host <host>")
         .option("--packager-port <port>")
+        .option("--sideload <command>")
         .option("--source-bundle-url-host <host>")
         .option("--source-bundle-url-port <port>")
         .option("--source-bundle-url-path <path>")
         .option("--source-bundle-url-extension <extension>")
         .action(commands.start);
+
+    commander
+        .command("stop <manifestPath>")
+        .option("--unload <command>")
+        .action(commands.stop);
 
     commander.parse(process.argv);
 }

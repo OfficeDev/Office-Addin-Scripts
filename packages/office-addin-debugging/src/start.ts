@@ -111,7 +111,7 @@ export async function startDebugging(manifestPath: string,
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerUrl?: string,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    sideloadCommandLine: string = "npm run sideload") {
+    sideloadCommandLine?: string) {
 
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
@@ -168,19 +168,24 @@ export async function startDebugging(manifestPath: string,
         }
     }
 
-    try {
-        console.log(`Sideloading the Office Add-in...`);
-        await startProcess(sideloadCommandLine);
-    } catch (err) {
-        console.log(`Unable to sideload the Office Add-in. ${err}`);
+    if (sideloadCommandLine) {
+        try {
+            console.log(`Sideloading the Office Add-in...`);
+            await startProcess(sideloadCommandLine);
+        } catch (err) {
+            console.log(`Unable to sideload the Office Add-in. ${err}`);
+        }
     }
 
     console.log("Debugging started.");
 }
 
-async function startProcess(commandLine: string): Promise<void> {
+export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-        console.log(`Starting process: ${commandLine}`);
+        if (verbose) {
+            console.log(`Starting process: ${commandLine}`);
+        }
+
         childProcess.exec(commandLine, (error: ExecException | null, stdout: string, stderr: string) => {
             if (error) {
                 reject(error);
