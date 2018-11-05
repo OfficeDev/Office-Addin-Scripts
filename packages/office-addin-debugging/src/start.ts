@@ -176,7 +176,7 @@ export async function startDebugging(manifestPath: string,
         }
     }
 
-    if (debuggingMethod === DebuggingMethod.Web) {
+    if (enableDebugging && (debuggingMethod === DebuggingMethod.Web)) {
         try {
             await runNodeDebugger();
             console.log(`Started the node debugger.`);
