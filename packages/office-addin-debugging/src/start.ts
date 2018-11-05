@@ -106,8 +106,21 @@ export async function runPackager(commandLine: string, host: string = "localhost
     }
 }
 
+/**
+ * Start debugging
+ * @param manifestPath The path to the manifest file.
+ * @param debuggingMethod The method to use when debugging.
+ * @param sourceBundleUrlComponents Specify components of the source bundle url.
+ * @param devServerCommandLine If provided, starts the dev server.
+ * @param devServerUrl If provided, url to verify that the dev server is running.
+ * @param packagerCommandLine If provided, starts the packager.
+ * @param packagerHost Specifies the host name of the packager.
+ * @param packagerPort Specifies the port of the packager.
+ * @param sideloadCommandLine If provided, launches the add-in.
+ */
 export async function startDebugging(manifestPath: string,
-    debuggingMethod: DebuggingMethod = defaultDebuggingMethod(),
+    enableDebugging: boolean = true,
+    debuggingMethod: DebuggingMethod | undefined = defaultDebuggingMethod(),
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerUrl?: string,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
@@ -116,7 +129,9 @@ export async function startDebugging(manifestPath: string,
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
 
-    console.log("Debugging is being started...");
+    console.log(enableDebugging
+        ? "Debugging is being started..."
+        : "Starting without debugging...");
 
     if (packagerCommandLine) {
         packagerPromise = runPackager(packagerCommandLine, packagerHost, packagerPort);
@@ -133,8 +148,10 @@ export async function startDebugging(manifestPath: string,
     }
 
     // enable debugging
-    await devSettings.enableDebugging(manifestInfo.id, true, debuggingMethod);
-    console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+    await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod);
+    if (enableDebugging) {
+        console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+    }
 
     // set source bundle url
     if (sourceBundleUrlComponents) {
@@ -177,7 +194,9 @@ export async function startDebugging(manifestPath: string,
         }
     }
 
-    console.log("Debugging started.");
+    console.log(enableDebugging
+        ? "Debugging started."
+        : "Started.");
 }
 
 export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
