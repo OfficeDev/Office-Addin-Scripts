@@ -117,14 +117,15 @@ export async function runPackager(commandLine: string, host: string = "localhost
  * @param packagerHost Specifies the host name of the packager.
  * @param packagerPort Specifies the port of the packager.
  * @param sideloadCommandLine If provided, launches the add-in.
+ * @param enableDebugging If false, start without debugging.
  */
 export async function startDebugging(manifestPath: string,
-    enableDebugging: boolean = true,
     debuggingMethod: DebuggingMethod | undefined = defaultDebuggingMethod(),
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerUrl?: string,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    sideloadCommandLine?: string) {
+    sideloadCommandLine?: string,
+    enableDebugging: boolean = true) {
 
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;

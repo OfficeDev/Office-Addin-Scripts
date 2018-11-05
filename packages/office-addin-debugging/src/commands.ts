@@ -10,10 +10,10 @@ export async function start(manifestPath: string, command: commander.Command) {
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
         const debuggingMethod = parseDebuggingMethod(command.debugMethod);
 
-        startDebugging(manifestPath, command.debug, debuggingMethod, sourceBundleUrlComponents,
+        startDebugging(manifestPath, debuggingMethod, sourceBundleUrlComponents,
             command.devServer, command.devServerUrl,
             command.packager, command.packagerHost, command.PackagerPort,
-            command.sideload);
+            command.sideload, command.debug);
     } catch (err) {
         console.log(`Unable to start debugging.\n${err}`);
     }
