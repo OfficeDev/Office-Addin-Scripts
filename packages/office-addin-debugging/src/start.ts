@@ -120,12 +120,11 @@ export async function runPackager(commandLine: string, host: string = "localhost
  * @param enableDebugging If false, start without debugging.
  */
 export async function startDebugging(manifestPath: string,
-    debuggingMethod: DebuggingMethod | undefined = defaultDebuggingMethod(),
+    debuggingMethod: DebuggingMethod = defaultDebuggingMethod(),
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerUrl?: string,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    sideloadCommandLine?: string,
-    enableDebugging: boolean = true) {
+    sideloadCommandLine?: string, enableDebugging: boolean = true) {
 
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
