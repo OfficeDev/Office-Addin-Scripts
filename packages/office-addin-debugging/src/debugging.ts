@@ -15,6 +15,7 @@ if (process.argv[1].endsWith("\\debugging.js")) {
         .option("--debug-method <method>", "The debug method to use.")
         .option("--dev-server <command>", "Run the dev server.")
         .option("--dev-server-url <url>", "Verify dev server is running using this url.")
+        .option("--no-debug", "Start without debugging.")
         .option("--packager <command>", "Run the packager.")
         .option("--packager-host <host>")
         .option("--packager-port <port>")
