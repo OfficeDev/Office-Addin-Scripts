@@ -1,6 +1,6 @@
 {
   "name": "office-addin-debugging",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "For debugging Office Add-ins.",
   "main": "./lib/debugging.js",
   "scripts": {
