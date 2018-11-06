@@ -24,6 +24,7 @@ if (process.argv[1].endsWith("\\debugging.js")) {
         .option("--source-bundle-url-port <port>")
         .option("--source-bundle-url-path <path>")
         .option("--source-bundle-url-extension <extension>")
+        .option("--live-reload")
         .action(commands.start);
 
     commander
