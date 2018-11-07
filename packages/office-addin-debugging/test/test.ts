@@ -29,10 +29,10 @@ describe("port functions", function() {
     let server: http.Server;
 
     before(async function() {
-      portNotInUse = await port.randomPortNotInUse();
       serverPort = await port.randomPortNotInUse();
-      console.log(`Port ${portNotInUse} is not in use.`);
       server = startServer(serverPort);
+      portNotInUse = await port.randomPortNotInUse();
+      console.log(`Port ${portNotInUse} is not in use.`);
     });
     it("no process ids", async function() {
       const processIds = await port.getProcessIdsForPort(portNotInUse);
@@ -56,10 +56,10 @@ describe("port functions", function() {
     let server: http.Server;
 
     before(async function() {
-      portNotInUse = await port.randomPortNotInUse();
       serverPort = await port.randomPortNotInUse();
-      console.log(`Port ${portNotInUse} is not in use.`);
       server = startServer(serverPort);
+      portNotInUse = await port.randomPortNotInUse();
+      console.log(`Port ${portNotInUse} is not in use.`);
     });
     it("port not in use", async function() {
       assert.strictEqual(await port.isPortInUse(portNotInUse), false);
