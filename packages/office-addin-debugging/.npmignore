@@ -1,4 +1,8 @@
-src
+.vscode
 node_modules
-tsconfig.json
 package-lock.json
+src
+test
+testExecution
+tsconfig.json
+tslint.json
