@@ -1,6 +1,6 @@
 import * as devSettings from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
-import { startProcess } from "./start";
+import { startProcess } from "./process";
 
 export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
     console.log("Debugging is being stopped...");

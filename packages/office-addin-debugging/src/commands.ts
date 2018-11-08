@@ -11,7 +11,7 @@ export async function start(manifestPath: string, command: commander.Command) {
         const debuggingMethod = parseDebuggingMethod(command.debugMethod);
 
         startDebugging(manifestPath, debuggingMethod, sourceBundleUrlComponents,
-            command.devServer, command.devServerUrl,
+            command.devServer, command.devServerPort,
             command.packager, command.packagerHost, command.PackagerPort,
             command.sideload, command.debug, command.liveReload);
     } catch (err) {
