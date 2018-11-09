@@ -95,3 +95,20 @@ function enumTest(e: Color) : Color {
 function tupleTest(t:[string,number]){
 }
 
+/**
+ * Test function for streaming type
+ * @param x - Test string
+ * @param sf - Streaming function type
+ * @CustomFunction 
+ */
+function streamingTest(x: string, sf: CustomFunctions.StreamingHandler<number>) {
+}
+
+/**
+ * Test function for optional parameter
+ * @param x - Optional string
+ * @CustomFunction
+ */
+function testOptional(x?: string){
+}
+

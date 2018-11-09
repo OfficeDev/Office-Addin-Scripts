@@ -6,3 +6,11 @@
  */
 function testadd(num1){
 }
+
+/**
+ * Testing bad result type
+ * @CustomFunction
+ * @return {badreturn} - not a return type
+ */
+function badResult(){
+}

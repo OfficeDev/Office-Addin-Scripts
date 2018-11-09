@@ -3,6 +3,7 @@ import * as mocha from "mocha";
 import * as fs from "fs";
 import * as ts from "typescript";
 import * as customFunctionsMetadata from "../src/custom-functions-metadata";
+import { isNumber } from "util";
 
 describe("test json file created", function() {
     describe("generate test", function(){
@@ -70,9 +71,14 @@ describe("test errors", function() {
              var inputFile = "../custom-functions-metadata/test/errorfunctions.js";
             var output = "./errortest.json";
             customFunctionsMetadata.generate(inputFile,output);
-            var errorlog = customFunctionsMetadata.errorLogFile[0];
+            var errtest:string[] = customFunctionsMetadata.errorLogFile;
             var errorstring = "Unsupported type in code comment:badtype";
-            assert.strictEqual(errorlog, errorstring, "Error string not found.");
+            if (errtest.indexOf(errorstring) >= 0 ){
+                assert.ok("Error item found");
+            }
+            else {
+                assert.fail("Error string not found");
+            }
             assert.strictEqual(fs.existsSync(output), false, "json file created");
         });
     });
