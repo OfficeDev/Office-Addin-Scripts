@@ -29,8 +29,43 @@ function notAdded() {
  * Testing boolean
  * @CustomFunction
  */
-function testBool(abc: boolean): string {
+function testBool(abc: boolean): boolean {
+    return true;
+}
+
+/**
+ * Test function for number type
+ * @param one - A number
+ * @CustomFunction
+ */
+function testNumber(one: number): number {
+    return 0;
+}
+
+/**
+ * Test function for string type
+ * @param word - Some string
+ * @CustomFunction
+ */
+function testString(word: string): string {
     return "";
+}
+
+/**
+ * Test function for void type
+ * @CustomFunction
+ */
+function voidTest(): void {
+}
+
+/**
+ * Test function for object type
+ * @param obj - Some object
+ * @CustomFunction
+ */
+function objectTest(obj: object): object {
+    let o;
+    return o;
 }
 
 /**
@@ -39,3 +74,24 @@ function testBool(abc: boolean): string {
 function testdatetime(d: number): string {
     return "";
 }
+
+enum Color {Red,Green,Blue};
+
+/**
+ * Test function for enum type
+ * @param e - enum type
+ * @CustomFunction
+ */
+function enumTest(e: Color) : Color {
+    let r : Color;
+    return r;
+}
+
+/**
+ * Test function for tuple type
+ * @param t 
+ * @CustomFunction
+ */
+function tupleTest(t:[string,number]){
+}
+
