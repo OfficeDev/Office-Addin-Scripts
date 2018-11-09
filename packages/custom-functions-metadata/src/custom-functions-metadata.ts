@@ -23,7 +23,10 @@ const TYPE_MAPPINGS = {
     [ts.SyntaxKind.BooleanKeyword]: 'boolean',
     [ts.SyntaxKind.AnyKeyword]: 'any',
     [ts.SyntaxKind.UnionType]: 'any',
-    [ts.SyntaxKind.TupleType]: 'any'
+    [ts.SyntaxKind.TupleType]: 'any',
+    [ts.SyntaxKind.EnumKeyword]: 'any',
+    [ts.SyntaxKind.ObjectKeyword]: 'any',
+    [ts.SyntaxKind.VoidKeyword]: 'any'
 };
 
 const TYPE_MAPPINGS_COMMENT = {
@@ -82,6 +85,8 @@ export async function generate(inputFile: string, outputFileName: string): Promi
     }
 }
 
+let enumList: string[] = [];
+
 /**
  * Takes the sourcefile and attempts to parse the functions information
  * @param sourceFile source file containing the custom functions
@@ -89,8 +94,16 @@ export async function generate(inputFile: string, outputFileName: string): Promi
 export function parseTree(sourceFile: ts.SourceFile): CustomFunctionMetadata.Function[] {
     const metadata: CustomFunctionMetadata.Function[] = [];
 
+    buildEnums(sourceFile);
     visit(sourceFile);
     return metadata;
+
+    function buildEnums(node: ts.Node) {
+        if (ts.isEnumDeclaration(node)) {
+            enumList.push(node.name.getText())
+        }
+        ts.forEachChild(node, buildEnums);
+    }
 
     function visit(node: ts.Node) {
         if (ts.isFunctionDeclaration(node)) {
@@ -263,7 +276,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             }
         }
 
-        const pmetadataitem: CustomFunctionMetadata.FunctionParameter = {
+        const pMetadataItem: CustomFunctionMetadata.FunctionParameter = {
             name,
             description: jsDocParamInfo[name],
             type: ptype,
@@ -272,11 +285,11 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         };
 
         //Only return dimensionality = matrix.  Default assumed scalar
-        if (pmetadataitem.dimensionality == "scalar") {
-            delete pmetadataitem.dimensionality;
+        if (pMetadataItem.dimensionality == "scalar") {
+            delete pMetadataItem.dimensionality;
         }
 
-        parameterMetadata.push(pmetadataitem);
+        parameterMetadata.push(pMetadataItem);
 
     })
     .filter(meta => meta);
@@ -521,6 +534,10 @@ function getParamType(t: ts.TypeNode): string {
         let kind = t.kind;
         if (ts.isTypeReferenceNode(t)) {
             const arrTr = t as ts.TypeReferenceNode;
+            if (enumList.indexOf(arrTr.typeName.getText()) >= 0) {
+                //Type found in the enumList
+                return type;
+            }
             if (arrTr.typeName.getText() !== 'Array') {
                 logError("Invalid type: " + arrTr.typeName.getText());
                 return type;
