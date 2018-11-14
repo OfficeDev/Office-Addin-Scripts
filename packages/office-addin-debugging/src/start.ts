@@ -3,7 +3,7 @@ import * as devSettings from "office-addin-dev-settings";
 import { DebuggingMethod } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
-import { isPortInUse } from "./port";
+import { getProcessIdsForPort } from "./port";
 import { startProcess } from "./process";
 
 function defaultDebuggingMethod(): DebuggingMethod {
@@ -22,7 +22,12 @@ function delay(milliseconds: number): Promise<void> {
 }
 
 export async function isDevServerRunning(port: number): Promise<boolean> {
-    return isPortInUse(port);
+    // isPortInUse(port) will return false when webpack-dev-server is running.
+    // it should be fixed, but for now, use getProcessIdsForPort(port)
+    const processIds = await getProcessIdsForPort(port);
+    const isRunning = processIds.length > 0;
+
+    return isRunning;
 }
 
 export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
