@@ -52,7 +52,7 @@ export function parseDebuggingMethod(text: string): DebuggingMethod {
 export async function runDevServer(commandLine: string, port?: number): Promise<void> {
     if (commandLine) {
         // if the dev server is running
-        if ((port !== undefined) && isDevServerRunning(port)) {
+        if ((port !== undefined) && await isDevServerRunning(port)) {
             console.log("The dev server is already running.");
         } else {
             // start the dev server
