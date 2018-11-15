@@ -4,7 +4,7 @@ import { DebuggingMethod } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
 import { getProcessIdsForPort } from "./port";
-import { startProcess, startDetachedProcess } from "./process";
+import { startDetachedProcess, startProcess  } from "./process";
 
 function defaultDebuggingMethod(): DebuggingMethod {
     switch (process.platform) {
@@ -208,7 +208,7 @@ export async function waitUntil(callback: (() => Promise<boolean>), retryCount: 
 
     while (!done && retryCount) {
         --retryCount;
-        delay(retryDelay);
+        await delay(retryDelay);
         done = await callback();
     }
 
