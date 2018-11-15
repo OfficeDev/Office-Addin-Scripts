@@ -34,7 +34,7 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const statusRunningResponse = `packager-status:running`;
 
     try {
-        console.log(`Is packager running? (${statusUrl})`);
+        // console.log(`Is packager running? (${statusUrl})`);
         const response = await fetch.default(statusUrl);
         console.log(`packager: ${response.status} ${response.statusText}`);
         const text = await response.text();
@@ -216,13 +216,9 @@ export async function waitUntil(callback: (() => Promise<boolean>), retryCount: 
 }
 
 export async function waitUntilDevServerIsRunning(port: number, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => {
-        return isDevServerRunning(port);
-    }, retryCount, retryDelay);
+    return waitUntil(async () => await isDevServerRunning(port), retryCount, retryDelay);
 }
 
 export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => {
-        return isPackagerRunning(statusUrl);
-    }, retryCount, retryDelay);
+    return waitUntil(async () => await isPackagerRunning(statusUrl), retryCount, retryDelay);
 }
