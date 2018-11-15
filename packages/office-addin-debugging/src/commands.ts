@@ -55,11 +55,12 @@ export async function start(manifestPath: string, command: commander.Command) {
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
         const debuggingMethod = parseDebuggingMethod(command.debugMethod);
         const devServerPort = parseDevServerPort(command.devServerPort);
+        const enableLiveReload: boolean = (command.liveReload === true);
 
         await startDebugging(manifestPath, debuggingMethod, sourceBundleUrlComponents,
             command.devServer, devServerPort,
             command.packager, command.packagerHost, command.PackagerPort,
-            command.sideload, command.debug, command.liveReload);
+            command.sideload, command.debug, enableLiveReload);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }

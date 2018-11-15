@@ -18,6 +18,7 @@ if (process.argv[1].endsWith("\\debugging.js")) {
         .option("--dev-server <command>", "Run the dev server.")
         .option("--dev-server-port <port>", "Verify the dev server is running using this port.")
         .option("--no-debug", "Start without debugging.")
+        .option("--no-live-reload", "Do not enable live-reload.")
         .option("--packager <command>", "Run the packager.")
         .option("--packager-host <host>")
         .option("--packager-port <port>")
@@ -26,7 +27,6 @@ if (process.argv[1].endsWith("\\debugging.js")) {
         .option("--source-bundle-url-port <port>")
         .option("--source-bundle-url-path <path>")
         .option("--source-bundle-url-extension <extension>")
-        .option("--live-reload")
         .action(commands.start);
 
     commander
