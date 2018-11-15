@@ -27,7 +27,8 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/debugging.js",
-      "args": [],
+      "args": ["start", "manifest.xml", "--debug-method", "direct", "--dev-server", "npm run dev-server", "--dev-server-port", "3000", "--sideload", "npm run sideload"],
+      "cwd": "C:\\dev\\git\\FHL\\Office-Addin-Templates\\TaskPane",
       "autoAttachChildProcesses": true
     }
   ]
