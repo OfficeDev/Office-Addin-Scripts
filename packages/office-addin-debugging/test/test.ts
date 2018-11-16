@@ -1,9 +1,7 @@
 import * as assert from "assert";
 import * as express from "express";
 import * as http from "http";
-import * as mocha from "mocha";
-import * as net from "net";
-import * as ws from "ws";
+import { after, before, describe, it } from "mocha";
 import * as port from "../src/port";
 
 function startServer(serverPort: number): http.Server {

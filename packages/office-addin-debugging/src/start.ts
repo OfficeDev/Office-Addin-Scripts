@@ -3,8 +3,8 @@ import * as devSettings from "office-addin-dev-settings";
 import { DebuggingMethod } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
-import { isPortInUse } from "./port";
-import { startProcess } from "./process";
+import { getProcessIdsForPort } from "./port";
+import { startDetachedProcess, startProcess  } from "./process";
 
 function defaultDebuggingMethod(): DebuggingMethod {
     switch (process.platform) {
@@ -22,14 +22,18 @@ function delay(milliseconds: number): Promise<void> {
 }
 
 export async function isDevServerRunning(port: number): Promise<boolean> {
-    return isPortInUse(port);
+    // isPortInUse(port) will return false when webpack-dev-server is running.
+    // it should be fixed, but for now, use getProcessIdsForPort(port)
+    const processIds = await getProcessIdsForPort(port);
+    const isRunning = processIds.length > 0;
+
+    return isRunning;
 }
 
 export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const statusRunningResponse = `packager-status:running`;
 
     try {
-        console.log(`Is packager running? (${statusUrl})`);
         const response = await fetch.default(statusUrl);
         console.log(`packager: ${response.status} ${response.statusText}`);
         const text = await response.text();
@@ -52,19 +56,21 @@ export function parseDebuggingMethod(text: string): DebuggingMethod {
 export async function runDevServer(commandLine: string, port?: number): Promise<void> {
     if (commandLine) {
         // if the dev server is running
-        if ((port !== undefined) && isDevServerRunning(port)) {
-            console.log("The dev server is already running.");
+        if ((port !== undefined) && await isDevServerRunning(port)) {
+            console.log(`The dev server is already running on port ${port}.`);
         } else {
             // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
-            startProcess(commandLine);
+            startDetachedProcess(commandLine);
 
             if (port !== undefined) {
                 // wait until the dev server is running
-                if (await waitUntilDevServerIsRunning(port)) {
-                    console.log(`The dev server is running.`);
+                const isRunning: boolean = await waitUntilDevServerIsRunning(port);
+
+                if (isRunning) {
+                    console.log(`The dev server is running on port ${port}.`);
                 } else {
-                    throw new Error("Unable to start the dev server.");
+                    throw new Error(`The dev server is not running on port ${port}.`);
                 }
             }
         }
@@ -73,6 +79,8 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
 
 export async function runNodeDebugger(host?: string, port?: string): Promise<void> {
     nodeDebugger.run(host, port);
+
+    console.log("The node debugger is running.");
 }
 
 export async function runPackager(commandLine: string, host: string = "localhost", port: string = "8081"): Promise<void> {
@@ -86,13 +94,13 @@ export async function runPackager(commandLine: string, host: string = "localhost
         } else {
             // start the packager
             console.log(`Starting the packager... (${commandLine})`);
-            startProcess(commandLine);
+            await startDetachedProcess(commandLine);
 
             // wait until the packager is running
             if (await waitUntilPackagerIsRunning(statusUrl)) {
                 console.log(`The packager is running. ${packagerUrl}`);
             } else {
-                throw new Error("Unable to start the packager.");
+                throw new Error(`The packager is not running. ${packagerUrl}`);
             }
         }
     }
@@ -125,14 +133,6 @@ export async function startDebugging(manifestPath: string,
         ? "Debugging is being started..."
         : "Starting without debugging...");
 
-    if (packagerCommandLine) {
-        packagerPromise = runPackager(packagerCommandLine, packagerHost, packagerPort);
-    }
-
-    if (devServerCommandLine) {
-        devServerPromise = runDevServer(devServerCommandLine, devServerPort);
-    }
-
     const manifestInfo = await manifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
@@ -156,10 +156,17 @@ export async function startDebugging(manifestPath: string,
         await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
     }
 
+    if (packagerCommandLine) {
+        packagerPromise = runPackager(packagerCommandLine, packagerHost, packagerPort);
+    }
+
+    if (devServerCommandLine) {
+        devServerPromise = runDevServer(devServerCommandLine, devServerPort);
+    }
+
     if (packagerPromise !== undefined) {
         try {
             await packagerPromise;
-            console.log(`Started the packager.`);
         } catch (err) {
             console.log(`Unable to start the packager. ${err}`);
         }
@@ -168,7 +175,6 @@ export async function startDebugging(manifestPath: string,
     if (devServerPromise !== undefined) {
         try {
             await devServerPromise;
-            console.log(`Started the dev server.`);
         } catch (err) {
             console.log(`Unable to start the dev server. ${err}`);
         }
@@ -177,7 +183,6 @@ export async function startDebugging(manifestPath: string,
     if (enableDebugging && (debuggingMethod === DebuggingMethod.Web)) {
         try {
             await runNodeDebugger();
-            console.log(`Started the node debugger.`);
         } catch (err) {
             console.log(`Unable to start the node debugger. ${err}`);
         }
@@ -202,21 +207,17 @@ export async function waitUntil(callback: (() => Promise<boolean>), retryCount: 
 
     while (!done && retryCount) {
         --retryCount;
-        delay(retryDelay);
+        await delay(retryDelay);
         done = await callback();
     }
 
     return done;
 }
 
-export async function waitUntilDevServerIsRunning(port: number, retryCount: number = 10, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => {
-        return isDevServerRunning(port);
-    }, retryCount, retryDelay);
+export async function waitUntilDevServerIsRunning(port: number, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
+    return waitUntil(async () => await isDevServerRunning(port), retryCount, retryDelay);
 }
 
 export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(() => {
-        return isPackagerRunning(statusUrl);
-    }, retryCount, retryDelay);
+    return waitUntil(async () => await isPackagerRunning(statusUrl), retryCount, retryDelay);
 }
