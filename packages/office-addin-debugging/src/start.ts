@@ -34,7 +34,6 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const statusRunningResponse = `packager-status:running`;
 
     try {
-        // console.log(`Is packager running? (${statusUrl})`);
         const response = await fetch.default(statusUrl);
         console.log(`packager: ${response.status} ${response.statusText}`);
         const text = await response.text();
