@@ -5,7 +5,7 @@ import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
-type Xml = any;
+type Xml = xmlMethods.Xml;
 
 export class ManifestInfo {
   public id?: string;
