@@ -1,0 +1,1244 @@
+<?xml version="1.0" encoding="UTF-8"?><OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
+  <Id>8bc018e3-f345-40d4-8f1d-97951765d531</Id>
+  <Version>1.3.2.0</Version>
+  <ProviderName>Microsoft</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Script Lab"/>
+  <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint.">
+    <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+    <Override Locale="de-at" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+    <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+    <Override Locale="es-ar" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-bo" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-cl" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-co" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-cr" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-do" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-ec" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-sv" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-gt" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-hn" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-mx" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-ni" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-pa" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-py" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-pe" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-pr" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-es" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-uy" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="es-mx" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="zh-cn" Value="在Excel,Word和PowerPoint中创建、运行和共享您的Office添加代码片段。"/>
+  </Description>
+  <IconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-64.png"/>
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues"/>
+  <AppDomains>
+    <AppDomain>https://github.com</AppDomain>
+    <AppDomain>https://stackoverflow.com</AppDomain>
+    <AppDomain>https://dev.office.com</AppDomain>
+    <AppDomain>https://localhost:3000</AppDomain>
+    <AppDomain>https://localhost:3200</AppDomain>
+    <AppDomain>https://script-lab.azureedge.net</AppDomain>
+    <AppDomain>https://script-lab-runner.azureedge.net</AppDomain>
+    <AppDomain>https://bornholm-edge.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-edge.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-insiders.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-staging.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-staging.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner.azurewebsites.net</AppDomain>
+    <AppDomain>https://script-lab-react-alpha.azurewebsites.net</AppDomain>
+    <AppDomain>https://script-lab-react-beta.azurewebsites.net</AppDomain>
+    <AppDomain>https://script-lab-react-server-alpha.azurewebsites.net</AppDomain>
+    <AppDomain>https://script-lab-react-server-beta.azurewebsites.net</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Workbook"/>
+    <Host Name="Document"/>
+    <Host Name="Presentation"/>
+    <Host Name="Project"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://script-lab.azureedge.net"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Description resid="PG.Description"/>
+    <Hosts>
+      <Host xsi:type="Workbook">
+        <AllFormFactors>
+          <ExtensionPoint xsi:type="CustomFunctions">
+            <Script>
+              <SourceLocation resid="PG.CFRunner.Script"/>
+            </Script>
+            <Page>
+              <SourceLocation resid="PG.CFRunner.Url"/>
+            </Page>
+            <Metadata>
+              <SourceLocation resid="PG.CFRunner.Metadata"/>
+            </Metadata>
+            <Namespace resid="PG.CFNamespace"/>
+          </ExtensionPoint>
+        </AllFormFactors>
+        <DesktopFormFactor>
+          <FunctionFile resid="PG.Functions.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="TabPlayground">
+              <Group id="PG.PlayGroup">
+                <Label resid="PG.GroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.CodeCommand">
+                  <Label resid="PG.CodeCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.CodeCommand.TipTitle"/>
+                    <Description resid="PG.CodeSupertip.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Code.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Code.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Code.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Office.AutoShowTaskpaneWithDocument</TaskpaneId>
+                    <SourceLocation resid="PG.Code.Url"/>
+                    <Title resid="PG.CodeCommand.Title"/>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.RunCommand">
+                  <Label resid="PG.RunCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.RunCommand.TipTitle"/>
+                    <Description resid="PG.RunSupertip.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Run.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Run.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Run.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Run</TaskpaneId>
+                    <SourceLocation resid="PG.Run.Url"/>
+                    <Title resid="PG.RunCommand.Title"/>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.CFCommand">
+                  <Label resid="PG.CFCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.CFCommand.TipTitle"/>
+                    <Description resid="PG.CFSupertip.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.CF.16"/>
+                    <bt:Image size="32" resid="PG.Icon.CF.32"/>
+                    <bt:Image size="80" resid="PG.Icon.CF.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <!-- Use the same "Run" tab title and taskpane ID, but pointing at a different URL -->
+                    <TaskpaneId>Run</TaskpaneId>
+                    <SourceLocation resid="PG.CF.Url"/>
+                    <Title resid="PG.RunCommand.Title"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle"/>
+                    <Description resid="PG.TutorialCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.HelpCommand">
+                  <Label resid="PG.HelpCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.HelpCommand.TipTitle"/>
+                    <Description resid="PG.HelpCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Help.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Help.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Help.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchHelp</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle"/>
+                    <Description resid="PG.ApiDocsCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16"/>
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32"/>
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle"/>
+                    <Description resid="PG.AskCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Ask.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Ask.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="PG.TabLabel"/>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <FunctionFile resid="PG.Functions.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="TabPlayground">
+              <Group id="PG.PlayGroup">
+                <Label resid="PG.GroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.CodeCommand">
+                  <Label resid="PG.CodeCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.CodeCommand.TipTitle"/>
+                    <Description resid="PG.CodeSupertip.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Code.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Code.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Code.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Office.AutoShowTaskpaneWithDocument</TaskpaneId>
+                    <SourceLocation resid="PG.Code.Url"/>
+                    <Title resid="PG.CodeCommand.Title"/>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.RunCommand">
+                  <Label resid="PG.RunCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.RunCommand.TipTitle"/>
+                    <Description resid="PG.RunSupertip.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Run.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Run.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Run.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="PG.Run.Url"/>
+                    <Title resid="PG.RunCommand.Title"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle"/>
+                    <Description resid="PG.TutorialCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.HelpCommand">
+                  <Label resid="PG.HelpCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.HelpCommand.TipTitle"/>
+                    <Description resid="PG.HelpCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Help.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Help.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Help.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchHelp</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle"/>
+                    <Description resid="PG.ApiDocsCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16"/>
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32"/>
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle"/>
+                    <Description resid="PG.AskCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Ask.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Ask.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="PG.TabLabel"/>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <FunctionFile resid="PG.Functions.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="TabPlayground">
+              <Group id="PG.PlayGroup">
+                <Label resid="PG.GroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.CodeCommand">
+                  <Label resid="PG.CodeCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.CodeCommand.TipTitle"/>
+                    <Description resid="PG.CodeSupertip.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Code.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Code.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Code.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Office.AutoShowTaskpaneWithDocument</TaskpaneId>
+                    <SourceLocation resid="PG.Code.Url"/>
+                    <Title resid="PG.CodeCommand.Title"/>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.RunCommand">
+                  <Label resid="PG.RunCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.RunCommand.TipTitle"/>
+                    <Description resid="PG.RunSupertip.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Run.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Run.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Run.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="PG.Run.Url"/>
+                    <Title resid="PG.RunCommand.Title"/>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle"/>
+                    <Description resid="PG.TutorialCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.HelpCommand">
+                  <Label resid="PG.HelpCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.HelpCommand.TipTitle"/>
+                    <Description resid="PG.HelpCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Help.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Help.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Help.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchHelp</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16"/>
+                  <bt:Image size="32" resid="PG.Icon.32"/>
+                  <bt:Image size="80" resid="PG.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle"/>
+                    <Description resid="PG.ApiDocsCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16"/>
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32"/>
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label"/>
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle"/>
+                    <Description resid="PG.AskCommand.Desc"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16"/>
+                    <bt:Image size="32" resid="PG.Icon.Ask.32"/>
+                    <bt:Image size="80" resid="PG.Icon.Ask.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="PG.TabLabel"/>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="PG.Icon.16" DefaultValue="https://script-lab.azureedge.net/assets/images/icon-16.png"/>
+        <bt:Image id="PG.Icon.32" DefaultValue="https://script-lab.azureedge.net/assets/images/icon-32.png"/>
+        <bt:Image id="PG.Icon.80" DefaultValue="https://script-lab.azureedge.net/assets/images/icon-80.png"/>
+        <bt:Image id="PG.Icon.Code.16" DefaultValue="https://script-lab.azureedge.net/assets/images/code-16.png"/>
+        <bt:Image id="PG.Icon.Code.32" DefaultValue="https://script-lab.azureedge.net/assets/images/code-32.png"/>
+        <bt:Image id="PG.Icon.Code.80" DefaultValue="https://script-lab.azureedge.net/assets/images/code-80.png"/>
+        <bt:Image id="PG.Icon.Run.16" DefaultValue="https://script-lab.azureedge.net/assets/images/run-16.png"/>
+        <bt:Image id="PG.Icon.Run.32" DefaultValue="https://script-lab.azureedge.net/assets/images/run-32.png"/>
+        <bt:Image id="PG.Icon.Run.80" DefaultValue="https://script-lab.azureedge.net/assets/images/run-80.png"/>
+        <bt:Image id="PG.Icon.CF.16" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-16.png"/>
+        <bt:Image id="PG.Icon.CF.32" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-32.png"/>
+        <bt:Image id="PG.Icon.CF.80" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-80.png"/>
+        <bt:Image id="PG.Icon.Tutorial.16" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-16.png"/>
+        <bt:Image id="PG.Icon.Tutorial.32" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-32.png"/>
+        <bt:Image id="PG.Icon.Tutorial.80" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-80.png"/>
+        <bt:Image id="PG.Icon.Help.16" DefaultValue="https://script-lab.azureedge.net/assets/images/help-16.png"/>
+        <bt:Image id="PG.Icon.Help.32" DefaultValue="https://script-lab.azureedge.net/assets/images/help-32.png"/>
+        <bt:Image id="PG.Icon.Help.80" DefaultValue="https://script-lab.azureedge.net/assets/images/help-80.png"/>
+        <bt:Image id="PG.Icon.ApiDocs.16" DefaultValue="https://script-lab.azureedge.net/assets/images/docs-16.png"/>
+        <bt:Image id="PG.Icon.ApiDocs.32" DefaultValue="https://script-lab.azureedge.net/assets/images/docs-32.png"/>
+        <bt:Image id="PG.Icon.ApiDocs.80" DefaultValue="https://script-lab.azureedge.net/assets/images/docs-80.png"/>
+        <bt:Image id="PG.Icon.Ask.16" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-16.png"/>
+        <bt:Image id="PG.Icon.Ask.32" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-32.png"/>
+        <bt:Image id="PG.Icon.Ask.80" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-80.png"/>
+        <bt:Image id="PG.Icon.Ask.16" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-16.png"/>
+        <bt:Image id="PG.Icon.Ask.32" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-32.png"/>
+        <bt:Image id="PG.Icon.Ask.80" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="PG.Code.Url" DefaultValue="https://script-lab.azureedge.net?commands=1"/>
+        <bt:Url id="PG.CF.Url" DefaultValue="https://script-lab.azureedge.net/custom-functions.html"/>
+        <bt:Url id="PG.Run.Url" DefaultValue="https://script-lab.azureedge.net/run.html"/>
+        <bt:Url id="PG.Functions.Url" DefaultValue="https://script-lab.azureedge.net/functions.html"/>
+        <bt:Url id="PG.CFRunner.Url" DefaultValue="https://script-lab.azureedge.net/custom-functions-run.html"/>
+        <bt:Url id="PG.CFRunner.Script" DefaultValue="https://script-lab.azureedge.net/assets/custom-functions/functions.js"/>
+        <bt:Url id="PG.CFRunner.Metadata" DefaultValue="https://script-lab.azureedge.net/assets/custom-functions/functions.json"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="PG.TabLabel" DefaultValue="Script Lab"/>
+        <bt:String id="PG.GroupLabel" DefaultValue="Script"/>
+        <bt:String id="PG.AboutGroupLabel" DefaultValue="About Script Lab">
+          <bt:Override Locale="de-de" Value="Über Script Lab"/>
+          <bt:Override Locale="de-ch" Value="Über Script Lab"/>
+          <bt:Override Locale="de-at" Value="Über Script Lab"/>
+          <bt:Override Locale="es-ar" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-bo" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-cl" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-co" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-cr" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-do" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-ec" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-sv" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-gt" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-hn" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-mx" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-ni" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-pa" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-py" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-pe" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-pr" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-es" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-uy" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="es-mx" Value="Acerca de Script Lab"/>
+          <bt:Override Locale="zh-cn" Value="关于Script Lab"/>
+        </bt:String>
+        <bt:String id="PG.ApiGroupLabel" DefaultValue="About the APIs">
+          <bt:Override Locale="de-de" Value="Über die APIs"/>
+          <bt:Override Locale="de-ch" Value="Über die APIs"/>
+          <bt:Override Locale="de-at" Value="Über die APIs"/>
+          <bt:Override Locale="es-ar" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-bo" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-cl" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-co" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-cr" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-do" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-ec" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-sv" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-gt" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-hn" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-mx" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-ni" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-pa" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-py" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-pe" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-pr" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-es" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-uy" Value="Acerca de las APIs"/>
+          <bt:Override Locale="es-mx" Value="Acerca de las APIs"/>
+          <bt:Override Locale="zh-cn" Value="关于APIs"/>
+        </bt:String>
+        <bt:String id="PG.CodeCommand.Label" DefaultValue="Code"/>
+        <bt:String id="PG.CodeCommand.Title" DefaultValue="Code"/>
+        <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets">
+          <bt:Override Locale="de-de" Value="Erstellen oder Editieren von Code-Schnipseln"/>
+          <bt:Override Locale="de-ch" Value="Erstellen oder Editieren von Code-Schnipseln"/>
+          <bt:Override Locale="de-at" Value="Erstellen oder Editieren von Code-Schnipseln"/>
+          <bt:Override Locale="es-ar" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-bo" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-cl" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-co" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-cr" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-do" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-ec" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-sv" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-gt" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-hn" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-mx" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-ni" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-pa" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-py" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-pe" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-pr" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-es" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-uy" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="es-mx" Value="Crea o edita fragmentos de código"/>
+          <bt:Override Locale="zh-cn" Value="创建或编辑代码段"/>
+        </bt:String>
+        <bt:String id="PG.CFCommand.Label" DefaultValue="Functions">
+          <bt:Override Locale="de-de" Value="Funktionen"/>
+          <bt:Override Locale="de-ch" Value="Funktionen"/>
+          <bt:Override Locale="de-at" Value="Funktionen"/>
+        </bt:String>
+        <bt:String id="PG.CFCommand.Title" DefaultValue="Functions">
+          <bt:Override Locale="de-de" Value="Funktionen"/>
+          <bt:Override Locale="de-ch" Value="Funktionen"/>
+          <bt:Override Locale="de-at" Value="Funktionen"/>
+        </bt:String>
+        <bt:String id="PG.CFCommand.TipTitle" DefaultValue="Launch the Custom Functions dashboard">
+          <bt:Override Locale="de-de" Value="Benutzerdefinierte Funktionen"/>
+          <bt:Override Locale="de-ch" Value="Benutzerdefinierte Funktionen"/>
+          <bt:Override Locale="de-at" Value="Benutzerdefinierte Funktionen"/>
+        </bt:String>
+        <bt:String id="PG.RunCommand.Label" DefaultValue="Run">
+          <bt:Override Locale="de-de" Value="Ausführen"/>
+          <bt:Override Locale="de-ch" Value="Ausführen"/>
+          <bt:Override Locale="de-at" Value="Ausführen"/>
+          <bt:Override Locale="es-ar" Value="Ejecutar"/>
+          <bt:Override Locale="es-bo" Value="Ejecutar"/>
+          <bt:Override Locale="es-cl" Value="Ejecutar"/>
+          <bt:Override Locale="es-co" Value="Ejecutar"/>
+          <bt:Override Locale="es-cr" Value="Ejecutar"/>
+          <bt:Override Locale="es-do" Value="Ejecutar"/>
+          <bt:Override Locale="es-ec" Value="Ejecutar"/>
+          <bt:Override Locale="es-sv" Value="Ejecutar"/>
+          <bt:Override Locale="es-gt" Value="Ejecutar"/>
+          <bt:Override Locale="es-hn" Value="Ejecutar"/>
+          <bt:Override Locale="es-mx" Value="Ejecutar"/>
+          <bt:Override Locale="es-ni" Value="Ejecutar"/>
+          <bt:Override Locale="es-pa" Value="Ejecutar"/>
+          <bt:Override Locale="es-py" Value="Ejecutar"/>
+          <bt:Override Locale="es-pe" Value="Ejecutar"/>
+          <bt:Override Locale="es-pr" Value="Ejecutar"/>
+          <bt:Override Locale="es-es" Value="Ejecutar"/>
+          <bt:Override Locale="es-uy" Value="Ejecutar"/>
+          <bt:Override Locale="es-mx" Value="Ejecutar"/>
+          <bt:Override Locale="zh-cn" Value="运行"/>
+        </bt:String>
+        <bt:String id="PG.RunCommand.Title" DefaultValue="Run">
+          <bt:Override Locale="de-de" Value="Ausführen"/>
+          <bt:Override Locale="de-ch" Value="Ausführen"/>
+          <bt:Override Locale="de-at" Value="Ausführen"/>
+          <bt:Override Locale="es-ar" Value="Ejecutar"/>
+          <bt:Override Locale="es-bo" Value="Ejecutar"/>
+          <bt:Override Locale="es-cl" Value="Ejecutar"/>
+          <bt:Override Locale="es-co" Value="Ejecutar"/>
+          <bt:Override Locale="es-cr" Value="Ejecutar"/>
+          <bt:Override Locale="es-do" Value="Ejecutar"/>
+          <bt:Override Locale="es-ec" Value="Ejecutar"/>
+          <bt:Override Locale="es-sv" Value="Ejecutar"/>
+          <bt:Override Locale="es-gt" Value="Ejecutar"/>
+          <bt:Override Locale="es-hn" Value="Ejecutar"/>
+          <bt:Override Locale="es-mx" Value="Ejecutar"/>
+          <bt:Override Locale="es-ni" Value="Ejecutar"/>
+          <bt:Override Locale="es-pa" Value="Ejecutar"/>
+          <bt:Override Locale="es-py" Value="Ejecutar"/>
+          <bt:Override Locale="es-pe" Value="Ejecutar"/>
+          <bt:Override Locale="es-pr" Value="Ejecutar"/>
+          <bt:Override Locale="es-es" Value="Ejecutar"/>
+          <bt:Override Locale="es-uy" Value="Ejecutar"/>
+          <bt:Override Locale="es-mx" Value="Ejecutar"/>
+          <bt:Override Locale="zh-cn" Value="运行"/>
+        </bt:String>
+        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run the code snippet">
+          <bt:Override Locale="de-de" Value="Code-Schnipsel ausführen"/>
+          <bt:Override Locale="de-ch" Value="Code-Schnipsel ausführen"/>
+          <bt:Override Locale="de-at" Value="Code-Schnipsel ausführen"/>
+          <bt:Override Locale="es-ar" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-bo" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-cl" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-co" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-cr" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-do" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-ec" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-sv" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-gt" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-hn" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-mx" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-ni" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-pa" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-py" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-pe" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-pr" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-es" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-uy" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="es-mx" Value="Ejecuta el fragmento de código"/>
+          <bt:Override Locale="zh-cn" Value="运行代码片段"/>
+        </bt:String>
+        <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial"/>
+        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Script Lab tutorial">
+          <bt:Override Locale="de-de" Value="Tutorial zu Script Lab"/>
+          <bt:Override Locale="de-ch" Value="Tutorial zu Script Lab"/>
+          <bt:Override Locale="de-at" Value="Tutorial zu Script Lab"/>
+          <bt:Override Locale="es-ar" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-bo" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-cl" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-co" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-cr" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-do" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-ec" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-sv" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-gt" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-hn" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-mx" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-ni" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-pa" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-py" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-pe" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-pr" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-es" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-uy" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="es-mx" Value="Tutorial de Script Lab"/>
+          <bt:Override Locale="zh-cn" Value="Script Lab教程"/>
+        </bt:String>
+        <bt:String id="PG.HelpCommand.Label" DefaultValue="Help">
+          <bt:Override Locale="de-de" Value="Hilfe"/>
+          <bt:Override Locale="de-ch" Value="Hilfe"/>
+          <bt:Override Locale="de-at" Value="Hilfe"/>
+          <bt:Override Locale="es-ar" Value="Ayuda"/>
+          <bt:Override Locale="es-bo" Value="Ayuda"/>
+          <bt:Override Locale="es-cl" Value="Ayuda"/>
+          <bt:Override Locale="es-co" Value="Ayuda"/>
+          <bt:Override Locale="es-cr" Value="Ayuda"/>
+          <bt:Override Locale="es-do" Value="Ayuda"/>
+          <bt:Override Locale="es-ec" Value="Ayuda"/>
+          <bt:Override Locale="es-sv" Value="Ayuda"/>
+          <bt:Override Locale="es-gt" Value="Ayuda"/>
+          <bt:Override Locale="es-hn" Value="Ayuda"/>
+          <bt:Override Locale="es-mx" Value="Ayuda"/>
+          <bt:Override Locale="es-ni" Value="Ayuda"/>
+          <bt:Override Locale="es-pa" Value="Ayuda"/>
+          <bt:Override Locale="es-py" Value="Ayuda"/>
+          <bt:Override Locale="es-pe" Value="Ayuda"/>
+          <bt:Override Locale="es-pr" Value="Ayuda"/>
+          <bt:Override Locale="es-es" Value="Ayuda"/>
+          <bt:Override Locale="es-uy" Value="Ayuda"/>
+          <bt:Override Locale="es-mx" Value="Ayuda"/>
+          <bt:Override Locale="zh-cn" Value="帮助"/>
+        </bt:String>
+        <bt:String id="PG.HelpCommand.TipTitle" DefaultValue="Help for Script Lab">
+          <bt:Override Locale="de-de" Value="Hilfe zu Script Lab"/>
+          <bt:Override Locale="de-ch" Value="Hilfe zu Script Lab"/>
+          <bt:Override Locale="de-at" Value="Hilfe zu Script Lab"/>
+          <bt:Override Locale="es-ar" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-bo" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-cl" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-co" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-cr" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-do" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-ec" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-sv" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-gt" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-hn" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-mx" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-ni" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-pa" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-py" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-pe" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-pr" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-es" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-uy" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="es-mx" Value="Ayuda de Script Lab"/>
+          <bt:Override Locale="zh-cn" Value="帮助Script Lab"/>
+        </bt:String>
+        <bt:String id="PG.ApiDocsCommand.Label" DefaultValue="Reference Docs">
+          <bt:Override Locale="de-de" Value="Dokumentation"/>
+          <bt:Override Locale="de-ch" Value="Dokumentation"/>
+          <bt:Override Locale="de-at" Value="Dokumentation"/>
+          <bt:Override Locale="es-ar" Value="Documentación"/>
+          <bt:Override Locale="es-bo" Value="Documentación"/>
+          <bt:Override Locale="es-cl" Value="Documentación"/>
+          <bt:Override Locale="es-co" Value="Documentación"/>
+          <bt:Override Locale="es-cr" Value="Documentación"/>
+          <bt:Override Locale="es-do" Value="Documentación"/>
+          <bt:Override Locale="es-ec" Value="Documentación"/>
+          <bt:Override Locale="es-sv" Value="Documentación"/>
+          <bt:Override Locale="es-gt" Value="Documentación"/>
+          <bt:Override Locale="es-hn" Value="Documentación"/>
+          <bt:Override Locale="es-mx" Value="Documentación"/>
+          <bt:Override Locale="es-ni" Value="Documentación"/>
+          <bt:Override Locale="es-pa" Value="Documentación"/>
+          <bt:Override Locale="es-py" Value="Documentación"/>
+          <bt:Override Locale="es-pe" Value="Documentación"/>
+          <bt:Override Locale="es-pr" Value="Documentación"/>
+          <bt:Override Locale="es-es" Value="Documentación"/>
+          <bt:Override Locale="es-uy" Value="Documentación"/>
+          <bt:Override Locale="es-mx" Value="Documentación"/>
+          <bt:Override Locale="zh-cn" Value="参考文档"/>
+        </bt:String>
+        <bt:String id="PG.ApiDocsCommand.TipTitle" DefaultValue="API Reference Documentation">
+          <bt:Override Locale="de-de" Value="API-Dokumentation"/>
+          <bt:Override Locale="de-ch" Value="API-Dokumentation"/>
+          <bt:Override Locale="de-at" Value="API-Dokumentation"/>
+          <bt:Override Locale="es-ar" Value="Documentación de la API"/>
+          <bt:Override Locale="es-bo" Value="Documentación de la API"/>
+          <bt:Override Locale="es-cl" Value="Documentación de la API"/>
+          <bt:Override Locale="es-co" Value="Documentación de la API"/>
+          <bt:Override Locale="es-cr" Value="Documentación de la API"/>
+          <bt:Override Locale="es-do" Value="Documentación de la API"/>
+          <bt:Override Locale="es-ec" Value="Documentación de la API"/>
+          <bt:Override Locale="es-sv" Value="Documentación de la API"/>
+          <bt:Override Locale="es-gt" Value="Documentación de la API"/>
+          <bt:Override Locale="es-hn" Value="Documentación de la API"/>
+          <bt:Override Locale="es-mx" Value="Documentación de la API"/>
+          <bt:Override Locale="es-ni" Value="Documentación de la API"/>
+          <bt:Override Locale="es-pa" Value="Documentación de la API"/>
+          <bt:Override Locale="es-py" Value="Documentación de la API"/>
+          <bt:Override Locale="es-pe" Value="Documentación de la API"/>
+          <bt:Override Locale="es-pr" Value="Documentación de la API"/>
+          <bt:Override Locale="es-es" Value="Documentación de la API"/>
+          <bt:Override Locale="es-uy" Value="Documentación de la API"/>
+          <bt:Override Locale="es-mx" Value="Documentación de la API"/>
+          <bt:Override Locale="zh-cn" Value="API参考文案"/>
+        </bt:String>
+        <bt:String id="PG.AskCommand.Label" DefaultValue="Ask the Community">
+          <bt:Override Locale="de-de" Value="Community"/>
+          <bt:Override Locale="de-ch" Value="Community"/>
+          <bt:Override Locale="de-at" Value="Community"/>
+          <bt:Override Locale="es-ar" Value="Comunidad"/>
+          <bt:Override Locale="es-bo" Value="Comunidad"/>
+          <bt:Override Locale="es-cl" Value="Comunidad"/>
+          <bt:Override Locale="es-co" Value="Comunidad"/>
+          <bt:Override Locale="es-cr" Value="Comunidad"/>
+          <bt:Override Locale="es-do" Value="Comunidad"/>
+          <bt:Override Locale="es-ec" Value="Comunidad"/>
+          <bt:Override Locale="es-sv" Value="Comunidad"/>
+          <bt:Override Locale="es-gt" Value="Comunidad"/>
+          <bt:Override Locale="es-hn" Value="Comunidad"/>
+          <bt:Override Locale="es-mx" Value="Comunidad"/>
+          <bt:Override Locale="es-ni" Value="Comunidad"/>
+          <bt:Override Locale="es-pa" Value="Comunidad"/>
+          <bt:Override Locale="es-py" Value="Comunidad"/>
+          <bt:Override Locale="es-pe" Value="Comunidad"/>
+          <bt:Override Locale="es-pr" Value="Comunidad"/>
+          <bt:Override Locale="es-es" Value="Comunidad"/>
+          <bt:Override Locale="es-uy" Value="Comunidad"/>
+          <bt:Override Locale="es-mx" Value="Comunidad"/>
+          <bt:Override Locale="zh-cn" Value="问社区"/>
+        </bt:String>
+        <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API help from the community">
+          <bt:Override Locale="de-de" Value="Unterstützung durch die Community"/>
+          <bt:Override Locale="de-ch" Value="Unterstützung durch die Community"/>
+          <bt:Override Locale="de-at" Value="Unterstützung durch die Community"/>
+          <bt:Override Locale="es-ar" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-bo" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-cl" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-co" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-cr" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-do" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-ec" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-sv" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-gt" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-hn" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-mx" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-ni" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-pa" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-py" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-pe" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-pr" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-es" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-uy" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="es-mx" Value="Obtén ayuda de nuestra comunidad"/>
+          <bt:Override Locale="zh-cn" Value="从社区获取API帮助"/>
+        </bt:String>
+        <bt:String id="PG.CFNamespace" DefaultValue="SCRIPTLAB"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor">
+          <bt:Override Locale="de-de" Value="Den Script Lab Code-Editor aufrufen."/>
+          <bt:Override Locale="de-ch" Value="Den Script Lab Code-Editor aufrufen."/>
+          <bt:Override Locale="de-at" Value="Den Script Lab Code-Editor aufrufen."/>
+          <bt:Override Locale="es-ar" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-bo" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-cl" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-co" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-cr" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-do" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-ec" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-sv" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-gt" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-hn" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-mx" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-ni" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-pa" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-py" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-pe" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-pr" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-es" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-uy" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="es-mx" Value="Abre el editor de código de Script Lab."/>
+          <bt:Override Locale="zh-cn" Value="打开Script Lab代码编辑器"/>
+        </bt:String>
+        <bt:String id="PG.CFSupertip.Desc" DefaultValue="Launch the Custom Functions dashboard">
+          <bt:Override Locale="de-de" Value="Den Aufgabenbereich zu den benutzerdefinierten Funktionen aufrufen."/>
+          <bt:Override Locale="de-ch" Value="Den Aufgabenbereich zu den benutzerdefinierten Funktionen aufrufen."/>
+          <bt:Override Locale="de-at" Value="Den Aufgabenbereich zu den benutzerdefinierten Funktionen aufrufen."/>
+        </bt:String>
+        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet">
+          <bt:Override Locale="de-de" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>
+          <bt:Override Locale="de-ch" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>
+          <bt:Override Locale="de-at" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>
+          <bt:Override Locale="es-ar" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-bo" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-cl" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-co" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-cr" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-do" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-ec" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-sv" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-gt" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-hn" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-mx" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-ni" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-pa" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-py" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-pe" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-pr" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-es" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-uy" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="es-mx" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <bt:Override Locale="zh-cn" Value="打开运行当前代码段的任务窗格"/>
+        </bt:String>
+        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial">
+          <bt:Override Locale="de-de" Value="Ein Tutorial zu Script Lab aufrufen."/>
+          <bt:Override Locale="de-ch" Value="Ein Tutorial zu Script Lab aufrufen."/>
+          <bt:Override Locale="de-at" Value="Ein Tutorial zu Script Lab aufrufen."/>
+          <bt:Override Locale="es-ar" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-bo" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-cl" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-co" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-cr" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-do" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-ec" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-sv" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-gt" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-hn" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-mx" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-ni" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-pa" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-py" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-pe" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-pr" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-es" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-uy" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="es-mx" Value="Abre un breve tutorial de Script Lab."/>
+          <bt:Override Locale="zh-cn" Value="快速启动Script Lab教程"/>
+        </bt:String>
+        <bt:String id="PG.HelpCommand.Desc" DefaultValue="Launches documentation on using Script Lab">
+          <bt:Override Locale="de-de" Value="Die Dokumentation zu Script Lab aufrufen."/>
+          <bt:Override Locale="de-ch" Value="Die Dokumentation zu Script Lab aufrufen."/>
+          <bt:Override Locale="de-at" Value="Die Dokumentation zu Script Lab aufrufen."/>
+          <bt:Override Locale="es-ar" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-bo" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-cl" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-co" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-cr" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-do" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-ec" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-sv" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-gt" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-hn" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-mx" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-ni" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-pa" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-py" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-pe" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-pr" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-es" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-uy" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="es-mx" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <bt:Override Locale="zh-cn" Value="使用Script Lab发布文档"/>
+        </bt:String>
+        <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running">
+          <bt:Override Locale="de-de" Value="Die JavaScript API-Dokumentation (Englisch) für die aktuelle Office-Anwendung aufrufen."/>
+          <bt:Override Locale="de-ch" Value="Die JavaScript API-Dokumentation (Englisch) für die aktuelle Office-Anwendung aufrufen."/>
+          <bt:Override Locale="de-at" Value="Die JavaScript API-Dokumentation (Englisch) für die aktuelle Office-Anwendung aufrufen."/>
+          <bt:Override Locale="es-ar" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-bo" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-cl" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-co" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-cr" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-do" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-ec" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-sv" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-gt" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-hn" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-mx" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-ni" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-pa" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-py" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-pe" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-pr" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-es" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-uy" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="es-mx" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <bt:Override Locale="zh-cn" Value="打开正在运行的Office应用程序的API文档"/>
+        </bt:String>
+        <bt:String id="PG.AskCommand.Desc" DefaultValue="Launches a community forum for questions about the Office JavaScript APIs">
+          <bt:Override Locale="de-de" Value="Ein Community-Forum (Englisch) für Fragen und Antworten rund um das Office JavaScript API aufrufen."/>
+          <bt:Override Locale="de-ch" Value="Ein Community-Forum (Englisch) für Fragen und Antworten rund um das Office JavaScript API aufrufen."/>
+          <bt:Override Locale="de-at" Value="Ein Community-Forum (Englisch) für Fragen und Antworten rund um das Office JavaScript API aufrufen."/>
+          <bt:Override Locale="es-ar" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-bo" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-cl" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-co" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-cr" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-do" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-ec" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-sv" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-gt" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-hn" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-mx" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-ni" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-pa" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-py" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-pe" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-pr" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-es" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-uy" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="es-mx" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <bt:Override Locale="zh-cn" Value="启动一个社区论坛，讨论有关Office JavaScript API的问题"/>
+        </bt:String>
+        <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office.">
+          <bt:Override Locale="de-de" Value="Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <bt:Override Locale="de-ch" Value="Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <bt:Override Locale="de-at" Value="Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <bt:Override Locale="es-ar" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-bo" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-cl" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-co" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-cr" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-do" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-ec" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-sv" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-gt" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-hn" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-mx" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-ni" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-pa" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-py" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-pe" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-pr" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-es" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-uy" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="es-mx" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <bt:Override Locale="zh-cn" Value="直接从Office中编码、运行和共享附加代码片段。"/>
+        </bt:String>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>z2jWvv/sopMKCl6CzeED51cqcVA=</DigestValue></Reference></SignedInfo><SignatureValue>
+    hAB6hCKlrP6DD54ArkNUjbBbqJQhuDeTgvADR4DIk5jl3cMOgAwhMpyCmKVhpEBr/S1lJkPF
+    w8CZOBynljWj79vXBd+1esnirKpWE9PwVldhIFBe4gK16OuLdBcBvOOTjolTGBQn1ssLqRp9
+    1nBGCpbZxaSc0Deh0oyX5xUS8apuWNG4K7tUmSWuSSMojAWy9R3xjw4SryJMDIzKbuHhYpJJ
+    AB/P7O7hp0t0DeaYRqMNnSOqo371s2n56hOoWivzEPnll/e88Exn8ACG7RNUvf+gAdR74km8
+    xXnk0x18GIFmG0xLM8F4MvpnyhKWmlZouiZMQwMnVqqise7RvaVQpA==
+  </SignatureValue><KeyInfo>
+      <KeyValue>
+        <RSAKeyValue>
+          <Modulus>
+            1ssTyis79VLYvRCacWahxAB367/CpxNUkDWYCrW68WshjSi96G0LvimtWe48+N0Hs0aDMCvN
+            CO627g//FWK85HCNpml3zlkdHyJVDP7/aU6sreublSIu6LPEO3f1ZAgzSMjfYG/y1dJxPvHQ
+            lqhbezgx3tfMxUYA3eVNWuNtLX/Gu1AdOtY7Rn7Tu5/3ckKCUVgHEC6CbZXn9pMCpyWG/0iS
+            kjuHOXzIgjSJXWVmM0g2Z1PWVAEMB8UfptS07O9tXs2DtBxPW7lEwKoli0h/Sj4fL644uvfO
+            Sr3gt7w3F3ZPdhpsg75P0ag5Ui/ALz7gPDuzuTiC3HJMHNplVsR/RQ==
+          </Modulus>
+          <Exponent>AQAB</Exponent>
+        </RSAKeyValue>
+      </KeyValue>
+      <X509Data>
+        <X509Certificate>
+          MIIFBTCCA+2gAwIBAgITMwAAAaQTpbc38Ak5MQABAAABpDANBgkqhkiG9w0BAQUFADB5MQsw
+          CQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwG
+          A1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSMwIQYDVQQDExpNaWNyb3NvZnQgQ29kZSBT
+          aWduaW5nIFBDQTAeFw0xODA2MDgxNzM5MDlaFw0xOTA1MjkxNzM5MDlaMIGRMQswCQYDVQQG
+          EwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMV
+          TWljcm9zb2Z0IENvcnBvcmF0aW9uMTswOQYDVQQDEzJNaWNyb3NvZnQgQ29ycG9yYXRpb24g
+          VGhpcmQtUGFydHkgQXBwIERpc3RyaWJ1dGlvbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+          AQoCggEBANbLE8orO/VS2L0QmnFmocQAd+u/wqcTVJA1mAq1uvFrIY0ovehtC74prVnuPPjd
+          B7NGgzArzQjutu4P/xVivORwjaZpd85ZHR8iVQz+/2lOrK3rm5UiLuizxDt39WQIM0jI32Bv
+          8tXScT7x0JaoW3s4Md7XzMVGAN3lTVrjbS1/xrtQHTrWO0Z+07uf93JCglFYBxAugm2V5/aT
+          Aqclhv9IkpI7hzl8yII0iV1lZjNINmdT1lQBDAfFH6bUtOzvbV7Ng7QcT1u5RMCqJYtIf0o+
+          Hy+uOLr3zkq94Le8Nxd2T3YabIO+T9GoOVIvwC8+4Dw7s7k4gtxyTBzaZVbEf0UCAwEAAaOC
+          AWswggFnMB8GA1UdJQQYMBYGCisGAQQBgjdMAQEGCCsGAQUFBwMDMB0GA1UdDgQWBBQjsJSU
+          ksM1oiXAkkKpunQ7sEL8zjBQBgNVHREESTBHpEUwQzEpMCcGA1UECxMgTWljcm9zb2Z0IE9w
+          ZXJhdGlvbnMgUHVlcnRvIFJpY28xFjAUBgNVBAUTDTIyOTgxMys0MzYwNzMwHwYDVR0jBBgw
+          FoAUyxHoytK0FlgByTcuMxYWuUyaCh8wVgYDVR0fBE8wTTBLoEmgR4ZFaHR0cDovL2NybC5t
+          aWNyb3NvZnQuY29tL3BraS9jcmwvcHJvZHVjdHMvTWljQ29kU2lnUENBXzA4LTMxLTIwMTAu
+          Y3JsMFoGCCsGAQUFBwEBBE4wTDBKBggrBgEFBQcwAoY+aHR0cDovL3d3dy5taWNyb3NvZnQu
+          Y29tL3BraS9jZXJ0cy9NaWNDb2RTaWdQQ0FfMDgtMzEtMjAxMC5jcnQwDQYJKoZIhvcNAQEF
+          BQADggEBAHTKlV0252YxunLEk/He7x0vRoy0NPBJo0NDNy4m8/NRXIaYcQZh/AdX6nWHrgXD
+          Fu/aLKtOs+QY9IDhSmPz897svRuBenzhOKk0yztQTgxQ6bsSAoRg8IjqQ2B0fX8Le7ihJGnn
+          +4ltBJDtyhytelb+U4a36h7KsKjgkr7D3ucKlRDOod1D937dxoz5vCeS2ad/GFxNWdCtgcAg
+          P6LjaCUW4wEAsjAhhxWi/AVJWsu5060hKiOp66jPu3LjNCR0kVscSLSYVHw5w4zaIjqH3jtg
+          OYb7iwuzI1c8U+V60R5jMo1XxZAT7U4Joq5cbzklraFMMrx8nePaFUxkZiAvD4Q=
+        </X509Certificate>
+      </X509Data>
+      <X509Data>
+        <X509Certificate>
+          MIIFmTCCA4GgAwIBAgIQea0WoUqgpa1Mc1j0BxMuZTANBgkqhkiG9w0BAQUFADBfMRMwEQYK
+          CZImiZPyLGQBGRYDY29tMRkwFwYKCZImiZPyLGQBGRYJbWljcm9zb2Z0MS0wKwYDVQQDEyRN
+          aWNyb3NvZnQgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMDEwNTA5MjMxOTIyWhcN
+          MjEwNTA5MjMyODEzWjBfMRMwEQYKCZImiZPyLGQBGRYDY29tMRkwFwYKCZImiZPyLGQBGRYJ
+          bWljcm9zb2Z0MS0wKwYDVQQDEyRNaWNyb3NvZnQgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3Jp
+          dHkwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDzXfqAZ9Rap6kMLJAg0DUIPHWE
+          zbcHiZyJ2t7Ow2D6kWhanpRxKRh2fMLgyCV2lA5Y+gQ0Nubfr/eAuulYCyuT5Z0F43cikfc0
+          ZDwikR1e4QmQvBT+/HVYGeF5tweSo66IWQjYnwfKA1j8aCltMtfSqMtL/OELSDJP5uu4rU/k
+          XG8TlJnbldV126gat5SRtHdb9UgMj2p5fRRwBH1tr5D12nDYR7e/my9s5wW34RFgrHmRFHzF
+          1qbk4X7Vw37lktI8ALU2gt554W3ztW74nzPJy1J9c5g224uha6KVl5uj3sJNJv8GlmclBsjn
+          rOTuEjOVMZnINQhONMp5U9W1vmMyWUA2wKVOBE0921sHM+RYv+8/U2TYQlk1V/0PRXwkBE2e
+          1jh0EZcikM5oRHSSb9VLb7CG48c2QqDQ/MHAWvmjYbkwR3GWChawkcBCle8Qfyhq4yofseTN
+          Az93cQTHIPxJDx1FiKTXy36IrY4t7EXbxFEEySr87IaemhGXW97OU4jm4rf9rJXCKEDb7wSQ
+          34EzOdmyRaUjhwalVYkxuwYtYA5BGH0fLrWXyxHrFdUkpZTvFRSJ/Utz+jJb/NEzAPlZYnAH
+          Muouq0Ate8rdIWcbMJmPFqojqEHRsG4RmzbE3kB0nOFYZcFgHnpbOMiPuwQmfNQWQOW2a2yq
+          hv0Av87BNQIDAQABo1EwTzALBgNVHQ8EBAMCAcYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4E
+          FgQUDqyCYEBWJ5flJRP8KuEKU5VZ5KQwEAYJKwYBBAGCNxUBBAMCAQAwDQYJKoZIhvcNAQEF
+          BQADggIBAMURTQM6YN1dUhF3j7K7NsiyBb+0t6jYIJ1cEwO2HCL6BhM1tshj1JpHbyZX0lXx
+          BLEmX9apUGigvNK4bszD6azfGc14rFl0rGY0NsQbPmw4TDMOMBINoyb+UVMA/69aToQNDx/k
+          bQUuToVLjWwzb1TSZKu/UK99ejmgN+1jAw/8EwbOFjbUVDuVG1FiOuVNF9QFOZKaJ6hbqr3s
+          u77jIIlgcWxWs6UT0G0OI36VA+1oPfLYY7hrTbboMLXhypRL96KqXZkwsj2nwlFsKCABJCcr
+          SwC3nRFrcL6yEIK8DJto0I07JIeqmShynTNfWZC99d6TnjpiWjQ54ohVHbkGsMGJay3XacMZ
+          EjaE0Mmg2v8vaXiy5Xra69cMwPe9Yxe4ORM4ojZbe/KFVmodZGLBOOKqv1FmopT1EpxmIhBr
+          8rcwki3yKfA9OxRDaKLxnCk3y844ICVtfGfzfiQSJAMIgUfspZ6X9RjXz7vV73aW7/3O21ad
+          laBC+ZdY4dcxItNfWeY+biIA6kOEtiXb2fMIVmjAZGsdfOy2k6JiV24u2OdYj8QxSSbd3ik1
+          h/UwcXBbFDxpvYkSfesuo/7Yf56CWlIKK8FDK9kwiJ/IEPuJjeahhXUzfmye23MTZGJppS99
+          ypZtn/gETTCSPW4hFCHJPeDD/YprnUr90aGdmUN3P7Da
+        </X509Certificate>
+      </X509Data>
+      <X509Data>
+        <X509Certificate>
+          MIIFvDCCA6SgAwIBAgIKYTMmGgAAAAAAMTANBgkqhkiG9w0BAQUFADBfMRMwEQYKCZImiZPy
+          LGQBGRYDY29tMRkwFwYKCZImiZPyLGQBGRYJbWljcm9zb2Z0MS0wKwYDVQQDEyRNaWNyb3Nv
+          ZnQgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMTAwODMxMjIxOTMyWhcNMjAwODMx
+          MjIyOTMyWjB5MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMH
+          UmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSMwIQYDVQQDExpNaWNy
+          b3NvZnQgQ29kZSBTaWduaW5nIFBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+          ALJyWVwZMGS/HZpgICBCmXZTbD4b1m/My/Hqa/6XFhDg3zp0gxq3L6Ay7P/ewkJOI9VyANs1
+          VwqJyq4gSfTwaKxNS42lvXlLcZtHB9r9Jd+ddYjPqnNEf9eB2/O98jakyVxF3K+tPeAoaJca
+          p6Vyc1bxF5Tk/TWUcqDWdl8ed0WDhTgW0HNbBbpnUo2lsmkv2hkL/pJ0KeJ2L1TdFDBZ+NKN
+          Yv3LyV9GMVC5JxPkQDDPcikQKCLHN049oDI9kM2hOAaFXE5WgigqBTK3S9dPY+fSLWLxRT3n
+          rAgA9kahntFbjCZT6HqqSvJGzzc8OJ60d1ylF56NyxGPVjzBrAlfA9MCAwEAAaOCAV4wggFa
+          MA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFMsR6MrStBZYAck3LjMWFrlMmgofMAsGA1Ud
+          DwQEAwIBhjASBgkrBgEEAYI3FQEEBQIDAQABMCMGCSsGAQQBgjcVAgQWBBT90TFO0yaKleGY
+          YDuoMW+mPLzYLTAZBgkrBgEEAYI3FAIEDB4KAFMAdQBiAEMAQTAfBgNVHSMEGDAWgBQOrIJg
+          QFYnl+UlE/wq4QpTlVnkpDBQBgNVHR8ESTBHMEWgQ6BBhj9odHRwOi8vY3JsLm1pY3Jvc29m
+          dC5jb20vcGtpL2NybC9wcm9kdWN0cy9taWNyb3NvZnRyb290Y2VydC5jcmwwVAYIKwYBBQUH
+          AQEESDBGMEQGCCsGAQUFBzAChjhodHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2NlcnRz
+          L01pY3Jvc29mdFJvb3RDZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAgEAWTk+fyZGr+tvQLEy
+          tWrrDi9uqEn361917Uw7LddDrQv+y+ktMaMjzHxQmIAhXaw9L0y6oqhWnONwu7i0+Hm1SXL3
+          PupBf8rhDBdpy6WcIC36C1DEVs0t40rSvHDnqA2iA6VW4LiKS1fylUKc8fPv7uOGHzQ8uFaa
+          8FMjhSqkghyT4pQHHfLiTviMocroE6WRTsgb0o9ylSpxbZsa+BzwU9ZnzCL/XB3Nooy9J7J5
+          Y1ZEolHN+emjWFbdmwJFRC9f9Nqu1IIybvyklRPk62nnqaIsvsgrEA5ljpnb9aL6EiYJZTiU
+          8XofSrvR4Vbo0HiWGFzJNRZf3ZMdSY4tvq00RBzuEBUaAF3dNVshzpjHCe6FDoxPbQ4TTj18
+          KUicctHzbMrB7HCjV5JXfZSNoBtIA1r3z6NnCnSlNu0tLxfI5nI3EvRvsTxngvlSso0zFmUe
+          DordEN5k9G/ORtTTF+l5xAS00/ss3x+KnqwK+xMnQK3k+eGpf0a7B2BHZWBATrBC7E7ts3Z5
+          2Ao0CW0cgDEf4g5U3eWh++VHEK1kmP9QFi58vwUheuKVQSdpw5OPlcmN2Jshrg1cnPCiroZo
+          gwxqLbt2awAdlq3yFnv2FoMkuYjPaqhHMS+a3ONxPdcAfmJH0c6IybgY+g5yjcGjPa8CQGr/
+          aZuW4hCoELQ3UAjWwz0=
+        </X509Certificate>
+      </X509Data>
+    </KeyInfo><Object id="ts-countersig"><X509Data><X509Certificate>MIIE2jCCA8KgAwIBAgITMwAAAQ4bLwsITDNxqAAAAAABDjANBgkqhkiG9w0BAQUFADB3MQswCQYD
+VQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMV
+TWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0Ew
+HhcNMTgwODIzMjAyMDM5WhcNMTkxMTIzMjAyMDM5WjCByjELMAkGA1UEBhMCVVMxEzARBgNVBAgT
+Cldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3Jh
+dGlvbjElMCMGA1UECxMcTWljcm9zb2Z0IEFtZXJpY2EgT3BlcmF0aW9uczEmMCQGA1UECxMdVGhh
+bGVzIFRTUyBFU046MTJCNC0yRDVGLTg3RDQxJTAjBgNVBAMTHE1pY3Jvc29mdCBUaW1lLVN0YW1w
+IFNlcnZpY2UwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD2of4BuJr+l5YdMhnQvz9m
+z4sRndB3DovL3qM02OdJEAPlJqWDe8/ZdjYqpHBzMuPvkw8+JnoHr0TpY/WQFk/hE34F01TqkhsD
+uqsaLqe8V24m8c9jcmfDcmx0yR7QZ/DdY8FbkrWck/ePKHKq4hRFhX2ynZlsVy0HGiuuSoj9q8iQ
+5mku3z3DnC4heY9+v0h7KhKCgieimEqzrpHpvyHK+s91aMhpWjpTol0nZxyHbFTq95wLkp6IqHIs
+yxtXwHJFmM+T3TVtccsxU2ckEvzJtzCm2Ee66HJBtI2G4OoSReK81BTC1xlNWQkSXLD5MvquL3dV
+evzEGDL9sCw5jyFxAgMBAAGjggEJMIIBBTAdBgNVHQ4EFgQUXpkTOkaccb8xG34+iCz+a4ZPT64w
+HwYDVR0jBBgwFoAUIzT42VJGcArtQPt2+7MrsMM1sw8wVAYDVR0fBE0wSzBJoEegRYZDaHR0cDov
+L2NybC5taWNyb3NvZnQuY29tL3BraS9jcmwvcHJvZHVjdHMvTWljcm9zb2Z0VGltZVN0YW1wUENB
+LmNybDBYBggrBgEFBQcBAQRMMEowSAYIKwYBBQUHMAKGPGh0dHA6Ly93d3cubWljcm9zb2Z0LmNv
+bS9wa2kvY2VydHMvTWljcm9zb2Z0VGltZVN0YW1wUENBLmNydDATBgNVHSUEDDAKBggrBgEFBQcD
+CDANBgkqhkiG9w0BAQUFAAOCAQEAMVyya9youGq7xaZi+3mc7Hv2USRlEsJny2Y9C0KHl1CUv3W1
+hLl9hHcOBTbYCkPybLbp4DDM00qGVQDtkBKoRHOESHd8xX7iP20EVj7YoH8bba8qoIVT/71F6tcl
+dmwNaxA9TiLp9ClPhvOdfJBbN+Pem4DpPBT9NOgotvCBCFF0NXizqkk9wtEYdMTqxLYEs8napK/4
+rKx4CtW8IobSaURZhlRla9ph6BRkMQv1NcfsgzWgHkvT9RRL2zLSk7opGdo6HtUX6SCKFjQ7WaP8
+lllCOmpMVFNlSDpmY2GC9358vGL4scKii6lygcMevVlbxqmoV/ay0OyhKWNStbZ54A==</X509Certificate></X509Data><X509Data><X509Certificate>MIIGBzCCA++gAwIBAgIKYRZoNAAAAAAAHDANBgkqhkiG9w0BAQUFADBfMRMwEQYKCZImiZPyLGQB
+GRYDY29tMRkwFwYKCZImiZPyLGQBGRYJbWljcm9zb2Z0MS0wKwYDVQQDEyRNaWNyb3NvZnQgUm9v
+dCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMDcwNDAzMTI1MzA5WhcNMjEwNDAzMTMwMzA5WjB3
+MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwG
+A1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFt
+cCBQQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCfoWyx39tIkip8ay4Z4b3i48WZ
+USNQrc7dGE4kD+7Rp9FMrXQwIBHrB9VUlRVJlBtCkq6YXDAm2gBr6Hu97IkHD/cOBJjwicwfyzMk
+h53y9GccLPx754gd6udOo6HBI1PKjfpFzwnQXq/QsEIEovmmbJNn1yjcRlOwhtDlKEYuJ6yGT1VS
+DOQDLPtqkJAwbofzWTCd+n7Wl7PoIZd++NIT8wi3U21StEWQn0gASkdmEScpZqiX5NMGgUqi+YSn
+EUcUCYKfhO1VeP4Bmh1QCIUAEDBG7bfeI0a7xC1Un68eeEExd8yb3zuDk6FhArUdDbH895uyAc4i
+S1T/+QXDwiALAgMBAAGjggGrMIIBpzAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBQjNPjZUkZw
+Cu1A+3b7syuwwzWzDzALBgNVHQ8EBAMCAYYwEAYJKwYBBAGCNxUBBAMCAQAwgZgGA1UdIwSBkDCB
+jYAUDqyCYEBWJ5flJRP8KuEKU5VZ5KShY6RhMF8xEzARBgoJkiaJk/IsZAEZFgNjb20xGTAXBgoJ
+kiaJk/IsZAEZFgltaWNyb3NvZnQxLTArBgNVBAMTJE1pY3Jvc29mdCBSb290IENlcnRpZmljYXRl
+IEF1dGhvcml0eYIQea0WoUqgpa1Mc1j0BxMuZTBQBgNVHR8ESTBHMEWgQ6BBhj9odHRwOi8vY3Js
+Lm1pY3Jvc29mdC5jb20vcGtpL2NybC9wcm9kdWN0cy9taWNyb3NvZnRyb290Y2VydC5jcmwwVAYI
+KwYBBQUHAQEESDBGMEQGCCsGAQUFBzAChjhodHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2Nl
+cnRzL01pY3Jvc29mdFJvb3RDZXJ0LmNydDATBgNVHSUEDDAKBggrBgEFBQcDCDANBgkqhkiG9w0B
+AQUFAAOCAgEAEJeKw1wDRDbd6bStd9vOeVFNAbEudHFbbQwTq86+e4+4LtQSooxtYrhXAstOIBNQ
+md16QOJXu69YmhzhHQGGrLt48ovQ7DsB7uK+jwoFyI1I4vBTFd1Pq5Lk541q1YDB5pTyBi+FA+mR
+KiQicPv2/OR4mS4N9wficLwYTp2OawpylbihOZxnLcVRDupiXD8WmIsgP+IHGjL5zDFKdjE9K3IL
+yOpwPf+FChPfwgphjvDXuBfrTot/xTUrXqO/67x9C0J71FNyIe4wyrt4ZVxbARcKFA7S2hSY9Ty5
+ZlizLS/n+YWGzFFW6J1wlGysOUzU9nm/qhh6YinvopspNAZ3GmLJPR5tH4LwC8csu89Ds+X57H21
+46SodDW4TsVxIxImdgs8UoxxWkZDFLyzs7BNZ8ifQv+AeSGAnhUwZuhCEl4ayJ4iIdBD6Svpu/RI
+zCzU2DKATCYqSCRfWupW76bemZ3KOm+9gSd0BhHudiG/m4LBJ1S2sWo9iaF2YbRuoROmv6pH8BJv
+/YoybLL+31HIjCPJZr2dHYcSZAI9La9Zj7jkIeW1sMpjtHhUBdRBLlCslLCleKuzoJZ1GtmShxN1
+Ii8yqAhuoFuMJb+g74TKIdbrHk/Jmu5J4PcBZW+JC33Iacjmbuqnl84xKf8OxVtc2E0bodj6L54/
+LlUWa8kTo/0=</X509Certificate></X509Data><CounterSignature xmlns="http://schemas.microsoft.com/xmldsig/timestamp/2003" ts-format="cms-timestamp-message">MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQMxCzAJBgUrDgMCGgUAMIIBEwYJKoZIhvcNAQcBoIIB
+BASCAQCEAHqEIqWs/oMPngCuQ1SNsFuolCG4N5OC8ANHgMiTmOXdww6ADCEynIKYpWGkQGv9LWUm
+Q8XDwJk4HKeWNaPv29cF37V6yeKsqlYT0/BWV2EgUF7iArXo64t0FwG845OOiVMYFCfWywupGn3W
+cEYKltnFpJzQN6HSjJfnFRLxqm5Y0bgru1SZJa5JIyiMBbL1HfGPDhKvIkwMjMpu4eFikkkAH8/s
+7uGnS3QN5phGow2dI6qjfvWzafnqE6haK/MQ+eWX97zwTGfwAIbtE1S9/6AB1HviSbzFeeTTHXwY
+gWYbTEszwXgy+mfKEpaaVmi6JkxDAydWqqKx7tG9pVCkoIIDrKGCA6gwggKQAgEBMIH6oYHQpIHN
+MIHKMQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEe
+MBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSUwIwYDVQQLExxNaWNyb3NvZnQgQW1lcmlj
+YSBPcGVyYXRpb25zMSYwJAYDVQQLEx1UaGFsZXMgVFNTIEVTTjoxMkI0LTJENUYtODdENDElMCMG
+A1UEAxMcTWljcm9zb2Z0IFRpbWUtU3RhbXAgU2VydmljZaIlCgEBMAkGBSsOAwIaBQADFQC2/CCW
+EWNpYzXyYAv+VF4i7RZ/TaCB2jCB16SB1DCB0TELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hp
+bmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjEl
+MCMGA1UECxMcTWljcm9zb2Z0IEFtZXJpY2EgT3BlcmF0aW9uczEnMCUGA1UECxMebkNpcGhlciBO
+VFMgRVNOOjI2NjUtNEMzRi1DNURFMSswKQYDVQQDEyJNaWNyb3NvZnQgVGltZSBTb3VyY2UgTWFz
+dGVyIENsb2NrMA0GCSqGSIb3DQEBBQUAAgUA30yXCDAiGA8yMDE4MDkxOTA5MzYwOFoYDzIwMTgw
+OTIwMDkzNjA4WjB3MD0GCisGAQQBhFkKBAExLzAtMAoCBQDfTJcIAgEAMAoCAQACAhYMAgH/MAcC
+AQACAhtcMAoCBQDfTeiIAgEAMDYGCisGAQQBhFkKBAIxKDAmMAwGCisGAQQBhFkKAwGgCjAIAgEA
+AgMW42ChCjAIAgEAAgMHoSAwDQYJKoZIhvcNAQEFBQADggEBADcxzYtIesjRDVmVVqO8diUKKr42
+QP+9PTqCMXy+BqBufAVOi1gpxeAMv2liKpK8ZGoXGE0qvxSooK61m7hT1e9KFkwfFpq738PKeLCg
+IH06ykZoSDYx6RnLMi4SflHLubXZKQk1IOYbwcQy32QtVoYODQJ5J36oDxweA0WGJhSw89JCtEDs
+16RInmsHEBSMI6RXa86zb21qSFCwPu18o8WBFoGWBVQYAT61sUE/Gpj5sX4ZJr/fLfjSln/Q8fMX
+PHCXd2Ry3rTwRbepInVCF2VlfVDtHCeRJY+wTKnJTvIfWdmOchLZ6zBmAIxI+MVj3E6JBOPyZeme
+9dVVftanYXwxggIVMIICEQIBATCBjjB3MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3Rv
+bjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYD
+VQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0ECEzMAAAEOGy8LCEwzcagAAAAAAQ4wCQYFKw4D
+AhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MDkxOTEw
+MzU0MFowIwYJKoZIhvcNAQkEMRYEFIdUyMw9a9yqytMXKfBQbe5ZdrnjMA0GCSqGSIb3DQEBBQUA
+BIIBADJ6wV8sgHiKL9KzjKmJXOyz/obtCkPVftsNNqWCbNEFxf3id1LRSX+HImb6x1e14/2oJnEy
+ZFL3QvLgbp4TAJId8ErF76l9cxjjjqLFNVb16aproXuHqeJyla1OmNQKUlLo4FVmsbpVubahgPAA
+vV+8RV0XIaE3lPzodF97vrcpbvdX3P32VOFRaQizypQf74hQZtTGG06Q99SS9DFZqgU5f4oSvgx5
+x/uvYxKQzT97VTcZl2ZD+3cT5Ne9zPg9j+iQQDDbPPhVIFUU+HZqmOI+PqZJlWN7LJ5pRiJLUYcE
+w8/cD6W0/onOjTBPE64H3UERsgNFqG4F/OMlXiAMdFM=</CounterSignature></Object></Signature></OfficeApp>

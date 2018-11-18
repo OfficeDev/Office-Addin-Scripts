@@ -6,20 +6,28 @@ import { isUUID } from "validator";
 import * as manifestInfo from "../src/manifestInfo";
 const manifestOriginalFolder = process.cwd() + "/test/manifests";
 const manifestTestFolder = process.cwd() + "\\testExecution\\testManifests";
-const testManifest = manifestTestFolder + "\\manifest.xml";
+const testManifest = manifestTestFolder + "\\Taskpane.manifest.xml";
 
 describe("Manifest", function() {
   describe("readManifestInfo", function() {
     it("should read the manifest info", async function() {
-      const info = await manifestInfo.readManifestFile("test/manifests/manifest.xml");
+      const info = await manifestInfo.readManifestFile("test/manifests/TaskPane.manifest.xml");
 
       assert.strictEqual(info.defaultLocale, "en-US");
       assert.strictEqual(info.description, "Describes this Office Add-in.");
-      assert.strictEqual(info.displayName, "Office Add-in Name");
-      assert.strictEqual(info.id, "132a8a21-011a-4ceb-9336-6af8a276a288");
+      assert.strictEqual(info.displayName, "Contoso Task Pane Add-in");
+      assert.strictEqual(info.highResolutionIconUrl, "https://localhost:3000/assets/icon-80.png");
+      assert.strictEqual(info.iconUrl, "https://localhost:3000/assets/icon-32.png");
+      assert.strictEqual(info.id, "6c883c79-9b2a-45a3-b3d1-3dbd08000c5a");
       assert.strictEqual(info.officeAppType, "TaskPaneApp");
-      assert.strictEqual(info.providerName, "ProviderName");
+      assert.strictEqual(info.permissions, "ReadWriteDocument");
+      assert.strictEqual(info.providerName, "Contoso");
       assert.strictEqual(info.version, "1.2.3.4");
+      if (info.defaultSettings) {
+        assert.strictEqual(info.defaultSettings.sourceLocation, "https://localhost:3000/taskpane.html");
+      } else {
+        assert.fail("ManifestInfo should include defaultSettings.");
+      }
     });
     it("should throw an error if there is a bad xml end tag", async function() {
         let result;
