@@ -7,6 +7,7 @@
     "rules": {
         "no-console": false,
         "only-arrow-functions": false,
+        "max-classes-per-file": false,
         "max-line-length": false
     },
     "rulesDirectory": []

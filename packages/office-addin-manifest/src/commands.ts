@@ -33,6 +33,16 @@ function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestIn
   console.log(`  Version: ${manifest.version || ""}`);
   console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
   console.log(`  Description: ${manifest.description || ""}`);
+  console.log(`  High Resolution Icon Url: ${manifest.highResolutionIconUrl || ""}`);
+  console.log(`  Icon Url: ${manifest.iconUrl || ""}`);
+  console.log(`  Permissions: ${manifest.permissions || ""}`);
+
+  if (manifest.defaultSettings) {
+    console.log("  Default Settings:");
+    console.log(`    Requested Height: ${manifest.defaultSettings.requestedHeight || ""}`);
+    console.log(`    Requested Width: ${manifest.defaultSettings.requestedWidth || ""}`);
+    console.log(`    Source Location: ${manifest.defaultSettings.sourceLocation || ""}`);
+  }
 }
 
 export async function modify(manifestPath: string, command: commnder.Command) {
