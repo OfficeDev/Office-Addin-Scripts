@@ -210,29 +210,6 @@ describe("RuntimeLogging", async function() {
           assert.fail("should not throw an error");
         }
       });
-      // it("file does not exist in non-writable directory", async function() {
-      //   const subdirPath = fspath.join(testExecDirPath, "subdir");
-      //   const filePath = fspath.join(subdirPath, defaultFileName);
-      //   let error;
-
-      //   // create the subdir
-      //   fsextra.mkdir(subdirPath);
-
-      //   // make the subdir non-writable
-      //   fsextra.chmod(subdirPath, 0o444);
-
-      //   try {
-      //     const path = await devSettings.enableRuntimeLogging(filePath);
-      //   } catch (err) {
-      //     error = err;
-      //   }
-
-      //   // clean up
-      //   fsextra.chmod(subdirPath, 0o777);
-
-      //   assert.ok(error instanceof Error, "should throw an error");
-      //   assert.strictEqual(error.message, `You need to specify the path where the file can be written. Unable to write to: "${filePath}".`);
-      // });
       it("file already exists and is writable", async function() {
         try {
           const filePath = fspath.join(testExecDirPath, defaultFileName);
@@ -268,33 +245,6 @@ describe("RuntimeLogging", async function() {
         assert.ok(error instanceof Error, "should throw an error");
         assert.strictEqual(error.message, `You need to specify the path to a writable file. Unable to write to: "${filePath}".`);
       });
-      // it("file already exists but directory is not writable", async function() {
-      //   const subdirPath = fspath.join(testExecDirPath, "subdir");
-      //   const filePath = fspath.join(subdirPath, defaultFileName);
-      //   let error;
-
-      //   // create the subdir
-      //   fsextra.mkdir(subdirPath);
-
-      //   // create the file
-      //   const file = await fsextra.open(filePath, "a+");
-      //   await fsextra.close(file);
-
-      //   // make the subdir non-writable
-      //   fsextra.chmod(subdirPath, 0o444);
-
-      //   try {
-      //     const path = await devSettings.enableRuntimeLogging(filePath);
-      //   } catch (err) {
-      //     error = err;
-      //   }
-
-      //   // clean up
-      //   fsextra.chmod(subdirPath, 0o777);
-
-      //   assert.ok(error instanceof Error, "should throw an error");
-      //   assert.strictEqual(error.message, `You need to specify the path where the file can be written. Unable to write to: "${filePath}".`);
-      // });
     });
   });
 });
