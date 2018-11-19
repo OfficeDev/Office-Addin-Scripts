@@ -17,10 +17,12 @@ export class ManifestInfo {
   public id?: string;
   public allowSnapshot?: string;
   public alternateId?: string;
+  public appDomains?: string[];
   public defaultLocale?: string;
   public description?: string;
   public displayName?: string;
   public highResolutionIconUrl?: string;
+  public hosts?: string[];
   public iconUrl?: string;
   public officeAppType?: string;
   public permissions?: string;
@@ -41,15 +43,17 @@ function parseManifest(xml: Xml): ManifestInfo {
     manifest.id = xmlMethods.getXmlElementValue(officeApp, "Id");
     manifest.allowSnapshot = xmlMethods.getXmlElementValue(officeApp, "AllowSnapshot");
     manifest.alternateId = xmlMethods.getXmlElementValue(officeApp, "AlternateId");
+    manifest.appDomains = xmlMethods.getXmlElementsValue(officeApp, "AppDomains", "AppDomain");
     manifest.defaultLocale = xmlMethods.getXmlElementValue(officeApp, "DefaultLocale");
     manifest.description = xmlMethods.getXmlElementAttributeValue(officeApp, "Description");
     manifest.displayName = xmlMethods.getXmlElementAttributeValue(officeApp, "DisplayName");
     manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "HighResolutionIconUrl");
+    manifest.hosts = xmlMethods.getXmlElementsAttributeValue(officeApp, "Hosts", "Host", "Name");
     manifest.iconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "IconUrl");
     manifest.officeAppType = xmlMethods.getXmlAttributeValue(officeApp, "xsi:type");
     manifest.permissions = xmlMethods.getXmlElementValue(officeApp, "Permissions");
     manifest.providerName = xmlMethods.getXmlElementValue(officeApp, "ProviderName");
-    manifest.supportUrl = xmlMethods.getXmlElementValue(officeApp, "SupportUrl");
+    manifest.supportUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "SupportUrl");
     manifest.version = xmlMethods.getXmlElementValue(officeApp, "Version");
 
     if (defaultSettingsXml) {

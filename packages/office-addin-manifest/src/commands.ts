@@ -31,11 +31,17 @@ function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestIn
   console.log(`  Provider: ${manifest.providerName || ""}`);
   console.log(`  Type: ${manifest.officeAppType || ""}`);
   console.log(`  Version: ${manifest.version || ""}`);
+  if (manifest.alternateId) {
+    console.log(`  AlternateId: ${manifest.alternateId}`);
+  }
+  console.log(`  AppDomains: ${manifest.appDomains ? manifest.appDomains.join(", ") : ""}`);
   console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
   console.log(`  Description: ${manifest.description || ""}`);
   console.log(`  High Resolution Icon Url: ${manifest.highResolutionIconUrl || ""}`);
+  console.log(`  Hosts: ${manifest.hosts ? manifest.hosts.join(", ") : ""}`);
   console.log(`  Icon Url: ${manifest.iconUrl || ""}`);
   console.log(`  Permissions: ${manifest.permissions || ""}`);
+  console.log(`  Support Url: ${manifest.supportUrl || ""}`);
 
   if (manifest.defaultSettings) {
     console.log("  Default Settings:");
