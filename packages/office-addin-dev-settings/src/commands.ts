@@ -58,6 +58,16 @@ export async function disableLiveReload(manifestPath: string) {
   }
 }
 
+export async function disableRuntimeLogging() {
+  try {
+    await devSettings.disableRuntimeLogging();
+
+    console.log("Runtime logging has been disabled.");
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 export async function enableDebugging(manifestPath: string, command: commander.Command) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -81,6 +91,16 @@ export async function enableLiveReload(manifestPath: string) {
     await devSettings.enableLiveReload(manifest.id!);
 
     console.log("Live reload has been enabled.");
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function enableRuntimeLogging(path?: string) {
+  try {
+    const logPath = await devSettings.enableRuntimeLogging(path);
+
+    console.log(`Runtime logging has been enabled. File: ${logPath}`);
   } catch (err) {
     logErrorMessage(err);
   }
@@ -127,6 +147,18 @@ export async function isLiveReloadEnabled(manifestPath: string, command: command
     console.log(enabled
       ? "Live reload is enabled."
       : "Live reload is not enabled.");
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function isRuntimeLoggingEnabled(command: commander.Command) {
+  try {
+    const path = await devSettings.getRuntimeLoggingPath();
+
+    console.log(path
+      ? `Runtime logging is enabled. File: ${path}`
+      : "Runtime logging is not enabled.");
   } catch (err) {
     logErrorMessage(err);
   }

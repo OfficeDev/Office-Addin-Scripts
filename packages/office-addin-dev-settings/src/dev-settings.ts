@@ -4,6 +4,8 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import * as fs from "fs";
+import * as fspath from "path";
 import * as commands from "./commands";
 import * as registry from "./dev-settings-registry";
 
@@ -52,6 +54,15 @@ export async function disableLiveReload(addinId: string): Promise<void> {
   return enableLiveReload(addinId, false);
 }
 
+export async function disableRuntimeLogging(): Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      return registry.disableRuntimeLogging();
+  default:
+    throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
   switch (process.platform) {
     case "win32":
@@ -70,6 +81,40 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
   }
 }
 
+export async function enableRuntimeLogging(path?: string): Promise<string> {
+  switch (process.platform) {
+    case "win32":
+      if (!path) {
+        const tempDir = process.env.TEMP;
+        if (!tempDir) {
+          throw new Error("The TEMP environment variable is not defined.");
+        }
+        path = `${tempDir}\\OfficeAddins.log.txt`;
+      }
+
+      const pathExists: boolean = fs.existsSync(path);
+      if (pathExists) {
+        const stat = fs.statSync(path);
+        if (stat.isDirectory()) {
+          throw new Error(`You need to specify the path to a file. This is a directory: "${path}".`);
+        }
+      }
+      try {
+        const file = fs.openSync(path, "a+");
+        fs.closeSync(file);
+      } catch (err) {
+        throw new Error(pathExists
+          ? `You need to specify the path to a writable file. Unable to write to: "${path}".`
+          : `You need to specify the path where the file can be written. Unable to write to: "${path}".`);
+      }
+
+      await registry.enableRuntimeLogging(path);
+      return path;
+  default:
+    throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
   switch (process.platform) {
     case "win32":
@@ -83,6 +128,15 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
   switch (process.platform) {
     case "win32":
       return registry.getEnabledDebuggingMethods(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function getRuntimeLoggingPath(): Promise<string | undefined> {
+  switch (process.platform) {
+    case "win32":
+      return registry.getRuntimeLoggingPath();
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -132,6 +186,11 @@ if (process.argv[1].endsWith("\\dev-settings.js")) {
     .action(commands.disableLiveReload);
 
   commander
+    .command("disable-runtime-logging")
+    .description("Disables runtime logging.")
+    .action(commands.disableRuntimeLogging);
+
+  commander
     .command("enable-debugging [manifestPath]")
     .description("Enable debugging for the add-in.")
     .option("--debug-method <method>", "Specify the debug method: 'direct' or 'web'.")
@@ -141,6 +200,11 @@ if (process.argv[1].endsWith("\\dev-settings.js")) {
     .command("enable-live-reload [manifestPath]")
     .description("Enable live reload for the add-in.")
     .action(commands.enableLiveReload);
+
+  commander
+    .command("enable-runtime-logging [path]")
+    .description("Enable runtime logging.")
+    .action(commands.enableRuntimeLogging);
 
   commander
     .command("get-source-bundle-url <manifestPath>")
@@ -156,6 +220,11 @@ if (process.argv[1].endsWith("\\dev-settings.js")) {
     .command("is-live-reload-enabled [manifestPath]")
     .description("Display whether live reload is enabled.")
     .action(commands.isDebuggingEnabled);
+
+  commander
+    .command("is-runtime-logging-enabled")
+    .description("Display whether runtime logging is enabled.")
+    .action(commands.isRuntimeLoggingEnabled);
 
   commander
     .command("set-source-bundle-url <manifestPath>")

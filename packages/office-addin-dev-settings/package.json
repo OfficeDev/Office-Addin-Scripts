@@ -28,11 +28,13 @@
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
+    "@types/fs-extra": "^5.0.4",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.5.7",
     "@types/node-fetch": "^2.1.2",
     "@types/winreg": "^1.2.30",
     "concurrently": "^3.6.1",
+    "fs-extra": "^7.0.1",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
     "ts-node": "^7.0.1",
