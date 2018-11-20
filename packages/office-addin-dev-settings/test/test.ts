@@ -174,7 +174,6 @@ describe("RuntimeLogging", async function() {
 
   this.beforeAll(async function() {
     pathBeforeTests = await devSettings.getRuntimeLoggingPath();
-    console.log(`Runtime logging path before tests: ${pathBeforeTests}`);
     await devSettings.disableRuntimeLogging();
   });
 
@@ -184,7 +183,6 @@ describe("RuntimeLogging", async function() {
     } else {
       await devSettings.disableRuntimeLogging();
     }
-    console.log(`Restored original runtime logging path.`);
   });
 
   describe("basic validation", function() {
