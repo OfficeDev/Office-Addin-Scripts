@@ -82,10 +82,11 @@ export function getXmlElements(xml: Xml, name: string): Xml[] {
  * Given an xml object, for the specified element, returns the values of the inner elements with the specified item element name.
  * @param xml The xml object.
  * @param name The name of the inner xml element.
- * @example Given the the following xml, the container name "Items" and item name "Item" will return ["1", "2"].
+ * @example Given the the following xml, the container name "Items" and item name "Item" will return ["One", "Two"].
+ * If the attributeName is "AnotherValue", then it will return ["First", "Second"].
  *   <Items>
- *     <Item>1</Item>
- *     <Item>2</Item>
+ *     <Item DefaultValue="One" AnotherValue="First">1</Item>
+ *     <Item DefaultValue="Two" AnotherValue="Second">2</Item>
  *   </Current>
  */
 export function getXmlElementsAttributeValue(xml: Xml, name: string, itemElementName: string, attributeName: string = "DefaultValue"): string[] {
