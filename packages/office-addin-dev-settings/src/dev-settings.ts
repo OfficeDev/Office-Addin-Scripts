@@ -9,6 +9,8 @@ import * as fspath from "path";
 import * as commands from "./commands";
 import * as registry from "./dev-settings-registry";
 
+const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
+
 export enum DebuggingMethod {
   Direct,
   Web,
@@ -26,7 +28,7 @@ export class SourceBundleUrlComponents {
     const path = (this.path !== undefined) ? this.path : "{path}";
     const extension = (this.extension !== undefined) ? this.extension : ".bundle";
 
-    return `http://${host}:${port}/${path}${extension}`;
+    return `http://${host}${host && port ? ":" : ""}${port}/${path}${extension}`;
   }
 
   constructor(host?: string, port?: string, path?: string, extension?: string) {
@@ -89,7 +91,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
         if (!tempDir) {
           throw new Error("The TEMP environment variable is not defined.");
         }
-        path = `${tempDir}\\OfficeAddins.log.txt`;
+        path = `${tempDir}\\${defaultRuntimeLogFileName}`;
       }
 
       const pathExists: boolean = fs.existsSync(path);
@@ -172,68 +174,39 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
 if (process.argv[1].endsWith("\\dev-settings.js")) {
   commander
     .command("clear [manifestPath]")
-    .description("Clear all dev settings for the add-in.")
+    .description("Clear all dev settings for the Office Add-in.")
     .action(commands.clear);
 
   commander
-    .command("disable-debugging [manifestPath]")
-    .description("Disable debugging of the add-in.")
-    .action(commands.disableDebugging);
+    .command("debugging <manifest-path>")
+    .option("--enable", `Enable debugging for the add-in.`)
+    .option("--disable", "Disable debugging for the add-in")
+    .option("--debug-method <method>", "Specify the debug method: 'direct' or 'proxy'.")
+    .description("Configure debugging for the Office Add-in.")
+    .action(commands.debugging);
 
   commander
-    .command("disable-live-reload [manifestPath]")
-    .description("Disable live reload for the add-in.")
-    .action(commands.disableLiveReload);
+    .command("live-reload <manifest-path>")
+    .option("--enable", `Enable live-reload for the add-in.`)
+    .option("--disable", "Disable live-reload for the add-in")
+    .description("Configure live-reload for the Office Add-in.")
+    .action(commands.liveReload);
 
   commander
-    .command("disable-runtime-logging")
-    .description("Disables runtime logging.")
-    .action(commands.disableRuntimeLogging);
+    .command("runtime-log")
+    .option("--enable [path]", `Enable the runtime log.`)
+    .option("--disable", "Disable the runtime log.")
+    .description("Configure the runtime log for all Office Add-ins.")
+    .action(commands.runtimeLogging);
 
   commander
-    .command("enable-debugging [manifestPath]")
-    .description("Enable debugging for the add-in.")
-    .option("--debug-method <method>", "Specify the debug method: 'direct' or 'web'.")
-    .action(commands.enableDebugging);
-
-  commander
-    .command("enable-live-reload [manifestPath]")
-    .description("Enable live reload for the add-in.")
-    .action(commands.enableLiveReload);
-
-  commander
-    .command("enable-runtime-logging [path]")
-    .description("Enable runtime logging.")
-    .action(commands.enableRuntimeLogging);
-
-  commander
-    .command("get-source-bundle-url <manifestPath>")
-    .description("Display the components of the url used to obtain the source bundle.")
-    .action(commands.getSourceBundleUrl);
-
-  commander
-    .command("is-debugging-enabled [manifestPath]")
-    .description("Display whether debugging is enabled for the add-in.")
-    .action(commands.isDebuggingEnabled);
-
-  commander
-    .command("is-live-reload-enabled [manifestPath]")
-    .description("Display whether live reload is enabled.")
-    .action(commands.isDebuggingEnabled);
-
-  commander
-    .command("is-runtime-logging-enabled")
-    .description("Display whether runtime logging is enabled.")
-    .action(commands.isRuntimeLoggingEnabled);
-
-  commander
-    .command("set-source-bundle-url <manifestPath>")
-    .description("Specify values for components of the url used to obtain the source bundle.")
+    .command("source-bundle-url <manifestPath>")
+    .description("Specify values for components of the source bundle url.")
     .option("-h,--host <host>", `The host name to use, or "" to use the default ('localhost').`)
     .option("-p,--port <port>", `The port number to use, or "" to use the default (8081).`)
     .option("--path <path>", `The path to use, or "" to use the default.`)
-    .option("-e,--extension [extension]", `The extension to use ("" for no extension), or omit the value to use the default (".bundle").`)
-    .action(commands.setSourceBundleUrl);
+    .option("-e,--extension <extension>", `The extension to use, or "" to use the default (".bundle").`)
+    .action(commands.sourceBundleUrl);
 
   commander.parse(process.argv);
 }

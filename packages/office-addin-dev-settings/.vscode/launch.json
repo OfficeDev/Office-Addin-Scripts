@@ -12,97 +12,127 @@
       "args": ["clear", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
-      "name": "Command Line: disable-debugging",
+      "name": "Command Line: debugging",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["disable-debugging", "${workspaceFolder}\\test\\manifest.xml"]
+      "args": ["debugging", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
-      "name": "Command Line: disable-live-reload",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["disable-live-reload", "${workspaceFolder}\\test\\manifest.xml"]
-    },
-    {
-      "name": "Command Line: disable-runtime-logging",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["disable-runtime-logging"]
-    },
-    {
-      "name": "Command Line: enable-debugging",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["enable-debugging", "${workspaceFolder}\\test\\manifest.xml"]
-    },
-    {
-      "name": "Command Line: enable-live-reload",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["enable-live-reload", "${workspaceFolder}\\test\\manifest.xml"]
-    },
-    {
-      "name": "Command Line: enable-runtime-logging",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["enable-runtime-logging"]
-    },
-    {
-      "name": "Command Line: get-source-bundle-url",
+      "name": "Command Line: debugging --disable",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/dev-settings.js",
       "args": [
-        "get-source-bundle-url",
-        "${workspaceFolder}\\test\\manifest.xml"
+        "debugging",
+        "${workspaceFolder}\\test\\manifest.xml",
+        "--disable"
       ]
     },
     {
-      "name": "Command Line: is-debugging-enabled",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["is-debugging-enabled", "${workspaceFolder}\\test\\manifest.xml"]
-    },
-    {
-      "name": "Command Line: is-live-reload-enabled",
+      "name": "Command Line: debugging --enable",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/dev-settings.js",
       "args": [
-        "is-live-reload-enabled",
-        "${workspaceFolder}\\test\\manifest.xml"
+        "debugging",
+        "${workspaceFolder}\\test\\manifest.xml",
+        "--enable"
       ]
     },
     {
-      "name": "Command Line: is-runtime-logging-enabled",
+      "name": "Command Line: live-reload",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["is-runtime-logging-enabled"]
+      "args": ["live-reload", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
-      "name": "Command Line: set-source-bundle-url",
+      "name": "Command Line: live-reload --disable",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/dev-settings.js",
       "args": [
-        "set-source-bundle-url",
+        "live-reload",
+        "${workspaceFolder}\\test\\manifest.xml",
+        "--disable"
+      ]
+    },
+    {
+      "name": "Command Line: live-reload --enable",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": [
+        "live-reload",
+        "${workspaceFolder}\\test\\manifest.xml",
+        "--enable"
+      ]
+    },
+    {
+      "name": "Command Line: runtime-log",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": ["runtime-log"]
+    },
+    {
+      "name": "Command Line: runtime-log --disable",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": ["runtime-log", "--disable"]
+    },
+    {
+      "name": "Command Line: runtime-log --enable",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": ["runtime-log", "--enable"]
+    },
+    {
+      "name": "Command Line: source-bundle-url",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": ["source-bundle-url", "${workspaceFolder}\\test\\manifest.xml"]
+    },
+    {
+      "name": "Command Line: source-bundle-url (set)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": [
+        "source-bundle-url",
         "${workspaceFolder}\\test\\manifest.xml",
         "--host",
-        "HOST",
-        "--port",
-        "PORT",
-        "--path",
-        "PATH",
-        "--extension",
-        ".EXT"
+        "zzz"
+      ]
+    },
+    {
+      "name": "Command Line: source-bundle-url (set to defaults)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": [
+        "source-bundle-url",
+        "${workspaceFolder}\\test\\manifest.xml",
+        "--host", "",
+        "--port", "",
+        "--path", "",
+        "--extension", ""
+      ]
+    },
+    {
+      "name": "Command Line: source-bundle-url (some params)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": [
+        "source-bundle-url",
+        "${workspaceFolder}\\test\\manifest.xml",
+        "--host", "",
+        "--port", "4444",
       ]
     },
     {

@@ -13,6 +13,18 @@
             }
         },
         {
+            "label": "Install",
+            "type": "npm",
+            "script": "install",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Tests",
+            "type": "npm",
+            "script": "test",
+            "problemMatcher": []
+        },
+        {
             "label": "Watch",
             "type": "npm",
             "script": "tsc-watch",
@@ -21,11 +33,5 @@
             ],
             "isBackground": true
         },
-        {
-            "label": "Run Tests",
-            "type": "npm",
-            "script": "test",
-            "problemMatcher": []
-        }
     ]
 }

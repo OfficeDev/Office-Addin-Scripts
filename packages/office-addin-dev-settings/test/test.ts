@@ -6,14 +6,14 @@ import * as devSettings from "../src/dev-settings";
 
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 
-async function testSetSourceBundleUrlComponents(host?: string, port?: string, path?: string, extension?: string) {
-  await devSettings.setSourceBundleUrl(addinId, new devSettings.SourceBundleUrlComponents(host, port, path, extension));
-  const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(addinId);
-  assert.strictEqual(components.extension, extension);
-  assert.strictEqual(components.host, host);
-  assert.strictEqual(components.path, path);
-  assert.strictEqual(components.port, port);
-  assert.strictEqual(components.url, `http://${host || "localhost"}:${port || "8081"}/${path || "{path}"}${(extension === undefined) ? ".bundle" : extension}`);
+async function testSetSourceBundleUrlComponents(components: devSettings.SourceBundleUrlComponents, expected: devSettings.SourceBundleUrlComponents) {
+  await devSettings.setSourceBundleUrl(addinId, components);
+  const actual: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(addinId);
+  assert.strictEqual(actual.extension, expected.extension);
+  assert.strictEqual(actual.host, expected.host);
+  assert.strictEqual(actual.path, expected.path);
+  assert.strictEqual(actual.port, expected.port);
+  assert.strictEqual(actual.url, `http://${expected.host || "localhost"}:${expected.port || "8081"}/${expected.path || "{path}"}${expected.extension || ".bundle"}`);
 }
 
 describe("DevSettingsForAddIn", function() {
@@ -54,10 +54,54 @@ describe("DevSettingsForAddIn", function() {
       assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
     });
     it("source bundle url components can be set", async function() {
-      await testSetSourceBundleUrlComponents("HOST", "PORT", "PATH", ".EXT");
+      const actual = new devSettings.SourceBundleUrlComponents("HOST", "PORT", "PATH", ".EXT");
+      const expected = new devSettings.SourceBundleUrlComponents("HOST", "PORT", "PATH", ".EXT");
+      await testSetSourceBundleUrlComponents(actual, expected);
     });
     it("source bundle url components can be cleared", async function() {
-      await testSetSourceBundleUrlComponents(undefined, undefined, undefined, undefined);
+      const actual = new devSettings.SourceBundleUrlComponents("", "", "", "");
+      const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, undefined);
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url host only can be set", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents("HOST", undefined, undefined, undefined);
+      const expected = new devSettings.SourceBundleUrlComponents("HOST", undefined, undefined, undefined);
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url port only can be set", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents(undefined, "9999", undefined, undefined);
+      const expected = new devSettings.SourceBundleUrlComponents("HOST", "9999", undefined, undefined);
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url path only can be set", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, "PATH", undefined);
+      const expected = new devSettings.SourceBundleUrlComponents("HOST", "9999", "PATH", undefined);
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url path only can be set", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, "EXT");
+      const expected = new devSettings.SourceBundleUrlComponents("HOST", "9999", "PATH", "EXT");
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url host only can be cleared", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents("", undefined, undefined, undefined);
+      const expected = new devSettings.SourceBundleUrlComponents(undefined, "9999", "PATH", "EXT");
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url port only can be set", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents(undefined, "", undefined, undefined);
+      const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, "PATH", "EXT");
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url path only can be set", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, "", undefined);
+      const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, "EXT");
+      await testSetSourceBundleUrlComponents(actual, expected);
+    });
+    it("source bundle url path only can be set", async function() {
+      const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, "");
+      const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, undefined);
+      await testSetSourceBundleUrlComponents(actual, expected);
     });
   });
 
@@ -121,6 +165,7 @@ describe("DevSettingsForAddIn", function() {
 });
 
 describe("RuntimeLogging", async function() {
+  let pathBeforeTests: string | undefined;
   const testExecDirName = "testExec";
   const defaultFileName = "OfficeAddins.log.txt";
   const baseDirPath = process.cwd();
@@ -128,7 +173,18 @@ describe("RuntimeLogging", async function() {
   const defaultPath = `${process.env.TEMP}\\${defaultFileName}`;
 
   this.beforeAll(async function() {
+    pathBeforeTests = await devSettings.getRuntimeLoggingPath();
+    console.log(`Runtime logging path before tests: ${pathBeforeTests}`);
     await devSettings.disableRuntimeLogging();
+  });
+
+  this.afterAll(async function() {
+    if (pathBeforeTests) {
+      await devSettings.enableRuntimeLogging(pathBeforeTests);
+    } else {
+      await devSettings.disableRuntimeLogging();
+    }
+    console.log(`Restored original runtime logging path.`);
   });
 
   describe("basic validation", function() {

@@ -123,27 +123,35 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
 
-  if (components.host) {
-    await registry.addStringValue(key, SourceBundleHost, components.host);
-  } else {
-    await registry.deleteValue(key, SourceBundleHost);
+  if (components.host !== undefined) {
+    if (components.host) {
+      await registry.addStringValue(key, SourceBundleHost, components.host);
+    } else {
+      await registry.deleteValue(key, SourceBundleHost);
+    }
   }
 
-  if (components.port) {
-    await registry.addStringValue(key, SourceBundlePort, components.port);
-  } else {
-    await registry.deleteValue(key, SourceBundlePort);
+  if (components.port !== undefined) {
+    if (components.port) {
+      await registry.addStringValue(key, SourceBundlePort, components.port);
+    } else {
+      await registry.deleteValue(key, SourceBundlePort);
+    }
   }
 
-  if (components.path) {
-    await registry.addStringValue(key, SourceBundlePath, components.path);
-  } else {
-    await registry.deleteValue(key, SourceBundlePath);
+  if (components.path !== undefined) {
+    if (components.path) {
+      await registry.addStringValue(key, SourceBundlePath, components.path);
+    } else {
+      await registry.deleteValue(key, SourceBundlePath);
+    }
   }
 
   if (components.extension !== undefined) {
-    await registry.addStringValue(key, SourceBundleExtension, components.extension);
-  } else {
-    await registry.deleteValue(key, SourceBundleExtension);
+    if (components.extension) {
+      await registry.addStringValue(key, SourceBundleExtension, components.extension);
+    } else {
+      await registry.deleteValue(key, SourceBundleExtension);
+    }
   }
 }
