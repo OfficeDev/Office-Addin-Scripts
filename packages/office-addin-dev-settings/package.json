@@ -4,10 +4,8 @@
   "description": "Configure developer settings for Office Add-ins.",
   "main": "./lib/dev-settings.js",
   "scripts": {
-    "tsc": "tsc -p tsconfig.json",
-    "tsc-watch": "tsc -p tsconfig.json -w",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\"",
     "test": "mocha -r ts-node/register test/**/*.ts"
   },
   "author": "Office Dev",
