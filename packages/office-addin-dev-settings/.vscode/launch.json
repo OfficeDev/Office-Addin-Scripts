@@ -5,6 +5,27 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Command Line: appcontainer",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml"]
+    },
+    {
+      "name": "Command Line: appcontainer --loopback",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml", "--loopback"]
+    },
+    {
+      "name": "Command Line: appcontainer --prevent-loopback",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml", "--prevent-loopback"]
+    },
+    {
       "name": "Command Line: clear",
       "type": "node",
       "request": "launch",
