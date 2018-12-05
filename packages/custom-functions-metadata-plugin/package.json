@@ -1,0 +1,21 @@
+{
+  "name": "customfunctionsplugin",
+  "version": "1.0.0",
+  "description": "Plugin to auto generate custom functions metadata",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json",
+    "tsc-watch": "tsc -p tsconfig.json -w",
+    "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^4.0.1",
+    "es6-promise": "^4.2.5",
+    "rimraf": "^2.6.2",
+    "typescript": "^3.1.6",
+    "webpack": "^4.25.1"
+  }
+}
