@@ -98,7 +98,7 @@ function tupleTest(t:[string,number]){
 /**
  * Test function for streaming type
  * @param x - Test string
- * @param sf - Streaming function type
+ * @param sf - Streaming function type return type should be number
  * @CustomFunction 
  */
 function streamingTest(x: string, sf: CustomFunctions.StreamingHandler<number>) {

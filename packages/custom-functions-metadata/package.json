@@ -14,7 +14,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "custom-functions-metadata": "./lib/json-generate.js generate"
+    "custom-functions-metadata": "./lib/json-generate.js"
   },
   "keywords": [
     "Office",
