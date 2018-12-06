@@ -20,7 +20,7 @@ class CustomFunctionsPlugin {
 
         if (compiler.hooks) {
             //@ts-ignore
-            compiler.hooks.entryOption.tap(pluginName, (compilation) => {
+            compiler.hooks.compile.tap(pluginName, (compilation) => {
                 //Create dist folder if it doesn't exist
                 try {
                     fs.mkdirSync(outputPath)
