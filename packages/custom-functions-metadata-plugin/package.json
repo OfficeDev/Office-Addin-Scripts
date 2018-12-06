@@ -1,15 +1,15 @@
 {
   "name": "customfunctionsplugin",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Plugin to auto generate custom functions metadata",
-  "main": "index.js",
+  "main": "./lib/customfunctionsplugin.js",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Office Dev",
   "license": "ISC",
   "dependencies": {
     "concurrently": "^4.0.1",

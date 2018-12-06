@@ -1,6 +1,7 @@
 import * as metadata from 'custom-functions-metadata';
-const path = require('path');
-const fs = require('fs');
+import * as path from 'path';
+import * as fs from 'fs';
+
 const pluginName = 'customfunctions-plugin';
 
 type CfType = {input:string, output:string};
@@ -23,7 +24,8 @@ class CustomFunctionsPlugin {
                 //Create dist folder if it doesn't exist
                 try {
                     fs.mkdirSync(outputPath)
-                    } catch (err) {
+                    } 
+                catch (err) {
                       if (err.code !== 'EEXIST') throw err
                     }
                 const cfmetadata = metadata.generate(this.options.input, path.join(outputPath, this.options.output));
