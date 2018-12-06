@@ -4,7 +4,65 @@
 
 import * as commander from "commander";
 import { ManifestInfo, readManifestFile } from "office-addin-manifest";
+import {
+  addLoopbackExemptionForAppcontainer,
+  getAppcontainerName,
+  isAppcontainerSupported,
+  isLoopbackExemptionForAppcontainer,
+  removeLoopbackExemptionForAppcontainer,
+} from "./appcontainer";
 import * as devSettings from "./dev-settings";
+
+export async function appcontainer(manifestPath: string, command: commander.Command) {
+  if (isAppcontainerSupported()) {
+    try {
+      const manifest = await readManifestFile(manifestPath);
+      const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
+
+      if (sourceLocation === undefined) {
+        throw new Error(`The source location could not be retrieved from the manifest.`);
+      }
+
+      const name = getAppcontainerName(sourceLocation, false);
+
+      if (command.loopback) {
+        console.log(`Appcontainer name: ${name}`);
+        try {
+          await addLoopbackExemptionForAppcontainer(name);
+          const allowed = await isLoopbackExemptionForAppcontainer(name);
+          if (allowed) {
+            console.log(`Loopback allowed.`);
+          } else {
+            // if the exemption was not added, the appcontainer name was not found.
+            throw new Error("Appcontainer name was not found.");
+          }
+        } catch (err) {
+          throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
+        }
+      } else if (command.preventLoopback) {
+        console.log(`Appcontainer name: ${name}`);
+        try {
+          await removeLoopbackExemptionForAppcontainer(name);
+          console.log(`Loopback is no longer allowed.`);
+        } catch (err) {
+          throw new Error(`Unable to disallow loopback. \n${err}`);
+        }
+      } else {
+        console.log(`Appcontainer name: ${name}`);
+        try {
+          const allowed = await isLoopbackExemptionForAppcontainer(name);
+          console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
+        } catch (err) {
+          throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
+        }
+      }
+    } catch (err) {
+      logErrorMessage(err);
+    }
+  } else {
+    console.log("Appcontainer is not supported.");
+  }
+}
 
 export async function clear(manifestPath: string) {
   try {

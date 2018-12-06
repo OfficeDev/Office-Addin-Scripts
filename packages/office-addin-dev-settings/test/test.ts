@@ -2,6 +2,7 @@ import * as assert from "assert";
 import * as fsextra from "fs-extra";
 import * as mocha from "mocha";
 import * as fspath from "path";
+import * as appcontainer from "../src/appcontainer";
 import * as devSettings from "../src/dev-settings";
 
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
@@ -160,6 +161,17 @@ describe("DevSettingsForAddIn", function() {
       assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
       await devSettings.enableLiveReload(addinId);
       assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
+    });
+  });
+});
+
+describe("Appcontainer", async function() {
+  describe("getAppcontainerName()", function() {
+    it("developer add-in from https://localhost:3000", function() {
+      assert.strictEqual(appcontainer.getAppcontainerName("https://localhost:3000/index.html"), "1_https___localhost_300004ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
+    });
+    it("store add-in (ScriptLab)", function() {
+      assert.strictEqual(appcontainer.getAppcontainerName("https://script-lab.azureedge.net", true), "0_https___script-lab.azureedge.net04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
   });
 });

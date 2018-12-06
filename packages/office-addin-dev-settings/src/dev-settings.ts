@@ -173,6 +173,13 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
 
 if (process.argv[1].endsWith("\\dev-settings.js")) {
   commander
+    .command("appcontainer <manifestPath>")
+    .description("Display or configure the appcontainer used to run the Office Add-in.")
+    .option("--loopback", `Allow access to loopback addresses such as "localhost".`)
+    .option("--prevent-loopback", `Prevent access to loopback addresses such as "localhost".`)
+    .action(commands.appcontainer);
+
+  commander
     .command("clear [manifestPath]")
     .description("Clear all dev settings for the Office Add-in.")
     .action(commands.clear);
