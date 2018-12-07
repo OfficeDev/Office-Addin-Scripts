@@ -7,7 +7,7 @@ const pluginName = "CustomFunctionsMetadataPlugin";
 
 type Options = {input: string, output: string};
 
-class CustomFunctionsPlugin {
+class CustomFunctionsMetadataPlugin {
     private options: Options;
 
     constructor(options: Options) {
@@ -33,4 +33,4 @@ class CustomFunctionsPlugin {
     }
 }
 
-module.exports = CustomFunctionsPlugin;
+module.exports = CustomFunctionsMetadataPlugin;
