@@ -1,24 +1,38 @@
 {
-  "name": "customfunctionsplugin",
+  "name": "custom-functions-plugin",
   "version": "0.0.1",
-  "description": "Plugin to auto generate custom functions metadata",
+  "author": "Office Dev",
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  },
+  "description": "WebPack Plugin which generates metadata for Excel custom functions.",
+  "keywords": [
+    "Office",
+    "Office Add-in",
+    "Excel Custom Functions"
+  ],
+  "license": "MIT",
   "main": "./lib/customfunctionsplugin.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Office Dev",
-  "license": "ISC",
   "dependencies": {
-    "concurrently": "^4.0.1",
     "es6-promise": "^4.2.5",
     "rimraf": "^2.6.2",
     "typescript": "^3.1.6",
     "webpack": "^4.25.1"
   },
   "devDependencies": {
-    "@types/node": "^10.12.12"
+    "@types/node": "^10.12.12",
+    "@types/webpack": "^4.4.20",
+    "concurrently": "^4.1.0",
+    "tslint": "^5.11.0"
   }
 }
