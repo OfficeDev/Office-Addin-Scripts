@@ -1,4 +1,15 @@
 
+# Office-Addin-Scripts
+
+This repository contains packages which provide scripts used to automate tasks related to Office Add-ins.
+
+## In this repository
+
+- [office-addin-debugging](packages/office-addin-debugging/README.md)
+- [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
+- [office-addin-manifest](packages/office-addin-manifest/README.md)
+- [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
