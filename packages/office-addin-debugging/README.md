@@ -6,6 +6,8 @@ Provides the ability to start and stop debugging Office Add-ins.
 * [start](#start)
 * [stop](#stop)
 
+#
+
 ## start 
 Starts debugging. 
 
@@ -100,5 +102,5 @@ Options:
 
 Unregister the Office Add-in using the specified command. For example: `office-toolbox remove -m <manifest> -a <app>`.
  
-
+#
 
