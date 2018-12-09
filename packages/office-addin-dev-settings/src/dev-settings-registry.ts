@@ -15,7 +15,7 @@ const SourceBundlePath: string = "SourceBundlePath";
 const SourceBundlePort: string = "SourceBundlePort";
 const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
-const UseWebDebugger: string = "UseWebDebugger";
+const UseProxyDebugger: string = "UseWebDebugger";
 
 export async function clearDevSettings(addinId: string): Promise<void> {
   return deleteDeveloperSettingsRegistryKey(addinId);
@@ -31,13 +31,13 @@ export async function disableRuntimeLogging() {
 
   return registry.deleteKey(key);
 }
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
-  const useWebDebugger: boolean = enable && (method === DebuggingMethod.Web);
+  const useProxyDebugger: boolean = enable && (method === DebuggingMethod.Proxy);
 
   await registry.addBooleanValue(key, UseDirectDebugger, useDirectDebugger);
-  await registry.addBooleanValue(key, UseWebDebugger, useWebDebugger);
+  await registry.addBooleanValue(key, UseProxyDebugger, useProxyDebugger);
 }
 
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
@@ -65,8 +65,8 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
     methods.push(DebuggingMethod.Direct);
   }
 
-  if (isRegistryValueTrue(await registry.getValue(key, UseWebDebugger))) {
-    methods.push(DebuggingMethod.Web);
+  if (isRegistryValueTrue(await registry.getValue(key, UseProxyDebugger))) {
+    methods.push(DebuggingMethod.Proxy);
   }
 
   return methods;
@@ -93,7 +93,7 @@ export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
 
   const useDirectDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, UseDirectDebugger));
-  const useWebDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, UseWebDebugger));
+  const useWebDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, UseProxyDebugger));
 
   return useDirectDebugger || useWebDebugger;
 }
