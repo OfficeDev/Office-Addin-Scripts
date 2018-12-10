@@ -13,10 +13,13 @@ export async function generate(inputFile: string, outputFile: string) {
       if (!outputFile) {
         throw new Error("You need to provide the path to the output file for the custom functions metadata.");
       }
-      console.log("Begin json generation")
-      await metadata.generate(inputFile,outputFile);
+      console.log("Begin json generation");
+      await metadata.generate(inputFile, outputFile);
+  } catch (err) {
+    logErrorMessage(err);
   }
-  catch (err){
-    console.log('Error: ' + err);
-  }
+}
+
+function logErrorMessage(err: any) {
+  console.error(`Error: ${err instanceof Error ? err.message : err}`);
 }

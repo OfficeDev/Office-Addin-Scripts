@@ -3,51 +3,78 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-/// <reference path="custom-functions-data.ts"/> 
-import * as fs from 'fs';
-import * as ts from 'typescript';
+import * as fs from "fs";
+import * as ts from "typescript";
 
 export let errorLogFile = [];
 export let skippedFunctions = [];
 
-const CUSTOM_FUNCTION = 'customfunction'; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
-const HELPURL_PARAM = 'helpurl';
+interface ICustomFunctionsMetadata {
+    functions: IFunction[];
+}
+
+interface IFunction {
+    name: string;
+    id: string;
+    helpUrl: string;
+    description: string;
+    parameters: IFunctionParameter[];
+    result: IFunctionResult;
+    options: IFunctionOptions;
+}
+
+interface IFunctionOptions {
+    volatile: boolean;
+    stream: boolean;
+    cancelable: boolean;
+}
+
+interface IFunctionParameter {
+    name: string;
+    description?: string;
+    type: string;
+    dimensionality: string;
+    optional: boolean;
+}
+
+interface IFunctionResult {
+    type: string;
+    dimensionality: string;
+}
+
+const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
+const HELPURL_PARAM = "helpurl";
 const VOLATILE = "volatile";
 const STREAMING = "streaming";
 const RETURN = "return";
 const CANCELABLE = "cancelable";
 
 const TYPE_MAPPINGS = {
-    [ts.SyntaxKind.NumberKeyword]: 'number',
-    [ts.SyntaxKind.StringKeyword]: 'string',
-    [ts.SyntaxKind.BooleanKeyword]: 'boolean',
-    [ts.SyntaxKind.AnyKeyword]: 'any',
-    [ts.SyntaxKind.UnionType]: 'any',
-    [ts.SyntaxKind.TupleType]: 'any',
-    [ts.SyntaxKind.EnumKeyword]: 'any',
-    [ts.SyntaxKind.ObjectKeyword]: 'any',
-    [ts.SyntaxKind.VoidKeyword]: 'any'
+    [ts.SyntaxKind.NumberKeyword]: "number",
+    [ts.SyntaxKind.StringKeyword]: "string",
+    [ts.SyntaxKind.BooleanKeyword]: "boolean",
+    [ts.SyntaxKind.AnyKeyword]: "any",
+    [ts.SyntaxKind.UnionType]: "any",
+    [ts.SyntaxKind.TupleType]: "any",
+    [ts.SyntaxKind.EnumKeyword]: "any",
+    [ts.SyntaxKind.ObjectKeyword]: "any",
+    [ts.SyntaxKind.VoidKeyword]: "any",
 };
 
 const TYPE_MAPPINGS_COMMENT = {
-    ['number']:1,
-    ['string']:2,
-    ['boolean']:3,
-    ['any']:4
+    ["number"]: 1,
+    ["string"]: 2,
+    ["boolean"]: 3,
+    ["any"]: 4,
 };
 
-type CustomFunctionsSchemaDimensionality = 'invalid' | 'scalar' | 'matrix';
+type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 /**
  * Check the error log and return true if any errors found
  */
-export function isErrorFound():boolean {
-    if (errorLogFile[0]){
-        return true;
-    }
-    else {
-        return false;
-    }
+export function isErrorFound(): boolean {
+    return errorLogFile[0] ? true : false;
 }
 
 /**
@@ -56,51 +83,43 @@ export function isErrorFound():boolean {
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
 export async function generate(inputFile: string, outputFileName: string): Promise<void> {
-    const sourceCode = fs.readFileSync(inputFile, 'utf-8');
+    const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
-    var rootObject: CustomFunctionMetadata.Metadata = {functions: parseTree(sourceFile)};
+    const rootObject: ICustomFunctionsMetadata = { functions: parseTree(sourceFile) };
 
     if (!isErrorFound()) {
 
         fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => {
-            if (err) {
-                console.error(err);
-                return;
-            };
-            console.log(outputFileName + " created for file: " + inputFile);
-        }
-        );
+            err ? console.error(err) : console.log(outputFileName + " created for file: " + inputFile);
+        });
+
         if (skippedFunctions.length > 0) {
             console.log("The following functions were skipped.");
-            for (let func in skippedFunctions) {
-                console.log(skippedFunctions[func]);
-            }
+            skippedFunctions.forEach((func) => console.log(skippedFunctions[func]));
         }
     } else {
-        console.log("There was one of more errors. We couldn't parse your file: " + inputFile);
-        for (let err in errorLogFile) {
-            console.log(errorLogFile[err]);
-        }
+        console.log("Errors in file: " + inputFile);
+        errorLogFile.forEach((err) => console.log(errorLogFile[err]));
     }
 }
 
-let enumList: string[] = [];
+const enumList: string[] = [];
 
 /**
  * Takes the sourcefile and attempts to parse the functions information
  * @param sourceFile source file containing the custom functions
  */
-export function parseTree(sourceFile: ts.SourceFile): CustomFunctionMetadata.Function[] {
-    const metadata: CustomFunctionMetadata.Function[] = [];
+export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
+    const functions: IFunction[] = [];
 
     buildEnums(sourceFile);
     visit(sourceFile);
-    return metadata;
+    return functions;
 
     function buildEnums(node: ts.Node) {
         if (ts.isEnumDeclaration(node)) {
-            enumList.push(node.name.getText())
+            enumList.push(node.name.getText());
         }
         ts.forEachChild(node, buildEnums);
     }
@@ -108,58 +127,55 @@ export function parseTree(sourceFile: ts.SourceFile): CustomFunctionMetadata.Fun
     function visit(node: ts.Node) {
         if (ts.isFunctionDeclaration(node)) {
             if (node.parent && node.parent.kind === ts.SyntaxKind.SourceFile) {
-                const func = node as ts.FunctionDeclaration;
+                const functionDeclaration = node as ts.FunctionDeclaration;
 
-                if (isCustomFunction(func)) {
-                    const jsDocParamInfo = getJSDocParams(func);
-                    const jsDocParamTypeInfo = getJSDocParamsType(func);
-                    const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(func);
+                if (isCustomFunction(functionDeclaration)) {
+                    const jsDocParamInfo = getJSDocParams(functionDeclaration);
+                    const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
+                    const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
-                    const [lastParameter] = func.parameters.slice(-1);
+                    const [lastParameter] = functionDeclaration.parameters.slice(-1);
                     const isStreamingFunction = isLastParameterStreaming(lastParameter);
                     const paramsToParse = isStreamingFunction
-                        ? func.parameters.slice(0, func.parameters.length - 1)
-                        : func.parameters.slice(0, func.parameters.length);
+                        ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
+                        : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
-                    const parameters = getParameters(paramsToParse,jsDocParamTypeInfo,jsDocParamInfo,jsDocsParamOptionalInfo);
+                    const parameters = getParameters(paramsToParse, jsDocParamTypeInfo, jsDocParamInfo, jsDocsParamOptionalInfo);
 
-                    const description = getDescription(func);
-                    const helpUrl = getHelpUrl(func);
+                    const description = getDescription(functionDeclaration);
+                    const helpUrl = getHelpUrl(functionDeclaration);
 
-                    const result = getResults(func, isStreamingFunction, lastParameter);
+                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter);
 
-                    const options = getOptions(func, isStreamingFunction);
+                    const options = getOptions(functionDeclaration, isStreamingFunction);
 
-                    let funcName:string = "";
-                    if (func.name) {
-                        funcName = func.name.text;
-                    }
+                    const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
 
-                    const metadataItem: CustomFunctionMetadata.Function = {
+                    const functionMetadata: IFunction = {
+                        description,
+                        helpUrl,
                         id: funcName,
                         name: funcName.toUpperCase(),
-                        helpUrl,
-                        description,
+                        options,
                         parameters,
                         result,
-                        options,
                     };
 
                     if (!options.volatile && !options.stream) {
-                        delete metadataItem.options;
+                        delete functionMetadata.options;
                     }
 
-                     metadata.push(metadataItem);
-                }
-                else {
-                    //Function was skipped
-                    if (func.name) {
+                    functions.push(functionMetadata);
+                } else {
+                    // Function was skipped
+                    if (functionDeclaration.name) {
                         // @ts-ignore
-                        skippedFunctions.push(func.name.text);
+                        skippedFunctions.push(functionDeclaration.name.text);
                     }
                 }
             }
         }
+
         ts.forEachChild(node, visit);
     }
 }
@@ -169,12 +185,12 @@ export function parseTree(sourceFile: ts.SourceFile): CustomFunctionMetadata.Fun
  * @param func - Function
  * @param isStreamingFunction - Is is a steaming function
  */
-function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean): CustomFunctionMetadata.FunctionOptions {
-    const optionsItem: CustomFunctionMetadata.FunctionOptions = {
-        volatile: isVolatile(func),
+function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean): IFunctionOptions {
+    const optionsItem: IFunctionOptions = {
         cancelable: isStreamCancelable(func),
-        stream: isStreaming(func, isStreamingFunction)
-    }
+        stream: isStreaming(func, isStreamingFunction),
+        volatile: isVolatile(func),
+    };
     return optionsItem;
 }
 
@@ -184,22 +200,22 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean):
  * @param isStreaming - Is a streaming function
  * @param lastParameter - Last parameter of the function signature
  */
-function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastParameter: ts.ParameterDeclaration): CustomFunctionMetadata.FunctionResult {
+function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration): IFunctionResult {
     let resultType = "any";
     let resultDim = "scalar";
-    const defaultResultItem: CustomFunctionMetadata.FunctionResult = {
+    const defaultResultItem: IFunctionResult = {
+        dimensionality: resultDim,
         type: resultType,
-        dimensionality: resultDim
     };
 
-    if (isStreaming) {
+    if (isStreamingFunction) {
         const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
             logError("The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >')");
             return defaultResultItem;
         }
-        let returnType = func.type as ts.TypeReferenceNode;
-        if (returnType && returnType.getFullText().trim() !== 'void') {
+        const returnType = func.type as ts.TypeReferenceNode;
+        if (returnType && returnType.getFullText().trim() !== "void") {
             logError(`A streaming function should not have a return type.  Instead, its type should be based purely on what's inside "CustomFunctions.StreamingHandler<T>".`);
             return defaultResultItem;
         }
@@ -207,7 +223,7 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
         resultDim = getParamDim(lastParameterType.typeArguments[0]);
     } else if (func.type) {
         if (func.type.kind === ts.SyntaxKind.TypeReference &&
-            (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
+            (func.type as ts.TypeReferenceNode).typeName.getText() === "Promise" &&
             (func.type as ts.TypeReferenceNode).typeArguments &&
             // @ts-ignore
             (func.type as ts.TypeReferenceNode).typeArguments.length === 1
@@ -216,8 +232,7 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
             resultType = getParamType((func.type as ts.TypeReferenceNode).typeArguments[0]);
             // @ts-ignore
             resultDim = getParamDim((func.type as ts.TypeReferenceNode).typeArguments[0]);
-        }
-        else {
+        } else {
             resultType = getParamType(func.type);
             resultDim = getParamDim(func.type);
         }
@@ -225,26 +240,25 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
         console.log("No return type specified. This could be .js filetype, so continue.");
     }
 
-    //Check the code comments for @return parameter
-    if (resultType == "any") {
+    // Check the code comments for @return parameter
+    if (resultType === "any") {
         const resultFromComment = getReturnType(func);
         // @ts-ignore
         const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
-            if (!checkType) {
+        if (!checkType) {
                 logError("Unsupported type in code comment:" + resultFromComment);
-            }
-            else {
+            } else {
                 resultType = resultFromComment;
             }
     }
 
-    const resultItem: CustomFunctionMetadata.FunctionResult = {
+    const resultItem: IFunctionResult = {
+        dimensionality: resultDim,
         type: resultType,
-        dimensionality: resultDim
     };
 
-    //Only return dimensionality = matrix.  Default assumed scalar
-    if (resultDim == "scalar") {
+    // Only return dimensionality = matrix.  Default assumed scalar
+    if (resultDim === "scalar") {
         delete resultItem.dimensionality;
     }
 
@@ -257,15 +271,15 @@ function getResults(func: ts.FunctionDeclaration, isStreaming: boolean, lastPara
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }): CustomFunctionMetadata.FunctionParameter[] {
-    const parameterMetadata: CustomFunctionMetadata.FunctionParameter[] = [];
+function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }): IFunctionParameter[] {
+    const parameterMetadata: IFunctionParameter[] = [];
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
         const name = (p.name as ts.Identifier).text;
         let ptype = getParamType(p.type as ts.TypeNode);
-        
-        //Try setting type from parameter in code comment
-        if (ptype == 'any'){
+
+        // Try setting type from parameter in code comment
+        if (ptype === "any") {
             ptype = jsDocParamTypeInfo[name];
             if (ptype) {
                 // @ts-ignore
@@ -276,25 +290,25 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             }
         }
 
-        const pMetadataItem: CustomFunctionMetadata.FunctionParameter = {
-            name,
+        const pMetadataItem: IFunctionParameter = {
             description: jsDocParamInfo[name],
-            type: ptype,
             dimensionality: getParamDim(p.type as ts.TypeNode),
-            optional: getParamOptional(p, jsDocParamOptionalInfo)
+            name,
+            optional: getParamOptional(p, jsDocParamOptionalInfo),
+            type: ptype,
         };
 
-        //Only return dimensionality = matrix.  Default assumed scalar
-        if (pMetadataItem.dimensionality == "scalar") {
+        // Only return dimensionality = matrix.  Default assumed scalar
+        if (pMetadataItem.dimensionality === "scalar") {
             delete pMetadataItem.dimensionality;
         }
 
         parameterMetadata.push(pMetadataItem);
 
     })
-    .filter(meta => meta);
+    .filter((meta) => meta);
 
-     return parameterMetadata;
+    return parameterMetadata;
 }
 
 /**
@@ -302,13 +316,31 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
  * @param node - jsDoc node
  */
 export function getDescription(node: ts.Node): string {
-    let description:string = "";
-    //@ts-ignore
+    let description: string = "";
+    // @ts-ignore
     if (node.jsDoc[0]) {
-        //@ts-ignore
+        // @ts-ignore
         description = node.jsDoc[0].comment;
     }
     return description;
+}
+
+/**
+ * Find the tag with the specified name.
+ * @param node - jsDocs node
+ * @returns the tag if found; undefined otherwise.
+ */
+function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
+    return  ts.getJSDocTags(node).find((tag: ts.JSDocTag) => containsTag(tag, tagName));
+}
+
+/**
+ * Determine if a node contains a tag.
+ * @param node - jsDocs node
+ * @returns true if the node contains the tag; false otherwise.
+ */
+function hasTag(node: ts.Node, tagName: string): boolean {
+    return  findTag(node, tagName) !== undefined;
 }
 
 /**
@@ -316,16 +348,7 @@ export function getDescription(node: ts.Node): string {
  * @param node - jsDocs node
  */
 function isCustomFunction(node: ts.Node): boolean {
-    let isCustomFunction = false;
-    ts.getJSDocTags(node).forEach(
-        (tag: ts.JSDocTag) => {
-            if (containsTag(tag, CUSTOM_FUNCTION)) {
-                isCustomFunction = true;
-            }
-        }
-    );
-
-    return isCustomFunction;
+    return  hasTag(node, CUSTOM_FUNCTION);
 }
 
 /**
@@ -333,17 +356,8 @@ function isCustomFunction(node: ts.Node): boolean {
  * @param node Node
  */
 function getHelpUrl(node: ts.Node): string {
-    let helpUrl:string = "";
-    ts.getJSDocTags(node).forEach(
-        (tag: ts.JSDocTag) => {
-            if (containsTag(tag, HELPURL_PARAM)) {
-                if (tag.comment) {
-                    helpUrl = tag.comment;
-                }
-            }
-        }
-    );
-    return helpUrl;
+    const tag = findTag(node, HELPURL_PARAM);
+    return tag ? tag.comment || "" : "";
 }
 
 /**
@@ -351,23 +365,11 @@ function getHelpUrl(node: ts.Node): string {
  * @param node jsDocs node
  */
 function isVolatile(node: ts.Node): boolean {
-    let isVolatile = false;
-    ts.getJSDocTags(node).forEach(
-        (tag: ts.JSDocTag) => {
-            if(containsTag(tag, VOLATILE)){
-                isVolatile = true;
-            }
-        }
-    );
-    return isVolatile;
+    return hasTag(node, VOLATILE);
 }
 
-function containsTag(tag: ts.JSDocTag, tagName:string):boolean {
-    let containsTag:boolean = false;
-    if ((tag.tagName.escapedText as string).toLowerCase() === tagName) {
-        containsTag = true;
-    }
-    return containsTag;
+function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
+    return ((tag.tagName.escapedText as string).toLowerCase() === tagName);
 }
 
 /**
@@ -376,20 +378,8 @@ function containsTag(tag: ts.JSDocTag, tagName:string):boolean {
  * @param streamFunction - Is streaming function already determined by signature
  */
 function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
-    //If streaming already determined by function signature then return true
-    if (streamFunction){
-        return streamFunction;
-    }
-  
-    let streaming = false;
-    ts.getJSDocTags(node).forEach(
-        (tag: ts.JSDocTag) => {
-            if (containsTag(tag, STREAMING)) {
-                streaming = true;
-            }
-        }
-    );
-    return streaming;
+    // If streaming already determined by function signature then return true
+    return streamFunction || hasTag(node, STREAMING);
 }
 
 /**
@@ -401,13 +391,13 @@ function isStreamCancelable(node: ts.Node): boolean {
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
             if (containsTag(tag, STREAMING)) {
-                if (tag.comment){
+                if (tag.comment) {
                     if (tag.comment.toLowerCase() === CANCELABLE) {
                         streamCancel = true;
                     }
                 }
             }
-        }
+        },
     );
     return streamCancel;
 }
@@ -417,54 +407,53 @@ function isStreamCancelable(node: ts.Node): boolean {
  * @param node - jsDocs node
  */
 function getReturnType(node: ts.Node): string {
-    let type = 'any';
+    let type = "any";
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
             if (containsTag(tag, RETURN)) {
                 // @ts-ignore
-                if (tag.typeExpression){
+                if (tag.typeExpression) {
                     // @ts-ignore
-                    type = tag.typeExpression.getFullText().slice(1,tag.typeExpression.getFullText().length-1).toLowerCase();
+                    type = tag.typeExpression.getFullText().slice(1, tag.typeExpression.getFullText().length - 1).toLowerCase();
                 }
             }
-        }
+        },
     );
     return type;
 
 }
 
 /**
-* This method will parse out all of the @param tags of a JSDoc and return a dictionary
-* @param node - The function to parse the JSDoc params from
-*/
+ * This method will parse out all of the @param tags of a JSDoc and return a dictionary
+ * @param node - The function to parse the JSDoc params from
+ */
 function getJSDocParams(node: ts.Node): { [key: string]: string } {
     const jsDocParamInfo = {};
 
     ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
         (tag: ts.JSDocTag) => {
             if (tag.comment) {
-                const comment = (tag.comment.startsWith('-')
+                const comment = (tag.comment.startsWith("-")
                     ? tag.comment.slice(1)
                     : tag.comment
                 ).trim();
                 // @ts-ignore
                 jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = comment;
-            }
-            else {
-                //Description is missing so add empty string
+            } else {
+                // Description is missing so add empty string
                 // @ts-ignore
                 jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "";
             }
-        }
+        },
     );
 
     return jsDocParamInfo;
 }
 
 /**
-* This method will parse out all of the @param tags of a JSDoc and return a dictionary
-* @param node - The function to parse the JSDoc params from
-*/
+ * This method will parse out all of the @param tags of a JSDoc and return a dictionary
+ * @param node - The function to parse the JSDoc params from
+ */
 function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
     const jsDocParamTypeInfo = {};
 
@@ -472,26 +461,25 @@ function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
         // @ts-ignore
         (tag: ts.JSDocParameterTag) => {
             if (tag.typeExpression) {
-                //Should be in the form {string}, so removing the {} around type
-                const paramType = tag.typeExpression.getFullText().slice(1,tag.typeExpression.getFullText().length-1);
+                // Should be in the form {string}, so removing the {} around type
+                const paramType = tag.typeExpression.getFullText().slice(1, tag.typeExpression.getFullText().length - 1);
                 // @ts-ignore
                 jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = paramType;
-            }
-            else {
+            } else {
                 // Set as any
                 // @ts-ignore
                 jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "any";
             }
-        }
+        },
     );
 
     return jsDocParamTypeInfo;
 }
 
 /**
-* This method will parse out all of the @param tags of a JSDoc and return a dictionary
-* @param node - The function to parse the JSDoc params from
-*/
+ * This method will parse out all of the @param tags of a JSDoc and return a dictionary
+ * @param node - The function to parse the JSDoc params from
+ */
 function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
     const jsDocParamOptionalTypeInfo = {};
 
@@ -500,7 +488,7 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
         (tag: ts.JSDocParameterTag) => {
             // @ts-ignore
             jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = tag.isBracketed;
-        }
+        },
     );
 
     return jsDocParamOptionalTypeInfo;
@@ -518,8 +506,8 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration): boolean {
 
     const typeRef = param.type as ts.TypeReferenceNode;
     return (
-        typeRef.typeName.getText() === 'CustomFunctions.StreamingHandler' ||
-        typeRef.typeName.getText() === 'IStreamingCustomFunctionHandler' /* older version*/
+        typeRef.typeName.getText() === "CustomFunctions.StreamingHandler" ||
+        typeRef.typeName.getText() === "IStreamingCustomFunctionHandler" /* older version*/
     );
 }
 
@@ -528,23 +516,23 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration): boolean {
  * @param t TypeNode
  */
 function getParamType(t: ts.TypeNode): string {
-    let type = 'any';
-    //Only get type for typescript files.  js files will return any for all types
+    let type = "any";
+    // Only get type for typescript files.  js files will return any for all types
     if (t) {
         let kind = t.kind;
         if (ts.isTypeReferenceNode(t)) {
             const arrTr = t as ts.TypeReferenceNode;
             if (enumList.indexOf(arrTr.typeName.getText()) >= 0) {
-                //Type found in the enumList
+                // Type found in the enumList
                 return type;
             }
-            if (arrTr.typeName.getText() !== 'Array') {
+            if (arrTr.typeName.getText() !== "Array") {
                 logError("Invalid type: " + arrTr.typeName.getText());
                 return type;
             }
             if (arrTr.typeArguments) {
             const isArrayWithTypeRefWithin = validateArray(t) && ts.isTypeReferenceNode(arrTr.typeArguments[0]);
-                if (isArrayWithTypeRefWithin) {
+            if (isArrayWithTypeRefWithin) {
                     const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
                     if (!validateArray(inner)) {
                         logError("Invalid type array: " + inner.getText());
@@ -555,8 +543,7 @@ function getParamType(t: ts.TypeNode): string {
                     }
                 }
             }
-        }
-        else if (ts.isArrayTypeNode(t)) {
+        } else if (ts.isArrayTypeNode(t)) {
             const inner = (t as ts.ArrayTypeNode).elementType;
             if (!ts.isArrayTypeNode(inner)) {
                 logError("Invalid array type node: " + inner.getText());
@@ -580,10 +567,10 @@ function getParamType(t: ts.TypeNode): string {
  * @param t TypeNode
  */
 function getParamDim(t: ts.TypeNode): string {
-    let dimensionality: CustomFunctionsSchemaDimensionality = 'scalar';
+    let dimensionality: CustomFunctionsSchemaDimensionality = "scalar";
     if (t) {
         if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
-            dimensionality = 'matrix';
+            dimensionality = "matrix";
         }
     }
     return dimensionality;
@@ -593,10 +580,10 @@ function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { 
     let optional = false;
     const name = (p.name as ts.Identifier).text;
     const isOptional = p.questionToken != null || p.initializer != null || p.dotDotDotToken != null;
-    //If parameter is found to be optional in ts
+    // If parameter is found to be optional in ts
     if (isOptional) {
         optional = true;
-    //Else check the comments section for [name] format
+    // Else check the comments section for [name] format
     } else {
         // @ts-ignore
         optional = jsDocParamOptionalInfo[name];
@@ -610,7 +597,7 @@ function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { 
  */
 function validateArray(a: ts.TypeReferenceNode) {
     return (
-        a.typeName.getText() === 'Array' && a.typeArguments && a.typeArguments.length === 1
+        a.typeName.getText() === "Array" && a.typeArguments && a.typeArguments.length === 1
     );
 }
 
@@ -622,4 +609,3 @@ export function logError(error: string) {
     // @ts-ignore
     errorLogFile.push(error);
 }
-

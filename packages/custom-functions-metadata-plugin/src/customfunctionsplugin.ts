@@ -1,41 +1,36 @@
-import * as metadata from 'custom-functions-metadata';
-import * as path from 'path';
-import * as fs from 'fs';
+import * as metadata from "custom-functions-metadata";
+import * as fs from "fs";
+import * as path from "path";
+import * as webpack from "webpack";
 
-const pluginName = 'customfunctions-plugin';
+const pluginName = "CustomFunctionsMetadataPlugin";
 
-type CfType = {input:string, output:string};
+type Options = {input: string, output: string};
 
-class CustomFunctionsPlugin {
-    options: CfType;
-    constructor (options:CfType) {
-        // Default options
+class CustomFunctionsMetadataPlugin {
+    private options: Options;
+
+    constructor(options: Options) {
         this.options = options;
     }
 
-    //@ts-ignore
-    apply (compiler) {
+    public apply(compiler: webpack.Compiler) {
 
-        const outputPath = compiler.options.output.path;
+        const outputPath: string = (compiler.options && compiler.options.output) ? compiler.options.output.path || "" : "";
+        const outputFilePath = path.resolve(outputPath, this.options.output);
 
-        if (compiler.hooks) {
-            //@ts-ignore
-            compiler.hooks.compile.tap(pluginName, (compilation) => {
-                //Create dist folder if it doesn't exist
-                try {
-                    fs.mkdirSync(outputPath)
-                    } 
-                catch (err) {
-                      if (err.code !== 'EEXIST') throw err
-                    }
-                const cfmetadata = metadata.generate(this.options.input, path.join(outputPath, this.options.output));
-            });
-        }
-        else {
-            console.log('hooks not found');
-        }
+        compiler.hooks.compile.tap(pluginName, () => {
+            try {
+                fs.mkdirSync(outputPath);
+            } catch (err) {
+                if (err.code !== "EEXIST") {
+                    throw err;
+                }
+            }
+
+            metadata.generate(this.options.input, outputFilePath);
+        });
     }
-
 }
 
-module.exports = CustomFunctionsPlugin;
+module.exports = CustomFunctionsMetadataPlugin;
