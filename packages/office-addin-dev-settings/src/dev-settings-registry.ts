@@ -31,6 +31,7 @@ export async function disableRuntimeLogging() {
 
   return registry.deleteKey(key);
 }
+
 export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
