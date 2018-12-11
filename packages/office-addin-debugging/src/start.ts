@@ -7,12 +7,7 @@ import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
 
 function defaultDebuggingMethod(): DebuggingMethod {
-    switch (process.platform) {
-        case "win32":
-            return DebuggingMethod.Web; // will change to Direct later
-        default:
-            return DebuggingMethod.Web;
-    }
+    return DebuggingMethod.Direct;
 }
 
 function delay(milliseconds: number): Promise<void> {
@@ -44,12 +39,14 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     }
 }
 
-export function parseDebuggingMethod(text: string): DebuggingMethod {
+export function parseDebuggingMethod(text: string): DebuggingMethod | undefined {
     switch (text) {
         case "direct":
             return DebuggingMethod.Direct;
+        case "proxy":
+            return DebuggingMethod.Proxy;
         default:
-            return DebuggingMethod.Web;
+            return undefined;
     }
 }
 
