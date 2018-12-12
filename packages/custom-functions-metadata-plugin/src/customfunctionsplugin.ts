@@ -28,9 +28,28 @@ class CustomFunctionsMetadataPlugin {
                 }
             }
 
-            metadata.generate(this.options.input, outputFilePath);
+            metadata.generate(this.options.input, outputFilePath, true);
+
         });
+
+        compiler.hooks.emit.tap(pluginName, (compilation) => {
+
+            if (metadata.isErrorFound()) {
+                compilation.errors.push("Generating metadata file:" + outputFilePath);
+                metadata.errorLogFile.forEach((err) => compilation.errors.push(this.options.input + " " + err));
+            } 
+            else {
+                const stats = fs.statSync(outputFilePath);
+                compilation.assets[this.options.output] = {
+                    source: function() {return outputFilePath;},
+                    size: function() {return stats.size;},
+                };
+            }
+
+        });
+
     }
+
 }
 
 module.exports = CustomFunctionsMetadataPlugin;

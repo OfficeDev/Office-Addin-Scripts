@@ -82,7 +82,7 @@ export function isErrorFound(): boolean {
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
-export async function generate(inputFile: string, outputFileName: string): Promise<void> {
+export async function generate(inputFile: string, outputFileName: string, noConsole?:boolean): Promise<void> {
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -90,17 +90,17 @@ export async function generate(inputFile: string, outputFileName: string): Promi
 
     if (!isErrorFound()) {
 
-        fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => {
-            err ? console.error(err) : console.log(outputFileName + " created for file: " + inputFile);
+        fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => { if (!noConsole) {
+            err ? console.error(err) : console.log(outputFileName + " created for file: " + inputFile); }
         });
 
-        if (skippedFunctions.length > 0) {
+        if ((skippedFunctions.length > 0) && !noConsole ) {
             console.log("The following functions were skipped.");
             skippedFunctions.forEach((func) => console.log(skippedFunctions[func]));
         }
-    } else {
+    } else if (!noConsole) {
         console.log("Errors in file: " + inputFile);
-        errorLogFile.forEach((err) => console.log(errorLogFile[err]));
+        errorLogFile.forEach((err) => console.log(err));
     }
 }
 
@@ -208,6 +208,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         type: resultType,
     };
 
+    // Try and determine the return type.  If one can't be determined we will set to any type
     if (isStreamingFunction) {
         const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
@@ -236,8 +237,6 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             resultType = getParamType(func.type);
             resultDim = getParamDim(func.type);
         }
-    } else {
-        console.log("No return type specified. This could be .js filetype, so continue.");
     }
 
     // Check the code comments for @return parameter
