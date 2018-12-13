@@ -293,13 +293,13 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
   switch (text) {
     case "direct":
       return devSettings.DebuggingMethod.Direct;
-    case "web":
-      return devSettings.DebuggingMethod.Web;
+    case "proxy":
+      return devSettings.DebuggingMethod.Proxy;
     case "":
     case null:
     case undefined:
       // preferred debug method
-      return devSettings.DebuggingMethod.Web;
+      return devSettings.DebuggingMethod.Direct;
     default:
       throw new Error(`Please provide a valid debug method instead of '${text}'.`);
   }

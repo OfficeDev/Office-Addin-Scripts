@@ -13,7 +13,9 @@ const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
 export enum DebuggingMethod {
   Direct,
-  Web,
+  Proxy,
+  /** @deprecated use Proxy */
+  Web = Proxy,
 }
 
 export class SourceBundleUrlComponents {
@@ -65,7 +67,7 @@ export async function disableRuntimeLogging(): Promise<void> {
   }
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Web): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct): Promise<void> {
   switch (process.platform) {
     case "win32":
       return registry.enableDebugging(addinId, enable, method);
