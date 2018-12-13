@@ -31,7 +31,8 @@
     "@types/node-fetch": "^2.1.2",
     "@types/ws": "^5.1.2",
     "concurrently": "^3.5.0",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "typescript": "^3.2.2"
   },
   "repository": {
     "type": "git",
