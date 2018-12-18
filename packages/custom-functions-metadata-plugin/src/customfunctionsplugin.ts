@@ -27,7 +27,6 @@ class CustomFunctionsMetadataPlugin {
                     throw err;
                 }
             }
-
             metadata.generate(this.options.input, outputFilePath, true);
 
         });
@@ -36,13 +35,14 @@ class CustomFunctionsMetadataPlugin {
 
             if (metadata.isErrorFound()) {
                 compilation.errors.push("Generating metadata file:" + outputFilePath);
-                metadata.errorLogFile.forEach((err) => compilation.errors.push(this.options.input + " " + err));
+                metadata.errorLogFile.forEach((err: string) => compilation.errors.push(this.options.input + " " + err));
             } 
             else {
                 const stats = fs.statSync(outputFilePath);
+                const content = fs.readFileSync(outputFilePath);
                 compilation.assets[this.options.output] = {
-                    source: function() {return outputFilePath;},
-                    size: function() {return stats.size;},
+                    source: function() {return content;},
+                    size: function() {return stats.size;}
                 };
             }
 
