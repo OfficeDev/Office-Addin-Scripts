@@ -1,16 +1,50 @@
 
 # Office-Addin-Scripts
 
-This repository contains packages which provide scripts used to automate tasks related to Office Add-ins.
+These packages provide functionality which can be used to automate tasks related to Office Add-ins.
 
 These packages have been developed initially for debugging Office Add-ins which use the JavaScript runtime directly. You can see how these are used in the [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions) project.
 
+Developers may have their own workflow and tooling. These packages provide basic building blocks which can be adapted as needed. We encourage contributions and feedback.
+
 ## In this repository
 
-- [office-addin-debugging](packages/office-addin-debugging/README.md)
-- [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
-- [office-addin-manifest](packages/office-addin-manifest/README.md)
-- [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
+* [office-addin-debugging](packages/office-addin-debugging/README.md)
+* [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
+* [office-addin-manifest](packages/office-addin-manifest/README.md)
+* [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
+
+## Requirements
+
+* [Node.js](https://nodejs.org) 
+
+## Getting started
+
+In a command prompt, run:
+* `npm install`
+* `npx lerna bootstrap`
+
+This should also be done when after pulling additional changes or switching branches.
+
+## Build
+
+To build all packages, at the root directory, run:
+* `npx lerna run build`
+
+To build a single package, in the directory for the package, run:
+* `npm run build`
+
+## Test
+
+To run tests for all packages, at the root directory, run:
+* `npx lerna run test`
+
+To run tests for a single package, in the directory for the package, run:
+* `npm run test`
+
+## Editing
+
+Use `VS Code` to edit, build, test, and debug by opening the package folder in VS Code.
 
 ## Contributing
 
