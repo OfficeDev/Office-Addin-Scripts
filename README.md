@@ -22,14 +22,13 @@ Developers may have their own workflow and tooling. These packages provide basic
 
 In a command prompt, run:
 * `npm install`
-* `npx lerna bootstrap`
 
 This should also be done when after pulling additional changes or switching branches.
 
 ## Build
 
 To build all packages, at the root directory, run:
-* `npx lerna run build`
+* `npm run build`
 
 To build a single package, in the directory for the package, run:
 * `npm run build`
@@ -37,7 +36,7 @@ To build a single package, in the directory for the package, run:
 ## Test
 
 To run tests for all packages, at the root directory, run:
-* `npx lerna run test`
+* `npm run test`
 
 To run tests for a single package, in the directory for the package, run:
 * `npm run test`
