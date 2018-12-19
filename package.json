@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run build",
+    "postinstall": "lerna bootstrap",
     "test": "lerna run test"
   },
   "devDependencies": {
