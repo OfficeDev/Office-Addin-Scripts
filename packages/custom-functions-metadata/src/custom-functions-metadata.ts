@@ -287,6 +287,10 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
                     logError("Unsupported type in code comment:" + ptype);
                 }
             }
+            else {
+                //If type not found in comment section set to any type
+                ptype = "any";
+            }
         }
 
         const pMetadataItem: IFunctionParameter = {

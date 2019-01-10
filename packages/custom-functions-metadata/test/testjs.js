@@ -22,3 +22,19 @@ function testBoolean(bool){
  * @CustomFunction 
  */
 function testOptional(opt){}
+
+/**
+ * Test the string type
+ * @param {string} str - string type parameter
+ * @return {string}
+ * @CustomFunction
+ */
+function testString(str){}
+
+/**
+ * Test the any type
+ * @param {any} a - any type parameter
+ * @return {any}
+ * @CustomFunction
+ */
+function testAny(a){}

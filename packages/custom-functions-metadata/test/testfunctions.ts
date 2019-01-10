@@ -112,3 +112,11 @@ function streamingTest(x: string, sf: CustomFunctions.StreamingHandler<number>) 
 function testOptional(x?: string){
 }
 
+/**
+ * Test any type
+ * @CustomFunction
+ */
+function testAny(a: any): any {}
+
+CustomFunctionMappings.ADD=add;
+
