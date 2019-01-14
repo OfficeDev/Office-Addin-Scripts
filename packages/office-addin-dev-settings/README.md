@@ -108,7 +108,7 @@ Enable live-reload for the Office Add-in.
 #
 
 ### runtime-log 
-Use the command to enable or disable writing Office Add-in runtime events to a log file. Without options, it displays whether runtime logging is enabled.
+ Use the command to enable or disable writing any Office Add-in runtime events to a log file. Without options, it displays whether runtime logging is enabled.
 
 Notes:
 
