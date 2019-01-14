@@ -1,5 +1,70 @@
 # Custom Functions Metadata Specification
 
+## Overview
+
+When an Excel custom function is written in JavaScript or TypeScript, JSDoc tags are used to provide the extra information about the custom function. 
+
+## Tags
+
+### @customfunction
+
+Syntax: @customfunction _id_ _name_
+
+Specify this tag to treat the JavaScript/TypeScript function as an Excel custom function.
+
+#### id 
+
+The id is used as the invariant identifier for the custom function stored in the document. It should not change.
+
+* If id is not provided, the JavaScript/TypeScript function name is converted to uppercase, disallowed characters are removed.
+* The id must be unique for all custom functions.
+* The characters allowed are limited to: A-Z, a-z, 0-9, and period (.).
+
+#### name
+
+Provides the display name for the custom function. 
+
+* If name is not provided, the id is also used as the name.
+* Allowed characters: Letters [Unicode Alphabetic character](https://www.unicode.org/reports/tr44/tr44-22.html#Alphabetic), numbers, period (.), and underscore (\_).
+* Must start with a letter.
+* Maximum length is 128 characters.
+
+### @helpurl
+
+Syntax: @helpurl _url_
+
+The provided _url_ is displayed in Excel.
+
+### @param
+
+Syntax: @param {_type_} name _description_
+
+Provides the type and description for the parameter named _name_. 
+
+If `{type}` is omitted, the TypeScript type info will be used. If there is no type info, the type will be `any`.
+
+See the [Types](##types) for more information.
+
+
+### @returns
+
+Syntax: @returns {_type_} description
+
+Provides the type and description for the return value.
+
+If `{type}` is omitted, the TypeScript type info will be used. If there is no type info, the type will be `any`.
+
+
+## Types
+
+
+## Invocation Context
+
+
+
+
+
+
 @CustomFunction required
 
 Id: function name
