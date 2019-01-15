@@ -39,16 +39,30 @@ The provided _url_ is displayed in Excel.
 
 ### @param
 
-Syntax: @param {_type_} [_name_] _description_
+Syntax: @param {_type_} _name_ _description_
 
-Provides the type and description for the parameter named _name_. 
+To denote a custom function parameter as optional:
+* In JavaScript, put square brackets around _name_. For example: `@param {string} [text] Optional text`
+<TODO: mention how to use a default parameter in JavaScript>
 
-If `{type}` is omitted, the TypeScript type info will be used. If there is no type info, the type will be `any`.
+* In TypeScript, do one of the following:
+1. Use an optional parameter. For example: `function f(text?: string)`
+2. Give the parameter a default value. For example: `function f(text: string = "abc")`
+3. Use a union with `undefined`. For example: `function f(text: string | undefined)`
 
-[] around the name denote it is an optional parameter.
+#### {type}
 
-See the [Types](##types) for more information.
+* For JavaScript, `{type}` provides the type info for the paramater, or will be `any` if not provided.
+* For TypeScript, `{type}` should be omitted as the type info will come from the Typescript parameter type.
+* See the [Types](##types) for more information.
 
+#### name
+
+Specifies which parameter the @param tag applies to.
+
+#### description
+
+Provides the description which appears in Excel for the function parameter.
 
 ### @returns
 
@@ -62,9 +76,14 @@ If `{type}` is omitted, the TypeScript type info will be used. If there is no ty
 
 Provides the description of the custom functions. It is determined from the comment section above the function itself.
 
-### @streaming cancelable
+### @streaming
 
-Used to denote custom function is streaming and cancelable. In typescript if the last parameter of the function is of type CustomFunctions.StreamingHandler, then the function will be marked streaming and cancelable.
+Used to indicate that a custom function is a streaming function. 
+
+The last parameter should be of type `CustomFunctions.StreamingHandler<ResultType>`.
+The function should return `void`.
+
+Streaming functions do not return values directly, but rather should call `setResult(result: ResultType)` using the last parameter.   
 
 ### @volatile
 
@@ -73,8 +92,14 @@ Used to denote the custom function is volatile.
 
 ## Types
 
-Support for the following types: string, number, boolean, and any.
-All other typescript types will be treated as any.
+### Value types
+
+A single values may be represented using one of the following types: `any`, `boolean`, `number`, `string`.
+Using `boolean`, `number`, or `string` will allow Excel to convert the value to the desired type before calling the function. 
+
+### Matrix type
+
+Use a two-dimensional array type to have the parameter or return value be a matrix of values. For example, the type `number[][]` indicates a matrix of numbers. `string[][]` indicates a matrix of strings.
 
 ## Invocation Context
 
