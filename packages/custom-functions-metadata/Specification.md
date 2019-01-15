@@ -42,13 +42,13 @@ The provided _url_ is displayed in Excel.
 Syntax: @param {_type_} _name_ _description_
 
 To denote a custom function parameter as optional:
-* In JavaScript, put square brackets around _name_. For example: `@param {string} [text] Optional text`
-<TODO: mention how to use a default parameter in JavaScript>
+* In JavaScript, put square brackets around _name_. For example: `@param {string} [text] Optional text` associated with `function f(text="default")`
 
 * In TypeScript, do one of the following:
 1. Use an optional parameter. For example: `function f(text?: string)`
 2. Give the parameter a default value. For example: `function f(text: string = "abc")`
-3. Use a union with `undefined`. For example: `function f(text: string | undefined)`
+
+For detailed description of the @param see: [JSDoc](http://usejsdoc.org/tags-param.html)
 
 #### {type}
 
@@ -66,9 +66,9 @@ Provides the description which appears in Excel for the function parameter.
 
 ### @returns
 
-Syntax: @returns {_type_} description
+Syntax: @returns {_type_}
 
-Provides the type and description for the return value.
+Provides the type for the return value.
 
 If `{type}` is omitted, the TypeScript type info will be used. If there is no type info, the type will be `any`.
 
@@ -79,6 +79,8 @@ Provides the description of the custom functions. It is determined from the comm
 ### @streaming
 
 Used to indicate that a custom function is a streaming function. 
+
+To denote the custom function is cancelable use @streaming cancelable.
 
 The last parameter should be of type `CustomFunctions.StreamingHandler<ResultType>`.
 The function should return `void`.
@@ -94,7 +96,7 @@ Used to denote the custom function is volatile.
 
 ### Value types
 
-A single values may be represented using one of the following types: `any`, `boolean`, `number`, `string`.
+A single value may be represented using one of the following types: `any`, `boolean`, `number`, `string`.
 Using `boolean`, `number`, or `string` will allow Excel to convert the value to the desired type before calling the function. 
 
 ### Matrix type
