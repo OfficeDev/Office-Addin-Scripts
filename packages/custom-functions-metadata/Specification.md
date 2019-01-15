@@ -12,6 +12,8 @@ Syntax: @customfunction _id_ _name_
 
 Specify this tag to treat the JavaScript/TypeScript function as an Excel custom function.
 
+This tag is required to auto generated the metadata for the custom function.
+
 #### id 
 
 The id is used as the invariant identifier for the custom function stored in the document. It should not change.
@@ -37,11 +39,13 @@ The provided _url_ is displayed in Excel.
 
 ### @param
 
-Syntax: @param {_type_} name _description_
+Syntax: @param {_type_} [_name_] _description_
 
 Provides the type and description for the parameter named _name_. 
 
 If `{type}` is omitted, the TypeScript type info will be used. If there is no type info, the type will be `any`.
+
+[] around the name denote it is an optional parameter.
 
 See the [Types](##types) for more information.
 
@@ -54,58 +58,32 @@ Provides the type and description for the return value.
 
 If `{type}` is omitted, the TypeScript type info will be used. If there is no type info, the type will be `any`.
 
+### description
+
+Provides the description of the custom functions. It is determined from the comment section above the function itself.
+
+### @streaming cancelable
+
+Used to denote custom function is streaming and cancelable. In typescript if the last parameter of the function is of type CustomFunctions.StreamingHandler, then the function will be marked streaming and cancelable.
+
+### @volatile
+
+Used to denote the custom function is volatile.
+
 
 ## Types
 
+Support for the following types: string, number, boolean, and any.
+All other typescript types will be treated as any.
 
 ## Invocation Context
 
 
-
-
-
-
-@CustomFunction required
-
-Id: function name
-Name: function name
-
-/**
-* This is the description
-* @CustomFunction
-*/
-Description: Comments section of function
-
-helpUrl: @helpUrl in comments section
-
-result:{
-	type: number, string, boolean, or any 
-	dimensionality: scalar or matrix
-}
-@return {type} used for result type in javascript. 
-
-Only adding dimensionality if matrix
-
-Parameters: {
-	Description: @param {type} parameterName – Description of parameter
-	Name: populated from the function signature
-	Optional: In typescript this is denoted by parameterName? Or in javascript use @param {type} [parameterName] 
-	Type: @param {type} if not determined by function signature
-    Dimensionality: scalar or matrix
-}
-
-Options: {
-	Cancelable: @streaming cancelable 
-	Stream: @streaming or last parameter of function is of type CustomFunctions.StreamingHandler<type>
-	Volatile: @volatile
-}
-
-Only writing options section if one of the parameters is true.
-
 Command to run tool:
-Npm run generate-json <inputFile> <output>
+Npm run generate-json [inputFile] [output]
 
-Example:
+## Example:
+
 /**
  * This function adds 2 or 3 numbers together
  * @CustomFunction
@@ -116,14 +94,20 @@ Example:
  * @volatile
  * @streaming cancelable
  * @return {number}
- */
-function add(first: number, second: number, third?: number): number {
+  */
+
+function add(first: number, second: number, third?: number): number
+{
+
     return first + second + third;
+
 }
 
 Metadata generated:
+
 {
-    "functions": [
+    "functions":[
+        
         {
             "description": "This function adds 2 or 3 numbers together",
             "helpUrl": "https://dev.office.com",
