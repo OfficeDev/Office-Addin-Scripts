@@ -23,5 +23,5 @@ export async function stopDebugging(manifestPath: string, unregisterCommandLine?
         }
     }
 
-    console.log("Debugging has being stopped.");
+    console.log("Debugging has been stopped.");
 }
