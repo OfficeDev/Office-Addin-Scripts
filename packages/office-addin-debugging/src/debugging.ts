@@ -13,7 +13,7 @@ export * from "./stop";
 
 if (process.argv[1].endsWith("\\debugging.js")) {
     commander
-        .command("start <manifestPath>")
+        .command("start <manifestPath> [appType]")
         .option("--debug-method <method>", "The debug method to use.")
         .option("--dev-server <command>", "Run the dev server.")
         .option("--dev-server-port <port>", "Verify the dev server is running using this port.")
