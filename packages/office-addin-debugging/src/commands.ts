@@ -58,7 +58,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
         const devServer: string | undefined = command.devServer || process.env.npm_package_scripts_dev_server;
         const devServerPort = parseDevServerPort(command.devServerPort || process.env.npm_package_config_dev_server_port);
         const enableDebugging: boolean = command.debug;
-        const enableLiveReload: boolean = (command.liveReload === false);
+        const enableLiveReload: boolean = (command.liveReload === true);
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;

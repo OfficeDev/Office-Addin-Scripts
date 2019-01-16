@@ -138,13 +138,19 @@ export async function startDebugging(manifestPath: string, appType: AppType,
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    sideloadCommandLine?: string, enableDebugging: boolean = true, enableLiveReload: boolean = (debuggingMethod === DebuggingMethod.Proxy)) {
+    sideloadCommandLine?: string, enableDebugging: boolean = true, enableLiveReload: boolean = true) {
 
     const isDesktopAppType = (appType === AppType.Desktop);
     const isWebAppType = (appType === AppType.Web);
     const isProxyDebuggingMethod = (debuggingMethod === DebuggingMethod.Proxy);
+    // live reload can only be enabled for the desktop app type
+    // when using proxy debugging and the packager
+    const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
+
+    // only enable live reload if it can be enabled
+    enableLiveReload = enableLiveReload && canEnableLiveReload;
 
     console.log(enableDebugging
         ? "Debugging is being started..."
