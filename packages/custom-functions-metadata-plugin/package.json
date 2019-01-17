@@ -21,18 +21,18 @@
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "dependencies": {
     "custom-functions-metadata": "^0.0.1",
     "es6-promise": "^4.2.5",
     "rimraf": "^2.6.2",
     "typescript": "^3.1.6",
-    "webpack": "^4.25.1"
+    "webpack": "^4.27.1"
   },
   "devDependencies": {
     "@types/node": "^10.12.12",
-    "@types/webpack": "^4.4.20",
+    "@types/webpack": "^4.4.21",
     "concurrently": "^4.1.0",
     "tslint": "^5.11.0"
   }
