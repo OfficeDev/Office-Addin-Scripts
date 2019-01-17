@@ -92,10 +92,10 @@ describe("verify json created in file by javascript", function() {
 });
 describe("test errors", function() {
     describe("failure to generate", function() {
-        it("test error", function() {
+        it("test error", async function() {
              const inputFile = "../custom-functions-metadata/test/javascript/errorfunctions.js";
              const output = "./errortest.json";
-             customFunctionsMetadata.generate(inputFile, output);
+             await customFunctionsMetadata.generate(inputFile, output);
              const errtest: string[] = customFunctionsMetadata.errorLogFile;
              const errorstring = "Unsupported type in code comment:badtype";
              if (errtest.indexOf(errorstring) >= 0 ) {
@@ -109,12 +109,12 @@ describe("test errors", function() {
 });
 describe("test bad file paths", function() {
     describe("failure to generate bad file path", function() {
-        it("test error file path", function() {
+        it("test error file path", async function() {
             const inputFile = "doesnotexist.ts";
             const output = "./nofile.json";
             const testError = "ENOENT: no such file or directory";
             try {
-                customFunctionsMetadata.generate(inputFile, output);
+                await customFunctionsMetadata.generate(inputFile, output);
             } catch (error) {
                 assert.ok(error.message.startsWith(testError), "Error message not found");
                 assert.ok(error.message.includes(inputFile), "File name not found in error message");
