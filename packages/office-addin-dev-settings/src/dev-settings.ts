@@ -173,7 +173,7 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-if (process.argv[1].endsWith("\\dev-settings.js")) {
+if (process.argv[1].endsWith(fspath.join("lib", "dev-settings.js"))) {
   commander
     .command("appcontainer <manifestPath>")
     .description("Display or configure the appcontainer used to run the Office Add-in.")

@@ -9,6 +9,7 @@
 import * as child from 'child_process';
 import * as commander from 'commander';
 import { fork } from 'child_process';
+import * as path from "path";
 import WebSocket = require('ws');
 
 export function run(host: string = "localhost", port: string = "8081", 
@@ -85,7 +86,7 @@ export function run(host: string = "localhost", port: string = "8081",
   connectToDebuggerProxy();
 }
 
-if (process.argv[1].endsWith("\\debugger.js")) {
+if (process.argv[1].endsWith(path.join("lib", "debugger.js"))) {
   commander
   .option('-h, --host <host>', 'The hostname where the packager is running.')
   .option('-p, --port <port>', 'The port where the packager is running.')  

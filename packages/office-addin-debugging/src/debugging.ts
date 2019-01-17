@@ -4,6 +4,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import * as path from "path";
 import * as commands from "./commands";
 
 export * from "./port";
@@ -11,7 +12,7 @@ export * from "./process";
 export * from "./start";
 export * from "./stop";
 
-if (process.argv[1].endsWith("\\debugging.js")) {
+if (process.argv[1].endsWith(path.join("lib", "debugging.js"))) {
     commander
         .command("start <manifestPath> [appType]")
         .option("--debug-method <method>", "The debug method to use.")
