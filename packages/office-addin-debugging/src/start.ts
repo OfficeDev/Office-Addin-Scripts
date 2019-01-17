@@ -140,6 +140,7 @@ export async function startDebugging(manifestPath: string, appType: AppType,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
     sideloadCommandLine?: string, enableDebugging: boolean = true, enableLiveReload: boolean = true) {
 
+    const isWindowsPlatform = (process.platform === "win32");
     const isDesktopAppType = (appType === AppType.Desktop);
     const isWebAppType = (appType === AppType.Web);
     const isProxyDebuggingMethod = (debuggingMethod === DebuggingMethod.Proxy);
@@ -164,7 +165,7 @@ export async function startDebugging(manifestPath: string, appType: AppType,
     }
 
     // enable debugging
-    if (isDesktopAppType) {
+    if (isDesktopAppType && isWindowsPlatform) {
         await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod);
         if (enableDebugging) {
             console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
@@ -172,7 +173,7 @@ export async function startDebugging(manifestPath: string, appType: AppType,
     }
 
     // enable live reload
-    if (isDesktopAppType) {
+    if (isDesktopAppType && isWindowsPlatform) {
         await devSettings.enableLiveReload(manifestInfo.id, enableLiveReload);
         if (enableLiveReload) {
             console.log(`Enabled live-reload for add-in ${manifestInfo.id}.`);
@@ -180,7 +181,7 @@ export async function startDebugging(manifestPath: string, appType: AppType,
     }
 
     // set source bundle url
-    if (isDesktopAppType) {
+    if (isDesktopAppType && isWindowsPlatform) {
         if (sourceBundleUrlComponents) {
             await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
         }
