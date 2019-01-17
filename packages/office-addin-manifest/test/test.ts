@@ -5,9 +5,9 @@ import * as uuid from "uuid";
 import { isUUID } from "validator";
 import * as manifestInfo from "../src/manifestInfo";
 
-const manifestOriginalFolder = process.cwd() + "/test/manifests";
-const manifestTestFolder = process.cwd() + "\\testExecution\\testManifests";
-const testManifest = manifestTestFolder + "\\Taskpane.manifest.xml";
+const manifestOriginalFolder = `${process.cwd()}/test/manifests`;
+const manifestTestFolder = `${process.cwd()}/testExecution/testManifests`;
+const testManifest = `${manifestTestFolder}/Taskpane.manifest.xml`;
 
 describe("Manifest", function() {
   describe("readManifestInfo", function() {
@@ -101,7 +101,7 @@ describe("Manifest", function() {
       assert.strictEqual(updatedInfo.id, testGuid);
       assert.strictEqual(updatedInfo.displayName, testDisplayName);
     });
-    it("should handle specifying \"random\" form guid parameter", async function() {
+    it(`should handle specifying "random" form guid parameter`, async function() {
       // get original manifest info and create copy of manifest that we can overwrite in this test
       const originalInfo = await manifestInfo.readManifestFile(testManifest);
 
@@ -137,7 +137,7 @@ describe("Manifest", function() {
     });
     it("should handle an invalid manifest file path", async function() {
       // call  modify, specifying an invalid manifest path with a valid guid and displayName
-      const invalidManifest = manifestTestFolder + "\\foo\\manifest.xml";
+      const invalidManifest = `${manifestTestFolder}/foo/manifest.xml`;
       const testGuid = uuid.v1();
       const testDisplayName = "TestDisplayName";
       let result;
