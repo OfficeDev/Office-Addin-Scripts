@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
+import * as path from "path";
 import * as uuid from "uuid";
 import { isUUID } from "validator";
 import * as manifestInfo from "../src/manifestInfo";
@@ -137,7 +138,7 @@ describe("Manifest", function() {
     });
     it("should handle an invalid manifest file path", async function() {
       // call  modify, specifying an invalid manifest path with a valid guid and displayName
-      const invalidManifest = `${manifestTestFolder}/foo/manifest.xml`;
+      const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
       const testGuid = uuid.v1();
       const testDisplayName = "TestDisplayName";
       let result;
