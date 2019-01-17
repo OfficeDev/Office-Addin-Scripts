@@ -83,10 +83,17 @@ export function isErrorFound(): boolean {
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
 export async function generate(inputFile: string, outputFileName: string, noConsole?:boolean): Promise<void> {
+    // @ts-ignore
+    let rootObject: ICustomFunctionsMetadata = null;
+    if (fs.existsSync(inputFile)) {
+        
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
-    const rootObject: ICustomFunctionsMetadata = { functions: parseTree(sourceFile) };
+    rootObject = { functions: parseTree(sourceFile) };
+    } else {
+        logError("File not found: " + inputFile);
+    }
 
     if (!isErrorFound()) {
 

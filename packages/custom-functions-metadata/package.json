@@ -8,7 +8,7 @@
     "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
     "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
-    "test": "mocha -r ts-node/register test/test.ts",
+    "test": "mocha -r ts-node/register test/src/test.ts",
     "generate-json": "node ./lib/json-generate.js generate"
   },
   "author": "Office Dev",
