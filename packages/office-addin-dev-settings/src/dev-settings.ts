@@ -93,7 +93,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
         if (!tempDir) {
           throw new Error("The TEMP environment variable is not defined.");
         }
-        path = `${tempDir}\\${defaultRuntimeLogFileName}`;
+        path = fspath.normalize(`${tempDir}/${defaultRuntimeLogFileName}`);
       }
 
       const pathExists: boolean = fs.existsSync(path);

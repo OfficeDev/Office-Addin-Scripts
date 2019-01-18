@@ -17,25 +17,24 @@ async function testSetSourceBundleUrlComponents(components: devSettings.SourceBu
   assert.strictEqual(actual.url, `http://${expected.host || "localhost"}:${expected.port || "8081"}/${expected.path || "{path}"}${expected.extension || ".bundle"}`);
 }
 
-
-describe("DevSettingsForAddIn", function () {
+describe("DevSettingsForAddIn", function() {
   if (process.platform === "win32") {
-    this.beforeAll(async function () {
+    this.beforeAll(async function() {
       await devSettings.clearDevSettings(addinId);
     });
 
-    this.afterAll(async function () {
+    this.afterAll(async function() {
       await devSettings.clearDevSettings(addinId);
     });
 
-    describe("when no dev settings", function () {
-      it("debugging should not be enabled", async function () {
+    describe("when no dev settings", function() {
+      it("debugging should not be enabled", async function() {
         assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
       });
-      it("live reload should not be enabled", async function () {
+      it("live reload should not be enabled", async function() {
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
       });
-      it("have defaults for source bundle url components", async function () {
+      it("have defaults for source bundle url components", async function() {
         const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(addinId);
         assert.strictEqual(components.extension, undefined);
         assert.strictEqual(components.host, undefined);
@@ -43,106 +42,106 @@ describe("DevSettingsForAddIn", function () {
         assert.strictEqual(components.port, undefined);
         assert.strictEqual(components.url, "http://localhost:8081/{path}.bundle");
       });
-      it("clear dev settings when no dev settings", async function () {
+      it("clear dev settings when no dev settings", async function() {
         await devSettings.clearDevSettings(addinId);
       });
-      it("debugging can be enabled", async function () {
+      it("debugging can be enabled", async function() {
         assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
         await devSettings.enableDebugging(addinId);
         assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), true);
       });
-      it("live reload can be enabled", async function () {
+      it("live reload can be enabled", async function() {
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
         await devSettings.enableLiveReload(addinId);
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
       });
-      it("source bundle url components can be set", async function () {
+      it("source bundle url components can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents("HOST", "PORT", "PATH", ".EXT");
         const expected = new devSettings.SourceBundleUrlComponents("HOST", "PORT", "PATH", ".EXT");
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url components can be cleared", async function () {
+      it("source bundle url components can be cleared", async function() {
         const actual = new devSettings.SourceBundleUrlComponents("", "", "", "");
         const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, undefined);
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url host only can be set", async function () {
+      it("source bundle url host only can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents("HOST", undefined, undefined, undefined);
         const expected = new devSettings.SourceBundleUrlComponents("HOST", undefined, undefined, undefined);
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url port only can be set", async function () {
+      it("source bundle url port only can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents(undefined, "9999", undefined, undefined);
         const expected = new devSettings.SourceBundleUrlComponents("HOST", "9999", undefined, undefined);
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url path only can be set", async function () {
+      it("source bundle url path only can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, "PATH", undefined);
         const expected = new devSettings.SourceBundleUrlComponents("HOST", "9999", "PATH", undefined);
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url path only can be set", async function () {
+      it("source bundle url path only can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, "EXT");
         const expected = new devSettings.SourceBundleUrlComponents("HOST", "9999", "PATH", "EXT");
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url host only can be cleared", async function () {
+      it("source bundle url host only can be cleared", async function() {
         const actual = new devSettings.SourceBundleUrlComponents("", undefined, undefined, undefined);
         const expected = new devSettings.SourceBundleUrlComponents(undefined, "9999", "PATH", "EXT");
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url port only can be set", async function () {
+      it("source bundle url port only can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents(undefined, "", undefined, undefined);
         const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, "PATH", "EXT");
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url path only can be set", async function () {
+      it("source bundle url path only can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, "", undefined);
         const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, "EXT");
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("source bundle url path only can be set", async function () {
+      it("source bundle url path only can be set", async function() {
         const actual = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, "");
         const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, undefined);
         await testSetSourceBundleUrlComponents(actual, expected);
       });
     });
 
-    describe("when debugging is enabled", function () {
-      it("debugging can be disabled", async function () {
+    describe("when debugging is enabled", function() {
+      it("debugging can be disabled", async function() {
         assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), true);
         await devSettings.disableDebugging(addinId);
         assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
       });
     });
 
-    describe("when debugging is not enabled", function () {
-      it("debugging can be enabled", async function () {
+    describe("when debugging is not enabled", function() {
+      it("debugging can be enabled", async function() {
         assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), false);
         await devSettings.enableDebugging(addinId);
         assert.strictEqual(await devSettings.isDebuggingEnabled(addinId), true);
       });
     });
 
-    describe("can specify debug method", function () {
-      before("debugging should be disabled", async function () {
+    describe("can specify debug method", function() {
+      before("debugging should be disabled", async function() {
         await devSettings.disableDebugging(addinId);
         const methods = await devSettings.getEnabledDebuggingMethods(addinId);
         assert.strictEqual(methods.length, 0);
       }),
-        it("direct debugging can be enabled", async function () {
+        it("direct debugging can be enabled", async function() {
           await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
           const methods = await devSettings.getEnabledDebuggingMethods(addinId);
           assert.strictEqual(methods.length, 1);
           assert.strictEqual(methods[0], devSettings.DebuggingMethod.Direct);
         });
-      it("web debugging can be enabled, and turns off direct debugging", async function () {
+      it("web debugging can be enabled, and turns off direct debugging", async function() {
         await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Web);
         const methods = await devSettings.getEnabledDebuggingMethods(addinId);
         assert.strictEqual(methods.length, 1);
         assert.strictEqual(methods[0], devSettings.DebuggingMethod.Web);
       });
-      it("enabling direct debugging turns off web debugging", async function () {
+      it("enabling direct debugging turns off web debugging", async function() {
         await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
         const methods = await devSettings.getEnabledDebuggingMethods(addinId);
         assert.strictEqual(methods.length, 1);
@@ -150,16 +149,16 @@ describe("DevSettingsForAddIn", function () {
       });
     });
 
-    describe("when live reload is enabled", function () {
-      it("live reload can be disabled", async function () {
+    describe("when live reload is enabled", function() {
+      it("live reload can be disabled", async function() {
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
         await devSettings.disableLiveReload(addinId);
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
       });
     });
 
-    describe("when live reload is not enabled", function () {
-      it("live reload can be disabled", async function () {
+    describe("when live reload is not enabled", function() {
+      it("live reload can be disabled", async function() {
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), false);
         await devSettings.enableLiveReload(addinId);
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
@@ -168,32 +167,32 @@ describe("DevSettingsForAddIn", function () {
   }
 });
 
-describe("Appcontainer", async function () {
-  describe("getAppcontainerName()", function () {
-    it("developer add-in from https://localhost:3000", function () {
+describe("Appcontainer", async function() {
+  describe("getAppcontainerName()", function() {
+    it("developer add-in from https://localhost:3000", function() {
       assert.strictEqual(appcontainer.getAppcontainerName("https://localhost:3000/index.html"), "1_https___localhost_300004ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
-    it("store add-in (ScriptLab)", function () {
+    it("store add-in (ScriptLab)", function() {
       assert.strictEqual(appcontainer.getAppcontainerName("https://script-lab.azureedge.net", true), "0_https___script-lab.azureedge.net04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
   });
 });
 
-describe("RuntimeLogging", async function () {
+describe("RuntimeLogging", async function() {
   if (process.platform === "win32") {
     let pathBeforeTests: string | undefined;
     const testExecDirName = "testExec";
     const defaultFileName = "OfficeAddins.log.txt";
     const baseDirPath = process.cwd();
-    const testExecDirPath = fspath.join(baseDirPath, testExecDirName);
-    const defaultPath = `${process.env.TEMP}/${defaultFileName}`;
+    const testExecDirPath = fspath.normalize(`${baseDirPath}/${testExecDirName}`);
+    const defaultPath = fspath.normalize(`${process.env.TEMP}/${defaultFileName}`);
 
-    this.beforeAll(async function () {
+    this.beforeAll(async function() {
       pathBeforeTests = await devSettings.getRuntimeLoggingPath();
       await devSettings.disableRuntimeLogging();
     });
 
-    this.afterAll(async function () {
+    this.afterAll(async function() {
       if (pathBeforeTests) {
         await devSettings.enableRuntimeLogging(pathBeforeTests);
       } else {
@@ -201,29 +200,29 @@ describe("RuntimeLogging", async function () {
       }
     });
 
-    describe("basic validation", function () {
-      it("runtime logging should not be enabled", async function () {
+    describe("basic validation", function() {
+      it("runtime logging should not be enabled", async function() {
         assert.strictEqual(await devSettings.getRuntimeLoggingPath(), undefined);
       });
-      it("runtime logging can be enabled to the default path", async function () {
+      it("runtime logging can be enabled to the default path", async function() {
         assert.strictEqual(await devSettings.getRuntimeLoggingPath(), undefined);
         await devSettings.enableRuntimeLogging(undefined);
         assert.strictEqual(await devSettings.getRuntimeLoggingPath(), defaultPath);
       });
-      it("runtime logging can be disabled", async function () {
+      it("runtime logging can be disabled", async function() {
         await devSettings.disableRuntimeLogging();
         assert.strictEqual(await devSettings.getRuntimeLoggingPath(), undefined);
       });
     });
 
-    describe("enableRuntimeLogging", function () {
-      it("default path (TEMP folder exists)", async function () {
+    describe("enableRuntimeLogging", function() {
+      it("default path (TEMP folder exists)", async function() {
         assert.strictEqual(await devSettings.getRuntimeLoggingPath(), undefined);
         const path: string = await devSettings.enableRuntimeLogging(undefined);
         assert.strictEqual(path, defaultPath);
         assert.strictEqual(path, await devSettings.getRuntimeLoggingPath());
       });
-      it("default path but TEMP folder doesn't exist", async function () {
+      it("default path but TEMP folder doesn't exist", async function() {
         const TEMP = process.env.TEMP;
         const directoryDoesNotExist = fspath.join(testExecDirName, "doesNotExist", defaultFileName);
         process.env.TEMP = directoryDoesNotExist;
@@ -237,7 +236,7 @@ describe("RuntimeLogging", async function () {
         assert.strictEqual(error.message, `You need to specify the path where the file can be written. Unable to write to: "${directoryDoesNotExist}\\${defaultFileName}".`);
         process.env.TEMP = TEMP;
       });
-      it("default path but TEMP env var is not defined", async function () {
+      it("default path but TEMP env var is not defined", async function() {
         const env = process.env;
         process.env = {};
         let error;
@@ -251,15 +250,15 @@ describe("RuntimeLogging", async function () {
         process.env = env;
       });
 
-      describe("filesystem test cases", async function () {
-        this.beforeEach(async function () {
+      describe("filesystem test cases", async function() {
+        this.beforeEach(async function() {
           await fsextra.remove(testExecDirPath);
           await fsextra.mkdir(testExecDirPath);
         });
-        this.afterAll(async function () {
+        this.afterAll(async function() {
           await fsextra.remove(testExecDirPath);
         });
-        it("directory does not exist", async function () {
+        it("directory does not exist", async function() {
           const filePath = fspath.join(testExecDirPath, "doesNotExist", defaultFileName);
           let error;
           try {
@@ -270,7 +269,7 @@ describe("RuntimeLogging", async function () {
           assert.ok(error instanceof Error, "should throw an error");
           assert.strictEqual(error.message, `You need to specify the path where the file can be written. Unable to write to: "${filePath}".`);
         });
-        it("file does not exist in writable directory", async function () {
+        it("file does not exist in writable directory", async function() {
           try {
             const filePath = fspath.join(testExecDirPath, defaultFileName);
             const path = await devSettings.enableRuntimeLogging(filePath);
@@ -280,7 +279,7 @@ describe("RuntimeLogging", async function () {
             assert.fail("should not throw an error");
           }
         });
-        it("file already exists and is writable", async function () {
+        it("file already exists and is writable", async function() {
           try {
             const filePath = fspath.join(testExecDirPath, defaultFileName);
 
@@ -295,7 +294,7 @@ describe("RuntimeLogging", async function () {
             assert.fail("should not throw an error");
           }
         });
-        it("file already exists but is not writable", async function () {
+        it("file already exists but is not writable", async function() {
           const filePath = fspath.join(testExecDirPath, defaultFileName);
           let error;
           try {
