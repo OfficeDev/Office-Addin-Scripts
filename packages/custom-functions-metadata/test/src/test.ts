@@ -87,6 +87,8 @@ describe("verify json created in file by javascript", function() {
             assert.strictEqual(j.functions[3].result.type, "string", "result type string not created properly");
             assert.strictEqual(j.functions[4].parameters[0].type, "any", "type any not created properly");
             assert.strictEqual(j.functions[4].result.type, "any", "result type any not created properly");
+            assert.strictEqual(j.functions[5].options.stream, true, "CustomFunctions.StreamingHandler type any not created properly");
+            assert.strictEqual(j.functions[5].result.type, "string", "streaming result type any not created properly");
         });
     });
 });

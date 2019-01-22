@@ -38,3 +38,11 @@ function testString(str){}
  * @CustomFunction
  */
 function testAny(a){}
+
+/**
+ * Test streaming handler function
+ * @param {string} x 
+ * @param {CustomFunctions.StreamingHandler<string>} handler
+ * @CustomFunction 
+ */
+function testStreaming(x, handler){}

@@ -68,6 +68,13 @@ const TYPE_MAPPINGS_COMMENT = {
     ["any"]: 4,
 };
 
+const TYPE_CUSTOM_FUNCTIONS = {
+    ["customfunctions.streaminghandler<string>"]: "string",
+    ["customfunctions.streaminghandler<number>"]: "number",
+    ["customfunctions.streaminghandler<boolean>"]: "boolean",
+    ["customfunctions.streaminghandler<any>"]: "any",
+};
+
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 /**
@@ -82,11 +89,11 @@ export function isErrorFound(): boolean {
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
-export async function generate(inputFile: string, outputFileName: string, noConsole?:boolean): Promise<void> {
+export async function generate(inputFile: string, outputFileName: string, noConsole?: boolean): Promise<void> {
     // @ts-ignore
     let rootObject: ICustomFunctionsMetadata = null;
     if (fs.existsSync(inputFile)) {
-        
+
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -142,7 +149,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
                     const [lastParameter] = functionDeclaration.parameters.slice(-1);
-                    const isStreamingFunction = isLastParameterStreaming(lastParameter);
+                    const isStreamingFunction = isLastParameterStreaming(lastParameter, jsDocParamTypeInfo);
                     const paramsToParse = isStreamingFunction
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
@@ -152,7 +159,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const description = getDescription(functionDeclaration);
                     const helpUrl = getHelpUrl(functionDeclaration);
 
-                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter);
+                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo);
 
                     const options = getOptions(functionDeclaration, isStreamingFunction);
 
@@ -207,7 +214,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean):
  * @param isStreaming - Is a streaming function
  * @param lastParameter - Last parameter of the function signature
  */
-function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration): IFunctionResult {
+function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): IFunctionResult {
     let resultType = "any";
     let resultDim = "scalar";
     const defaultResultItem: IFunctionResult = {
@@ -218,6 +225,19 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
     // Try and determine the return type.  If one can't be determined we will set to any type
     if (isStreamingFunction) {
         const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
+        if (!lastParameterType) {
+            // Need to get result type from param {type}
+            const name = (lastParameter.name as ts.Identifier).text;
+            const ptype = jsDocParamTypeInfo[name];
+            // @ts-ignore
+            resultType = TYPE_CUSTOM_FUNCTIONS[ptype.toLocaleLowerCase()];
+            const paramResultItem: IFunctionResult = {
+                dimensionality: resultDim,
+                type: resultType,
+            };
+
+            return paramResultItem;
+        }
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
             logError("The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >')");
             return defaultResultItem;
@@ -252,10 +272,10 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         // @ts-ignore
         const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
         if (!checkType) {
-                logError("Unsupported type in code comment:" + resultFromComment);
-            } else {
-                resultType = resultFromComment;
-            }
+            logError("Unsupported type in code comment:" + resultFromComment);
+        } else {
+            resultType = resultFromComment;
+        }
     }
 
     const resultItem: IFunctionResult = {
@@ -293,9 +313,8 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
                 if (!checkType) {
                     logError("Unsupported type in code comment:" + ptype);
                 }
-            }
-            else {
-                //If type not found in comment section set to any type
+            } else {
+                // If type not found in comment section set to any type
                 ptype = "any";
             }
         }
@@ -508,8 +527,24 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
  * Determines if the last parameter is streaming
  * @param param ParameterDeclaration
  */
-function isLastParameterStreaming(param: ts.ParameterDeclaration): boolean {
+function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
+
+    if (param) {
+        const name = (param.name as ts.Identifier).text;
+        if (name) {
+            const ptype = jsDocParamTypeInfo[name];
+            // Check to see if the streaming parameter is defined in the comment section
+            if (ptype) {
+                // @ts-ignore
+                const typecheck = TYPE_CUSTOM_FUNCTIONS[ptype.toLocaleLowerCase()];
+                if (typecheck) {
+                    return true;
+                }
+            }
+        }
+    }
+
     if (!isTypeReferenceNode) {
         return false;
     }
