@@ -105,6 +105,14 @@ Use a two-dimensional array type to have the parameter or return value be a matr
 
 ## Invocation Context
 
+### Javascript
+
+To mark the custom function as streaming in javascript use the follow syntax in the comment section:
+ 
+ @param {`CustomFunctions.StreamingHandler<ResultType>`} handler
+
+
+## Usage
 
 Command to run tool:
 Npm run generate-json [inputFile] [output]
