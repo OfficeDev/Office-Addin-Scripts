@@ -46,3 +46,11 @@ function testAny(a){}
  * @CustomFunction 
  */
 function testStreaming(x, handler){}
+
+/**
+ * Test the cancelable handler
+ * @param {string} x 
+ * @param {CustomFunctions.CancelableHandler} chandler
+ * @CustomFunction 
+ */
+function testCancel(x, chandler){}

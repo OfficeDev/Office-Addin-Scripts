@@ -53,6 +53,7 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[11].parameters[0].optional, true, "optional true not created properly");
             assert.strictEqual(j.functions[12].parameters[0].type, "any", "any type - type any not created properly");
             assert.strictEqual(j.functions[12].result.type, "any", "any type - result type any not created properly");
+            assert.strictEqual(j.functions[13].options.cancelable, true, "CustomFunctions.CancelableHandler type not created properly");
         });
     });
 });
@@ -89,6 +90,7 @@ describe("verify json created in file by javascript", function() {
             assert.strictEqual(j.functions[4].result.type, "any", "result type any not created properly");
             assert.strictEqual(j.functions[5].options.stream, true, "CustomFunctions.StreamingHandler type any not created properly");
             assert.strictEqual(j.functions[5].result.type, "string", "streaming result type any not created properly");
+            assert.strictEqual(j.functions[6].options.cancelable, true, "CustomFunctions.CancelableHandler type any not created properly");
         });
     });
 });

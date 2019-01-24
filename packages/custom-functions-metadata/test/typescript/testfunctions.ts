@@ -118,5 +118,15 @@ function testOptional(x?: string){
  */
 function testAny(a: any): any {}
 
+/**
+ * Test support for the CustomFunctions.CancelableHandler
+ * @param x string parameter
+ * @param cf Cancelable Handler parameter
+ * @CustomFunction
+ */
+async function testCancelableFunction(x: string, cf: CustomFunctions.CancelableHandler ): Promise<number> {
+    return 1;
+}
+
 CustomFunctionMappings.ADD=add;
 

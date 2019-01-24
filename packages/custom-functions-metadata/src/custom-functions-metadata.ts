@@ -75,6 +75,8 @@ const TYPE_CUSTOM_FUNCTIONS = {
     ["customfunctions.streaminghandler<any>"]: "any",
 };
 
+const TYPE_CUSTOM_FUNCTION_CANCELABLE = "customfunctions.cancelablehandler";
+
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 /**
@@ -150,7 +152,10 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 
                     const [lastParameter] = functionDeclaration.parameters.slice(-1);
                     const isStreamingFunction = isLastParameterStreaming(lastParameter, jsDocParamTypeInfo);
-                    const paramsToParse = isStreamingFunction
+                    const isCancelableFunction = isCancelable(lastParameter, jsDocParamTypeInfo);
+                    console.log ("cancelable: " + isCancelableFunction);
+
+                    const paramsToParse = (isStreamingFunction || isCancelableFunction)
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
@@ -161,7 +166,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 
                     const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo);
 
-                    const options = getOptions(functionDeclaration, isStreamingFunction);
+                    const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction);
 
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
 
@@ -175,7 +180,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                         result,
                     };
 
-                    if (!options.volatile && !options.stream) {
+                    if (!options.volatile && !options.stream && !options.cancelable) {
                         delete functionMetadata.options;
                     }
 
@@ -199,9 +204,9 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
  * @param func - Function
  * @param isStreamingFunction - Is is a steaming function
  */
-function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean): IFunctionOptions {
+function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, isCancelableFunction: boolean): IFunctionOptions {
     const optionsItem: IFunctionOptions = {
-        cancelable: isStreamCancelable(func),
+        cancelable: isStreamCancelable(func, isCancelableFunction),
         stream: isStreaming(func, isStreamingFunction),
         volatile: isVolatile(func),
     };
@@ -415,7 +420,7 @@ function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
  * Returns true if streaming function is cancelable
  * @param node - jsDocs node
  */
-function isStreamCancelable(node: ts.Node): boolean {
+function isStreamCancelable(node: ts.Node, cancelableFunction: boolean): boolean {
     let streamCancel = false;
     ts.getJSDocTags(node).forEach(
         (tag: ts.JSDocTag) => {
@@ -428,7 +433,7 @@ function isStreamCancelable(node: ts.Node): boolean {
             }
         },
     );
-    return streamCancel;
+    return cancelableFunction || streamCancel;
 }
 
 /**
@@ -553,6 +558,37 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamType
     return (
         typeRef.typeName.getText() === "CustomFunctions.StreamingHandler" ||
         typeRef.typeName.getText() === "IStreamingCustomFunctionHandler" /* older version*/
+    );
+}
+
+/**
+ * Determines if the last parameter is streaming
+ * @param param ParameterDeclaration
+ * @param jsDocParamTypeInfo
+ */
+function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+    const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
+
+    if (param) {
+        const name = (param.name as ts.Identifier).text;
+        if (name) {
+            const ptype = jsDocParamTypeInfo[name];
+            // Check to see if the cancelable parameter is defined in the comment section
+            if (ptype) {
+                if (ptype.toLocaleLowerCase() === TYPE_CUSTOM_FUNCTION_CANCELABLE ) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    if (!isTypeReferenceNode) {
+        return false;
+    }
+
+    const typeRef = param.type as ts.TypeReferenceNode;
+    return (
+        typeRef.typeName.getText() === "CustomFunctions.CancelableHandler"
     );
 }
 
