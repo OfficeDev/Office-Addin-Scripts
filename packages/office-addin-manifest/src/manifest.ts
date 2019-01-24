@@ -4,11 +4,12 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import * as path from "path";
 import * as commands from "./commands";
 
 export * from "./manifestInfo";
 
-if (process.argv[1].endsWith("\\manifest.js")) {
+if (process.argv[1].endsWith(path.join("lib", "manifest.js"))) {
   commander
     .command("info <manifest-path>")
     .action(commands.info);
