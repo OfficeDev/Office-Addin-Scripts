@@ -22,7 +22,7 @@ describe("verify json created in file by typescript", function() {
             const output = "test.json";
             const jsonCreated = fs.readFileSync(output);
             const j = JSON.parse(jsonCreated.toString());
-            assert.strictEqual(j.functions[0].id, "add", "id not created properly");
+            assert.strictEqual(j.functions[0].id, "ADD", "id not created properly");
             assert.strictEqual(j.functions[0].name, "ADD", "name not created properly");
             assert.strictEqual(j.functions[0].description, "Test comments", "description not created properly");
             assert.strictEqual(j.functions[0].helpUrl, "https://dev.office.com", "helpUrl not created properly");
@@ -54,6 +54,8 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[12].parameters[0].type, "any", "any type - type any not created properly");
             assert.strictEqual(j.functions[12].result.type, "any", "any type - result type any not created properly");
             assert.strictEqual(j.functions[13].options.cancelable, true, "CustomFunctions.CancelableHandler type not created properly");
+            assert.strictEqual(j.functions[14].id, "updateId", "@CustomFunction id not created properly");
+            assert.strictEqual(j.functions[14].name, "updateName", "@CustomFunction name not created properly");
         });
     });
 });
@@ -73,7 +75,7 @@ describe("verify json created in file by javascript", function() {
             const output = "testjs.json";
             const jsonCreated = fs.readFileSync(output);
             const j = JSON.parse(jsonCreated.toString());
-            assert.strictEqual(j.functions[0].id, "testAdd", "id not created properly");
+            assert.strictEqual(j.functions[0].id, "TESTADD", "id not created properly");
             assert.strictEqual(j.functions[0].name, "TESTADD", "name not created properly");
             assert.strictEqual(j.functions[0].description, "This function is testing add", "description not created properly");
             assert.strictEqual(j.functions[0].parameters[0].name, "number1", "parameter name not created properly");
@@ -91,6 +93,10 @@ describe("verify json created in file by javascript", function() {
             assert.strictEqual(j.functions[5].options.stream, true, "CustomFunctions.StreamingHandler type any not created properly");
             assert.strictEqual(j.functions[5].result.type, "string", "streaming result type any not created properly");
             assert.strictEqual(j.functions[6].options.cancelable, true, "CustomFunctions.CancelableHandler type any not created properly");
+            assert.strictEqual(j.functions[7].id, "newId", "@CustomFunction id not created properly");
+            assert.strictEqual(j.functions[7].name, "newId", "@CustomFunction id set for name not created properly");
+            assert.strictEqual(j.functions[8].id, "newId", "@CustomFunction id name not created properly");
+            assert.strictEqual(j.functions[8].name, "newName", "@CustomFunction id name not created properly");
         });
     });
 });

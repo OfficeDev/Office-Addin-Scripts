@@ -54,3 +54,17 @@ function testStreaming(x, handler){}
  * @CustomFunction 
  */
 function testCancel(x, chandler){}
+
+/**
+ * Test the custom function id
+ * @param {string} x
+ * @CustomFunction newId 
+ */
+function customIdTest(x){}
+
+/**
+ * Test the custom function id and name
+ * @param {string} x
+ * @CustomFunction newId newName 
+ */
+function customIdNameTest(x){}

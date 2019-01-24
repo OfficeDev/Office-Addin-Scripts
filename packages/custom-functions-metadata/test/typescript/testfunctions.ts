@@ -128,5 +128,13 @@ async function testCancelableFunction(x: string, cf: CustomFunctions.CancelableH
     return 1;
 }
 
+/**
+ * Test the custom function id and name
+ * @param x test string
+ * @CustomFunction updateId updateName
+ */
+function customFunctionIdNameTest(x:string){
+}
+
 CustomFunctionMappings.ADD=add;
 

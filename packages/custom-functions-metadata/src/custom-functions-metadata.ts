@@ -146,6 +146,8 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                 const functionDeclaration = node as ts.FunctionDeclaration;
 
                 if (isCustomFunction(functionDeclaration)) {
+                    const idName = getIdName(functionDeclaration);
+                    const idNameArray = idName.split(" ");
                     const jsDocParamInfo = getJSDocParams(functionDeclaration);
                     const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
                     const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
@@ -153,7 +155,6 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const [lastParameter] = functionDeclaration.parameters.slice(-1);
                     const isStreamingFunction = isLastParameterStreaming(lastParameter, jsDocParamTypeInfo);
                     const isCancelableFunction = isCancelable(lastParameter, jsDocParamTypeInfo);
-                    console.log ("cancelable: " + isCancelableFunction);
 
                     const paramsToParse = (isStreamingFunction || isCancelableFunction)
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
@@ -169,12 +170,14 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction);
 
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
+                    const id = getId(funcName, idNameArray[0]);
+                    const name = getName(id, idNameArray[1]);
 
                     const functionMetadata: IFunction = {
                         description,
                         helpUrl,
-                        id: funcName,
-                        name: funcName.toUpperCase(),
+                        id,
+                        name,
                         options,
                         parameters,
                         result,
@@ -197,6 +200,14 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 
         ts.forEachChild(node, visit);
     }
+}
+
+function getName(id: string, customName: string): string {
+    return customName ? customName : id;
+}
+
+function getId(functionName: string, customId: string ): string {
+    return customId ? customId : functionName.toLocaleUpperCase();
 }
 
 /**
@@ -437,6 +448,15 @@ function isStreamCancelable(node: ts.Node, cancelableFunction: boolean): boolean
 }
 
 /**
+ * Returns custom id and name from custom functions tag (@CustomFunction id name)
+ * @param node - jsDocs node
+ */
+function getIdName(node: ts.Node): string {
+    const tag = findTag(node, CUSTOM_FUNCTION);
+    return tag ? tag.comment || "" : "";
+}
+
+/**
  * Returns return type of function from comments
  * @param node - jsDocs node
  */
@@ -562,7 +582,7 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamType
 }
 
 /**
- * Determines if the last parameter is streaming
+ * Determines if the last parameter is of type cancelable
  * @param param ParameterDeclaration
  * @param jsDocParamTypeInfo
  */
