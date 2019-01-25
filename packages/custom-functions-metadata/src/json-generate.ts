@@ -6,16 +6,20 @@
 import * as commander from "commander";
 import * as commands from "./commands";
 import * as metadata from "./custom-functions-metadata";
+import * as path from "path";
 
 export async function generate(inputFile:string, outputFile:string) {
-    await metadata.generate(inputFile,outputFile);
+  await metadata.generate(inputFile,outputFile);
 }
 
-if (process.argv[1].endsWith("\\json-generate.js")) {
-    commander
-      .command("generate <jsourceFile> <metadataFile>")
-      .description("Generate the metadata for the custom functions from the source code.")
-      .action(commands.generate);
-  
-    commander.parse(process.argv);
-  }
+// if this package is being run from the command line
+// (related to "main" and "bin" in package.json)
+if (process.argv[1].endsWith(path.join("lib", "json-generate.js"))
+  || process.argv[1].endsWith(path.join(".bin", "custom-functions-metadata"))) {
+  commander
+    .command("generate <jsourceFile> <metadataFile>")
+    .description("Generate the metadata for the custom functions from the source code.")
+    .action(commands.generate);
+
+  commander.parse(process.argv);
+}

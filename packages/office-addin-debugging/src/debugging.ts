@@ -12,7 +12,10 @@ export * from "./process";
 export * from "./start";
 export * from "./stop";
 
-if (process.argv[1].endsWith(path.join("lib", "debugging.js"))) {
+// if this package is being run from the command line
+// (related to "main" and "bin" in package.json)
+if (process.argv[1].endsWith(path.join("lib", "debugging.js"))
+    || process.argv[1].endsWith(path.join(".bin", "office-addin-debugging"))) {
     commander
         .command("start <manifestPath> [appType]")
         .option("--debug-method <method>", "The debug method to use.")
