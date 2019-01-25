@@ -173,7 +173,10 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-if (process.argv[1].endsWith(fspath.join("lib", "dev-settings.js"))) {
+// if this package is being run from the command line
+// (related to "main" and "bin" in package.json)
+if (process.argv[1].endsWith(fspath.join("lib", "dev-settings.js"))
+    || process.argv[1].endsWith(fspath.join(".bin", "office-addin-dev-settings"))) {
   commander
     .command("appcontainer <manifestPath>")
     .description("Display or configure the appcontainer used to run the Office Add-in.")
