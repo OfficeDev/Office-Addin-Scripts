@@ -170,8 +170,8 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction);
 
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
-                    const id = getId(funcName, idNameArray[0]);
-                    const name = getName(id, idNameArray[1]);
+                    const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
+                    const name = idNameArray[1] || id;
 
                     const functionMetadata: IFunction = {
                         description,
@@ -202,12 +202,12 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
     }
 }
 
-function getName(id: string, customName: string): string {
-    return customName ? customName : id;
-}
-
-function getId(functionName: string, customId: string ): string {
-    return customId ? customId : functionName.toLocaleUpperCase();
+/**
+ * Normalize the id of the custom function
+ * @param id Parameter id of the custom function
+ */
+function normalizeCustomFunctionId(id: string): string {
+    return id ? id.toLocaleUpperCase() : id;
 }
 
 /**
@@ -332,6 +332,14 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             } else {
                 // If type not found in comment section set to any type
                 ptype = "any";
+            }
+        }
+
+        // Verify parameter types match between typescript and @param {type}
+        const jsDocType = jsDocParamTypeInfo[name];
+        if (jsDocType && jsDocType !== "any") {
+            if (jsDocType.toLocaleLowerCase() !== ptype.toLocaleLowerCase()) {
+                logError("Type {" + jsDocType + ":" + ptype + "} doesn't match for parameter : " + name);
             }
         }
 
