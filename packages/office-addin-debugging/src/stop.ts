@@ -5,6 +5,7 @@ import { startProcess } from "./process";
 export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
     console.log("Debugging is being stopped...");
 
+    const isWindowsPlatform = (process.platform === "win32");
     const manifestInfo = await manifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
@@ -12,7 +13,9 @@ export async function stopDebugging(manifestPath: string, unregisterCommandLine?
     }
 
     // clear dev settings
-    await devSettings.clearDevSettings(manifestInfo.id);
+    if (isWindowsPlatform) {
+      await devSettings.clearDevSettings(manifestInfo.id);
+    }
 
     if (unregisterCommandLine) {
         // unregister
