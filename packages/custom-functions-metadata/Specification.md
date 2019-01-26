@@ -91,6 +91,9 @@ Streaming functions do not return values directly, but rather should call `setRe
 
 Used to denote the custom function is volatile.
 
+### @requiresAddress
+
+Used to denote the custom function requires an address for the invocation.
 
 ## Types
 
