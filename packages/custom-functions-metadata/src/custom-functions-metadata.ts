@@ -27,6 +27,7 @@ interface IFunctionOptions {
     volatile: boolean;
     stream: boolean;
     cancelable: boolean;
+    requiresAddress: boolean;
 }
 
 interface IFunctionParameter {
@@ -48,6 +49,7 @@ const VOLATILE = "volatile";
 const STREAMING = "streaming";
 const RETURN = "return";
 const CANCELABLE = "cancelable";
+const REQUIRESADDRESS = "requiresaddress";
 
 const TYPE_MAPPINGS = {
     [ts.SyntaxKind.NumberKeyword]: "number",
@@ -218,6 +220,7 @@ function normalizeCustomFunctionId(id: string): string {
 function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, isCancelableFunction: boolean): IFunctionOptions {
     const optionsItem: IFunctionOptions = {
         cancelable: isStreamCancelable(func, isCancelableFunction),
+        requiresAddress: isRequiresAddress(func),
         stream: isStreaming(func, isStreamingFunction),
         volatile: isVolatile(func),
     };
@@ -419,6 +422,14 @@ function getHelpUrl(node: ts.Node): string {
  */
 function isVolatile(node: ts.Node): boolean {
     return hasTag(node, VOLATILE);
+}
+
+/**
+ * Returns true if requiresAddress tag found in comments
+ * @param node jsDocs node
+ */
+function isRequiresAddress(node: ts.Node): boolean {
+    return hasTag(node, REQUIRESADDRESS);
 }
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {

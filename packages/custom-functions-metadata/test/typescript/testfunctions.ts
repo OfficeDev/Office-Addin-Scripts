@@ -136,5 +136,14 @@ async function testCancelableFunction(x: string, cf: CustomFunctions.CancelableH
 function customFunctionIdNameTest(x:string){
 }
 
+/**
+ * Test the requiresAddress tag
+ * @param x string
+ * @param handler my handler
+ * @CustomFunction
+ * @requiresAddress
+ */
+function requiresAddressTest(x: string, handler: CustomFunctions.StreamingHandler<number>){}
+
 CustomFunctionMappings.ADD=add;
 

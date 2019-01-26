@@ -56,6 +56,7 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[13].options.cancelable, true, "CustomFunctions.CancelableHandler type not created properly");
             assert.strictEqual(j.functions[14].id, "UPDATEID", "@CustomFunction id not created properly");
             assert.strictEqual(j.functions[14].name, "updateName", "@CustomFunction name not created properly");
+            assert.strictEqual(j.functions[15].options.requiresAddress, true, "requiresAddress tag not created properly");
         });
     });
 });
