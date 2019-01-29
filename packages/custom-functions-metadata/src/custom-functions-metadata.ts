@@ -219,7 +219,7 @@ function normalizeCustomFunctionId(id: string): string {
  */
 function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, isCancelableFunction: boolean): IFunctionOptions {
     const optionsItem: IFunctionOptions = {
-        cancelable: isStreamCancelable(func, isCancelableFunction),
+        cancelable: isCancelableTag(func, isCancelableFunction),
         requiresAddress: isRequiresAddress(func),
         stream: isStreaming(func, isStreamingFunction),
         volatile: isVolatile(func),
@@ -416,6 +416,7 @@ function getHelpUrl(node: ts.Node): string {
     return tag ? tag.comment || "" : "";
 }
 
+
 /**
  * Returns true if volatile tag found in comments
  * @param node jsDocs node
@@ -450,7 +451,7 @@ function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
  * Returns true if streaming function is cancelable
  * @param node - jsDocs node
  */
-function isStreamCancelable(node: ts.Node, cancelableFunction: boolean): boolean {
+function isCancelableTag(node: ts.Node, cancelableFunction: boolean): boolean {
     return cancelableFunction || hasTag(node, CANCELABLE);
 }
 

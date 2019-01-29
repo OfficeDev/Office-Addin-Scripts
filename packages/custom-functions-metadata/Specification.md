@@ -135,7 +135,6 @@ Npm run generate-json [inputFile] [output]
  * @helpUrl https://dev.office.com
  * @volatile
  * @streaming
- * @cancelable 
  * @return {number}
   */
 
@@ -157,7 +156,7 @@ Metadata generated:
             "id": "add",
             "name": "ADD",
             "options": {
-                "cancelable": true,
+                "cancelable": false,
                 "stream": true,
                 "volatile": true
             },
