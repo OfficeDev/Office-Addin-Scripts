@@ -6,7 +6,8 @@
  * @CustomFunction
  * @notfound test123
  * @volatile
- * @streaming cancelable
+ * @streaming
+ * @cancelable
  * @return {returntypetest}
  */
 function add(first: number, second: number): number {

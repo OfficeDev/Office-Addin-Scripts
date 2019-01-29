@@ -80,12 +80,16 @@ Provides the description of the custom functions. It is determined from the comm
 
 Used to indicate that a custom function is a streaming function. 
 
-To denote the custom function is cancelable use @streaming cancelable.
-
 The last parameter should be of type `CustomFunctions.StreamingHandler<ResultType>`.
 The function should return `void`.
 
-Streaming functions do not return values directly, but rather should call `setResult(result: ResultType)` using the last parameter.   
+Streaming functions do not return values directly, but rather should call `setResult(result: ResultType)` using the last parameter.
+
+### @cancelable
+
+Used to indicate that a custom function is cancelable.
+
+The last parameter should be of type `CustomFunctions.CancelableHandler`.
 
 ### @volatile
 
@@ -130,7 +134,8 @@ Npm run generate-json [inputFile] [output]
  * @param {number} [third] - the third optional number
  * @helpUrl https://dev.office.com
  * @volatile
- * @streaming cancelable
+ * @streaming
+ * @cancelable 
  * @return {number}
   */
 

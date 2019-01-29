@@ -451,19 +451,7 @@ function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
  * @param node - jsDocs node
  */
 function isStreamCancelable(node: ts.Node, cancelableFunction: boolean): boolean {
-    let streamCancel = false;
-    ts.getJSDocTags(node).forEach(
-        (tag: ts.JSDocTag) => {
-            if (containsTag(tag, STREAMING)) {
-                if (tag.comment) {
-                    if (tag.comment.toLowerCase() === CANCELABLE) {
-                        streamCancel = true;
-                    }
-                }
-            }
-        },
-    );
-    return cancelableFunction || streamCancel;
+    return cancelableFunction || hasTag(node, CANCELABLE);
 }
 
 /**
