@@ -1,18 +1,32 @@
 
 # Office-Addin-Scripts
 
-These packages provide functionality which can be used to automate tasks related to Office Add-ins.
+These packages provide functionality which can be used to perform tasks related to Office Add-ins. The packages export functions which can be imported and used in Node scripts. Many of the packages also provide a command-line interface (CLI), allowing them to be used directly from a Command Prompt / Terminal window.
 
-These packages have been developed initially for debugging Office Add-ins which use the JavaScript runtime directly. You can see how these are used in the [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions) project.
+The [Yo Office](https://github.com/OfficeDev/generator-office) templates provide a starting point for developing an Office Add-in. These scripts are used in the templates to provide for basic developer tasks such as debugging. 
 
-Developers may have their own workflow and tooling. These packages provide basic building blocks which can be adapted as needed. We encourage contributions and feedback.
+Developers may have other workflows with different requirements and tooling. Our goal is for the these packages to serve as building blocks which can be adapted as needed. We encourage feedback and contributions from the community.
+
+The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions) project provides an example of how these packages may be used.
+
 
 ## In this repository
 
 * [office-addin-debugging](packages/office-addin-debugging/README.md)
+
+  This package provides the orchestration of components related to debugging Office Add-ins. When debugging is started, it will ensure that the dev-server is running, that dev settings are configured for debugging, and will register and sideload the Office Add-in. When debugging is stopped, it will unregister and shutdown components.
+  
 * [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
+
+  This package can be used to configure developer settings for an Office Add-in. 
+
 * [office-addin-manifest](packages/office-addin-manifest/README.md)
+
+  This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
+
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
+
+  This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application. 
 
 ## Requirements
 
