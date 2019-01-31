@@ -15,7 +15,6 @@ class CustomFunctionsMetadataPlugin {
     }
 
     public apply(compiler: webpack.Compiler) {
-
         const outputPath: string = (compiler.options && compiler.options.output) ? compiler.options.output.path || "" : "";
         const outputFilePath = path.resolve(outputPath, this.options.output);
 
@@ -28,24 +27,20 @@ class CustomFunctionsMetadataPlugin {
                 }
             }
             metadata.generate(this.options.input, outputFilePath, true);
-
         });
 
         compiler.hooks.emit.tap(pluginName, (compilation) => {
-
             if (metadata.isErrorFound()) {
                 compilation.errors.push("Generating metadata file:" + outputFilePath);
                 metadata.errorLogFile.forEach((err: string) => compilation.errors.push(this.options.input + " " + err));
-            } 
-            else {
+            } else {
                 const stats = fs.statSync(outputFilePath);
                 const content = fs.readFileSync(outputFilePath);
                 compilation.assets[this.options.output] = {
-                    source: function() {return content;},
-                    size: function() {return stats.size;}
+                    source() { return content; },
+                    size() { return stats.size; },
                 };
             }
-
         });
 
     }

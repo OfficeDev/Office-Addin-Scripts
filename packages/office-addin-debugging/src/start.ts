@@ -6,6 +6,11 @@ import * as nodeDebugger from "office-addin-node-debugger";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
 
+export enum AppType {
+    Desktop = "desktop",
+    Web = "web",
+}
+
 function defaultDebuggingMethod(): DebuggingMethod {
     return DebuggingMethod.Direct;
 }
@@ -36,6 +41,17 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
         return (statusRunningResponse === text);
     } catch (err) {
         return false;
+    }
+}
+
+export function parseAppType(text: string): AppType | undefined {
+    switch (text) {
+        case "desktop":
+            return AppType.Desktop;
+        case "web":
+            return AppType.Web;
+        default:
+            return undefined;
     }
 }
 
@@ -105,6 +121,7 @@ export async function runPackager(commandLine: string, host: string = "localhost
 
 /**
  * Start debugging
+ * @param appType The type of application to debug.
  * @param manifestPath The path to the manifest file.
  * @param debuggingMethod The method to use when debugging.
  * @param sourceBundleUrlComponents Specify components of the source bundle url.
@@ -116,19 +133,30 @@ export async function runPackager(commandLine: string, host: string = "localhost
  * @param sideloadCommandLine If provided, launches the add-in.
  * @param enableDebugging If false, start without debugging.
  */
-export async function startDebugging(manifestPath: string,
+export async function startDebugging(manifestPath: string, appType: AppType,
     debuggingMethod: DebuggingMethod = defaultDebuggingMethod(),
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
     sideloadCommandLine?: string, enableDebugging: boolean = true, enableLiveReload: boolean = true) {
 
+    const isWindowsPlatform = (process.platform === "win32");
+    const isDesktopAppType = (appType === AppType.Desktop);
+    const isWebAppType = (appType === AppType.Web);
+    const isProxyDebuggingMethod = (debuggingMethod === DebuggingMethod.Proxy);
+    // live reload can only be enabled for the desktop app type
+    // when using proxy debugging and the packager
+    const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
+
+    // only enable live reload if it can be enabled
+    enableLiveReload = enableLiveReload && canEnableLiveReload;
 
     console.log(enableDebugging
         ? "Debugging is being started..."
         : "Starting without debugging...");
+    console.log(`App type: ${appType.toString()}`);
 
     const manifestInfo = await manifest.readManifestFile(manifestPath);
 
@@ -137,23 +165,29 @@ export async function startDebugging(manifestPath: string,
     }
 
     // enable debugging
-    await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod);
-    if (enableDebugging) {
-        console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+    if (isDesktopAppType && isWindowsPlatform) {
+        await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod);
+        if (enableDebugging) {
+            console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+        }
     }
 
     // enable live reload
-    await devSettings.enableLiveReload(manifestInfo.id, enableLiveReload);
-    if (enableLiveReload) {
-        console.log(`Enabled live-reload for add-in ${manifestInfo.id}.`);
+    if (isDesktopAppType && isWindowsPlatform) {
+        await devSettings.enableLiveReload(manifestInfo.id, enableLiveReload);
+        if (enableLiveReload) {
+            console.log(`Enabled live-reload for add-in ${manifestInfo.id}.`);
+        }
     }
 
     // set source bundle url
-    if (sourceBundleUrlComponents) {
-        await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
+    if (isDesktopAppType && isWindowsPlatform) {
+        if (sourceBundleUrlComponents) {
+            await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
+        }
     }
 
-    if (packagerCommandLine) {
+    if (packagerCommandLine && isProxyDebuggingMethod && isDesktopAppType) {
         packagerPromise = runPackager(packagerCommandLine, packagerHost, packagerPort);
     }
 
@@ -177,7 +211,7 @@ export async function startDebugging(manifestPath: string,
         }
     }
 
-    if (enableDebugging && (debuggingMethod === DebuggingMethod.Web)) {
+    if (enableDebugging && isProxyDebuggingMethod && isDesktopAppType) {
         try {
             await runNodeDebugger();
         } catch (err) {
@@ -185,7 +219,7 @@ export async function startDebugging(manifestPath: string,
         }
     }
 
-    if (sideloadCommandLine) {
+    if (sideloadCommandLine && isDesktopAppType) {
         try {
             console.log(`Sideloading the Office Add-in...`);
             await startProcess(sideloadCommandLine);

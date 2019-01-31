@@ -47,15 +47,11 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
 
   return new Promise((resolve, reject) => {
     const isWin32 = process.platform === "win32";
-    const command = `netstat -ano`; // non-Windows: `lsof -n -i:${port}`;
-
-    if (!isWin32) {
-      throw new Error("Platform is not supported.");
-    }
+    const command = isWin32 ? `netstat -ano` : `lsof -n -i:${port}`;
 
     childProcess.exec(command, (error, stdout) => {
       if (error) {
-        if (isWin32 && (error.code === 1)) {
+        if (error.code === 1) {
           // no processes are using the port
           resolve([]);
         } else {
@@ -64,15 +60,24 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
       } else {
         const processIds = new Set();
         const lines = stdout.trim().split("\n");
-        lines.forEach((line) => {
-          const [protocol, localAddress, foreignAddress, status, processId] = line.split(" ").filter((text) => text);
-          if (processId !== undefined) {
-            const localAddressPort = parsePort(localAddress);
-            if (localAddressPort === port) {
+        if (isWin32) {
+          lines.forEach((line) => {
+            const [protocol, localAddress, foreignAddress, status, processId] = line.split(" ").filter((text) => text);
+            if (processId !== undefined) {
+              const localAddressPort = parsePort(localAddress);
+              if (localAddressPort === port) {
+                processIds.add(parseInt(processId, 10));
+              }
+            }
+          });
+        } else {
+          lines.forEach((line) => {
+            const [process, processId, user, fd, type, device, size, node, name] = line.split(" ").filter((text) => text);
+            if ((processId !== undefined) && (processId !== "PID")) {
               processIds.add(parseInt(processId, 10));
             }
-          }
-        });
+          });
+        }
 
         resolve(Array.from(processIds));
       }
