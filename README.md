@@ -12,6 +12,14 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
 ## In this repository
 
+* [custom-functions-metadata](packages/custom-functions-metadata/README.md)
+
+  This package allows metadata for custom functions to be generated automatically from JSDoc tags and the function parameter types.
+
+* [custom-functions-metadata-plugin](packages/custom-functions-metadata-plugin/README.md)
+
+  A WebPack plugin which generates the metadata for custom functions.
+
 * [office-addin-debugging](packages/office-addin-debugging/README.md)
 
   This package provides the orchestration of components related to debugging Office Add-ins. When debugging is started, it will ensure that the dev-server is running, that dev settings are configured for debugging, and will register and sideload the Office Add-in. When debugging is stopped, it will unregister and shutdown components.
