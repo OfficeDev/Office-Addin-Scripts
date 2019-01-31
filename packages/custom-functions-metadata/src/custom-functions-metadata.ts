@@ -175,7 +175,8 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
                     const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
                     const name = idNameArray[1] || id;
-                    verifyIdAndName(id, name);
+                    validateId(id);
+                    validateName(name);
 
                     const functionMetadata: IFunction = {
                         description,
@@ -207,20 +208,29 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 }
 
 /**
- * Verifies if the id and name are valid. If either are invalid log error.
+ * Verifies if the id is valid and logs error if not.
  * @param id Id of the function
- * @param name Name of the function
  */
-function verifyIdAndName(id: string, name: string): void {
+function validateId(id: string): void {
     const idRegExString: string = "^[a-zA-Z0-9._]*$";
     const idRegEx = new RegExp(idRegExString);
-    const nameRegEx = xregexp("^[\\pL][\\pL0-9._]*$");
     if (!idRegEx.test(id)) {
         if (!id) {
             id = "Function name is invalid";
         }
         logError("ID contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'): " + id);
     }
+    if (id.length > 128) {
+        logError("Id exceeds the maximum of 128 characters allowed.");
+    }
+}
+
+/**
+ * Verifies if the name is valid and logs error if not.
+ * @param name Name of the function
+ */
+function validateName(name: string): void {
+    const nameRegEx = xregexp("^[\\pL][\\pL0-9._]*$");
     if (!nameRegEx.test(name)) {
         if (!name) {
             name = "Function name is invalid";
@@ -228,7 +238,7 @@ function verifyIdAndName(id: string, name: string): void {
         logError("Name contains invalid characters. Name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.: " + name);
     }
     if (name.length > 128) {
-        logError("Name exceeds the maximun of 128 characters allowed.");
+        logError("Name exceeds the maximum of 128 characters allowed.");
     }
 }
 
