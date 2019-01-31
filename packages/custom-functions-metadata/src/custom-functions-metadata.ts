@@ -5,6 +5,7 @@
 
 import * as fs from "fs";
 import * as ts from "typescript";
+import * as xregexp from "xregexp";
 
 export let errorLogFile = [];
 export let skippedFunctions = [];
@@ -174,6 +175,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
                     const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
                     const name = idNameArray[1] || id;
+                    verifyIdAndName(id, name);
 
                     const functionMetadata: IFunction = {
                         description,
@@ -201,6 +203,32 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
         }
 
         ts.forEachChild(node, visit);
+    }
+}
+
+/**
+ * Verifies if the id and name are valid. If either are invalid log error.
+ * @param id Id of the function
+ * @param name Name of the function
+ */
+function verifyIdAndName(id: string, name: string): void {
+    const idRegExString: string = "^[a-zA-Z0-9._]*$";
+    const idRegEx = new RegExp(idRegExString);
+    const nameRegEx = xregexp("^[\\pL][\\pL0-9._]*$");
+    if (!idRegEx.test(id)) {
+        if (!id) {
+            id = "Function name is invalid";
+        }
+        logError("ID contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'): " + id);
+    }
+    if (!nameRegEx.test(name)) {
+        if (!name) {
+            name = "Function name is invalid";
+        }
+        logError("Name contains invalid characters. Name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.: " + name);
+    }
+    if (name.length > 128) {
+        logError("Name exceeds the maximun of 128 characters allowed.");
     }
 }
 
@@ -415,7 +443,6 @@ function getHelpUrl(node: ts.Node): string {
     const tag = findTag(node, HELPURL_PARAM);
     return tag ? tag.comment || "" : "";
 }
-
 
 /**
  * Returns true if volatile tag found in comments

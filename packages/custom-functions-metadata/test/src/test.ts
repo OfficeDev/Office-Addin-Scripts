@@ -9,7 +9,7 @@ describe("test json file created", function() {
         it("test it", async function() {
             const inputFile = "../custom-functions-metadata/test/typescript/testfunctions.ts";
             const output = "test.json";
-            await customFunctionsMetadata.generate(inputFile, output);
+            await customFunctionsMetadata.generate(inputFile, output, true);
             const skipped = "notAdded";
             assert.strictEqual(customFunctionsMetadata.skippedFunctions[0], skipped, "skipped function not found");
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
@@ -106,14 +106,14 @@ describe("test errors", function() {
         it("test error", async function() {
              const inputFile = "../custom-functions-metadata/test/javascript/errorfunctions.js";
              const output = "./errortest.json";
-             await customFunctionsMetadata.generate(inputFile, output);
+             await customFunctionsMetadata.generate(inputFile, output, true);
              const errtest: string[] = customFunctionsMetadata.errorLogFile;
+             const errorIdBad = "ID-BAD";
+             const errorNameBad = "1invalidname";
              const errorstring = "Unsupported type in code comment:badtype";
-             if (errtest.indexOf(errorstring) >= 0 ) {
-                assert.ok("Error item found");
-            } else {
-                assert.fail("Error string not found");
-            }
+             assert.equal(errtest[0].includes(errorstring), true, "Unsupported type found");
+             assert.equal(errtest[2].includes(errorIdBad), true, "Invalid id found");
+             assert.equal(errtest[4].includes(errorNameBad), true, "Invalid name found");
              assert.strictEqual(fs.existsSync(output), false, "json file created");
         });
     });
@@ -125,7 +125,7 @@ describe("test bad file paths", function() {
             const output = "./nofile.json";
             const testError = "ENOENT: no such file or directory";
             try {
-                await customFunctionsMetadata.generate(inputFile, output);
+                await customFunctionsMetadata.generate(inputFile, output, true);
             } catch (error) {
                 assert.ok(error.message.startsWith(testError), "Error message not found");
                 assert.ok(error.message.includes(inputFile), "File name not found in error message");
