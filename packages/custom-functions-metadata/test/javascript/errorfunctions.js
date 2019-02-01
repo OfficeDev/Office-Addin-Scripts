@@ -14,3 +14,15 @@ function testadd(num1){
  */
 function badResult(){
 }
+
+/**
+ * Function contains a bad id
+ * @CustomFunction id-bad
+ */
+function badId(){}
+
+/**
+ * This funciton has an invalid name
+ * @CustomFunction id 1invalidname
+ */
+function badName(){}

@@ -6,7 +6,8 @@
  * @CustomFunction
  * @notfound test123
  * @volatile
- * @streaming cancelable
+ * @streaming
+ * @cancelable
  * @return {returntypetest}
  */
 function add(first: number, second: number): number {
@@ -117,6 +118,33 @@ function testOptional(x?: string){
  * @CustomFunction
  */
 function testAny(a: any): any {}
+
+/**
+ * Test support for the CustomFunctions.CancelableHandler
+ * @param x string parameter
+ * @param cf Cancelable Handler parameter
+ * @CustomFunction
+ */
+async function testCancelableFunction(x: string, cf: CustomFunctions.CancelableHandler ): Promise<number> {
+    return 1;
+}
+
+/**
+ * Test the custom function id and name
+ * @param x test string
+ * @CustomFunction updateId updateName
+ */
+function customFunctionIdNameTest(x:string){
+}
+
+/**
+ * Test the requiresAddress tag
+ * @param x string
+ * @param handler my handler
+ * @CustomFunction
+ * @requiresAddress
+ */
+function requiresAddressTest(x: string, handler: CustomFunctions.StreamingHandler<number>){}
 
 CustomFunctionMappings.ADD=add;
 
