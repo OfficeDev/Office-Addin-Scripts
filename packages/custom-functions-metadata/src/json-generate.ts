@@ -4,12 +4,12 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import * as path from "path";
 import * as commands from "./commands";
 import * as metadata from "./custom-functions-metadata";
-import * as path from "path";
 
-export async function generate(inputFile:string, outputFile:string) {
-  await metadata.generate(inputFile,outputFile);
+export async function generate(inputFile: string, outputFile: string) {
+  await metadata.generate(inputFile, outputFile);
 }
 
 // if this package is being run from the command line

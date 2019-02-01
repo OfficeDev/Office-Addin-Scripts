@@ -38,3 +38,33 @@ function testString(str){}
  * @CustomFunction
  */
 function testAny(a){}
+
+/**
+ * Test streaming handler function
+ * @param {string} x 
+ * @param {CustomFunctions.StreamingHandler<string>} handler
+ * @CustomFunction 
+ */
+function testStreaming(x, handler){}
+
+/**
+ * Test the cancelable handler
+ * @param {string} x 
+ * @param {CustomFunctions.CancelableHandler} chandler
+ * @CustomFunction 
+ */
+function testCancel(x, chandler){}
+
+/**
+ * Test the custom function id
+ * @param {string} x
+ * @CustomFunction newId 
+ */
+function customIdTest(x){}
+
+/**
+ * Test the custom function id and name
+ * @param {string} x
+ * @CustomFunction newId newName 
+ */
+function customIdNameTest(x){}

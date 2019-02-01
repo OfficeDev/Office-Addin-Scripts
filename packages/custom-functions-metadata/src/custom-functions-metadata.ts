@@ -5,6 +5,7 @@
 
 import * as fs from "fs";
 import * as ts from "typescript";
+import * as xregexp from "xregexp";
 
 export let errorLogFile = [];
 export let skippedFunctions = [];
@@ -27,6 +28,7 @@ interface IFunctionOptions {
     volatile: boolean;
     stream: boolean;
     cancelable: boolean;
+    requiresAddress: boolean;
 }
 
 interface IFunctionParameter {
@@ -48,6 +50,7 @@ const VOLATILE = "volatile";
 const STREAMING = "streaming";
 const RETURN = "return";
 const CANCELABLE = "cancelable";
+const REQUIRESADDRESS = "requiresaddress";
 
 const TYPE_MAPPINGS = {
     [ts.SyntaxKind.NumberKeyword]: "number",
@@ -68,6 +71,15 @@ const TYPE_MAPPINGS_COMMENT = {
     ["any"]: 4,
 };
 
+const TYPE_CUSTOM_FUNCTIONS = {
+    ["customfunctions.streaminghandler<string>"]: "string",
+    ["customfunctions.streaminghandler<number>"]: "number",
+    ["customfunctions.streaminghandler<boolean>"]: "boolean",
+    ["customfunctions.streaminghandler<any>"]: "any",
+};
+
+const TYPE_CUSTOM_FUNCTION_CANCELABLE = "customfunctions.cancelablehandler";
+
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 /**
@@ -82,11 +94,11 @@ export function isErrorFound(): boolean {
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
-export async function generate(inputFile: string, outputFileName: string, noConsole?:boolean): Promise<void> {
+export async function generate(inputFile: string, outputFileName: string, noConsole?: boolean): Promise<void> {
     // @ts-ignore
     let rootObject: ICustomFunctionsMetadata = null;
     if (fs.existsSync(inputFile)) {
-        
+
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -137,13 +149,17 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                 const functionDeclaration = node as ts.FunctionDeclaration;
 
                 if (isCustomFunction(functionDeclaration)) {
+                    const idName = getIdName(functionDeclaration);
+                    const idNameArray = idName.split(" ");
                     const jsDocParamInfo = getJSDocParams(functionDeclaration);
                     const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
                     const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
                     const [lastParameter] = functionDeclaration.parameters.slice(-1);
-                    const isStreamingFunction = isLastParameterStreaming(lastParameter);
-                    const paramsToParse = isStreamingFunction
+                    const isStreamingFunction = isLastParameterStreaming(lastParameter, jsDocParamTypeInfo);
+                    const isCancelableFunction = isCancelable(lastParameter, jsDocParamTypeInfo);
+
+                    const paramsToParse = (isStreamingFunction || isCancelableFunction)
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
@@ -152,23 +168,27 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const description = getDescription(functionDeclaration);
                     const helpUrl = getHelpUrl(functionDeclaration);
 
-                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter);
+                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo);
 
-                    const options = getOptions(functionDeclaration, isStreamingFunction);
+                    const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction);
 
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
+                    const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
+                    const name = idNameArray[1] || id;
+                    validateId(id);
+                    validateName(name);
 
                     const functionMetadata: IFunction = {
                         description,
                         helpUrl,
-                        id: funcName,
-                        name: funcName.toUpperCase(),
+                        id,
+                        name,
                         options,
                         parameters,
                         result,
                     };
 
-                    if (!options.volatile && !options.stream) {
+                    if (!options.volatile && !options.stream && !options.cancelable) {
                         delete functionMetadata.options;
                     }
 
@@ -188,13 +208,57 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 }
 
 /**
+ * Verifies if the id is valid and logs error if not.
+ * @param id Id of the function
+ */
+function validateId(id: string): void {
+    const idRegExString: string = "^[a-zA-Z0-9._]*$";
+    const idRegEx = new RegExp(idRegExString);
+    if (!idRegEx.test(id)) {
+        if (!id) {
+            id = "Function name is invalid";
+        }
+        logError("ID contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'): " + id);
+    }
+    if (id.length > 128) {
+        logError("Id exceeds the maximum of 128 characters allowed.");
+    }
+}
+
+/**
+ * Verifies if the name is valid and logs error if not.
+ * @param name Name of the function
+ */
+function validateName(name: string): void {
+    const nameRegEx = xregexp("^[\\pL][\\pL0-9._]*$");
+    if (!nameRegEx.test(name)) {
+        if (!name) {
+            name = "Function name is invalid";
+        }
+        logError("Name contains invalid characters. Name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.: " + name);
+    }
+    if (name.length > 128) {
+        logError("Name exceeds the maximum of 128 characters allowed.");
+    }
+}
+
+/**
+ * Normalize the id of the custom function
+ * @param id Parameter id of the custom function
+ */
+function normalizeCustomFunctionId(id: string): string {
+    return id ? id.toLocaleUpperCase() : id;
+}
+
+/**
  * Determines the options parameters for the json
  * @param func - Function
  * @param isStreamingFunction - Is is a steaming function
  */
-function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean): IFunctionOptions {
+function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, isCancelableFunction: boolean): IFunctionOptions {
     const optionsItem: IFunctionOptions = {
-        cancelable: isStreamCancelable(func),
+        cancelable: isCancelableTag(func, isCancelableFunction),
+        requiresAddress: isRequiresAddress(func),
         stream: isStreaming(func, isStreamingFunction),
         volatile: isVolatile(func),
     };
@@ -207,7 +271,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean):
  * @param isStreaming - Is a streaming function
  * @param lastParameter - Last parameter of the function signature
  */
-function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration): IFunctionResult {
+function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): IFunctionResult {
     let resultType = "any";
     let resultDim = "scalar";
     const defaultResultItem: IFunctionResult = {
@@ -218,6 +282,19 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
     // Try and determine the return type.  If one can't be determined we will set to any type
     if (isStreamingFunction) {
         const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
+        if (!lastParameterType) {
+            // Need to get result type from param {type}
+            const name = (lastParameter.name as ts.Identifier).text;
+            const ptype = jsDocParamTypeInfo[name];
+            // @ts-ignore
+            resultType = TYPE_CUSTOM_FUNCTIONS[ptype.toLocaleLowerCase()];
+            const paramResultItem: IFunctionResult = {
+                dimensionality: resultDim,
+                type: resultType,
+            };
+
+            return paramResultItem;
+        }
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
             logError("The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >')");
             return defaultResultItem;
@@ -252,10 +329,10 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         // @ts-ignore
         const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
         if (!checkType) {
-                logError("Unsupported type in code comment:" + resultFromComment);
-            } else {
-                resultType = resultFromComment;
-            }
+            logError("Unsupported type in code comment:" + resultFromComment);
+        } else {
+            resultType = resultFromComment;
+        }
     }
 
     const resultItem: IFunctionResult = {
@@ -293,10 +370,17 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
                 if (!checkType) {
                     logError("Unsupported type in code comment:" + ptype);
                 }
-            }
-            else {
-                //If type not found in comment section set to any type
+            } else {
+                // If type not found in comment section set to any type
                 ptype = "any";
+            }
+        }
+
+        // Verify parameter types match between typescript and @param {type}
+        const jsDocType = jsDocParamTypeInfo[name];
+        if (jsDocType && jsDocType !== "any") {
+            if (jsDocType.toLocaleLowerCase() !== ptype.toLocaleLowerCase()) {
+                logError("Type {" + jsDocType + ":" + ptype + "} doesn't match for parameter : " + name);
             }
         }
 
@@ -378,6 +462,14 @@ function isVolatile(node: ts.Node): boolean {
     return hasTag(node, VOLATILE);
 }
 
+/**
+ * Returns true if requiresAddress tag found in comments
+ * @param node jsDocs node
+ */
+function isRequiresAddress(node: ts.Node): boolean {
+    return hasTag(node, REQUIRESADDRESS);
+}
+
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
     return ((tag.tagName.escapedText as string).toLowerCase() === tagName);
 }
@@ -396,20 +488,17 @@ function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
  * Returns true if streaming function is cancelable
  * @param node - jsDocs node
  */
-function isStreamCancelable(node: ts.Node): boolean {
-    let streamCancel = false;
-    ts.getJSDocTags(node).forEach(
-        (tag: ts.JSDocTag) => {
-            if (containsTag(tag, STREAMING)) {
-                if (tag.comment) {
-                    if (tag.comment.toLowerCase() === CANCELABLE) {
-                        streamCancel = true;
-                    }
-                }
-            }
-        },
-    );
-    return streamCancel;
+function isCancelableTag(node: ts.Node, cancelableFunction: boolean): boolean {
+    return cancelableFunction || hasTag(node, CANCELABLE);
+}
+
+/**
+ * Returns custom id and name from custom functions tag (@CustomFunction id name)
+ * @param node - jsDocs node
+ */
+function getIdName(node: ts.Node): string {
+    const tag = findTag(node, CUSTOM_FUNCTION);
+    return tag ? tag.comment || "" : "";
 }
 
 /**
@@ -508,8 +597,24 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
  * Determines if the last parameter is streaming
  * @param param ParameterDeclaration
  */
-function isLastParameterStreaming(param: ts.ParameterDeclaration): boolean {
+function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
+
+    if (param) {
+        const name = (param.name as ts.Identifier).text;
+        if (name) {
+            const ptype = jsDocParamTypeInfo[name];
+            // Check to see if the streaming parameter is defined in the comment section
+            if (ptype) {
+                // @ts-ignore
+                const typecheck = TYPE_CUSTOM_FUNCTIONS[ptype.toLocaleLowerCase()];
+                if (typecheck) {
+                    return true;
+                }
+            }
+        }
+    }
+
     if (!isTypeReferenceNode) {
         return false;
     }
@@ -518,6 +623,37 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration): boolean {
     return (
         typeRef.typeName.getText() === "CustomFunctions.StreamingHandler" ||
         typeRef.typeName.getText() === "IStreamingCustomFunctionHandler" /* older version*/
+    );
+}
+
+/**
+ * Determines if the last parameter is of type cancelable
+ * @param param ParameterDeclaration
+ * @param jsDocParamTypeInfo
+ */
+function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+    const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
+
+    if (param) {
+        const name = (param.name as ts.Identifier).text;
+        if (name) {
+            const ptype = jsDocParamTypeInfo[name];
+            // Check to see if the cancelable parameter is defined in the comment section
+            if (ptype) {
+                if (ptype.toLocaleLowerCase() === TYPE_CUSTOM_FUNCTION_CANCELABLE ) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    if (!isTypeReferenceNode) {
+        return false;
+    }
+
+    const typeRef = param.type as ts.TypeReferenceNode;
+    return (
+        typeRef.typeName.getText() === "CustomFunctions.CancelableHandler"
     );
 }
 

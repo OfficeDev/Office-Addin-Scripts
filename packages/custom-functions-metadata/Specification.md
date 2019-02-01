@@ -2,10 +2,35 @@
 
 ## Overview
 
-When an Excel custom function is written in JavaScript or TypeScript, JSDoc tags are used to provide the extra information about the custom function. 
+When an Excel custom function is written in JavaScript or TypeScript, JSDoc tags are used to provide the extra information about the custom function.
+
+Add the `@customfunction` tag in the comments for a JavaScript or TypeScript function to mark it as a custom function. 
+
+The function parameter and return types may be provided using the [@param](#param) tag in JavaScript, or from the [Function type](http://www.typescriptlang.org/docs/handbook/functions.html) in TypeScript. For more information, see the [Types](#Types) section.
 
 ## Tags
+* [@cancelable](#cancelable)
+* [@customfunction](#customfunction) id name
+* [@helpurl](#helpurl) url
+* [@param](#param) _{type}_ name description
+* [@requiresAddress](#requiresAddress)
+* [@returns](#returns) _{type}_
+* [@streaming](#streaming)
+* [@volatile](#volatile)
 
+---
+### @cancelable
+
+Indicates that a custom function wants to perform an action when the function is canceled. 
+
+The last function parameter must be of type `CustomFunctions.CancelableInvocation`. The function can assign a function to the `oncanceled` property to denote the action to perform when the function is canceled.
+
+If the last function parameter is of type `CustomFunctions.CancelableInvocation`, it will be considered `@cancelable` even if the tag is not present.
+
+ A function cannot have both `@cancelable` and `@streaming` tags.
+
+
+---
 ### @customfunction
 
 Syntax: @customfunction _id_ _name_
@@ -31,18 +56,20 @@ Provides the display name for the custom function.
 * Must start with a letter.
 * Maximum length is 128 characters.
 
+---
 ### @helpurl
 
 Syntax: @helpurl _url_
 
 The provided _url_ is displayed in Excel.
 
+---
 ### @param
 
 Syntax: @param {_type_} _name_ _description_
 
 To denote a custom function parameter as optional:
-* In JavaScript, put square brackets around _name_. For example: `@param {string} [text] Optional text` associated with `function f(text="default")`
+* In JavaScript, put square brackets around _name_. For example: `@param {string} [text] Optional text`.
 
 * In TypeScript, do one of the following:
 1. Use an optional parameter. For example: `function f(text?: string)`
@@ -52,8 +79,8 @@ For detailed description of the @param see: [JSDoc](http://usejsdoc.org/tags-par
 
 #### {type}
 
-* For JavaScript, `{type}` provides the type info for the paramater, or will be `any` if not provided.
-* For TypeScript, `{type}` should be omitted as the type info will come from the Typescript parameter type.
+* For JavaScript, `{type}` provides the type info for the parameter, or will be `any` if not provided.
+* For TypeScript, `{type}` should be omitted as the type info will come from the Typescript function type.
 * See the [Types](##types) for more information.
 
 #### name
@@ -64,6 +91,14 @@ Specifies which parameter the @param tag applies to.
 
 Provides the description which appears in Excel for the function parameter.
 
+---
+### @requiresAddress
+
+Indicates that the address of the cell where the function is being evaluated should be provided. 
+
+The last function parameter must be of type `CustomFunctions.Invocation` or a derived type. When the function is called, the `address` property will contain the address.
+
+---
 ### @returns
 
 Syntax: @returns {_type_}
@@ -72,25 +107,28 @@ Provides the type for the return value.
 
 If `{type}` is omitted, the TypeScript type info will be used. If there is no type info, the type will be `any`.
 
-### description
-
-Provides the description of the custom functions. It is determined from the comment section above the function itself.
-
+---
 ### @streaming
 
 Used to indicate that a custom function is a streaming function. 
 
-To denote the custom function is cancelable use @streaming cancelable.
-
-The last parameter should be of type `CustomFunctions.StreamingHandler<ResultType>`.
+The last parameter should be of type `CustomFunctions.StreamingInvocation<ResultType>`.
 The function should return `void`.
 
-Streaming functions do not return values directly, but rather should call `setResult(result: ResultType)` using the last parameter.   
+Streaming functions do not return values directly, but rather should call `setResult(result: ResultType)` using the last parameter.
 
+Exceptions thrown by a streaming function are ignored. `setResult()` may be called with Error to indicate an error result.
+
+Streaming functions cannot be marked as [@volatile](#volatile).
+
+---
 ### @volatile
 
-Used to denote the custom function is volatile.
+A volatile function is one whose result cannot be assumed to be the same from one moment to the next even if it takes no arguments or the arguments have not changed. Excel re-evaluates cells that contain volatile functions, together with all dependents, every time that a calculation is done. For this reason, too much reliance on volatile functions can make recalculation times slow, so use them sparingly.
 
+Streaming functions cannot be volatile.
+
+---
 
 ## Types
 
@@ -103,71 +141,16 @@ Using `boolean`, `number`, or `string` will allow Excel to convert the value to 
 
 Use a two-dimensional array type to have the parameter or return value be a matrix of values. For example, the type `number[][]` indicates a matrix of numbers. `string[][]` indicates a matrix of strings.
 
-## Invocation Context
+### Error type
 
+A non-streaming function can indicate an error by returning an Error type.
 
-Command to run tool:
-Npm run generate-json [inputFile] [output]
+A streaming function can indicate an error by calling setResult() with an Error type.
 
-## Example:
+### Promise
 
-/**
- * This function adds 2 or 3 numbers together
- * @CustomFunction
- * @param {number} first - the first number
- * @param {number} second - the second number
- * @param {number} [third] - the third optional number
- * @helpUrl https://dev.office.com
- * @volatile
- * @streaming cancelable
- * @return {number}
-  */
+A function can return a Promise, which will provide the value when the promise is resolved. If the promise is rejected, then it is an error.
 
-function add(first: number, second: number, third?: number): number
-{
+### Other types
 
-    return first + second + third;
-
-}
-
-Metadata generated:
-
-{
-    "functions":[
-        
-        {
-            "description": "This function adds 2 or 3 numbers together",
-            "helpUrl": "https://dev.office.com",
-            "id": "add",
-            "name": "ADD",
-            "options": {
-                "cancelable": true,
-                "stream": true,
-                "volatile": true
-            },
-            "parameters": [
-                {
-                    "description": "the first number",
-                    "name": "first",
-                    "optional": false,
-                    "type": "number"
-                },
-                {
-                    "description": "the second number",
-                    "name": "second",
-                    "optional": false,
-                    "type": "number"
-                },
-                {
-                    "description": "the third optional number",
-                    "name": "third",
-                    "optional": true,
-                    "type": "number"
-                }
-            ],
-            "result": {
-                "type": "number"
-            }
-        }
-    ]
-}
+Any other type will be treated as an error.
