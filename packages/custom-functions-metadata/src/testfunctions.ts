@@ -2,7 +2,7 @@
  * Test comments
  * @param {number} first - the first number
  * @param {number} [second]
- * @param {number} [optional] - an optional number 
+ * @param {number} [optional] - an optional number
  * @helpUrl https://dev.office.com
  * @CustomFunction
  * @notfound test123
@@ -19,11 +19,13 @@ function add(first: number, second: number, optional?: number): number {
  * @param {number} x - x arraynumber
  * @CustomFunction
  */
+// tslint:disable-next-line:array-type
 function bad(one: string[][], x: Array<Array<number>>): string[][] {
     // @ts-ignore
     return [""][""];
 }
 
+// tslint:disable-next-line:no-empty
 function notadded() {
 }
 
