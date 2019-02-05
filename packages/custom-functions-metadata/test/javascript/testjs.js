@@ -68,3 +68,26 @@ function customIdTest(x){}
  * @CustomFunction newId newName 
  */
 function customIdNameTest(x){}
+
+/**
+ * Test the new invocation type
+ * @param {CustomFunctions.Invocation} inv
+ * @CustomFunction 
+ */
+function customInvocationTest(inv){}
+
+/**
+ * Test streaming handler function
+ * @param {string} x 
+ * @param {CustomFunctions.StreamingInvocation<string>} handler
+ * @CustomFunction 
+ */
+function testStreamingInvocation(x, handler){}
+
+/**
+ * Test the cancelable handler
+ * @param {string} x 
+ * @param {CustomFunctions.CancelableInvocation} chandler
+ * @CustomFunction 
+ */
+function testCancelInvocation(x, chandler){}
