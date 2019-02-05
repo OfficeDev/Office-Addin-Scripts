@@ -164,9 +164,9 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
                     const [lastParameter] = functionDeclaration.parameters.slice(-1);
-                    const isStreamingFunction = isLastParameterStreaming(lastParameter, jsDocParamTypeInfo);
-                    const isCancelableFunction = isCancelable(lastParameter, jsDocParamTypeInfo);
-                    const isInvocationFunction = isInvocation(lastParameter, jsDocParamTypeInfo);
+                    const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
+                    const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
+                    const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
 
                     const paramsToParse = (isStreamingFunction || isCancelableFunction || isInvocationFunction)
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
@@ -606,7 +606,7 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
  * Determines if the last parameter is streaming
  * @param param ParameterDeclaration
  */
-function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+function hasStreamingInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
     if (param) {
@@ -629,10 +629,11 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamType
     }
 
     const typeRef = param.type as ts.TypeReferenceNode;
+    const typeName = typeRef.typeName.getText();
     return (
-        typeRef.typeName.getText() === "CustomFunctions.StreamingInvocation" ||
-        typeRef.typeName.getText() === "CustomFunctions.StreamingHandler" ||
-        typeRef.typeName.getText() === "IStreamingCustomFunctionHandler" /* older version*/
+        typeName === "CustomFunctions.StreamingInvocation" ||
+        typeName === "CustomFunctions.StreamingHandler" ||
+        typeName === "IStreamingCustomFunctionHandler" /* older version*/
     );
 }
 
@@ -641,7 +642,7 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamType
  * @param param ParameterDeclaration
  * @param jsDocParamTypeInfo
  */
-function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+function hasCancelableInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
     if (param) {
@@ -664,9 +665,10 @@ function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key
     }
 
     const typeRef = param.type as ts.TypeReferenceNode;
+    const typeName = typeRef.typeName.getText();
     return (
-        typeRef.typeName.getText() === "CustomFunctions.CancelableHandler" ||
-        typeRef.typeName.getText() === "CustomFunctions.CancelableInvocation"
+        typeName === "CustomFunctions.CancelableHandler" ||
+        typeName === "CustomFunctions.CancelableInvocation"
     );
 }
 
@@ -675,7 +677,7 @@ function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key
  * @param param ParameterDeclaration
  * @param jsDocParamTypeInfo
  */
-function isInvocation(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+function hasInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
     if (param) {

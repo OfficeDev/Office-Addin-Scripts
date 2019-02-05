@@ -158,6 +158,7 @@ function customFunctionInvocationTest(x: string, invocation: CustomFunctions.Inv
  * @param x string
  * @param cancel CustomFunctions.CancelableInvocation type
  * @CustomFunction
+ * @requiresAddress
  */
 function customFunctionCancelableInvocationTest(x: string, cancel: CustomFunctions.CancelableInvocation){}
 
@@ -166,6 +167,7 @@ function customFunctionCancelableInvocationTest(x: string, cancel: CustomFunctio
  * @param x string
  * @param stream StreamingInvocation type
  * @CustomFunction
+ * @requiresAddress
  */
 function customFunctionStreamingInvocationTest(x: string, stream: CustomFunctions.StreamingInvocation<string>){}
 
