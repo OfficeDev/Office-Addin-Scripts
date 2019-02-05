@@ -18,6 +18,7 @@ if (process.argv[1].endsWith(path.join("lib", "debugging.js"))
     || process.argv[1].endsWith(path.join(".bin", "office-addin-debugging"))) {
     commander
         .command("start <manifestPath> [appType]")
+        .option("--app <app>", "Specify which Office app to use.")
         .option("--debug-method <method>", "The debug method to use.")
         .option("--dev-server <command>", "Run the dev server.")
         .option("--dev-server-port <port>", "Verify the dev server is running using this port.")

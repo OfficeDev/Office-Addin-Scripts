@@ -51,6 +51,7 @@ function parseNumericCommandOption(optionValue: any, errorMessage: string = "The
 export async function start(manifestPath: string, appType: string | undefined, command: commander.Command) {
     try {
         const appTypeToDebug: AppType | undefined = parseAppType(appType || process.env.npm_package_config_app_type_to_debug || "desktop");
+        const app: string = command.app || process.env.npm_package_config_app_to_debug;
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
             command.sourceBundleUrlHost, command.sourceBundleUrlPort,
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
@@ -62,7 +63,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
-        const sideload: string | undefined = command.sideload || process.env.npm_package_scripts_sideload;
+        const sideload: string | undefined = command.sideload || process.env[`npm_package_scripts_sideload_${app}`] || process.env.package_scripts_sideload;
 
         if (appTypeToDebug === undefined) {
             throw new Error("Please specify the application type to debug.");
@@ -78,7 +79,8 @@ export async function start(manifestPath: string, appType: string | undefined, c
 
 export async function stop(manifestPath: string, command: commander.Command) {
     try {
-        const unload: string | undefined = command.unload || process.env.npm_package_scripts_unload;
+        const app: string = command.app || process.env.npm_package_config_app_to_debug;
+        const unload: string | undefined = command.unload || process.env[`npm_package_scripts_unload_${app}`] || process.env.npm_package_scripts_unload;
 
         await stopDebugging(manifestPath, unload);
     } catch (err) {
