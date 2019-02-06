@@ -72,7 +72,8 @@ function customIdNameTest(x){}
 /**
  * Test the new invocation type
  * @param {CustomFunctions.Invocation} inv
- * @CustomFunction 
+ * @CustomFunction
+ * @requiresAddress 
  */
 function customInvocationTest(inv){}
 

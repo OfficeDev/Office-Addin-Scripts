@@ -150,6 +150,7 @@ function requiresAddressTest(x: string, handler: CustomFunctions.StreamingHandle
  * Test the CustomFunctions.Invocation type
  * @CustomFunction
  * @param invocation Invocation parameter
+ * @requiresAddress
  */
 function customFunctionInvocationTest(x: string, invocation: CustomFunctions.Invocation){}
 
