@@ -267,14 +267,14 @@ function normalizeCustomFunctionId(id: string): string {
 function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, isCancelableFunction: boolean, isInvocationFunction: boolean): IFunctionOptions {
     const optionsItem: IFunctionOptions = {
         cancelable: isCancelableTag(func, isCancelableFunction),
-        requiresAddress: isRequiresAddress(func),
+        requiresAddress: isAddressRequired(func),
         stream: isStreaming(func, isStreamingFunction),
         volatile: isVolatile(func),
     };
 
     if (optionsItem.requiresAddress) {
         if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
-            logError("@requiresAddress requires last parameter of function to be one of the following CustomFunction types: Invocation, CancelableInvocation, or StreamingInvocation.");
+            logError("Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation.");
         }
     }
 
@@ -482,7 +482,7 @@ function isVolatile(node: ts.Node): boolean {
  * Returns true if requiresAddress tag found in comments
  * @param node jsDocs node
  */
-function isRequiresAddress(node: ts.Node): boolean {
+function isAddressRequired(node: ts.Node): boolean {
     return hasTag(node, REQUIRESADDRESS);
 }
 
