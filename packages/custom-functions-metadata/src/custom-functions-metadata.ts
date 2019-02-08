@@ -71,14 +71,22 @@ const TYPE_MAPPINGS_COMMENT = {
     ["any"]: 4,
 };
 
-const TYPE_CUSTOM_FUNCTIONS = {
+const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
     ["customfunctions.streaminghandler<string>"]: "string",
     ["customfunctions.streaminghandler<number>"]: "number",
     ["customfunctions.streaminghandler<boolean>"]: "boolean",
     ["customfunctions.streaminghandler<any>"]: "any",
+    ["customfunctions.streaminginvocation<string>"]: "string",
+    ["customfunctions.streaminginvocation<number>"]: "number",
+    ["customfunctions.streaminginvocation<boolean>"]: "boolean",
+    ["customfunctions.streaminginvocation<any>"]: "any",
 };
 
-const TYPE_CUSTOM_FUNCTION_CANCELABLE = "customfunctions.cancelablehandler";
+const TYPE_CUSTOM_FUNCTION_CANCELABLE = {
+    ["customfunctions.cancelablehandler"]: 1,
+    ["customfunctions.cancelableinvocation"]: 2,
+};
+const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
@@ -156,10 +164,11 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
                     const [lastParameter] = functionDeclaration.parameters.slice(-1);
-                    const isStreamingFunction = isLastParameterStreaming(lastParameter, jsDocParamTypeInfo);
-                    const isCancelableFunction = isCancelable(lastParameter, jsDocParamTypeInfo);
+                    const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
+                    const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
+                    const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
 
-                    const paramsToParse = (isStreamingFunction || isCancelableFunction)
+                    const paramsToParse = (isStreamingFunction || isCancelableFunction || isInvocationFunction)
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
@@ -170,7 +179,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 
                     const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo);
 
-                    const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction);
+                    const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction, isInvocationFunction);
 
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
                     const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
@@ -188,7 +197,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                         result,
                     };
 
-                    if (!options.volatile && !options.stream && !options.cancelable) {
+                    if (!options.volatile && !options.stream && !options.cancelable && !options.requiresAddress) {
                         delete functionMetadata.options;
                     }
 
@@ -255,13 +264,20 @@ function normalizeCustomFunctionId(id: string): string {
  * @param func - Function
  * @param isStreamingFunction - Is is a steaming function
  */
-function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, isCancelableFunction: boolean): IFunctionOptions {
+function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, isCancelableFunction: boolean, isInvocationFunction: boolean): IFunctionOptions {
     const optionsItem: IFunctionOptions = {
         cancelable: isCancelableTag(func, isCancelableFunction),
-        requiresAddress: isRequiresAddress(func),
+        requiresAddress: isAddressRequired(func),
         stream: isStreaming(func, isStreamingFunction),
         volatile: isVolatile(func),
     };
+
+    if (optionsItem.requiresAddress) {
+        if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
+            logError("Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation.");
+        }
+    }
+
     return optionsItem;
 }
 
@@ -287,7 +303,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             const name = (lastParameter.name as ts.Identifier).text;
             const ptype = jsDocParamTypeInfo[name];
             // @ts-ignore
-            resultType = TYPE_CUSTOM_FUNCTIONS[ptype.toLocaleLowerCase()];
+            resultType = TYPE_CUSTOM_FUNCTIONS_STREAMING[ptype.toLocaleLowerCase()];
             const paramResultItem: IFunctionResult = {
                 dimensionality: resultDim,
                 type: resultType,
@@ -466,7 +482,7 @@ function isVolatile(node: ts.Node): boolean {
  * Returns true if requiresAddress tag found in comments
  * @param node jsDocs node
  */
-function isRequiresAddress(node: ts.Node): boolean {
+function isAddressRequired(node: ts.Node): boolean {
     return hasTag(node, REQUIRESADDRESS);
 }
 
@@ -597,7 +613,7 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
  * Determines if the last parameter is streaming
  * @param param ParameterDeclaration
  */
-function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+function hasStreamingInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
     if (param) {
@@ -607,7 +623,7 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamType
             // Check to see if the streaming parameter is defined in the comment section
             if (ptype) {
                 // @ts-ignore
-                const typecheck = TYPE_CUSTOM_FUNCTIONS[ptype.toLocaleLowerCase()];
+                const typecheck = TYPE_CUSTOM_FUNCTIONS_STREAMING[ptype.toLocaleLowerCase()];
                 if (typecheck) {
                     return true;
                 }
@@ -620,9 +636,11 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamType
     }
 
     const typeRef = param.type as ts.TypeReferenceNode;
+    const typeName = typeRef.typeName.getText();
     return (
-        typeRef.typeName.getText() === "CustomFunctions.StreamingHandler" ||
-        typeRef.typeName.getText() === "IStreamingCustomFunctionHandler" /* older version*/
+        typeName === "CustomFunctions.StreamingInvocation" ||
+        typeName === "CustomFunctions.StreamingHandler" ||
+        typeName === "IStreamingCustomFunctionHandler" /* older version*/
     );
 }
 
@@ -631,7 +649,7 @@ function isLastParameterStreaming(param: ts.ParameterDeclaration, jsDocParamType
  * @param param ParameterDeclaration
  * @param jsDocParamTypeInfo
  */
-function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+function hasCancelableInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
     const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
     if (param) {
@@ -640,7 +658,42 @@ function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key
             const ptype = jsDocParamTypeInfo[name];
             // Check to see if the cancelable parameter is defined in the comment section
             if (ptype) {
-                if (ptype.toLocaleLowerCase() === TYPE_CUSTOM_FUNCTION_CANCELABLE ) {
+                // @ts-ignore
+                const cancelableTypeCheck = TYPE_CUSTOM_FUNCTION_CANCELABLE[ptype.toLocaleLowerCase()];
+                if (cancelableTypeCheck ) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    if (!isTypeReferenceNode) {
+        return false;
+    }
+
+    const typeRef = param.type as ts.TypeReferenceNode;
+    const typeName = typeRef.typeName.getText();
+    return (
+        typeName === "CustomFunctions.CancelableHandler" ||
+        typeName === "CustomFunctions.CancelableInvocation"
+    );
+}
+
+/**
+ * Determines if the last parameter is of type invocation
+ * @param param ParameterDeclaration
+ * @param jsDocParamTypeInfo
+ */
+function hasInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }): boolean {
+    const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
+
+    if (param) {
+        const name = (param.name as ts.Identifier).text;
+        if (name) {
+            const ptype = jsDocParamTypeInfo[name];
+            // Check to see if the invocation parameter is defined in the comment section
+            if (ptype) {
+                if (ptype.toLocaleLowerCase() === TYPE_CUSTOM_FUNCTION_INVOCATION ) {
                     return true;
                 }
             }
@@ -653,7 +706,7 @@ function isCancelable(param: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key
 
     const typeRef = param.type as ts.TypeReferenceNode;
     return (
-        typeRef.typeName.getText() === "CustomFunctions.CancelableHandler"
+        typeRef.typeName.getText() === "CustomFunctions.Invocation"
     );
 }
 

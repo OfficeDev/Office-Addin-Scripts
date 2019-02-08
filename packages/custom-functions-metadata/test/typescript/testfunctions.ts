@@ -146,5 +146,31 @@ function customFunctionIdNameTest(x:string){
  */
 function requiresAddressTest(x: string, handler: CustomFunctions.StreamingHandler<number>){}
 
+/**
+ * Test the CustomFunctions.Invocation type
+ * @CustomFunction
+ * @param invocation Invocation parameter
+ * @requiresAddress
+ */
+function customFunctionInvocationTest(x: string, invocation: CustomFunctions.Invocation){}
+
+/**
+ * Test the new cancelable type
+ * @param x string
+ * @param cancel CustomFunctions.CancelableInvocation type
+ * @CustomFunction
+ * @requiresAddress
+ */
+function customFunctionCancelableInvocationTest(x: string, cancel: CustomFunctions.CancelableInvocation){}
+
+/**
+ * Test the new streaming invocation type
+ * @param x string
+ * @param stream StreamingInvocation type
+ * @CustomFunction
+ * @requiresAddress
+ */
+function customFunctionStreamingInvocationTest(x: string, stream: CustomFunctions.StreamingInvocation<string>){}
+
 CustomFunctionMappings.ADD=add;
 

@@ -57,6 +57,11 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[14].id, "UPDATEID", "@CustomFunction id not created properly");
             assert.strictEqual(j.functions[14].name, "updateName", "@CustomFunction name not created properly");
             assert.strictEqual(j.functions[15].options.requiresAddress, true, "requiresAddress tag not created properly");
+            assert.strictEqual(j.functions[16].options.requiresAddress, true, "CustomFunctions.Invocation requiresAddress tag not created properly");
+            assert.strictEqual(j.functions[17].options.cancelable, true, "CustomFunctions.CancelableInvocation type not created properly");
+            assert.strictEqual(j.functions[17].options.requiresAddress, true, "CustomFunctions.CancelableInvocation requiresAdress type not created properly");
+            assert.strictEqual(j.functions[18].options.stream, true, "CustomFunctions.StreamingInvocation - options stream not created properly");
+            assert.strictEqual(j.functions[18].options.requiresAddress, true, "CustomFunctions.StreamingInvocation requiresAddress - options stream not created properly");
         });
     });
 });
@@ -98,6 +103,9 @@ describe("verify json created in file by javascript", function() {
             assert.strictEqual(j.functions[7].name, "NEWID", "@CustomFunction id set for name not created properly");
             assert.strictEqual(j.functions[8].id, "NEWID", "@CustomFunction id name not created properly");
             assert.strictEqual(j.functions[8].name, "newName", "@CustomFunction id name not created properly");
+            assert.strictEqual(j.functions[9].options.requiresAddress, true, "CustomFunctions.Invocation set requiresAddress not created properly");
+            assert.strictEqual(j.functions[10].options.stream, true, "CustomFunctions.StreamingInvocation type any not created properly");
+            assert.strictEqual(j.functions[11].options.cancelable, true, "CustomFunctions.CancelableInvocation type any not created properly");
         });
     });
 });
@@ -111,9 +119,11 @@ describe("test errors", function() {
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
              const errorstring = "Unsupported type in code comment:badtype";
+             const errorRequiresAddress = "@requiresAddress";
              assert.equal(errtest[0].includes(errorstring), true, "Unsupported type found");
              assert.equal(errtest[2].includes(errorIdBad), true, "Invalid id found");
              assert.equal(errtest[4].includes(errorNameBad), true, "Invalid name found");
+             assert.equal(errtest[5].includes(errorRequiresAddress), true, "Missing Invocation type");
              assert.strictEqual(fs.existsSync(output), false, "json file created");
         });
     });

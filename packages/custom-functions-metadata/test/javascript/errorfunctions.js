@@ -26,3 +26,11 @@ function badId(){}
  * @CustomFunction id 1invalidname
  */
 function badName(){}
+
+/**
+ * requiresAddress tag requires parmeter to be of type Invocation
+ * @param {string} x
+ * @CustomFunction
+ * @requiresAddress 
+ */
+function missingInvocationType(x){}
