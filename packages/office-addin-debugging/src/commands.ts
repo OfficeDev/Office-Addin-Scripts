@@ -63,7 +63,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
-        const sideload: string | undefined = command.sideload || process.env[`npm_package_scripts_sideload_${app}`] || process.env.package_scripts_sideload;
+        const sideload: string | undefined = command.sideload || process.env[`npm_package_scripts_sideload_${app}`] || process.env.npm_package_scripts_sideload;
 
         if (appTypeToDebug === undefined) {
             throw new Error("Please specify the application type to debug.");
