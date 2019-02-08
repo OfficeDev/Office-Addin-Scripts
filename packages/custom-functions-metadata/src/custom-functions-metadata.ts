@@ -105,6 +105,7 @@ export function isErrorFound(): boolean {
 export async function generate(inputFile: string, outputFileName: string, noConsole?: boolean): Promise<void> {
     // @ts-ignore
     let rootObject: ICustomFunctionsMetadata = null;
+    errorLogFile = [];
     if (fs.existsSync(inputFile)) {
 
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
