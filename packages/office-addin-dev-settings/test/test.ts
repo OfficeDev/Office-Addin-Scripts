@@ -194,7 +194,12 @@ describe("RuntimeLogging", async function() {
 
     this.afterAll(async function() {
       if (pathBeforeTests) {
-        await devSettings.enableRuntimeLogging(pathBeforeTests);
+        try {
+          await devSettings.enableRuntimeLogging(pathBeforeTests);
+        } catch (err) {
+          console.log("Unable to restore original runtime logging settings. Runtime logging will be disabled.");
+          await devSettings.disableRuntimeLogging();
+        }
       } else {
         await devSettings.disableRuntimeLogging();
       }
