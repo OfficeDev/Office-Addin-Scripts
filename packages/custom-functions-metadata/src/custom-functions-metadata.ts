@@ -158,7 +158,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                 const functionDeclaration = node as ts.FunctionDeclaration;
 
                 if (isCustomFunction(functionDeclaration)) {
-                    const line = linePosition(functionDeclaration);
+                    const position = getPosition(functionDeclaration);
                     const idName = getIdName(functionDeclaration);
                     const idNameArray = idName.split(" ");
                     const jsDocParamInfo = getJSDocParams(functionDeclaration);
@@ -186,8 +186,8 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
                     const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
                     const name = idNameArray[1] || id;
-                    validateId(id , line);
-                    validateName(name, line);
+                    validateId(id , position);
+                    validateName(name, position);
 
                     const functionMetadata: IFunction = {
                         description,
@@ -219,10 +219,10 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 }
 
 /**
- * Get the line position of the object
+ * Get the position of the object
  * @param node function, parameter, or node
  */
-function linePosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode): ts.LineAndCharacter | null {
+function getPosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode): ts.LineAndCharacter | null {
     return node ? node.getSourceFile().getLineAndCharacterOfPosition(node.pos) : null;
 }
 
@@ -230,17 +230,17 @@ function linePosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | t
  * Verifies if the id is valid and logs error if not.
  * @param id Id of the function
  */
-function validateId(id: string, line: ts.LineAndCharacter | null): void {
+function validateId(id: string, position: ts.LineAndCharacter | null): void {
     const idRegExString: string = "^[a-zA-Z0-9._]*$";
     const idRegEx = new RegExp(idRegExString);
     if (!idRegEx.test(id)) {
         if (!id) {
             id = "Function name is invalid";
         }
-        logError(`The custom function id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`, line);
+        logError(`The custom function id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`, position);
     }
     if (id.length > 128) {
-        logError(`The custom function id exceeds the maximum of 128 characters allowed.`, line);
+        logError(`The custom function id exceeds the maximum of 128 characters allowed.`, position);
     }
 }
 
@@ -248,16 +248,16 @@ function validateId(id: string, line: ts.LineAndCharacter | null): void {
  * Verifies if the name is valid and logs error if not.
  * @param name Name of the function
  */
-function validateName(name: string, line: ts.LineAndCharacter | null): void {
+function validateName(name: string, position: ts.LineAndCharacter | null): void {
     const nameRegEx = xregexp("^[\\pL][\\pL0-9._]*$");
     if (!nameRegEx.test(name)) {
         if (!name) {
             name = "Function name is invalid";
         }
-        logError(`The custom function name contains invalid characters. The name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.:${name}`, line);
+        logError(`The custom function name contains invalid characters. The name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.:${name}`, position);
     }
     if (name.length > 128) {
-        logError(`The custom function name exceeds the maximum of 128 characters allowed.`, line);
+        logError(`The custom function name exceeds the maximum of 128 characters allowed.`, position);
     }
 }
 
@@ -284,7 +284,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
 
     if (optionsItem.requiresAddress) {
         if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
-            const functionPosition =  linePosition(func);
+            const functionPosition =  getPosition(func);
             logError("Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :", functionPosition);
         }
     }
@@ -306,7 +306,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         type: resultType,
     };
 
-    const functionPosition = linePosition(lastParameter);
+    const lastParameterPosition = getPosition(lastParameter);
 
     // Try and determine the return type.  If one can't be determined we will set to any type
     if (isStreamingFunction) {
@@ -325,12 +325,12 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             return paramResultItem;
         }
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
-            logError("The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >') :", functionPosition);
+            logError("The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >') :", lastParameterPosition);
             return defaultResultItem;
         }
         const returnType = func.type as ts.TypeReferenceNode;
         if (returnType && returnType.getFullText().trim() !== "void") {
-            logError(`A streaming function should not have a return type.  Instead, its type should be based purely on what's inside "CustomFunctions.StreamingHandler<T>" :`, functionPosition);
+            logError(`A streaming function should return 'void'. Use CustomFunctions.StreamingHandler.setResult() to set results.`, lastParameterPosition);
             return defaultResultItem;
         }
         resultType = getParamType(lastParameterType.typeArguments[0]);
@@ -358,7 +358,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         // @ts-ignore
         const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
         if (!checkType) {
-            logError(`Unsupported type in code comment:${resultFromComment}`, functionPosition);
+            logError(`Unsupported type in code comment:${resultFromComment}`, lastParameterPosition);
         } else {
             resultType = resultFromComment;
         }
@@ -389,7 +389,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     .map((p: ts.ParameterDeclaration) => {
         const name = (p.name as ts.Identifier).text;
         let ptype = getParamType(p.type as ts.TypeNode);
-        const parameterPosition = linePosition(p);
+        const parameterPosition = getPosition(p);
         // Try setting type from parameter in code comment
         if (ptype === "any") {
             ptype = jsDocParamTypeInfo[name];
@@ -732,7 +732,7 @@ function getParamType(t: ts.TypeNode): string {
     // Only get type for typescript files.  js files will return any for all types
     if (t) {
         let kind = t.kind;
-        const typePosition = linePosition(t);
+        const typePosition = getPosition(t);
         if (ts.isTypeReferenceNode(t)) {
             const arrTr = t as ts.TypeReferenceNode;
             if (enumList.indexOf(arrTr.typeName.getText()) >= 0) {
