@@ -158,6 +158,7 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                 const functionDeclaration = node as ts.FunctionDeclaration;
 
                 if (isCustomFunction(functionDeclaration)) {
+                    const line = linePosition(functionDeclaration);
                     const idName = getIdName(functionDeclaration);
                     const idNameArray = idName.split(" ");
                     const jsDocParamInfo = getJSDocParams(functionDeclaration);
@@ -185,8 +186,8 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
                     const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
                     const name = idNameArray[1] || id;
-                    validateId(id , functionDeclaration);
-                    validateName(name, functionDeclaration);
+                    validateId(id , line);
+                    validateName(name, line);
 
                     const functionMetadata: IFunction = {
                         description,
@@ -218,21 +219,28 @@ export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
 }
 
 /**
+ * Get the line position of the object
+ * @param node function, parameter, or node
+ */
+function linePosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode): ts.LineAndCharacter | null {
+    return node ? node.getSourceFile().getLineAndCharacterOfPosition(node.pos) : null;
+}
+
+/**
  * Verifies if the id is valid and logs error if not.
  * @param id Id of the function
  */
-function validateId(id: string, node: ts.FunctionDeclaration): void {
+function validateId(id: string, line: ts.LineAndCharacter | null): void {
     const idRegExString: string = "^[a-zA-Z0-9._]*$";
     const idRegEx = new RegExp(idRegExString);
-    const nodePosition = node ? node.getSourceFile().getLineAndCharacterOfPosition(node.pos) : null;
     if (!idRegEx.test(id)) {
         if (!id) {
             id = "Function name is invalid";
         }
-        logError("ID contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'): " + id, nodePosition);
+        logError(`The custom function id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`, line);
     }
     if (id.length > 128) {
-        logError("Id exceeds the maximum of 128 characters allowed.", nodePosition);
+        logError(`The custom function id exceeds the maximum of 128 characters allowed.`, line);
     }
 }
 
@@ -240,17 +248,16 @@ function validateId(id: string, node: ts.FunctionDeclaration): void {
  * Verifies if the name is valid and logs error if not.
  * @param name Name of the function
  */
-function validateName(name: string, node: ts.FunctionDeclaration): void {
+function validateName(name: string, line: ts.LineAndCharacter | null): void {
     const nameRegEx = xregexp("^[\\pL][\\pL0-9._]*$");
-    const nodePosition = node ? node.getSourceFile().getLineAndCharacterOfPosition(node.pos) : null;
     if (!nameRegEx.test(name)) {
         if (!name) {
             name = "Function name is invalid";
         }
-        logError("Name contains invalid characters. Name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.: " + name, nodePosition);
+        logError(`The custom function name contains invalid characters. The name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.:${name}`, line);
     }
     if (name.length > 128) {
-        logError("Name exceeds the maximum of 128 characters allowed.", nodePosition);
+        logError(`The custom function name exceeds the maximum of 128 characters allowed.`, line);
     }
 }
 
@@ -277,7 +284,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
 
     if (optionsItem.requiresAddress) {
         if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
-            const functionPosition =  func ? func.getSourceFile().getLineAndCharacterOfPosition(func.pos) : null;
+            const functionPosition =  linePosition(func);
             logError("Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :", functionPosition);
         }
     }
@@ -299,7 +306,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         type: resultType,
     };
 
-    const functionPosition = lastParameter ? func.getSourceFile().getLineAndCharacterOfPosition(lastParameter.pos) : null;
+    const functionPosition = linePosition(lastParameter);
 
     // Try and determine the return type.  If one can't be determined we will set to any type
     if (isStreamingFunction) {
@@ -351,7 +358,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         // @ts-ignore
         const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
         if (!checkType) {
-            logError("Unsupported type in code comment:" + resultFromComment, functionPosition);
+            logError(`Unsupported type in code comment:${resultFromComment}`, functionPosition);
         } else {
             resultType = resultFromComment;
         }
@@ -382,7 +389,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     .map((p: ts.ParameterDeclaration) => {
         const name = (p.name as ts.Identifier).text;
         let ptype = getParamType(p.type as ts.TypeNode);
-        const parameterPosition = p.getSourceFile().getLineAndCharacterOfPosition(p.pos);
+        const parameterPosition = linePosition(p);
         // Try setting type from parameter in code comment
         if (ptype === "any") {
             ptype = jsDocParamTypeInfo[name];
@@ -390,7 +397,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
                 // @ts-ignore
                 const checkType = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
                 if (!checkType) {
-                    logError("Unsupported type in code comment:" + ptype, parameterPosition);
+                    logError(`Unsupported type in code comment:${ptype}`, parameterPosition);
                 }
             } else {
                 // If type not found in comment section set to any type
@@ -402,7 +409,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         const jsDocType = jsDocParamTypeInfo[name];
         if (jsDocType && jsDocType !== "any") {
             if (jsDocType.toLocaleLowerCase() !== ptype.toLocaleLowerCase()) {
-                logError("Type {" + jsDocType + ":" + ptype + "} doesn't match for parameter : " + name, parameterPosition);
+                logError(`Type {${jsDocType}:${ptype}} doesn't match for parameter : ${name}`, parameterPosition);
             }
         }
 
@@ -725,7 +732,7 @@ function getParamType(t: ts.TypeNode): string {
     // Only get type for typescript files.  js files will return any for all types
     if (t) {
         let kind = t.kind;
-        const typePosition = t.getSourceFile().getLineAndCharacterOfPosition(t.pos);
+        const typePosition = linePosition(t);
         if (ts.isTypeReferenceNode(t)) {
             const arrTr = t as ts.TypeReferenceNode;
             if (enumList.indexOf(arrTr.typeName.getText()) >= 0) {
@@ -811,12 +818,10 @@ function validateArray(a: ts.TypeReferenceNode) {
  * Log containing all the errors found while parsing
  * @param error Error string to add to the log
  */
-export function logError(error: string, functionPosition?: ts.LineAndCharacter | null) {
-    if (functionPosition) {
-        // @ts-ignore
-        errorLogFile.push(error + " [Line: " + functionPosition.line + " Char: " + functionPosition.character + "]");
-    } else {
-        // @ts-ignore
-        errorLogFile.push(error);
+export function logError(error: string, position?: ts.LineAndCharacter | null) {
+    if (position) {
+        error = `${error} (${position.line},${position.character})`;
     }
+    // @ts-ignore
+    errorLogFile.push(error);
 }
