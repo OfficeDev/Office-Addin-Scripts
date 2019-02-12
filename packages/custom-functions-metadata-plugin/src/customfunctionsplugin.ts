@@ -30,9 +30,9 @@ class CustomFunctionsMetadataPlugin {
         });
 
         compiler.hooks.emit.tap(pluginName, (compilation) => {
-            if (metadata.isErrorFound()) {
+            if (metadata.anyErrors()) {
                 compilation.errors.push("Generating metadata file:" + outputFilePath);
-                metadata.errorLogFile.forEach((err: string) => compilation.errors.push(this.options.input + " " + err));
+                metadata.errors.forEach((err: string) => compilation.errors.push(this.options.input + " " + err));
             } else {
                 const stats = fs.statSync(outputFilePath);
                 const content = fs.readFileSync(outputFilePath);
