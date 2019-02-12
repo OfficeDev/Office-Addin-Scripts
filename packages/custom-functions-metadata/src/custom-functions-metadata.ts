@@ -14,7 +14,7 @@ export async function generate(inputFile: string, outputFile: string) {
 
 // if this package is being run from the command line
 // (related to "main" and "bin" in package.json)
-if (process.argv[1].endsWith(path.join("lib", "json-generate.js"))
+if (process.argv[1].endsWith(path.join("lib", "custom-functions-metadata.js"))
   || process.argv[1].endsWith(path.join(".bin", "custom-functions-metadata"))) {
   commander
     .command("generate <jsourceFile> <metadataFile>")
