@@ -2,16 +2,16 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
 import * as ts from "typescript";
-import * as customFunctionsMetadata from "../../src/custom-functions-metadata";
+import * as generate from "../../src/generate";
 
 describe("test json file created", function() {
     describe("generate test", function() {
         it("test it", async function() {
             const inputFile = "../custom-functions-metadata/test/typescript/testfunctions.ts";
             const output = "test.json";
-            await customFunctionsMetadata.generate(inputFile, output, true);
+            await generate.generate(inputFile, output, true);
             const skipped = "notAdded";
-            assert.strictEqual(customFunctionsMetadata.skippedFunctions[0], skipped, "skipped function not found");
+            assert.strictEqual(generate.skippedFunctions[0], skipped, "skipped function not found");
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
     });
@@ -70,7 +70,7 @@ describe("test javascript file as input", function() {
         it("basic test", async function() {
             const inputFile = "../custom-functions-metadata/test/javascript/testjs.js";
             const output = "testjs.json";
-            await customFunctionsMetadata.generate(inputFile, output);
+            await generate.generate(inputFile, output);
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
     });
@@ -114,8 +114,8 @@ describe("test errors", function() {
         it("test error", async function() {
              const inputFile = "../custom-functions-metadata/test/javascript/errorfunctions.js";
              const output = "./errortest.json";
-             await customFunctionsMetadata.generate(inputFile, output, true);
-             const errtest: string[] = customFunctionsMetadata.errorLogFile;
+             await generate.generate(inputFile, output, true);
+             const errtest: string[] = generate.errorLogFile;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
              const errorstring = "Unsupported type in code comment:badtype";
@@ -137,7 +137,7 @@ describe("test bad file paths", function() {
             const output = "./nofile.json";
             const testError = "ENOENT: no such file or directory";
             try {
-                await customFunctionsMetadata.generate(inputFile, output, true);
+                await generate.generate(inputFile, output, true);
             } catch (error) {
                 assert.ok(error.message.startsWith(testError), "Error message not found");
                 assert.ok(error.message.includes(inputFile), "File name not found in error message");
