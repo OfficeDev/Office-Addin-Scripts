@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import * as metadata from "./custom-functions-metadata";
+import * as generateMetadata from "./generate";
 
 export async function generate(inputFile: string, outputFile: string) {
   try {
@@ -13,8 +13,7 @@ export async function generate(inputFile: string, outputFile: string) {
       if (!outputFile) {
         throw new Error("You need to provide the path to the output file for the custom functions metadata.");
       }
-      console.log("Begin json generation");
-      await metadata.generate(inputFile, outputFile);
+      await generateMetadata.generate(inputFile, outputFile);
   } catch (err) {
     logErrorMessage(err);
   }

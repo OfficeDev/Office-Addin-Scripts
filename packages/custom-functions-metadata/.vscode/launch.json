@@ -84,6 +84,24 @@
             "args": [
                 "set-source-bundle-url", "${workspaceFolder}\\test\\manifest.xml", "--host", "HOST", "--port", "PORT", "--path", "PATH", "--extension", ".EXT"
             ]
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+              "-u",
+              "tdd",
+              "--timeout",
+              "999999",
+              "--colors",
+              "${workspaceFolder}/test",
+              "-r",
+              "ts-node/register",
+              "${workspaceFolder}/test/src/**/*.ts"
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
+          },      
     ]
 }
