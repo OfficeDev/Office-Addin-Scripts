@@ -7,7 +7,7 @@ import * as generate from "../../src/generate";
 describe("test json file created", function() {
     describe("generate test", function() {
         it("test it", async function() {
-            const inputFile = "../custom-functions-metadata/test/typescript/testfunctions.ts";
+            const inputFile = "./test/typescript/testfunctions.ts";
             const output = "test.json";
             await generate.generate(inputFile, output);
             const skipped = "notAdded";
@@ -68,8 +68,8 @@ describe("verify json created in file by typescript", function() {
 describe("test javascript file as input", function() {
     describe("js test", function() {
         it("basic test", async function() {
-            const inputFile = "../custom-functions-metadata/test/javascript/testjs.js";
-            const output = "testjs.json";
+            const inputFile = "./test/javascript/testjs.js";
+            const output = "./testjs.json";
             await generate.generate(inputFile, output, true);
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
@@ -112,7 +112,7 @@ describe("verify json created in file by javascript", function() {
 describe("test errors", function() {
     describe("failure to generate", function() {
         it("test error", async function() {
-             const inputFile = "../custom-functions-metadata/test/javascript/errorfunctions.js";
+             const inputFile = "./test/javascript/errorfunctions.js";
              const output = "./errortest.json";
              await generate.generate(inputFile, output);
              const errtest: string[] = generate.errorLogFile;

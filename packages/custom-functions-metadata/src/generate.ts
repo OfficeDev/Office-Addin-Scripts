@@ -9,6 +9,7 @@ import * as xregexp from "xregexp";
 
 export let errorLogFile = [];
 export let skippedFunctions = [];
+let enumList: string[] = [];
 
 interface ICustomFunctionsMetadata {
     functions: IFunction[];
@@ -103,34 +104,41 @@ export function isErrorFound(): boolean {
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
 export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<void> {
-    // @ts-ignore
-    let rootObject: ICustomFunctionsMetadata = null;
     errorLogFile = [];
-    if (fs.existsSync(inputFile)) {
+    skippedFunctions = [];
+    enumList = [];
 
-    const sourceCode = fs.readFileSync(inputFile, "utf-8");
-    rootObject = { functions: parseTree(sourceCode, inputFile) };
+    if (fs.existsSync(inputFile)) {
+        const sourceCode = fs.readFileSync(inputFile, "utf-8");
+        const metadataFunctions: IFunction[] = parseTree(sourceCode, inputFile);
+
+        if (!isErrorFound()) {
+            const json = JSON.stringify({ functions: metadataFunctions }, null, 4);
+
+            try {
+                fs.writeFileSync(outputFileName, json);
+
+                if (wantConsoleOutput) {
+                    console.log(`${outputFileName} created for file: ${inputFile}`);
+                }
+            } catch (err) {
+                if (wantConsoleOutput) {
+                    console.error(err);
+                }
+            }
+
+            if ((skippedFunctions.length > 0) && wantConsoleOutput ) {
+                console.log("The following functions were skipped.");
+                skippedFunctions.forEach((func) => console.log(skippedFunctions[func]));
+            }
+        } else if (wantConsoleOutput) {
+            console.log("Errors in file: " + inputFile);
+            errorLogFile.forEach((err) => console.log(err));
+        }
     } else {
         logError("File not found: " + inputFile);
     }
-
-    if (!isErrorFound()) {
-
-        fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => { if (wantConsoleOutput) {
-            err ? console.error(err) : console.log(outputFileName + " created for file: " + inputFile); }
-        });
-
-        if ((skippedFunctions.length > 0) && wantConsoleOutput ) {
-            console.log("The following functions were skipped.");
-            skippedFunctions.forEach((func) => console.log(skippedFunctions[func]));
-        }
-    } else if (wantConsoleOutput) {
-        console.log("Errors in file: " + inputFile);
-        errorLogFile.forEach((err) => console.log(err));
-    }
 }
-
-const enumList: string[] = [];
 
 /**
  * Takes the sourceCode and attempts to parse the functions information
