@@ -102,7 +102,7 @@ export function isErrorFound(): boolean {
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
-export async function generate(inputFile: string, outputFileName: string, noConsole?: boolean): Promise<void> {
+export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<void> {
     // @ts-ignore
     let rootObject: ICustomFunctionsMetadata = null;
     errorLogFile = [];
@@ -116,15 +116,15 @@ export async function generate(inputFile: string, outputFileName: string, noCons
 
     if (!isErrorFound()) {
 
-        fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => { if (!noConsole) {
+        fs.writeFile(outputFileName, JSON.stringify(rootObject, null, 4), (err) => { if (wantConsoleOutput) {
             err ? console.error(err) : console.log(outputFileName + " created for file: " + inputFile); }
         });
 
-        if ((skippedFunctions.length > 0) && !noConsole ) {
+        if ((skippedFunctions.length > 0) && wantConsoleOutput ) {
             console.log("The following functions were skipped.");
             skippedFunctions.forEach((func) => console.log(skippedFunctions[func]));
         }
-    } else if (!noConsole) {
+    } else if (wantConsoleOutput) {
         console.log("Errors in file: " + inputFile);
         errorLogFile.forEach((err) => console.log(err));
     }

@@ -9,7 +9,7 @@ describe("test json file created", function() {
         it("test it", async function() {
             const inputFile = "../custom-functions-metadata/test/typescript/testfunctions.ts";
             const output = "test.json";
-            await generate.generate(inputFile, output, true);
+            await generate.generate(inputFile, output);
             const skipped = "notAdded";
             assert.strictEqual(generate.skippedFunctions[0], skipped, "skipped function not found");
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
@@ -70,7 +70,7 @@ describe("test javascript file as input", function() {
         it("basic test", async function() {
             const inputFile = "../custom-functions-metadata/test/javascript/testjs.js";
             const output = "testjs.json";
-            await generate.generate(inputFile, output);
+            await generate.generate(inputFile, output, true);
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
     });
@@ -114,7 +114,7 @@ describe("test errors", function() {
         it("test error", async function() {
              const inputFile = "../custom-functions-metadata/test/javascript/errorfunctions.js";
              const output = "./errortest.json";
-             await generate.generate(inputFile, output, true);
+             await generate.generate(inputFile, output);
              const errtest: string[] = generate.errorLogFile;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
@@ -137,7 +137,7 @@ describe("test bad file paths", function() {
             const output = "./nofile.json";
             const testError = "ENOENT: no such file or directory";
             try {
-                await generate.generate(inputFile, output, true);
+                await generate.generate(inputFile, output);
             } catch (error) {
                 assert.ok(error.message.startsWith(testError), "Error message not found");
                 assert.ok(error.message.includes(inputFile), "File name not found in error message");
