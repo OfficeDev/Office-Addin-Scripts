@@ -6,11 +6,8 @@
 import * as commander from "commander";
 import * as path from "path";
 import * as commands from "./commands";
-import * as metadata from "./custom-functions-metadata";
 
-export async function generate(inputFile: string, outputFile: string) {
-  await metadata.generate(inputFile, outputFile);
-}
+export * from "./generate";
 
 // if this package is being run from the command line
 // (related to "main" and "bin" in package.json)
