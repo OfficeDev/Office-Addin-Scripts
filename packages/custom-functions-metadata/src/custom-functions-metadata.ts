@@ -109,9 +109,7 @@ export async function generate(inputFile: string, outputFileName: string, noCons
     if (fs.existsSync(inputFile)) {
 
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
-    const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
-
-    rootObject = { functions: parseTree(sourceFile) };
+    rootObject = { functions: parseTree(sourceCode, inputFile) };
     } else {
         logError("File not found: " + inputFile);
     }
@@ -135,11 +133,13 @@ export async function generate(inputFile: string, outputFileName: string, noCons
 const enumList: string[] = [];
 
 /**
- * Takes the sourcefile and attempts to parse the functions information
- * @param sourceFile source file containing the custom functions
+ * Takes the sourceCode and attempts to parse the functions information
+ * @param sourceCode source containing the custom functions
+ * @param inputFile path to file containing custom functions
  */
-export function parseTree(sourceFile: ts.SourceFile): IFunction[] {
+export function parseTree(sourceCode: string, inputFile: string): IFunction[] {
     const functions: IFunction[] = [];
+    const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
 
     buildEnums(sourceFile);
     visit(sourceFile);
