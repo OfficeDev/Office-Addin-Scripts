@@ -115,7 +115,7 @@ describe("test errors", function() {
              const inputFile = "./test/javascript/errorfunctions.js";
              const output = "./errortest.json";
              await generate.generate(inputFile, output);
-             const errtest: string[] = generate.errorLogFile;
+             const errtest: string[] = generate.errors;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
              const errorstring = "Unsupported type in code comment:badtype";

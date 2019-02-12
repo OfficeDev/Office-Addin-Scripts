@@ -7,7 +7,7 @@ import * as fs from "fs";
 import * as ts from "typescript";
 import * as xregexp from "xregexp";
 
-export let errorLogFile = [];
+export let errors = [];
 export let skippedFunctions = [];
 let enumList: string[] = [];
 
@@ -92,10 +92,10 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 /**
- * Check the error log and return true if any errors found
+ * Return whether there were any errors
  */
-export function isErrorFound(): boolean {
-    return errorLogFile[0] ? true : false;
+export function anyErrors(): boolean {
+    return errors.length > 0;
 }
 
 /**
@@ -104,7 +104,7 @@ export function isErrorFound(): boolean {
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
 export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<void> {
-    errorLogFile = [];
+    errors = [];
     skippedFunctions = [];
     enumList = [];
 
@@ -112,7 +112,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
         const sourceCode = fs.readFileSync(inputFile, "utf-8");
         const metadataFunctions: IFunction[] = parseTree(sourceCode, inputFile);
 
-        if (!isErrorFound()) {
+        if (!anyErrors()) {
             const json = JSON.stringify({ functions: metadataFunctions }, null, 4);
 
             try {
@@ -133,7 +133,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
             }
         } else if (wantConsoleOutput) {
             console.log("Errors in file: " + inputFile);
-            errorLogFile.forEach((err) => console.log(err));
+            errors.forEach((err) => console.log(err));
         }
     } else {
         logError("File not found: " + inputFile);
@@ -831,5 +831,5 @@ export function logError(error: string, position?: ts.LineAndCharacter | null) {
         error = `${error} (${position.line},${position.character})`;
     }
     // @ts-ignore
-    errorLogFile.push(error);
+    errors.push(error);
 }
