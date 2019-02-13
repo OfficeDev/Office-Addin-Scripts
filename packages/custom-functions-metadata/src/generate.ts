@@ -205,8 +205,24 @@ export function parseTree(sourceCode: string, sourceFileName: string): IFunction
                         result,
                     };
 
-                    if (!options.volatile && !options.stream && !options.cancelable && !options.requiresAddress) {
+                    if (!options.cancelable && !options.requiresAddress && !options.stream && !options.volatile) {
                         delete functionMetadata.options;
+                    } else {
+                        if (!options.cancelable) {
+                            delete options.cancelable;
+                        }
+
+                        if (!options.requiresAddress) {
+                            delete options.requiresAddress;
+                        }
+
+                        if (!options.stream) {
+                            delete options.stream;
+                        }
+
+                        if (!options.volatile) {
+                            delete options.volatile;
+                        }
                     }
 
                     functions.push(functionMetadata);
