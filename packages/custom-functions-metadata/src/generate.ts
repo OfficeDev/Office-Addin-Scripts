@@ -14,20 +14,20 @@ interface ICustomFunctionsMetadata {
 }
 
 interface IFunction {
-    name: string;
     id: string;
-    helpUrl: string;
+    name: string;
     description: string;
+    helpUrl: string;
     parameters: IFunctionParameter[];
     result: IFunctionResult;
     options: IFunctionOptions;
 }
 
 interface IFunctionOptions {
-    volatile: boolean;
-    stream: boolean;
     cancelable: boolean;
     requiresAddress: boolean;
+    stream: boolean;
+    volatile: boolean;
 }
 
 interface IFunctionParameter {
