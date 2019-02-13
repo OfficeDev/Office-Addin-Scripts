@@ -7,8 +7,8 @@ import * as fs from "fs";
 import * as ts from "typescript";
 import * as xregexp from "xregexp";
 
-export let errors = [];
-export let skippedFunctions = [];
+export let errors: string[] = [];
+export let skippedFunctions: string[] = [];
 let enumList: string[] = [];
 
 interface ICustomFunctionsMetadata {
@@ -127,9 +127,9 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
                 }
             }
 
-            if ((skippedFunctions.length > 0) && wantConsoleOutput ) {
+            if ((skippedFunctions.length > 0) && wantConsoleOutput) {
                 console.log("The following functions were skipped.");
-                skippedFunctions.forEach((func) => console.log(skippedFunctions[func]));
+                skippedFunctions.forEach((functionName: string) => console.log(functionName));
             }
         } else if (wantConsoleOutput) {
             console.log("Errors in file: " + inputFile);
@@ -215,7 +215,6 @@ export function parseTree(sourceCode: string, inputFile: string): IFunction[] {
                 } else {
                     // Function was skipped
                     if (functionDeclaration.name) {
-                        // @ts-ignore
                         skippedFunctions.push(functionDeclaration.name.text);
                     }
                 }
