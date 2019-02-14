@@ -6,7 +6,7 @@ When an Excel custom function is written in JavaScript or TypeScript, JSDoc tags
 
 Add the `@customfunction` tag in the comments for a JavaScript or TypeScript function to mark it as a custom function. 
 
-The function parameter and return types may be provided using the [@param](#param) tag in JavaScript, or from the [Function type](http://www.typescriptlang.org/docs/handbook/functions.html) in TypeScript. For more information, see the [Types](#Types) section.
+The function parameter types may be provided using the [@param](#param) tag in JavaScript, or from the [Function type](http://www.typescriptlang.org/docs/handbook/functions.html) in TypeScript. For more information, see the [@param](#param) tag and [Types](#Types) section.
 
 ## Tags
 * [@cancelable](#cancelable)
@@ -64,32 +64,33 @@ Syntax: @helpurl _url_
 The provided _url_ is displayed in Excel.
 
 ---
-### @param
+### @param 
 
-Syntax: @param {_type_} _name_ _description_
+#### JavaScript
+
+JavaScript Syntax: @param {type} name _description_
+
+* `{type}` should specify the type info within curly braces. See the [Types](##types) for more information about the types which may be used. Optional: if not specified, the type `any` will be used.
+* `name` specifies which parameter the @param tag applies to. Required.
+* `description` provides the description which appears in Excel for the function parameter. Optional.
 
 To denote a custom function parameter as optional:
-* In JavaScript, put square brackets around _name_. For example: `@param {string} [text] Optional text`.
+* Put square brackets around the parameter name. For example: `@param {string} [text] Optional text`.
 
-* In TypeScript, do one of the following:
-1. Use an optional parameter. For example: `function f(text?: string)`
-2. Give the parameter a default value. For example: `function f(text: string = "abc")`
+#### TypeScript
+
+TypeScript Syntax: @param name _description_
+
+* `name` specifies which parameter the @param tag applies to. Required.
+* `description` provides the description which appears in Excel for the function parameter. Optional.
+
+See the [Types](##types) for more information about the function parameter types which may be used.
+
+To denote a custom function parameter as optional, do one of the following:
+* Use an optional parameter. For example: `function f(text?: string)`
+* Give the parameter a default value. For example: `function f(text: string = "abc")`
 
 For detailed description of the @param see: [JSDoc](http://usejsdoc.org/tags-param.html)
-
-#### {type}
-
-* For JavaScript, `{type}` provides the type info for the parameter, or will be `any` if not provided.
-* For TypeScript, `{type}` should be omitted as the type info will come from the Typescript function type.
-* See the [Types](##types) for more information.
-
-#### name
-
-Specifies which parameter the @param tag applies to.
-
-#### description
-
-Provides the description which appears in Excel for the function parameter.
 
 ---
 ### @requiresAddress
@@ -132,14 +133,15 @@ Streaming functions cannot be volatile.
 
 ## Types
 
+By specifying a parameter type, Excel will convert values into that type before calling the function. If the type is `any`, no conversion will be performed.
+
 ### Value types
 
-A single value may be represented using one of the following types: `any`, `boolean`, `number`, `string`.
-Using `boolean`, `number`, or `string` will allow Excel to convert the value to the desired type before calling the function. 
+A single value may be represented using one of the following types: `boolean`, `number`, `string`.
 
 ### Matrix type
 
-Use a two-dimensional array type to have the parameter or return value be a matrix of values. For example, the type `number[][]` indicates a matrix of numbers. `string[][]` indicates a matrix of strings.
+Use a two-dimensional array type to have the parameter or return value be a matrix of values. For example, the type `number[][]` indicates a matrix of numbers. `string[][]` indicates a matrix of strings. 
 
 ### Error type
 
