@@ -22,7 +22,6 @@
     "Excel Custom Funtions"
   ],
   "dependencies": {
-    "@types/assert": "^1.4.0",
     "assert": "^1.4.1",
     "commander": "^2.19.0",
     "fs": "0.0.1-security",
@@ -31,6 +30,7 @@
     "xregexp": "^4.2.4"
   },
   "devDependencies": {
+    "@types/assert": "^1.4.2",
     "@types/commander": "^2.12.2",
     "@types/es6-promise": "^3.3.0",
     "@types/mocha": "^5.2.5",
