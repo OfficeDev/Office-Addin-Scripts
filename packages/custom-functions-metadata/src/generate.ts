@@ -143,11 +143,11 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
 /**
  * Takes the sourceCode and attempts to parse the functions information
  * @param sourceCode source containing the custom functions
- * @param inputFile path to file containing custom functions
+ * @param sourceFileName source code file name or path
  */
-export function parseTree(sourceCode: string, inputFile: string): IFunction[] {
+export function parseTree(sourceCode: string, sourceFileName: string): IFunction[] {
     const functions: IFunction[] = [];
-    const sourceFile = ts.createSourceFile(inputFile, sourceCode, ts.ScriptTarget.Latest, true);
+    const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
     buildEnums(sourceFile);
     visit(sourceFile);
