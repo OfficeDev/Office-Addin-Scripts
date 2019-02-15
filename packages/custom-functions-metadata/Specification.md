@@ -37,7 +37,9 @@ Syntax: @customfunction _id_ _name_
 
 Specify this tag to treat the JavaScript/TypeScript function as an Excel custom function.
 
-This tag is required to auto generated the metadata for the custom function.
+This tag is required to generate metadata for the custom function.
+
+There should also be a call to `CustomFunctions.associate("id", functionName);`
 
 #### id 
 
