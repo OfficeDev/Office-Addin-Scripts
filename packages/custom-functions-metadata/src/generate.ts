@@ -5,7 +5,7 @@
 
 import * as fs from "fs";
 import * as ts from "typescript";
-import * as xregexp from "xregexp";
+import * as XRegExp from "xregexp";
 
 export let errors: string[] = [];
 export let skippedFunctions: string[] = [];
@@ -256,15 +256,20 @@ function validateId(id: string, position: ts.LineAndCharacter | null): void {
  * @param name Name of the function
  */
 function validateName(name: string, position: ts.LineAndCharacter | null): void {
-    const nameRegEx = xregexp("^[\\pL][\\pL0-9._]*$");
-    if (!nameRegEx.test(name)) {
-        if (!name) {
-            name = "Function name is invalid";
-        }
-        logError(`The custom function name contains invalid characters. The name must start with an alphabetic character and contain only alphabetic characters, numbers, '.', and '_'.:${name}`, position);
+    const startsWithLetterRegEx = XRegExp("^[\\pL]");
+    const validNameRegEx = XRegExp("^[\\pL][\\pL0-9._]*$");
+
+    if (!name) {
+        logError(`You need to provide a custom function name.`, position);
+    }
+    if (!startsWithLetterRegEx.test(name)) {
+        logError(`The custom function name "${name}" should start with an alphabetic character.`, position);
+    }
+    if (!validNameRegEx.test(name)) {
+        logError(`The custom function name "${name}" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_).`, position);
     }
     if (name.length > 128) {
-        logError(`The custom function name exceeds the maximum of 128 characters allowed.`, position);
+        logError(`The custom function name is too long. It must be 128 characters or less.`, position);
     }
 }
 

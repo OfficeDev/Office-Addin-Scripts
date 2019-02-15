@@ -124,8 +124,8 @@ describe("test errors", function() {
              assert.equal(errtest[0].includes(errorstring), true, "Unsupported type found");
              assert.equal(errtest[0].includes(errorPosition), true, "Line and column number found");
              assert.equal(errtest[2].includes(errorIdBad), true, "Invalid id found");
-             assert.equal(errtest[4].includes(errorNameBad), true, "Invalid name found");
-             assert.equal(errtest[5].includes(errorRequiresAddress), true, "Missing Invocation type");
+             assert.equal(errtest[4], `The custom function name "1invalidname" should start with an alphabetic character. (21,18)`);
+             assert.equal(errtest[5], `The custom function name "1invalidname" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_). (21,18)`);
              assert.strictEqual(fs.existsSync(output), false, "json file created");
         });
     });
