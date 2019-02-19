@@ -103,7 +103,7 @@ export function anyErrors(): boolean {
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
-export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<void> {
+export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<string[]> {
     errors = [];
     skippedFunctions = [];
     enumList = [];
@@ -125,6 +125,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
                 if (wantConsoleOutput) {
                     console.error(err);
                 }
+                throw new Error(`Error writing: ${outputFileName} : ${err}`);
             }
 
             if ((skippedFunctions.length > 0) && wantConsoleOutput) {
@@ -137,7 +138,9 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
         }
     } else {
         logError("File not found: " + inputFile);
+        throw new Error(`File not found: ${inputFile}`);
     }
+    return Promise.resolve(errors);
 }
 
 /**
