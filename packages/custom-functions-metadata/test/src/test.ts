@@ -135,7 +135,7 @@ describe("test bad file paths", function() {
         it("test error file path", async function() {
             const inputFile = "doesnotexist.ts";
             const output = "./nofile.json";
-            const testError = "ENOENT: no such file or directory";
+            const testError = "File not found";
             try {
                 await generate.generate(inputFile, output);
             } catch (error) {

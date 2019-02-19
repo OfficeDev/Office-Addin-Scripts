@@ -6,7 +6,7 @@ Provides the ability to auto generate the custom functions metadata.
 
 Syntax:
 
-`npm run generate-json <inputFile> <output>`
+`npm run package <inputFile> <output>`
 
 `inputFile`: path to custom functions file (.ts or .js).
 `output`: filename of the metadata file (i.e functions.json).
