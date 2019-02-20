@@ -2,7 +2,7 @@
   "name": "office-addin-debugging",
   "version": "2.1.2",
   "description": "For debugging Office Add-ins.",
-  "main": "./lib/debugging.js",
+  "main": "./lib/main.js",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
@@ -14,7 +14,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-debugging": "./lib/debugging.js"
+    "office-addin-debugging": "./lib/cli.js"
   },
   "keywords": [
     "Office"

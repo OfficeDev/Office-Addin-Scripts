@@ -13,7 +13,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-node-debugger": "./lib/debugger.js"
+    "office-addin-node-debugger": "./lib/cli.js"
   },
   "keywords": [
     "Office",
