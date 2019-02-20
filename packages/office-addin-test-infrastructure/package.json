@@ -1,0 +1,51 @@
+{
+    "name": "office-addin-test-infrastructure",
+    "version": "1.2.3",
+    "description": "Create test server that facilitates communication between taskpane add-in and mocha tests.",
+    "main": "./lib/test-infrastructure.js",
+    "scripts": {
+        "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+        "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\"",
+        "test": "mocha -r ts-node/register test/**/*.ts"
+    },
+    "author": "Office Dev",
+    "license": "MIT",
+    "bin": {
+        "office-addin-manifest": "./lib/test-infrastructure.js"
+    },
+    "keywords": [
+        "Office",
+        "Office Add-in"
+    ],
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.16.4",
+        "fs": "0.0.1-security"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.4",
+        "@types/es6-collections": "^0.5.29",
+        "@types/es6-promise": "0.0.32",
+        "@types/express": "^4.16.1",
+        "@types/flux": "^3.1.0",
+        "@types/mocha": "^2.2.48",
+        "@types/node": "^7.0.65",
+        "concurrently": "^4.1.0",
+        "cors": "^2.8.5",
+        "current-processes": "^0.2.1",
+        "express": "^4.16.4",
+        "fs": "0.0.1-security",
+        "mocha": "^5.2.0",
+        "rimraf": "^2.6.3",
+        "ts-node": "^3.0.2",
+        "typescript": "^3.1.6",
+        "xmlhttprequest": "^1.8.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+    },
+    "bugs": {
+        "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+    }
+}

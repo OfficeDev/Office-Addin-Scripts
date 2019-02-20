@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "baseUrl": ".",
+        "experimentalDecorators": true,
+        "jsx": "react",
+        "noEmitOnError": true,
+        "outDir": "lib",
+        "sourceMap": true,
+        "target": "es5"
+    },
+    "types": [
+        "cors",
+        "es6-promise",
+        "express",
+        "mocha",
+        "node",
+        "xmlhttprequest"
+    ],
+    "include": [
+        "src/**/*",
+        "test/**/*",
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "lib",
+        "lib-amd"
+    ]
+}
