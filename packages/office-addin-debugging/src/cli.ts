@@ -7,7 +7,7 @@ import * as commander from "commander";
 import * as commands from "./commands";
 
 commander
-    .command("start <manifestPath> [appType]")
+    .command("start <manifest-path> [app-type]")
     .option("--app <app>", "Specify which Office app to use.")
     .option("--debug-method <method>", "The debug method to use.")
     .option("--dev-server <command>", "Run the dev server.")
@@ -25,7 +25,7 @@ commander
     .action(commands.start);
 
 commander
-    .command("stop <manifestPath>")
+    .command("stop <manifest-path>")
     .option("--unload <command>")
     .action(commands.stop);
 

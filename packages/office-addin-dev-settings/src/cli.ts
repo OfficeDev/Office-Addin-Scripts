@@ -7,14 +7,14 @@ import * as commander from "commander";
 import * as commands from "./commands";
 
 commander
-.command("appcontainer <manifestPath>")
+.command("appcontainer <manifest-path>")
 .description("Display or configure the appcontainer used to run the Office Add-in.")
 .option("--loopback", `Allow access to loopback addresses such as "localhost".`)
 .option("--prevent-loopback", `Prevent access to loopback addresses such as "localhost".`)
 .action(commands.appcontainer);
 
 commander
-.command("clear [manifestPath]")
+.command("clear [manifest-path]")
 .description("Clear all dev settings for the Office Add-in.")
 .action(commands.clear);
 
@@ -41,7 +41,7 @@ commander
 .action(commands.runtimeLogging);
 
 commander
-.command("source-bundle-url <manifestPath>")
+.command("source-bundle-url <manifest-path>")
 .description("Specify values for components of the source bundle url.")
 .option("-h,--host <host>", `The host name to use, or "" to use the default ('localhost').`)
 .option("-p,--port <port>", `The port number to use, or "" to use the default (8081).`)
