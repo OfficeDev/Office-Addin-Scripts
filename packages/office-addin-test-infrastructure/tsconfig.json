@@ -9,18 +9,6 @@
         "sourceMap": true,
         "target": "es5"
     },
-    "types": [
-        "cors",
-        "es6-promise",
-        "express",
-        "mocha",
-        "node",
-        "xmlhttprequest"
-    ],
-    "include": [
-        "src/**/*",
-        "test/**/*",
-    ],
     "exclude": [
         "node_modules",
         "dist",
