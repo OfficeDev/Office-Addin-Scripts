@@ -3,12 +3,12 @@ import * as express from "express";
 import * as fs from "fs";
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const app: any = express();
-let port: string = "8080";
+let port: number = 8080;
 let server: any;
 let testServerStarted: boolean = false
 let jsonData: JSON;
 
-export async function startTestServer(portNumber: string | undefined): Promise <boolean> {
+export async function startTestServer(portNumber: number | undefined): Promise <boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
 
         if (portNumber !== undefined) {
@@ -72,7 +72,7 @@ export function getTestServerState(): boolean {
     return testServerStarted;
 }
 
-export function getTestServerPort(): string {
+export function getTestServerPort(): number {
     return port;
 }
 

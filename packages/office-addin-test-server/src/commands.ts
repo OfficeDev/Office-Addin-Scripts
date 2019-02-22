@@ -1,25 +1,21 @@
 import * as commnder from "commander";
-import { startTestServer, stopTestServer }  from "./testServer"
+import { startTestServer }  from "./testServer"
 
 export async function start(command: commnder.Command) {
     const port: string | undefined = getCommandOptionString(command.port, "");
-    const serverStarted: boolean  = await startTestServer(port);
+    let testServerPort: number | undefined;
+
+    if (port != undefined){
+        testServerPort = parseTestServerPort(port);
+    }
+
+    const serverStarted: boolean = await startTestServer(testServerPort);
 
     if (serverStarted){
-        console.log("Server started successfully");
+        console.log(`Server started successfully on port ${testServerPort != undefined ? testServerPort: 8080}`);
     }
     else{
         console.log("Server failed to start");
-    }
-}
-
-export async function stop() {
-    const serverStopped: boolean = await stopTestServer();
-    if (serverStopped) {
-        console.log("Server stopped successfully");
-    }
-    else {
-        console.log("Server failed to stop");
     }
 }
 
@@ -28,4 +24,44 @@ function getCommandOptionString(option: string | boolean, defaultValue?: string)
     // when the option is provided with a value, it will be of type "string", return the specified value;
     // when the option is provided without a value, it will be of type "boolean", return undefined.
     return (typeof (option) === "boolean") ? defaultValue : option;
+}
+
+function parseNumericCommandOption(optionValue: any, errorMessage: string = "The value should be a number."): number | undefined {
+    switch (typeof (optionValue)) {
+        case "number": {
+            return optionValue;
+        }
+        case "string": {
+            let result;
+
+            try {
+                result = parseInt(optionValue, 10);
+            } catch (err) {
+                throw new Error(errorMessage);
+            }
+
+            if (Number.isNaN(result)) {
+                throw new Error(errorMessage);
+            }
+
+            return result;
+        }
+        case "undefined": {
+            return undefined;
+        }
+        default: {
+            throw new Error(errorMessage);
+        }
+    }
+}
+
+function parseTestServerPort(optionValue: any): number | undefined {
+    const testServerPort = parseNumericCommandOption(optionValue, "--dev-server-port should specify a number.");
+
+    if (testServerPort !== undefined) {
+        if ((testServerPort < 0) || (testServerPort > 65535)) {
+            throw new Error("port should be between 0 and 65535.");
+        }
+    }
+    return testServerPort;
 }
