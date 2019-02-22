@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as testServer from "../src/testServer";
-const port: number = 8080;
+const port: string = "8080";
 const testKey: string = "TestString";
 const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
