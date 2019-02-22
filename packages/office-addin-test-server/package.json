@@ -21,6 +21,7 @@
         "commander": "^2.19.0",
         "cors": "^2.8.5",
         "express": "^4.16.4",
+        "es6-promise": "^4.2.6",
         "fs": "0.0.1-security"
     },
     "devDependencies": {
@@ -36,7 +37,7 @@
         "rimraf": "^2.6.3",
         "ts-node": "^8.0.2",
         "typescript": "^3.3.3333",
-        "xmlhttprequest": "^1.8.0"
+        "xmlhttprequest-ts": "^1.0.1"
     },
     "repository": {
         "type": "git",
