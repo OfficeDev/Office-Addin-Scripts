@@ -1,8 +1,8 @@
 {
-    "name": "office-addin-test-infrastructure",
+    "name": "office-addin-test-server",
     "version": "1.0.0",
     "description": "Create test server that facilitates communication between taskpane add-in and mocha tests.",
-    "main": "./src/office-addin-test-infrastructure.js",
+    "main": "./lib/main.js",
     "scripts": {
         "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
         "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\"",
@@ -11,13 +11,14 @@
     "author": "Office Dev",
     "license": "MIT",
     "bin": {
-        "office-addin-manifest": "./lib/src/office-addin-test-infrastructure.js"
+        "office-addin-test-server": "./lib/cli.js"
     },
     "keywords": [
         "Office",
         "Office Add-in"
     ],
     "dependencies": {
+        "commander": "^2.19.0",
         "cors": "^2.8.5",
         "express": "^4.16.4",
         "fs": "0.0.1-security"
