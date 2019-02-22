@@ -76,8 +76,11 @@ export function getTestServerPort(): number {
     return port;
 }
 
-export async function pingTestServer(): Promise<Object> {
+export async function pingTestServer(portNumber: number | undefined): Promise<Object> {
     return new Promise<Object>(async (resolve, reject) => {
+        if (portNumber !== undefined) {
+            port = portNumber;
+        }
 
         const serverResponse: any = {};
         const serverStatus: string = "status";
@@ -99,8 +102,11 @@ export async function pingTestServer(): Promise<Object> {
     });
 }
 
-export async function sendTestResults(data: Object): Promise<boolean> {
+export async function sendTestResults(data: Object, portNumber: number | undefined): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
+        if (portNumber !== undefined) {
+            port = portNumber;
+        }
 
         const json = JSON.stringify(data);
         const xhr = new XMLHttpRequest();

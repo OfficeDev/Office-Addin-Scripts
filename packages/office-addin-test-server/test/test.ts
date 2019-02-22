@@ -23,7 +23,7 @@ describe("End-to-end validation of test server", function() {
     describe("Ping server for response", function () {
         let testServerResponse: any;
         it("Test server should have responded to ping", async function () {
-            testServerResponse = await testServer.pingTestServer();
+            testServerResponse = await testServer.pingTestServer(port);
             assert.equal(testServerResponse != undefined, true);
         });
         it("Test server status should be '200'", async function () {
@@ -66,5 +66,5 @@ async function _sendTestData(): Promise<boolean> {
     testData[valueKey] = testValue;
     testValues.push(testData);
 
-    return testServer.sendTestResults(testValues);
+    return testServer.sendTestResults(testValues, port);
 }
