@@ -13,10 +13,10 @@ export async function generate(inputFile: string, outputFile: string) {
       if (!outputFile) {
         throw new Error("You need to provide the path to the output file for the custom functions metadata.");
       }
-      const errors = await generateMetadata.generate(inputFile, outputFile);
-      if (errors.length > 0) {
+      const results = await generateMetadata.generate(inputFile, outputFile);
+      if (results.errors.length > 0) {
         console.log("Errors found:" );
-        errors.forEach((err) => console.log(err));
+        results.errors.forEach((err) => console.log(err));
       }
   } catch (err) {
     logErrorMessage(err);

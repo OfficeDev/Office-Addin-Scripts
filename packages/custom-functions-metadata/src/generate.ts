@@ -45,6 +45,10 @@ interface IFunctionResult {
     dimensionality: string;
 }
 
+interface IGenerateResult {
+    errors: string[];
+}
+
 const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
 const HELPURL_PARAM = "helpurl";
 const VOLATILE = "volatile";
@@ -103,8 +107,11 @@ export function anyErrors(): boolean {
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
-export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<string[]> {
+export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<IGenerateResult> {
     errors = [];
+    const generateResults: IGenerateResult = {
+        errors,
+    };
     skippedFunctions = [];
     enumList = [];
 
@@ -140,7 +147,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
         logError("File not found: " + inputFile);
         throw new Error(`File not found: ${inputFile}`);
     }
-    return Promise.resolve(errors);
+    return Promise.resolve(generateResults);
 }
 
 /**
