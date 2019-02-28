@@ -12,12 +12,13 @@ Generates metadata for custom functions from source code.
 
 Syntax:
 
-`custom-functions-metadata generate <inputFile> <output>`
+`custom-functions-metadata generate <sourceFile> <metadataFile>`
 
-`inputFile`: path to custom functions file (.ts or .js).
-`output`: filename of the metadata file (i.e functions.json).
+`sourceFile`: path to the source file (.ts or .js).
+`metadataFile`: path to the metadata file (i.e functions.json).
 
 Notes:
 
-* Output file is generated, if no errors found during processing.
-* If errors are found, they will be displayed in the console.
+* The metadata file is written if there are no errors.
+* Otherwise, errors are displayed in the console.
+
