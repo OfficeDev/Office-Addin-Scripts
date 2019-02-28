@@ -1,7 +1,7 @@
 import * as cors from "cors";
 import * as express from "express";
 import * as fs from "fs";
-import { XMLHttpRequest } from 'xmlhttprequest-ts';
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const app: any = express();
 let port: number = 8080;
 let server: any;
