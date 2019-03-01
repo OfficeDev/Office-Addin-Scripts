@@ -7,7 +7,7 @@
         "sourceMap": true,
         "declaration": true,
         "outDir": "lib",
-        "strict": true,
+        "strict": false,
         "alwaysStrict": false,
         "noImplicitUseStrict": true,
         "types": [

@@ -1,5 +1,6 @@
 import * as assert from "assert";
 import * as mocha from "mocha";
+import * as testHelper from "../src/testHelpers";
 import * as testServer from "../src/testServer";
 const port: number = 8080;
 const testKey: string = "TestString";
@@ -23,7 +24,7 @@ describe("End-to-end validation of test server", function() {
     describe("Ping server for response", function () {
         let testServerResponse: any;
         it("Test server should have responded to ping", async function () {
-            testServerResponse = await testServer.pingTestServer(port);
+            testServerResponse = await testHelper.pingTestServer(port);
             assert.equal(testServerResponse != undefined, true);
         });
         it("Test server status should be '200'", async function () {
@@ -66,5 +67,5 @@ async function _sendTestData(): Promise<boolean> {
     testData[valueKey] = testValue;
     testValues.push(testData);
 
-    return testServer.sendTestResults(testValues, port);
+    return testHelper.sendTestResults(testValues, port);
 }
