@@ -5,7 +5,7 @@ Provides the ability to auto generate the custom functions metadata.
 ## Command-Line Interface
 * [generate](#generate)
 
-=======
+#
 
 ## generate 
 Generates metadata for custom functions from source code. 
