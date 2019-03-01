@@ -12,7 +12,8 @@
         "noImplicitUseStrict": true,
         "types": [
             "node",
-            "es6-promise"
+            "es6-promise",
+            "express"
         ]
     },
     "include": [
