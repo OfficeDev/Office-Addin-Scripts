@@ -13,7 +13,7 @@ export async function setupTestEnvironment(app: string, port: number): Promise<b
             reject();
         }
 
-        devServerStarted = await testServer.startTestServer(port);
+        devServerStarted = await _startDevServer();
         let sideLoadSuceeded: boolean = false
         try {
             console.log(`Sideload application: ${app}`);
@@ -24,6 +24,20 @@ export async function setupTestEnvironment(app: string, port: number): Promise<b
         }
         resolve(devServerStarted && sideLoadSuceeded);
     });
+}
+
+async function _startDevServer(): Promise<boolean> {
+    devServerStarted = false;
+    const cmdLine = "npm run dev-server";
+    subProcess = childProcess.spawn(cmdLine, [], {
+        detached: true,
+        shell: true,
+        stdio: "ignore"
+    });
+    subProcess.on("error", (err) => {
+    console.log(`Unable to run command: ${cmdLine}.\n${err}`);
+    });
+    return subProcess.pid != undefined;
 }
 
 async function _executeCommandLine(cmdLine: string): Promise<boolean> {
@@ -117,8 +131,6 @@ export async function sendTestResults(data: Object, portNumber: number | undefin
         const url: string = `https://localhost:${port}/results/`;
         const dataUrl: string = url + "?data=" + encodeURIComponent(json);
 
-        xhr.open("POST", dataUrl, true);
-        xhr.send();
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status === 200 && xhr.responseText === "200") {
                 resolve(true);
@@ -127,5 +139,7 @@ export async function sendTestResults(data: Object, portNumber: number | undefin
                 reject(false);
             }
         };
+        xhr.open("POST", dataUrl, true);
+        xhr.send();
     });
 }

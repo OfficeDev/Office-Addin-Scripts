@@ -1,5 +1,7 @@
 import * as commnder from "commander";
-import { startTestServer }  from "./testServer"
+import TestServer from "./testServer"
+const port: number = 8080
+
 
 export async function start(command: commnder.Command) {
     const port: string | undefined = getCommandOptionString(command.port, "");
@@ -9,7 +11,8 @@ export async function start(command: commnder.Command) {
         testServerPort = parseTestServerPort(port);
     }
 
-    const serverStarted: boolean = await startTestServer(testServerPort);
+    const testServer = new TestServer(testServerPort);
+    const serverStarted: boolean = await testServer.startTestServer();
 
     if (serverStarted){
         console.log(`Server started successfully on port ${testServerPort != undefined ? testServerPort: 8080}`);

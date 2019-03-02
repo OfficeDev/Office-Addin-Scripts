@@ -1,77 +1,82 @@
 import * as cors from "cors";
 import * as express from "express";
 import * as fs from "fs";
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const app: any = express();
-let port: number = 8080;
-let server: any;
-let testServerStarted: boolean = false
-let jsonData: JSON;
 
-export async function startTestServer(portNumber: number | undefined): Promise <boolean> {
-    return new Promise<boolean>(async (resolve, reject) => {
+export default class TestServer {
+    m_jsonData: any;
+    m_port: number;
+    m_testServerStarted;
+    m_app: any;
+    m_server: any;
 
-        if (portNumber !== undefined) {
-            port = portNumber;
-        }
+    constructor(port: number) {
+        this.m_jsonData = {};
+        this.m_port = port;
+        this.m_testServerStarted = false;
+        this.m_app = express();
+    }
+
+    public async startTestServer(): Promise <boolean> {
+        return new Promise<boolean>(async (resolve, reject) => {   
+      
+            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+            const key = fs.readFileSync('certs/server.key');
+            const cert = fs.readFileSync('certs/server.crt');
+            const options = { key: key, cert: cert };
     
-        process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
-        const key = fs.readFileSync('certs/server.key');
-        const cert = fs.readFileSync('certs/server.crt');
-        const options = { key: key, cert: cert };
-
-        app.use(cors());
-        app.get("/ping", function (req: any, res: any, next: any) {
-            res.send(process.platform === "win32" ? "Win32" : "Mac");
-            resolve(true);
-        });
-
-        app.post("/results", function (req: any, res: any) {
-            res.send("200");
-            jsonData = JSON.parse(req.query.data);
-            resolve(true);
-        });
-
-        const https = require("https");
-        server = https.createServer(options, app);
-
-        // listen for new web clients:
-        try {
-            server.listen(port, function () {
-                testServerStarted = true;
+            this.m_app.use(cors());
+            this.m_app.get("/ping", function (req: any, res: any, next: any) {
+                res.send(process.platform === "win32" ? "Win32" : "Mac");
                 resolve(true);
             });
-        } catch (err) {
-            reject(new Error(`Unable to start test server. \n${err}`));
-        }
-    });
-}
-
-export async function stopTestServer(): Promise < boolean > {
-    return new Promise<boolean>(async (resolve, reject) => {
-        if (testServerStarted) {
-            try {
-                server.close();
-                testServerStarted = false;
+    
+            this.m_app.post("/results", function (req: any, res: any) {
+                res.send("200");
+                this.m_jsonData = JSON.parse(req.query.data);
                 resolve(true);
+            }.bind(this));
+    
+            const https = require("https");
+            this.m_server = https.createServer(options,  this.m_app);
+    
+            // listen for new web clients:
+            try {
+                this.m_server.listen(this.m_port, function () {
+                    this.m_testServerStarted = true;
+                    resolve(true);
+                }.bind(this));
             } catch (err) {
-                reject(new Error(`Unable to stop test server. \n${err}`));
+                reject(new Error(`Unable to start test server. \n${err}`));
             }
-        } else {
-            // test server not started
-            resolve(false);
-        }
-    });
-}
-
-export function getTestResults(): JSON {
-    return jsonData;
-}
-
-export function getTestServerState(): boolean {
-    return testServerStarted;
-}
-
-export function getTestServerPort(): number {
-    return port;
+        });
+    }
+    
+    public async stopTestServer(): Promise < boolean > {
+        return new Promise<boolean>(async (resolve, reject) => {
+            if (this.m_testServerStarted) {
+                try {
+                    this.m_server.close();
+                    this.m_testServerStarted = false;
+                    resolve(true);
+                } catch (err) {
+                    reject(new Error(`Unable to stop test server. \n${err}`));
+                }
+            } else {
+                // test server not started
+                resolve(false);
+            }
+        });
+    }
+   
+    public async getTestResults(): Promise<JSON> {
+        return this.m_jsonData;
+    }
+    
+    public getTestServerState(): boolean {
+        return this.m_testServerStarted;
+    }
+    
+    public getTestServerPort(): number {
+        return this.m_port;
+    }
 }
