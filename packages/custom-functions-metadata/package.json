@@ -9,7 +9,7 @@
     "build": "rimraf lib && concurrently \"npm run tsc\"",
     "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
     "test": "mocha -r ts-node/register test/src/test.ts",
-    "package": "node ./lib/custom-functions-metadata.js generate"
+    "package": "node ./lib/cli.js generate"
   },
   "author": "Office Dev",
   "license": "MIT",
