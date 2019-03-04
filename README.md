@@ -24,7 +24,7 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package provides the orchestration of components related to debugging Office Add-ins. When debugging is started, it will ensure that the dev-server is running, that dev settings are configured for debugging, and will register and sideload the Office Add-in. When debugging is stopped, it will unregister and shutdown components.
   
-* [office-addin-dev-cert](packages/office-addin-dev-cert/README.md)
+* [office-addin-dev-certs](packages/office-addin-dev-certs/README.md)
 
   This package can be used to manage certificates for development server using https://localhost. 
 
