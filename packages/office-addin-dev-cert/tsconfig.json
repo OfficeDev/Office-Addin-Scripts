@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "declaration": true,
+        "outDir": "lib",
+        "strict": true,
+        "alwaysStrict": false,
+        "noImplicitUseStrict": true,
+        "types": [
+            "node",
+            "node-fetch",
+            "es6-promise"
+        ]
+    },
+    "include": [
+        "src/**/*",
+    ],
+    "exclude": [
+        "node_modules",
+        "lib"
+    ]
+}
