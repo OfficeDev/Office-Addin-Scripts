@@ -1,4 +1,4 @@
-# Office-Addin-Debugging
+# Office-Addin-dev-certs
 
 Provides the ability to start and stop debugging Office Add-ins.
 
@@ -13,19 +13,27 @@ Provides the ability to start and stop debugging Office Add-ins.
 
 
 ### generate
-Generate self-signed ca and localhost certificate.
+Generate an SSL certificate for localhost and a CA certificate which has issued it.
 
 Syntax:
 
-`office addin-dev-cert generate <manifest> [options]`
+`office addin-dev-certs generate [options]`
 
 `manifest`: path to manifest file.
 
 Options:
 
-`--path <command>`
+`--ca-cert <ca-cert-path>`
 
-Optional path of generated certficate files. By default, certificates are generated in .certs directory.
+Path where the CA certificate file is written. Default ./ca.crt.
+
+`--cert <cert-path>`
+
+Path where the SSL certificate is written. Default ./localhost.crt.
+
+`--key <key-path>`
+
+Path where the private key for the SSL certificate is written. Default ./localhost.key.
  
 #
 
@@ -34,9 +42,9 @@ Install the certificate.
 
 Syntax:
 
-`office addin-dev-cert install <manifest>`
+`office addin-dev-certs install <ca-certificate-path>`
 
-`manifest`: path to manifest file.
+`ca-certificate-path`: path to CA certificate location.
  
 #
 
@@ -45,9 +53,7 @@ Verify the certificate.
 
 Syntax:
 
-`office addin-dev-cert verify <manifest>`
-
-`manifest`: path to manifest file.
+`office addin-dev-certs verify`
  
 #
 
@@ -56,7 +62,7 @@ Uninstall the certificate.
 
 Syntax:
 
-`office addin-dev-cert uninstall`
+`office addin-dev-certs uninstall`
 
 #
 
@@ -65,8 +71,6 @@ Clean the certificates.
 
 Syntax:
 
-`office addin-dev-cert clean <manifest>`
-
-`manifest`: path to manifest file.
+`office addin-dev-certs clean`
  
 #

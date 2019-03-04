@@ -26,7 +26,7 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
   
 * [office-addin-dev-cert](packages/office-addin-dev-cert/README.md)
 
-  This package can be used to manage dev certificate for local server. 
+  This package can be used to manage certificates for development server using https://localhost. 
 
 * [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
 
