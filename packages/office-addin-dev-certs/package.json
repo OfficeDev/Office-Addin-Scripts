@@ -1,7 +1,7 @@
 {
   "name": "office-addin-dev-certs",
   "version": "0.0.0",
-  "description": "For managing Office dev certs.",
+  "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
