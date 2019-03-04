@@ -2,44 +2,52 @@ import * as cors from "cors";
 import * as express from "express";
 import * as fs from "fs";
 
-export default class TestServer {
+export class TestServer {
     m_jsonData: any;
     m_port: number;
     m_testServerStarted;
     m_app: any;
+    m_resultsPromise: Promise<JSON>;
     m_server: any;
 
     constructor(port: number) {
+        this.m_app = express();
         this.m_jsonData = {};
         this.m_port = port;
+        this.m_resultsPromise = undefined;
         this.m_testServerStarted = false;
-        this.m_app = express();
     }
 
-    public async startTestServer(): Promise <boolean> {
-        return new Promise<boolean>(async (resolve, reject) => {   
-      
-            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+    public async startTestServer(mochaTest: boolean = false): Promise<any>{
+        return new Promise<boolean>(async (resolve, reject) => {
+            if (mochaTest) {
+                process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+            }
+
             const key = fs.readFileSync('certs/server.key');
             const cert = fs.readFileSync('certs/server.crt');
             const options = { key: key, cert: cert };
-    
+
+            // listen for 'ping'
             this.m_app.use(cors());
             this.m_app.get("/ping", function (req: any, res: any, next: any) {
                 res.send(process.platform === "win32" ? "Win32" : "Mac");
-                resolve(true);
             });
-    
-            this.m_app.post("/results", function (req: any, res: any) {
-                res.send("200");
-                this.m_jsonData = JSON.parse(req.query.data);
-                resolve(true);
-            }.bind(this));
+
+            // listen for posting of test results
+            this.m_resultsPromise = new Promise<JSON>(async (resolveResults) => {
+                this.m_app.post("/results", async function (req: any, res: any) {
+                    res.send("200");
+                    this.m_jsonData = JSON.parse(req.query.data);
+                    resolveResults(this.m_jsonData);
+                }.bind(this));
+
+            });
     
             const https = require("https");
             this.m_server = https.createServer(options,  this.m_app);
     
-            // listen for new web clients:
+            // start listening on specified port
             try {
                 this.m_server.listen(this.m_port, function () {
                     this.m_testServerStarted = true;
@@ -51,7 +59,7 @@ export default class TestServer {
         });
     }
     
-    public async stopTestServer(): Promise < boolean > {
+    public async stopTestServer(): Promise <boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             if (this.m_testServerStarted) {
                 try {
@@ -69,7 +77,7 @@ export default class TestServer {
     }
    
     public async getTestResults(): Promise<JSON> {
-        return this.m_jsonData;
+        return this.m_resultsPromise;
     }
     
     public getTestServerState(): boolean {

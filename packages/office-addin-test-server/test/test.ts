@@ -1,23 +1,24 @@
 import * as assert from "assert";
 import * as mocha from "mocha";
 import * as testHelper from "../src/testHelpers";
-import TestServer from "../src/testServer";
+import { TestServer } from "../src/testServer";
 const port: number = 8080;
 const testServer = new TestServer(port);
+const promiseStartTestServer = testServer.startTestServer(true /* mochaTest */);
 const testKey: string = "TestString";
 const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
 
 describe("End-to-end validation of test server", function() {
     describe("Setup test server", function() {
-        it("Dev-server should have started", async function() {
-            const startTestServer = await testServer.startTestServer();
+        it("Test server should have started", async function() {
+            const startTestServer = await promiseStartTestServer;
             assert.equal(startTestServer, true);
         });
-        it(`Dev-server port should be ${port}`, async function () {
+        it(`Test server port should be ${port}`, async function () {
             assert.equal(testServer.getTestServerPort(), port);
         });
-        it(`Dev-server state should be set to true (i.e. started)`, async function () {
+        it(`Test server state should be set to true (i.e. started)`, async function () {
             assert.equal(testServer.getTestServerState(), true);
         });
     });
