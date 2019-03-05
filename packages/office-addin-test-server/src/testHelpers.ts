@@ -1,13 +1,10 @@
-let port: number = 8080;
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-export async function pingTestServer(portNumber: number | undefined): Promise<Object> {
-    return new Promise<Object>(async (resolve, reject) => {
-        if (portNumber !== undefined) {
-            port = portNumber;
-        }
+const defaultPort: number = 8080;
 
-        const serverResponse: any = {};
+export async function pingTestServer(port: number = defaultPort): Promise<object> {
+    return new Promise<object>(async (resolve, reject) => {
+        const serverResponse: object = {};
         const serverStatus: string = "status";
         const platform: string = "platform";
         const xhr = new XMLHttpRequest();
@@ -27,16 +24,12 @@ export async function pingTestServer(portNumber: number | undefined): Promise<Ob
     });
 }
 
-export async function sendTestResults(data: Object, portNumber: number | undefined): Promise<boolean> {
+export async function sendTestResults(data: object, port: number = defaultPort): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
-        if (portNumber !== undefined) {
-            port = portNumber;
-        }
-
         const json = JSON.stringify(data);
         const xhr = new XMLHttpRequest();
         const url: string = `https://localhost:${port}/results/`;
-        const dataUrl: string = url + "?data=" + encodeURIComponent(json);
+        const dataUrl: string = `${url}?data=${encodeURIComponent(json)}`;
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
