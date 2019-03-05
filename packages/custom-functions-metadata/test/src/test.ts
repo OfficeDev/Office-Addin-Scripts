@@ -10,8 +10,6 @@ describe("test json file created", function() {
             const inputFile = "./test/typescript/testfunctions.ts";
             const output = "test.json";
             await generate.generate(inputFile, output);
-            const skipped = "notAdded";
-            assert.strictEqual(generate.skippedFunctions[0], skipped, "skipped function not found");
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
     });
@@ -162,8 +160,7 @@ describe("test parseTreeResult", function() {
         it("parseTree for errorfunctions", async function() {
             const inputFile = "./test/javascript/errorfunctions.js";
             const sourceCode = fs.readFileSync(inputFile, "utf-8");
-            const errorsList: string[] = [];
-            const pTree: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions", errorsList);
+            const pTree: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions");
             assert.equal(pTree.extras[0].javascriptFunctionName, "testadd", "Function testadd found");
             assert.equal(pTree.extras[0].errors.length, 1, "Correct number of errors found(1)");
             assert.equal(pTree.extras[2].javascriptFunctionName, "badId", "Function badId found");

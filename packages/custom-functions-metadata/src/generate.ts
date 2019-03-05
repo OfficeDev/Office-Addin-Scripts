@@ -5,9 +5,6 @@ import * as fs from "fs";
 import * as ts from "typescript";
 import * as XRegExp from "xregexp";
 
-export let skippedFunctions: string[] = [];
-let enumList: string[] = [];
-
 export interface ICustomFunctionsMetadata {
     functions: IFunction[];
 }
@@ -112,12 +109,12 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
     const generateResults: IGenerateResult = {
         errors,
     };
-    skippedFunctions = [];
-    enumList = [];
 
     if (fs.existsSync(inputFile)) {
         const sourceCode = fs.readFileSync(inputFile, "utf-8");
-        const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile, errors);
+        const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
+        parseTreeResult.extras.forEach((extra) => {extra.errors.forEach((err) => errors.push(err));
+        });
 
         if (errors.length === 0) {
             const json = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
@@ -134,14 +131,9 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
                 }
                 throw new Error(`Error writing: ${outputFileName} : ${err}`);
             }
-
-            if ((skippedFunctions.length > 0) && wantConsoleOutput) {
-                console.log("The following functions were skipped.");
-                skippedFunctions.forEach((functionName: string) => console.log(functionName));
-            }
         } else if (wantConsoleOutput) {
-            console.log("Errors in file: " + inputFile);
-            errors.forEach((err) => console.log(err));
+            console.error("Errors in file: " + inputFile);
+            errors.forEach((err) => console.error(err));
         }
     } else {
         throw new Error(`File not found: ${inputFile}`);
@@ -154,9 +146,10 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
  * @param sourceCode source containing the custom functions
  * @param sourceFileName source code file name or path
  */
-export function parseTree(sourceCode: string, sourceFileName: string, completeErrorsList: string[]): IParseTreeResult {
+export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
+    const enumList: string[] = [];
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
     buildEnums(sourceFile);
@@ -201,12 +194,12 @@ export function parseTree(sourceCode: string, sourceFileName: string, completeEr
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
-                    const parameters = getParameters(paramsToParse, jsDocParamTypeInfo, jsDocParamInfo, jsDocsParamOptionalInfo, extra);
+                    const parameters = getParameters(paramsToParse, jsDocParamTypeInfo, jsDocParamInfo, jsDocsParamOptionalInfo, extra, enumList);
 
                     const description = getDescription(functionDeclaration);
                     const helpUrl = getHelpUrl(functionDeclaration);
 
-                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo, extra);
+                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo, extra, enumList);
 
                     const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction, isInvocationFunction, extra);
 
@@ -238,13 +231,7 @@ export function parseTree(sourceCode: string, sourceFileName: string, completeEr
                         delete functionMetadata.description;
                     }
                     extras.push(extra);
-                    extra.errors.forEach((err) => completeErrorsList.push(err));
                     functions.push(functionMetadata);
-                } else {
-                    // Function was skipped
-                    if (functionDeclaration.name) {
-                        skippedFunctions.push(functionDeclaration.name.text);
-                    }
                 }
             }
         }
@@ -346,7 +333,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
  * @param isStreaming - Is a streaming function
  * @param lastParameter - Last parameter of the function signature
  */
-function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }, extra: IFunctionExtras): IFunctionResult {
+function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }, extra: IFunctionExtras, enumList: string[]): IFunctionResult {
     let resultType = "any";
     let resultDim = "scalar";
     const defaultResultItem: IFunctionResult = {
@@ -383,7 +370,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             extra.errors.push(logError(errorString, lastParameterPosition));
             return defaultResultItem;
         }
-        resultType = getParamType(lastParameterType.typeArguments[0], extra);
+        resultType = getParamType(lastParameterType.typeArguments[0], extra, enumList);
         resultDim = getParamDim(lastParameterType.typeArguments[0]);
     } else if (func.type) {
         if (func.type.kind === ts.SyntaxKind.TypeReference &&
@@ -393,11 +380,11 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             (func.type as ts.TypeReferenceNode).typeArguments.length === 1
         ) {
             // @ts-ignore
-            resultType = getParamType((func.type as ts.TypeReferenceNode).typeArguments[0], extra);
+            resultType = getParamType((func.type as ts.TypeReferenceNode).typeArguments[0], extra, enumList);
             // @ts-ignore
             resultDim = getParamDim((func.type as ts.TypeReferenceNode).typeArguments[0]);
         } else {
-            resultType = getParamType(func.type, extra);
+            resultType = getParamType(func.type, extra, enumList);
             resultDim = getParamDim(func.type);
         }
     }
@@ -434,12 +421,12 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }, extra: IFunctionExtras): IFunctionParameter[] {
+function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }, extra: IFunctionExtras, enumList: string[]): IFunctionParameter[] {
     const parameterMetadata: IFunctionParameter[] = [];
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
         const name = (p.name as ts.Identifier).text;
-        let ptype = getParamType(p.type as ts.TypeNode, extra);
+        let ptype = getParamType(p.type as ts.TypeNode, extra, enumList);
         const parameterPosition = getPosition(p);
         // Try setting type from parameter in code comment
         if (ptype === "any") {
@@ -780,7 +767,7 @@ function hasInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeIn
  * Gets the parameter type of the node
  * @param t TypeNode
  */
-function getParamType(t: ts.TypeNode, extra: IFunctionExtras): string {
+function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]): string {
     let type = "any";
     // Only get type for typescript files.  js files will return any for all types
     if (t) {
