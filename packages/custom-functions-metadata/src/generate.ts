@@ -5,7 +5,6 @@ import * as fs from "fs";
 import * as ts from "typescript";
 import * as XRegExp from "xregexp";
 
-export let errors: string[] = [];
 export let skippedFunctions: string[] = [];
 let enumList: string[] = [];
 
@@ -49,7 +48,7 @@ export interface IGenerateResult {
 
 export interface IFunctionExtras {
     errors: string[];
-    name: string;
+    javascriptFunctionName: string;
 }
 
 export interface IParseTreeResult {
@@ -104,19 +103,12 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 /**
- * Return whether there were any errors
- */
-export function anyErrors(): boolean {
-    return errors.length > 0;
-}
-
-/**
  * Generate the metadata of the custom functions
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
 export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<IGenerateResult> {
-    errors = [];
+    const errors: string[] = [];
     const generateResults: IGenerateResult = {
         errors,
     };
@@ -125,9 +117,9 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
 
     if (fs.existsSync(inputFile)) {
         const sourceCode = fs.readFileSync(inputFile, "utf-8");
-        const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
+        const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile, errors);
 
-        if (!anyErrors()) {
+        if (errors.length === 0) {
             const json = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
 
             try {
@@ -152,7 +144,6 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
             errors.forEach((err) => console.log(err));
         }
     } else {
-        logError("File not found: " + inputFile);
         throw new Error(`File not found: ${inputFile}`);
     }
     return Promise.resolve(generateResults);
@@ -163,7 +154,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
  * @param sourceCode source containing the custom functions
  * @param sourceFileName source code file name or path
  */
-export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
+export function parseTree(sourceCode: string, sourceFileName: string, completeErrorsList: string[]): IParseTreeResult {
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
@@ -192,7 +183,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     const extra: IFunctionExtras = {
                         errors: functionErrors,
                         // @ts-ignore
-                        name: functionDeclaration.name.text,
+                        javascriptFunctionName: functionDeclaration.name.text,
                     };
                     const position = getPosition(functionDeclaration);
                     const idName = getIdName(functionDeclaration);
@@ -222,7 +213,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
                     const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
                     const name = idNameArray[1] || id;
-                    validateId(id , position, extra);
+                    validateId(id, position, extra);
                     validateName(name, position, extra);
 
                     const functionMetadata: IFunction = {
@@ -242,7 +233,12 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     if (functionMetadata.helpUrl === "") {
                         delete functionMetadata.helpUrl;
                     }
+
+                    if (functionMetadata.description === "") {
+                        delete functionMetadata.description;
+                    }
                     extras.push(extra);
+                    extra.errors.forEach((err) => completeErrorsList.push(err));
                     functions.push(functionMetadata);
                 } else {
                     // Function was skipped
@@ -277,13 +273,11 @@ function validateId(id: string, position: ts.LineAndCharacter | null, extra: IFu
             id = "Function name is invalid";
         }
         const errorString = `The custom function id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`;
-        logError(errorString, position);
-        extra.errors.push(errorString);
+        extra.errors.push(logError(errorString, position));
     }
     if (id.length > 128) {
         const errorString = `The custom function id exceeds the maximum of 128 characters allowed.`;
-        logError(errorString, position);
-        extra.errors.push(errorString);
+        extra.errors.push(logError(errorString, position));
     }
 }
 
@@ -298,23 +292,19 @@ function validateName(name: string, position: ts.LineAndCharacter | null, extra:
 
     if (!name) {
         errorString = `You need to provide a custom function name.`;
-        logError(errorString, position);
-        extra.errors.push(errorString);
+        extra.errors.push(logError(errorString, position));
     }
     if (!startsWithLetterRegEx.test(name)) {
         errorString = `The custom function name "${name}" should start with an alphabetic character.`;
-        logError(errorString, position);
-        extra.errors.push(errorString);
+        extra.errors.push(logError(errorString, position));
     }
     if (!validNameRegEx.test(name)) {
         errorString = `The custom function name "${name}" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_).`;
-        logError(errorString, position);
-        extra.errors.push(errorString);
+        extra.errors.push(logError(errorString, position));
     }
     if (name.length > 128) {
         errorString = `The custom function name is too long. It must be 128 characters or less.`;
-        logError(errorString, position);
-        extra.errors.push(errorString);
+        extra.errors.push(logError(errorString, position));
     }
 }
 
@@ -343,8 +333,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
             const functionPosition =  getPosition(func);
             const errorString = "Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :";
-            logError(errorString, functionPosition);
-            extra.errors.push(errorString);
+            extra.errors.push(logError(errorString, functionPosition));
         }
     }
 
@@ -385,18 +374,16 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         }
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
             const errorString = "The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >') :";
-            logError(errorString, lastParameterPosition);
-            extra.errors.push(errorString);
+            extra.errors.push(logError(errorString, lastParameterPosition));
             return defaultResultItem;
         }
         const returnType = func.type as ts.TypeReferenceNode;
         if (returnType && returnType.getFullText().trim() !== "void") {
             const errorString = `A streaming function should return 'void'. Use CustomFunctions.StreamingHandler.setResult() to set results.`;
-            logError(errorString, lastParameterPosition);
-            extra.errors.push(errorString);
+            extra.errors.push(logError(errorString, lastParameterPosition));
             return defaultResultItem;
         }
-        resultType = getParamType(lastParameterType.typeArguments[0]);
+        resultType = getParamType(lastParameterType.typeArguments[0], extra);
         resultDim = getParamDim(lastParameterType.typeArguments[0]);
     } else if (func.type) {
         if (func.type.kind === ts.SyntaxKind.TypeReference &&
@@ -406,11 +393,11 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             (func.type as ts.TypeReferenceNode).typeArguments.length === 1
         ) {
             // @ts-ignore
-            resultType = getParamType((func.type as ts.TypeReferenceNode).typeArguments[0]);
+            resultType = getParamType((func.type as ts.TypeReferenceNode).typeArguments[0], extra);
             // @ts-ignore
             resultDim = getParamDim((func.type as ts.TypeReferenceNode).typeArguments[0]);
         } else {
-            resultType = getParamType(func.type);
+            resultType = getParamType(func.type, extra);
             resultDim = getParamDim(func.type);
         }
     }
@@ -422,8 +409,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
         const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
         if (!checkType) {
             const errorString = `Unsupported type in code comment:${resultFromComment}`;
-            logError(errorString, lastParameterPosition);
-            extra.errors.push(errorString);
+            extra.errors.push(logError(errorString, lastParameterPosition));
         } else {
             resultType = resultFromComment;
         }
@@ -453,7 +439,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
         const name = (p.name as ts.Identifier).text;
-        let ptype = getParamType(p.type as ts.TypeNode);
+        let ptype = getParamType(p.type as ts.TypeNode, extra);
         const parameterPosition = getPosition(p);
         // Try setting type from parameter in code comment
         if (ptype === "any") {
@@ -463,8 +449,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
                 const checkType = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
                 if (!checkType) {
                     const errorString = `Unsupported type in code comment:${ptype}`;
-                    logError(errorString, parameterPosition);
-                    extra.errors.push(errorString);
+                    extra.errors.push(logError(errorString, parameterPosition));
                 }
             } else {
                 // If type not found in comment section set to any type
@@ -477,8 +462,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         if (jsDocType && jsDocType !== "any") {
             if (jsDocType.toLocaleLowerCase() !== ptype.toLocaleLowerCase()) {
                 const errorString = `Type {${jsDocType}:${ptype}} doesn't match for parameter : ${name}`;
-                logError(errorString, parameterPosition);
-                extra.errors.push(errorString);
+                extra.errors.push(logError(errorString, parameterPosition));
             }
         }
 
@@ -796,7 +780,7 @@ function hasInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeIn
  * Gets the parameter type of the node
  * @param t TypeNode
  */
-function getParamType(t: ts.TypeNode): string {
+function getParamType(t: ts.TypeNode, extra: IFunctionExtras): string {
     let type = "any";
     // Only get type for typescript files.  js files will return any for all types
     if (t) {
@@ -809,7 +793,7 @@ function getParamType(t: ts.TypeNode): string {
                 return type;
             }
             if (arrTr.typeName.getText() !== "Array") {
-                logError("Invalid type: " + arrTr.typeName.getText(), typePosition);
+                extra.errors.push(logError("Invalid type: " + arrTr.typeName.getText(), typePosition));
                 return type;
             }
             if (arrTr.typeArguments) {
@@ -817,7 +801,7 @@ function getParamType(t: ts.TypeNode): string {
             if (isArrayWithTypeRefWithin) {
                     const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
                     if (!validateArray(inner)) {
-                        logError("Invalid type array: " + inner.getText(), typePosition);
+                        extra.errors.push(logError("Invalid type array: " + inner.getText(), typePosition));
                         return type;
                     }
                     if (inner.typeArguments) {
@@ -828,7 +812,7 @@ function getParamType(t: ts.TypeNode): string {
         } else if (ts.isArrayTypeNode(t)) {
             const inner = (t as ts.ArrayTypeNode).elementType;
             if (!ts.isArrayTypeNode(inner)) {
-                logError("Invalid array type node: " + inner.getText(), typePosition);
+                extra.errors.push(logError("Invalid array type node: " + inner.getText(), typePosition));
                 return type;
             }
             // Expectation is that at this point, "kind" is a primitive type (not 3D array).
@@ -838,7 +822,7 @@ function getParamType(t: ts.TypeNode): string {
         // @ts-ignore
         type = TYPE_MAPPINGS[kind];
         if (!type) {
-            logError("Type doesn't match mappings", typePosition);
+            extra.errors.push(logError("Type doesn't match mappings", typePosition));
         }
     }
     return type;
@@ -887,10 +871,9 @@ function validateArray(a: ts.TypeReferenceNode) {
  * Log containing all the errors found while parsing
  * @param error Error string to add to the log
  */
-export function logError(error: string, position?: ts.LineAndCharacter | null) {
+export function logError(error: string, position?: ts.LineAndCharacter | null): string {
     if (position) {
         error = `${error} (${position.line},${position.character})`;
     }
-    // @ts-ignore
-    errors.push(error);
+    return error;
 }

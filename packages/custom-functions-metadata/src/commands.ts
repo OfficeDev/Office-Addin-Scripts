@@ -15,7 +15,7 @@ export async function generate(inputFile: string, outputFile: string) {
       }
       const results = await generateMetadata.generate(inputFile, outputFile);
       if (results.errors.length > 0) {
-        console.log("Errors found:" );
+        console.error("Errors found:" );
         results.errors.forEach((err) => console.log(err));
       }
   } catch (err) {

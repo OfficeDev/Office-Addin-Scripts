@@ -114,8 +114,8 @@ describe("test errors", function() {
         it("test error", async function() {
              const inputFile = "./test/javascript/errorfunctions.js";
              const output = "./errortest.json";
-             await generate.generate(inputFile, output);
-             const errtest: string[] = generate.errors;
+             const generateResult = await generate.generate(inputFile, output);
+             const errtest: string[] = generateResult.errors;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
              const errorstring = "Unsupported type in code comment:badtype";
@@ -162,12 +162,13 @@ describe("test parseTreeResult", function() {
         it("parseTree for errorfunctions", async function() {
             const inputFile = "./test/javascript/errorfunctions.js";
             const sourceCode = fs.readFileSync(inputFile, "utf-8");
-            const pTree: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions");
-            assert.equal(pTree.extras[0].name, "testadd", "Function testadd found");
+            const errorsList: string[] = [];
+            const pTree: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions", errorsList);
+            assert.equal(pTree.extras[0].javascriptFunctionName, "testadd", "Function testadd found");
             assert.equal(pTree.extras[0].errors.length, 1, "Correct number of errors found(1)");
-            assert.equal(pTree.extras[2].name, "badId", "Function badId found");
+            assert.equal(pTree.extras[2].javascriptFunctionName, "badId", "Function badId found");
             assert.equal(pTree.extras[2].errors.length, 2, "Correct number of errors found(2)");
-            assert.equal(pTree.extras[5].name, "привет", "Function привет found");
+            assert.equal(pTree.extras[5].javascriptFunctionName, "привет", "Function привет found");
             assert.equal(pTree.extras[5].errors[0].includes("привет".toLocaleUpperCase()), true, "Error message contains function name");
         });
     });
