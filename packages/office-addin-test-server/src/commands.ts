@@ -1,9 +1,9 @@
 import * as commnder from "commander";
 import { TestServer } from "./testServer"
-let port: number = 8080
+const defaultPort: number = 8080
 
 export async function start(command: commnder.Command) {
-    const testServerPort: number = command.port != undefined ? parseTestServerPort(command.port) : port;
+    const testServerPort: number = (command.port !== undefined) ? parseTestServerPort(command.port) : defaultPort;
     const testServer = new TestServer(testServerPort);
     const serverStarted: boolean = await testServer.startTestServer();
 
@@ -21,7 +21,7 @@ function parseNumericCommandOption(optionValue: any, errorMessage: string = "The
             return optionValue;
         }
         case "string": {
-            let result;
+            let result: number;
 
             try {
                 result = parseInt(optionValue, 10);
