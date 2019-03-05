@@ -7,16 +7,18 @@ import * as commander from "commander";
 import * as commands from "./commands";
 
 commander
-    .command("generate <manifest-path>")
-    .option("--path <path>", "Specify the path of generated certficate files.")
+    .command("generate")
+    .option("--ca-cert ", "Specify the path where the CA certificate file is written.")
+    .option("--cert ", "Specify the path where the SSL certificate file is written.")
+    .option("--key ", "Specify the path where the private key for the SSL certificate file is written.")
     .action(commands.generate);
 
 commander
-    .command("install <manifest-path>")
+    .command("install")
     .action(commands.install);
 
 commander
-    .command("verify <manifest-path>")
+    .command("verify")
     .action(commands.verify);
 
 commander
@@ -24,7 +26,7 @@ commander
     .action(commands.uninstall);
 
 commander
-    .command("clean <manifest-path>")
+    .command("clean")
     .action(commands.clean);
 
 commander.parse(process.argv);

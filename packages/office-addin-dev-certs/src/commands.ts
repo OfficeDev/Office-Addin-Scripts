@@ -5,7 +5,7 @@ import {installCertificates} from "./install";
 import {uninstallCertificates} from "./uninstall";
 import {verifyCertificates} from "./verify";
 
-export async function generate(manifestPath: string, command: commander.Command) {
+export async function generate(command: commander.Command) {
     try {
         await generateCertificates(command.path);
     } catch (err) {
@@ -13,7 +13,7 @@ export async function generate(manifestPath: string, command: commander.Command)
     }
 }
 
-export async function install(manifestPath: string, command: commander.Command) {
+export async function install(command: commander.Command) {
     try {
         await installCertificates(command.path);
     } catch (err) {

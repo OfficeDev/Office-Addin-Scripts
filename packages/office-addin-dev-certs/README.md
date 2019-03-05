@@ -19,8 +19,6 @@ Syntax:
 
 `office addin-dev-certs generate [options]`
 
-`manifest`: path to manifest file.
-
 Options:
 
 `--ca-cert <ca-cert-path>`
@@ -44,7 +42,7 @@ Syntax:
 
 `office addin-dev-certs install <ca-certificate-path>`
 
-`ca-certificate-path`: path to CA certificate location.
+`ca-certificate-path`: path to CA certificate file.
  
 #
 
