@@ -9,6 +9,6 @@ export function installCertificates(caCertPath: string): void {
       execSync(finalCommand, {stdio : "pipe" });
       console.log("Successfully installed certificate to trusted store");
    } catch (error) {
-      throw new Error(error.stdout.toString());
+      throw new Error(error.stderr.toString());
    }
 }

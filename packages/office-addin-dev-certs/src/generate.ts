@@ -11,31 +11,31 @@ export function generateCertificates(caCertPath: string, certPath: string , keyP
     }
     const createCA = require("mkcert").createCA;
     const createCert = require("mkcert").createCert;
+    const fs = require("fs");
     createCA({
         countryCode: "US",
         locality: "Redmond",
         organization: "Developer CA for Microsoft Office Add-ins",
         state: "WA",
-        validityDays: 1,
+        validityDays: 30,
     })
     .then((ca: any) => {
         createCert({
-        caCert: ca.cert,
-        caKey: ca.key,
-        domains: ["127.0.0.1", "localhost"],
-        validityDays: 1,
+            caCert: ca,
+            caKey: ca,
+            domains: ["127.0.0.1", "localhost"],
+            validityDays: 30,
         })
         .then((localhost: any) => {
-            const fs = require("fs");
             fs.writeFileSync(`${caCertPath}`, ca.cert);
             fs.writeFileSync(`${certPath}`, localhost.cert);
             fs.writeFileSync(`${keyPath}`, localhost.key);
             console.log("Certificates is generated successfully");
+            if (installCert) {
+                installCertificates(caCertPath);
+            }
         })
         .catch((err: any) => console.error(err));
     })
     .catch((err: any) => console.error(err));
-    if (installCert) {
-        installCertificates(caCertPath);
-    }
 }
