@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as mocha from "mocha";
-import * as testHelper from "../src/testHelpers";
+import * as testHelper from "office-addin-test-helpers";
 import { TestServer } from "../src/testServer";
 const port: number = 8080;
 const testServer = new TestServer(port);

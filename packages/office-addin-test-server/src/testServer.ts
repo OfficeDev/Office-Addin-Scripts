@@ -1,6 +1,7 @@
 import * as cors from "cors";
 import * as express from "express";
 import * as fs from "fs";
+const path = require("path");
 
 export class TestServer {
     m_jsonData: any;
@@ -24,8 +25,8 @@ export class TestServer {
                 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
             }
 
-            const key = fs.readFileSync('certs/server.key');
-            const cert = fs.readFileSync('certs/server.crt');
+            const key = fs.readFileSync(path.resolve(__dirname, '../certs/server.key'));
+            const cert = fs.readFileSync(path.resolve(__dirname, '../certs/server.crt'));
             const options = { key: key, cert: cert };
 
             // listen for 'ping'

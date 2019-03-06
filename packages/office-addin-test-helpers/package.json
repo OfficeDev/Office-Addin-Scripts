@@ -1,7 +1,7 @@
 {
-    "name": "office-addin-test-server",
+    "name": "office-addin-test-helpers",
     "version": "0.0.1",
-    "description": "Create test server that facilitates communication between taskpane add-in and mocha tests.",
+    "description": "Provides test helpers for automating validation of Office Addins.",
     "main": "./lib/main.js",
     "scripts": {
         "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
@@ -10,33 +10,28 @@
     },
     "author": "Office Dev",
     "license": "MIT",
-    "bin": {
-        "office-addin-test-server": "./lib/cli.js"
-    },
     "keywords": [
         "Office",
         "Office Add-in"
     ],
     "dependencies": {
-        "commander": "^2.19.0",
-        "cors": "^2.8.5",
-        "express": "^4.16.4",
         "es6-promise": "^4.2.6",
         "fs": "0.0.1-security"
     },
     "devDependencies": {
-        "@types/cors": "^2.8.4",
         "@types/es6-collections": "^0.5.31",
         "@types/es6-promise": "0.0.32",
         "@types/express": "^4.16.1",
         "@types/mocha": "^5.2.5",
         "@types/node": "^11.9.4",
         "concurrently": "^4.1.0",
+        "current-processes": "^0.2.1",
         "mocha": "^5.2.0",
-        "office-addin-test-helpers": "^0.0.1",
+        "office-addin-test-server": "^0.0.1",
         "rimraf": "^2.6.3",
         "ts-node": "^8.0.2",
-        "typescript": "^3.3.3333"
+        "typescript": "^3.3.3333",
+        "xmlhttprequest": "^1.8.0"
     },
     "repository": {
         "type": "git",
