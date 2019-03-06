@@ -1,6 +1,6 @@
 {
     "name": "office-addin-test-server",
-    "version": "0.0.1",
+    "version": "0.0.0",
     "description": "Create test server that facilitates communication between taskpane add-in and mocha tests.",
     "main": "./lib/main.js",
     "scripts": {
@@ -33,7 +33,7 @@
         "@types/node": "^11.9.4",
         "concurrently": "^4.1.0",
         "mocha": "^5.2.0",
-        "office-addin-test-helpers": "^0.0.1",
+        "office-addin-test-helpers": "^0.0.0",
         "rimraf": "^2.6.3",
         "ts-node": "^8.0.2",
         "typescript": "^3.3.3333"

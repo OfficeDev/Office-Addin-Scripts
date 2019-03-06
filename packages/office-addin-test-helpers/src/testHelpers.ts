@@ -57,7 +57,7 @@ export async function sendTestResults(data: Object, portNumber: number | undefin
 }
 
 
-export async function sideloadExcel(): Promise<boolean> {
+export async function sideloadDesktopApp(application: string): Promise<boolean> {
     return new Promise<boolean>(async function (resolve, reject) {
 
         if (process.platform !== 'win32' && process.platform !== 'darwin') {
@@ -65,7 +65,7 @@ export async function sideloadExcel(): Promise<boolean> {
         }
 
         try {
-            const cmdLine = `npm run sideload:test`;
+            const cmdLine = `npm run sideload:${application}`;
             const sideloadSucceeded = await _executeCommandLine(cmdLine);
             resolve(sideloadSucceeded);
         } catch (err) {
@@ -104,8 +104,46 @@ async function _executeCommandLine(cmdLine: string): Promise<boolean> {
 }
 
 // Office-JS close workbook API is coming soon.  Once it's available we can stript out this code to kill the Excel process
-export async function teardownTestEnvironment(): Promise<void> {
-    const processName: string = process.platform == 'win32' ? "EXCEL" : "Excel";
+export async function teardownTestEnvironment(application: string): Promise<void> {
+
+    await closeDesktopApplication(application);
+
+    // if the dev-server was started, kill the spawned process
+    if (devServerStarted) {
+        if (process.platform == "win32") {
+            childProcess.spawn("taskkill", ["/pid", subProcess.pid, '/f', '/t']);
+        } else {
+            subProcess.kill();
+        }
+    }
+}
+
+async function closeDesktopApplication(application: string): Promise <void> {
+    let processName: string = "";
+    switch(application.toLowerCase()) {
+        case "excel":
+            processName = "Excel";
+            break;
+        case "powerpoint":
+            processName = "Powerpnt";
+            break;
+        case "onenote":
+            processName = "Onenote";
+            break;
+        case "outlook":
+            processName = "Outlook";
+            break;
+        case "project":
+            processName = "Project";
+            break;
+        case "word":
+            processName = "Winword";
+            break;
+        // Not sure yet what process names are for Visio or Proect
+        default:
+            console.log(`${application} is not a valid Office desktop application`)
+    }
+
     try {
         if (process.platform == "win32") {
             const cmdLine = `tskill ${processName}`;
@@ -117,17 +155,9 @@ export async function teardownTestEnvironment(): Promise<void> {
             }
         }
     } catch (err) {
-        console.log(`Unable to kill Excel process. ${err}`);
+        console.log(`Unable to kill ${application} process. ${err}`);
     }
 
-    // if the dev-server was started, kill the spawned process
-    if (devServerStarted) {
-        if (process.platform == "win32") {
-            childProcess.spawn("taskkill", ["/pid", subProcess.pid, '/f', '/t']);
-        } else {
-            subProcess.kill();
-        }
-    }
 }
 
 async function _getProcessId(processName: string): Promise<number> {
