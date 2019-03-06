@@ -34,3 +34,7 @@ function badName(){}
  * @requiresAddress 
  */
 function missingInvocationType(x){}
+
+/** @customfunction */
+function привет() {
+}
