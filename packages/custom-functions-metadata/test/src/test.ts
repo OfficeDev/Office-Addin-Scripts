@@ -160,13 +160,13 @@ describe("test parseTreeResult", function() {
         it("parseTree for errorfunctions", async function() {
             const inputFile = "./test/javascript/errorfunctions.js";
             const sourceCode = fs.readFileSync(inputFile, "utf-8");
-            const pTree: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions");
-            assert.equal(pTree.extras[0].javascriptFunctionName, "testadd", "Function testadd found");
-            assert.equal(pTree.extras[0].errors.length, 1, "Correct number of errors found(1)");
-            assert.equal(pTree.extras[2].javascriptFunctionName, "badId", "Function badId found");
-            assert.equal(pTree.extras[2].errors.length, 2, "Correct number of errors found(2)");
-            assert.equal(pTree.extras[5].javascriptFunctionName, "привет", "Function привет found");
-            assert.equal(pTree.extras[5].errors[0].includes("привет".toLocaleUpperCase()), true, "Error message contains function name");
+            const parseTreeResult: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions");
+            assert.equal(parseTreeResult.extras[0].javascriptFunctionName, "testadd", "Function testadd found");
+            assert.equal(parseTreeResult.extras[0].errors.length, 1, "Correct number of errors found(1)");
+            assert.equal(parseTreeResult.extras[2].javascriptFunctionName, "badId", "Function badId found");
+            assert.equal(parseTreeResult.extras[2].errors.length, 2, "Correct number of errors found(2)");
+            assert.equal(parseTreeResult.extras[5].javascriptFunctionName, "привет", "Function привет found");
+            assert.equal(parseTreeResult.extras[5].errors[0].includes("привет".toLocaleUpperCase()), true, "Error message contains function name");
         });
     });
 });
