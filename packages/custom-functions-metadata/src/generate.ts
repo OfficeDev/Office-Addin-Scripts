@@ -14,20 +14,20 @@ interface ICustomFunctionsMetadata {
 }
 
 interface IFunction {
-    name: string;
     id: string;
-    helpUrl: string;
+    name: string;
     description: string;
+    helpUrl: string;
     parameters: IFunctionParameter[];
     result: IFunctionResult;
     options: IFunctionOptions;
 }
 
 interface IFunctionOptions {
-    volatile: boolean;
-    stream: boolean;
     cancelable: boolean;
     requiresAddress: boolean;
+    stream: boolean;
+    volatile: boolean;
 }
 
 interface IFunctionParameter {
@@ -205,8 +205,24 @@ export function parseTree(sourceCode: string, sourceFileName: string): IFunction
                         result,
                     };
 
-                    if (!options.volatile && !options.stream && !options.cancelable && !options.requiresAddress) {
+                    if (!options.cancelable && !options.requiresAddress && !options.stream && !options.volatile) {
                         delete functionMetadata.options;
+                    } else {
+                        if (!options.cancelable) {
+                            delete options.cancelable;
+                        }
+
+                        if (!options.requiresAddress) {
+                            delete options.requiresAddress;
+                        }
+
+                        if (!options.stream) {
+                            delete options.stream;
+                        }
+
+                        if (!options.volatile) {
+                            delete options.volatile;
+                        }
                     }
 
                     functions.push(functionMetadata);
