@@ -113,8 +113,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
     if (fs.existsSync(inputFile)) {
         const sourceCode = fs.readFileSync(inputFile, "utf-8");
         const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
-        parseTreeResult.extras.forEach((extra) => {extra.errors.forEach((err) => errors.push(err));
-        });
+        parseTreeResult.extras.forEach(extra => extra.errors.forEach(err => errors.push(err)));
 
         if (errors.length === 0) {
             const json = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
