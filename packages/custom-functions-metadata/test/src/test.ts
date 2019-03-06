@@ -10,8 +10,6 @@ describe("test json file created", function() {
             const inputFile = "./test/typescript/testfunctions.ts";
             const output = "test.json";
             await generate.generate(inputFile, output);
-            const skipped = "notAdded";
-            assert.strictEqual(generate.skippedFunctions[0], skipped, "skipped function not found");
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
         });
     });
@@ -114,8 +112,8 @@ describe("test errors", function() {
         it("test error", async function() {
              const inputFile = "./test/javascript/errorfunctions.js";
              const output = "./errortest.json";
-             await generate.generate(inputFile, output);
-             const errtest: string[] = generate.errors;
+             const generateResult = await generate.generate(inputFile, output);
+             const errtest: string[] = generateResult.errors;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
              const errorstring = "Unsupported type in code comment:badtype";
@@ -135,7 +133,7 @@ describe("test bad file paths", function() {
         it("test error file path", async function() {
             const inputFile = "doesnotexist.ts";
             const output = "./nofile.json";
-            const testError = "ENOENT: no such file or directory";
+            const testError = "File not found";
             try {
                 await generate.generate(inputFile, output);
             } catch (error) {
@@ -154,6 +152,21 @@ describe("delete test files", function() {
             const outputTypeScript = "test.json";
             fs.unlinkSync(outputJavaScript);
             fs.unlinkSync(outputTypeScript);
+        });
+    });
+});
+describe("test parseTreeResult", function() {
+    describe("parseTreeResult", function() {
+        it("parseTree for errorfunctions", async function() {
+            const inputFile = "./test/javascript/errorfunctions.js";
+            const sourceCode = fs.readFileSync(inputFile, "utf-8");
+            const parseTreeResult: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions");
+            assert.equal(parseTreeResult.extras[0].javascriptFunctionName, "testadd", "Function testadd found");
+            assert.equal(parseTreeResult.extras[0].errors.length, 1, "Correct number of errors found(1)");
+            assert.equal(parseTreeResult.extras[2].javascriptFunctionName, "badId", "Function badId found");
+            assert.equal(parseTreeResult.extras[2].errors.length, 2, "Correct number of errors found(2)");
+            assert.equal(parseTreeResult.extras[5].javascriptFunctionName, "привет", "Function привет found");
+            assert.equal(parseTreeResult.extras[5].errors[0].includes("привет".toLocaleUpperCase()), true, "Error message contains function name");
         });
     });
 });

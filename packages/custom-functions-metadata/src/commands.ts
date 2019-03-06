@@ -13,7 +13,11 @@ export async function generate(inputFile: string, outputFile: string) {
       if (!outputFile) {
         throw new Error("You need to provide the path to the output file for the custom functions metadata.");
       }
-      await generateMetadata.generate(inputFile, outputFile);
+      const results = await generateMetadata.generate(inputFile, outputFile);
+      if (results.errors.length > 0) {
+        console.error("Errors found:" );
+        results.errors.forEach((err) => console.log(err));
+      }
   } catch (err) {
     logErrorMessage(err);
   }
