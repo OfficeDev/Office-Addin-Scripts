@@ -5,4 +5,3 @@ export * from "./generate";
 export * from "./install";
 export * from "./verify";
 export * from "./uninstall";
-export * from "./clean";

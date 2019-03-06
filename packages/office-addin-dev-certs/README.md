@@ -40,9 +40,9 @@ Install the certificate.
 
 Syntax:
 
-`office addin-dev-certs install <ca-certificate-path>`
+`office addin-dev-certs install <ca-cert-path>`
 
-`ca-certificate-path`: path to CA certificate file.
+`ca-cert-path`: path to CA certificate file.
  
 #
 
@@ -62,13 +62,4 @@ Syntax:
 
 `office addin-dev-certs uninstall`
 
-#
-
-### clean
-Clean the certificates.
-
-Syntax:
-
-`office addin-dev-certs clean`
- 
 #
