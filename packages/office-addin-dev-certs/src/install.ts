@@ -1,4 +1,4 @@
-import {defaultCaCertPath} from "./generate"
+import {defaultCaCertPath} from "./default"
 
 function getInstallCommand(caCertPath: string): string {
    let command: string;

@@ -31,6 +31,10 @@ Path where the SSL certificate is written. Default ./localhost.crt.
 `--key <key-path>`
 
 Path where the private key for the SSL certificate is written. Default ./localhost.key.
+
+`--install`
+
+Install the generated CA certificate.
  
 #
 
@@ -41,8 +45,7 @@ Syntax:
 
 `office addin-dev-certs install <ca-cert-path>`
 
-`ca-cert-path`: path to CA certificate file.
-
+`ca-cert-path`: Path to CA certificate file.
  
 #
 

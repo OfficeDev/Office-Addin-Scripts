@@ -5,7 +5,7 @@
 
 import * as commander from "commander";
 import * as commands from "./commands";
-import {defaultCaCertPath, defaultCertPath, defaultKeyPath} from "./generate"
+import {defaultCaCertPath, defaultCertPath, defaultKeyPath} from "./default"
 
 commander
     .command("generate")
@@ -13,7 +13,6 @@ commander
     .option("--cert <cert-path>", `Specifies the path where the SSL certificate file is written. Default: ${defaultCertPath}`)
     .option("--key <key-path>", `Specifies the path where the private key for the SSL certificate file is written. Default: ${defaultKeyPath}`)
     .option("--install", `Install the generated CA certificate`)
-    .option("--overwrite", `If specified, any existing certificates will be overwritten.`)
     .description(`Generate an SSL certificate for localhost and a CA certificate which has issued it.`)
     .action(commands.generate);
 
