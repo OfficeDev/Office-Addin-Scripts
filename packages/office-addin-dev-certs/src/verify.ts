@@ -1,4 +1,4 @@
-export function verifyCertificates(): boolean {
+export function verifyCaCertificate(): boolean {
     let command = `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=Developer CA for Microsoft Office Add-ins*' | Format-List"`;
     if (process.platform !== "win32") {
         command = `sudo security find-certificate -c "Developer CA for Microsoft Office Add-ins"`;

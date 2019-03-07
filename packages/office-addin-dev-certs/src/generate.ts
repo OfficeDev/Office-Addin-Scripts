@@ -1,9 +1,20 @@
-import {installCertificates} from "./install";
-import {verifyCertificates} from "./verify";
+import {installCaCertificate} from "./install";
+import {verifyCaCertificate} from "./verify";
 
-export function generateCertificates(caCertPath: string, certPath: string , keyPath: string, overwriteCert: any, installCert: any): void {
+export const defaultCaCertPath = "ca.crt"
+export const defaultCertPath = "localhost.crt"
+export const defaultKeyPath = "localhost.key"
+
+export function generateCertificates(caCertPath: string | undefined, certPath: string | undefined, keyPath: string | undefined, overwriteCert: any, installCert: any): void {
+    if(!caCertPath) caCertPath = defaultCaCertPath;
+    if(!certPath) certPath = defaultCertPath;
+    if(!keyPath) keyPath = defaultKeyPath;
+    interface certificateInfo{
+        cert: string;
+        key: string;
+    }
     if (!overwriteCert) {
-        const isCertificateInstalled = verifyCertificates();
+        const isCertificateInstalled = verifyCaCertificate();
         if (isCertificateInstalled) {
             console.log("Valid certificate already exists. Run with --overwrite to overwrite the existing certificates");
             return;
@@ -19,20 +30,20 @@ export function generateCertificates(caCertPath: string, certPath: string , keyP
         state: "WA",
         validityDays: 30,
     })
-    .then((ca: any) => {
+    .then((caCertificateInfo: certificateInfo) => {
         createCert({
-            caCert: ca.cert,
-            caKey: ca.key,
+            caCert: caCertificateInfo.cert,
+            caKey: caCertificateInfo.key,
             domains: ["127.0.0.1", "localhost"],
             validityDays: 30,
         })
-        .then((localhost: any) => {
-            fs.writeFileSync(`${caCertPath}`, ca.cert);
+        .then((localhost: certificateInfo) => {
+            fs.writeFileSync(`${caCertPath}`, caCertificateInfo.cert);
             fs.writeFileSync(`${certPath}`, localhost.cert);
             fs.writeFileSync(`${keyPath}`, localhost.key);
-            console.log("Certificates is generated successfully");
+            console.log("The developer certificates have been generated.");
             if (installCert) {
-                installCertificates(caCertPath);
+                installCaCertificate(caCertPath);
             }
         })
         .catch((err: any) => console.error(err));
