@@ -21,8 +21,8 @@ export function generateCertificates(caCertPath: string, certPath: string , keyP
     })
     .then((ca: any) => {
         createCert({
-            caCert: ca,
-            caKey: ca,
+            caCert: ca.cert,
+            caKey: ca.key,
             domains: ["127.0.0.1", "localhost"],
             validityDays: 30,
         })

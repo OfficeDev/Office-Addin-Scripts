@@ -42,6 +42,7 @@ Syntax:
 `office addin-dev-certs install <ca-cert-path>`
 
 `ca-cert-path`: path to CA certificate file.
+
  
 #
 
