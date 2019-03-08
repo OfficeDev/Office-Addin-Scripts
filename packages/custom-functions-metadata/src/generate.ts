@@ -149,6 +149,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
     const enumList: string[] = [];
+    const functionNames: string[] = [];
+    const ids: string[] = [];
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
     buildEnums(sourceFile);
@@ -170,14 +172,19 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
         if (ts.isFunctionDeclaration(node)) {
             if (node.parent && node.parent.kind === ts.SyntaxKind.SourceFile) {
                 const functionDeclaration = node as ts.FunctionDeclaration;
+                const position = getPosition(functionDeclaration);
                 const functionErrors: string[] = [];
+                const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
+                if (functionNames.indexOf(functionName) > -1) {
+                    const errorString = `Duplicate function name: ${functionName}`;
+                    functionErrors.push(logError(errorString, position));
+                }
+                functionNames.push(functionName);
                 if (isCustomFunction(functionDeclaration)) {
                     const extra: IFunctionExtras = {
                         errors: functionErrors,
-                        // @ts-ignore
-                        javascriptFunctionName: functionDeclaration.name.text,
+                        javascriptFunctionName: functionName,
                     };
-                    const position = getPosition(functionDeclaration);
                     const idName = getIdName(functionDeclaration);
                     const idNameArray = idName.split(" ");
                     const jsDocParamInfo = getJSDocParams(functionDeclaration);
@@ -207,6 +214,16 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     const name = idNameArray[1] || id;
                     validateId(id, position, extra);
                     validateName(name, position, extra);
+                    if (functionNames.indexOf(name) > -1) {
+                        const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
+                        functionErrors.push(logError(errorString, position));
+                    }
+                    functionNames.push(name);
+                    if (ids.indexOf(id) > -1) {
+                        const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
+                        functionErrors.push(logError(errorString, position));
+                    }
+                    ids.push(id);
 
                     const functionMetadata: IFunction = {
                         description,
@@ -247,6 +264,12 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     }
                     extras.push(extra);
                     functions.push(functionMetadata);
+                } else {
+                    const extra: IFunctionExtras = {
+                        errors: functionErrors,
+                        javascriptFunctionName: functionName,
+                    };
+                    extras.push(extra);
                 }
             }
         }
@@ -875,7 +898,7 @@ function validateArray(a: ts.TypeReferenceNode) {
  */
 export function logError(error: string, position?: ts.LineAndCharacter | null): string {
     if (position) {
-        error = `${error} (${position.line},${position.character})`;
+        error = `${error} (${position.line + 1},${position.character + 1})`;
     }
     return error;
 }
