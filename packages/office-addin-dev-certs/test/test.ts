@@ -1,17 +1,17 @@
 import * as assert from "assert";
+import * as childProcess from "child_process";
 import * as mocha from "mocha";
+import * as path from "path";
 import {generateCertificates} from "../src/generate";
 import {installCaCertificate} from "../src/install";
 import {uninstallCaCertificate} from "../src/uninstall";
 import {verifyCaCertificate} from "../src/verify";
 import * as verify from "../src/verify";
+
 describe("office-addin-dev-certs", function() {
     const sinon = require("sinon");
     const mkcert = require("mkcert");
-    const fs = require("fs");
-    const childProcess = require("child_process");
     const testCertificateDir = "";
-    const folderPrefix = (process.platform === "win32") ? "\\" : "/";
     let sandbox = sinon.createSandbox();
     describe("generate-tests", function() {
         beforeEach(function() {
@@ -25,7 +25,7 @@ describe("office-addin-dev-certs", function() {
             const createCA = sandbox.fake();
             sandbox.stub(mkcert, "createCA").callsFake(createCA);
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
-            await generateCertificates(testCertificateDir + folderPrefix + "ca.crt", testCertificateDir + folderPrefix + "localhost.crt", testCertificateDir + folderPrefix + "localhost.key", false);
+            await generateCertificates(path.join(testCertificateDir, "ca.crt"), path.join(testCertificateDir, "localhost.crt"), path.join(testCertificateDir, "localhost.key"), false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCA.callCount, 0);
         });
@@ -36,7 +36,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").rejects(cert);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
-            await generateCertificates(testCertificateDir + folderPrefix + "ca.crt", testCertificateDir + folderPrefix + "localhost.crt", testCertificateDir + folderPrefix + "localhost.key", false);
+            await generateCertificates(path.join(testCertificateDir, "ca.crt"), path.join(testCertificateDir, "localhost.crt"), path.join(testCertificateDir, "localhost.key"), false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 0);
         });
@@ -47,7 +47,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
-            await generateCertificates(testCertificateDir + folderPrefix + "ca.crt", testCertificateDir + folderPrefix + "localhost.crt", testCertificateDir + folderPrefix + "localhost.key", false);
+            await generateCertificates(path.join(testCertificateDir, "ca.crt"), path.join(testCertificateDir, "localhost.crt"), path.join(testCertificateDir, "localhost.key"), false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 1);
         });
@@ -63,7 +63,7 @@ describe("office-addin-dev-certs", function() {
             const error = {stderr : "test error"};
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
-                await installCaCertificate(testCertificateDir + folderPrefix + "ca.crt");
+                await installCaCertificate(path.join(testCertificateDir, "ca.crt"));
             } catch (err) {
                 assert.strictEqual(err.message, "test error");
             }
@@ -72,7 +72,7 @@ describe("office-addin-dev-certs", function() {
             const execSync = sandbox.fake();
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
-                await installCaCertificate(testCertificateDir + folderPrefix + "ca.crt");
+                await installCaCertificate(path.join(testCertificateDir, "ca.crt"));
                 assert.strictEqual(execSync.callCount, 1);
             } catch (err) {
                 // not expecting any exception

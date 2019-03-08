@@ -5,7 +5,7 @@
 
 import * as commander from "commander";
 import * as commands from "./commands";
-import {defaultCaCertPath, defaultCertPath, defaultKeyPath} from "./default"
+import {defaultCaCertPath, defaultCertPath, defaultKeyPath} from "./default";
 
 commander
     .command("generate")

@@ -11,7 +11,7 @@ function getVerifyCommand(): string {
     }
  }
 
-function isCaCertificateValid(): boolean{
+function isCaCertificateValid(): boolean {
     const command = getVerifyCommand();
     const execSync = require("child_process").execSync;
     try {
