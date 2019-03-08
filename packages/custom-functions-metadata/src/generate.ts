@@ -149,6 +149,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
     const enumList: string[] = [];
+    const functionNames: string[] = [];
+    let functionName: string;
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
     buildEnums(sourceFile);
@@ -171,11 +173,18 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             if (node.parent && node.parent.kind === ts.SyntaxKind.SourceFile) {
                 const functionDeclaration = node as ts.FunctionDeclaration;
                 const functionErrors: string[] = [];
+                functionName = "";
+                if (functionDeclaration.name) {
+                    functionName = functionDeclaration.name.text;
+                    if (functionNames.indexOf(functionName) > -1) {
+                        functionErrors.push("Duplicate function name");
+                    }
+                }
+                functionNames.push(functionName);
                 if (isCustomFunction(functionDeclaration)) {
                     const extra: IFunctionExtras = {
                         errors: functionErrors,
-                        // @ts-ignore
-                        javascriptFunctionName: functionDeclaration.name.text,
+                        javascriptFunctionName: functionName,
                     };
                     const position = getPosition(functionDeclaration);
                     const idName = getIdName(functionDeclaration);
@@ -207,6 +216,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     const name = idNameArray[1] || id;
                     validateId(id, position, extra);
                     validateName(name, position, extra);
+                    if (functionNames.indexOf(name) > -1) {
+                        functionErrors.push("Duplicate name found in @CustomFunction tag");
+                    }
+                    functionNames.push(name);
 
                     const functionMetadata: IFunction = {
                         description,
@@ -247,6 +260,12 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     }
                     extras.push(extra);
                     functions.push(functionMetadata);
+                } else {
+                    const extra: IFunctionExtras = {
+                        errors: functionErrors,
+                        javascriptFunctionName: functionName,
+                    };
+                    extras.push(extra);
                 }
             }
         }

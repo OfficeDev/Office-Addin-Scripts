@@ -38,3 +38,16 @@ function missingInvocationType(x){}
 /** @customfunction */
 function привет() {
 }
+
+/**
+ * Duplicate function name test
+ */
+function testadd(){
+}
+
+/**
+ * Duplicate name test set in CustomFunction tag
+ * @CustomFunction id testadd
+ */
+function customNameTest(){
+}

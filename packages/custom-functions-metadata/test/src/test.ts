@@ -167,6 +167,8 @@ describe("test parseTreeResult", function() {
             assert.equal(parseTreeResult.extras[2].errors.length, 2, "Correct number of errors found(2)");
             assert.equal(parseTreeResult.extras[5].javascriptFunctionName, "привет", "Function привет found");
             assert.equal(parseTreeResult.extras[5].errors[0].includes("привет".toLocaleUpperCase()), true, "Error message contains function name");
+            assert.equal(parseTreeResult.extras[6].errors[0].includes("Duplicate function name"), true, "Error message contains duplicate function name");
+            assert.equal(parseTreeResult.extras[7].errors[0].includes("Duplicate name found in @CustomFunction tag"), true, "Error message contains duplicate function name from custom function");
         });
     });
 });
