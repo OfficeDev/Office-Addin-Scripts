@@ -173,13 +173,16 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             if (node.parent && node.parent.kind === ts.SyntaxKind.SourceFile) {
                 const functionDeclaration = node as ts.FunctionDeclaration;
                 const position = getPosition(functionDeclaration);
-                const functionErrors: string[] = [];
+                const functionErrors: string[] = [];                
                 const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
+
                 if (functionNames.indexOf(functionName) > -1) {
                     const errorString = `Duplicate function name: ${functionName}`;
                     functionErrors.push(logError(errorString, position));
                 }
+
                 functionNames.push(functionName);
+
                 if (isCustomFunction(functionDeclaration)) {
                     const extra: IFunctionExtras = {
                         errors: functionErrors,
@@ -212,17 +215,22 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     const funcName: string = (functionDeclaration.name) ? functionDeclaration.name.text : "";
                     const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
                     const name = idNameArray[1] || id;
+
                     validateId(id, position, extra);
                     validateName(name, position, extra);
+
                     if (functionNames.indexOf(name) > -1) {
                         const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
                         functionErrors.push(logError(errorString, position));
                     }
+
                     functionNames.push(name);
+
                     if (ids.indexOf(id) > -1) {
                         const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
                         functionErrors.push(logError(errorString, position));
                     }
+
                     ids.push(id);
 
                     const functionMetadata: IFunction = {
@@ -262,14 +270,9 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     if (functionMetadata.description === "") {
                         delete functionMetadata.description;
                     }
+
                     extras.push(extra);
-                    functions.push(functionMetadata);
-                } else {
-                    const extra: IFunctionExtras = {
-                        errors: functionErrors,
-                        javascriptFunctionName: functionName,
-                    };
-                    extras.push(extra);
+                    functions.push(functionMetadata);                    
                 }
             }
         }

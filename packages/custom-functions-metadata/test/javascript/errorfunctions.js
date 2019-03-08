@@ -41,6 +41,7 @@ function привет() {
 
 /**
  * Duplicate function name test
+ * @customfunction
  */
 function testadd(){
 }
