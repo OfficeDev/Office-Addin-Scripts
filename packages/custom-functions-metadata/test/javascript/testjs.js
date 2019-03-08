@@ -1,6 +1,6 @@
 /**
  * This function is testing add
- * @CustomFunction
+ * @customfunction
  * @param {number} number1 - first number
  * @return {number} - return number
  */
@@ -11,7 +11,7 @@ function testAdd(number1){
  * Test function for boolean type
  * @param {boolean} bool - boolean parameter
  * @return {boolean}
- * @CustomFunction
+ * @customfunction
  */
 function testBoolean(bool){
 }
@@ -19,7 +19,7 @@ function testBoolean(bool){
 /**
  * Test the optional parameter
  * @param {string} [opt] - this parameter should be optional
- * @CustomFunction 
+ * @customfunction 
  */
 function testOptional(opt){}
 
@@ -27,7 +27,7 @@ function testOptional(opt){}
  * Test the string type
  * @param {string} str - string type parameter
  * @return {string}
- * @CustomFunction
+ * @customfunction
  */
 function testString(str){}
 
@@ -35,7 +35,7 @@ function testString(str){}
  * Test the any type
  * @param {any} a - any type parameter
  * @return {any}
- * @CustomFunction
+ * @customfunction
  */
 function testAny(a){}
 
@@ -43,7 +43,7 @@ function testAny(a){}
  * Test streaming handler function
  * @param {string} x 
  * @param {CustomFunctions.StreamingHandler<string>} handler
- * @CustomFunction 
+ * @customfunction 
  */
 function testStreaming(x, handler){}
 
@@ -51,28 +51,28 @@ function testStreaming(x, handler){}
  * Test the cancelable handler
  * @param {string} x 
  * @param {CustomFunctions.CancelableHandler} chandler
- * @CustomFunction 
+ * @customfunction 
  */
 function testCancel(x, chandler){}
 
 /**
  * Test the custom function id
  * @param {string} x
- * @CustomFunction newIdTest 
+ * @customfunction newIdTest 
  */
 function customIdTest(x){}
 
 /**
  * Test the custom function id and name
  * @param {string} x
- * @CustomFunction newId newName 
+ * @customfunction newId newName 
  */
 function customIdNameTest(x){}
 
 /**
  * Test the new invocation type
  * @param {CustomFunctions.Invocation} inv
- * @CustomFunction
+ * @customfunction
  * @requiresAddress 
  */
 function customInvocationTest(inv){}
@@ -81,7 +81,7 @@ function customInvocationTest(inv){}
  * Test streaming handler function
  * @param {string} x 
  * @param {CustomFunctions.StreamingInvocation<string>} handler
- * @CustomFunction 
+ * @customfunction 
  */
 function testStreamingInvocation(x, handler){}
 
@@ -89,6 +89,6 @@ function testStreamingInvocation(x, handler){}
  * Test the cancelable handler
  * @param {string} x 
  * @param {CustomFunctions.CancelableInvocation} chandler
- * @CustomFunction 
+ * @customfunction 
  */
 function testCancelInvocation(x, chandler){}

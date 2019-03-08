@@ -215,12 +215,12 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     validateId(id, position, extra);
                     validateName(name, position, extra);
                     if (functionNames.indexOf(name) > -1) {
-                        const errorString = `@CustomFunction tag specifies a duplicate name: ${name}`;
+                        const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
                         functionErrors.push(logError(errorString, position));
                     }
                     functionNames.push(name);
                     if (ids.indexOf(id) > -1) {
-                        const errorString = `@CustomFunction tag specifies a duplicate id: ${id}`;
+                        const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
                         functionErrors.push(logError(errorString, position));
                     }
                     ids.push(id);
@@ -898,7 +898,7 @@ function validateArray(a: ts.TypeReferenceNode) {
  */
 export function logError(error: string, position?: ts.LineAndCharacter | null): string {
     if (position) {
-        error = `${error} (${position.line + 1},${position.character})`;
+        error = `${error} (${position.line + 1},${position.character + 1})`;
     }
     return error;
 }
