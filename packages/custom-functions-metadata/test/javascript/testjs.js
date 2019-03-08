@@ -58,7 +58,7 @@ function testCancel(x, chandler){}
 /**
  * Test the custom function id
  * @param {string} x
- * @CustomFunction newId 
+ * @CustomFunction newIdTest 
  */
 function customIdTest(x){}
 
