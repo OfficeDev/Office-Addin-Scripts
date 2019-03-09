@@ -173,7 +173,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             if (node.parent && node.parent.kind === ts.SyntaxKind.SourceFile) {
                 const functionDeclaration = node as ts.FunctionDeclaration;
                 const position = getPosition(functionDeclaration);
-                const functionErrors: string[] = [];                
+                const functionErrors: string[] = [];
                 const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
 
                 if (functionNames.indexOf(functionName) > -1) {
@@ -272,7 +272,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     }
 
                     extras.push(extra);
-                    functions.push(functionMetadata);                    
+                    functions.push(functionMetadata);
                 }
             }
         }
