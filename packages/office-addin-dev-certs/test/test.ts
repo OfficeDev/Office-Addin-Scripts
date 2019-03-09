@@ -11,8 +11,11 @@ import * as verify from "../src/verify";
 describe("office-addin-dev-certs", function() {
     const sinon = require("sinon");
     const mkcert = require("mkcert");
-    const testCertificateDir = "";
     let sandbox = sinon.createSandbox();
+    const testCertificateDir = "certs";
+    const testCaCertificatePath = path.join(testCertificateDir, "ca.crt");
+    const testCertificatePath = path.join(testCertificateDir, "localhost.crt");
+    const testKeyPath = path.join(testCertificateDir, "localhost.key");
     describe("generate-tests", function() {
         beforeEach(function() {
             sandbox = sinon.createSandbox();
@@ -25,7 +28,7 @@ describe("office-addin-dev-certs", function() {
             const createCA = sandbox.fake();
             sandbox.stub(mkcert, "createCA").callsFake(createCA);
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
-            await generateCertificates(path.join(testCertificateDir, "ca.crt"), path.join(testCertificateDir, "localhost.crt"), path.join(testCertificateDir, "localhost.key"), false);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCA.callCount, 0);
         });
@@ -36,7 +39,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").rejects(cert);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
-            await generateCertificates(path.join(testCertificateDir, "ca.crt"), path.join(testCertificateDir, "localhost.crt"), path.join(testCertificateDir, "localhost.key"), false);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 0);
         });
@@ -47,7 +50,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
-            await generateCertificates(path.join(testCertificateDir, "ca.crt"), path.join(testCertificateDir, "localhost.crt"), path.join(testCertificateDir, "localhost.key"), false);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 1);
         });
@@ -63,7 +66,7 @@ describe("office-addin-dev-certs", function() {
             const error = {stderr : "test error"};
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
-                await installCaCertificate(path.join(testCertificateDir, "ca.crt"));
+                await installCaCertificate(testCaCertificatePath);
             } catch (err) {
                 assert.strictEqual(err.message, "test error");
             }
@@ -72,7 +75,7 @@ describe("office-addin-dev-certs", function() {
             const execSync = sandbox.fake();
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
-                await installCaCertificate(path.join(testCertificateDir, "ca.crt"));
+                await installCaCertificate(testCaCertificatePath);
                 assert.strictEqual(execSync.callCount, 1);
             } catch (err) {
                 // not expecting any exception

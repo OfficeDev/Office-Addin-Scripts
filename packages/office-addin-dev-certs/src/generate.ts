@@ -1,4 +1,4 @@
-import {certificateName, certificateValidity, defaultCaCertPath, defaultCertPath, defaultKeyPath} from "./default";
+import * as defaults from "./default";
 import {installCaCertificate} from "./install";
 import {verifyCaCertificate} from "./verify";
 
@@ -7,17 +7,17 @@ import {verifyCaCertificate} from "./verify";
    else, new certificates are generated and installed if --install was provided.
 */
 export function generateCertificates(caCertPath: string | undefined, certPath: string | undefined, keyPath: string | undefined, install: boolean = false): void {
-    if (!caCertPath) { caCertPath = defaultCaCertPath; }
-    if (!certPath) { certPath = defaultCertPath; }
-    if (!keyPath) { keyPath = defaultKeyPath; }
+    if (!caCertPath) { caCertPath = defaults.defaultCaCertPath; }
+    if (!certPath) { certPath = defaults.defaultCertPath; }
+    if (!keyPath) { keyPath = defaults.defaultKeyPath; }
     interface ICertificateInfo {
         cert: string;
         key: string;
     }
 
-    const isCertificateInstalled = verifyCaCertificate();
-    if (isCertificateInstalled) {
-        console.log("A valid CA certificate already exists in trusted store.");
+    const isCertificateValid  = verifyCaCertificate();
+    if (isCertificateValid) {
+        console.log("A valid CA certificate is already installed.");
         return;
     }
 
@@ -25,18 +25,18 @@ export function generateCertificates(caCertPath: string | undefined, certPath: s
     const createCert = require("mkcert").createCert;
     const fs = require("fs");
     createCA({
-        countryCode: "US",
-        locality: "Redmond",
-        organization: certificateName,
-        state: "WA",
-        validityDays: certificateValidity,
+        countryCode: defaults.countryCode,
+        locality: defaults.locality,
+        organization: defaults.certificateName,
+        state: defaults.state,
+        validityDays: defaults.daysUntilCertificateExpires,
     })
     .then((caCertificateInfo: ICertificateInfo) => {
         createCert({
             caCert: caCertificateInfo.cert,
             caKey: caCertificateInfo.key,
-            domains: ["127.0.0.1", "localhost"],
-            validityDays: certificateValidity,
+            domains: defaults.domain,
+            validityDays: defaults.daysUntilCertificateExpires,
         })
         .then((localhost: ICertificateInfo) => {
             fs.writeFileSync(`${caCertPath}`, caCertificateInfo.cert);

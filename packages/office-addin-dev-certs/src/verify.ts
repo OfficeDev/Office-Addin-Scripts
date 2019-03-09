@@ -11,7 +11,7 @@ function getVerifyCommand(): string {
     }
  }
 
-function isCaCertificateValid(): boolean {
+function isCaCertificateInstalled(): boolean {
     const command = getVerifyCommand();
     const execSync = require("child_process").execSync;
     try {
@@ -29,6 +29,6 @@ function isCaCertificateValid(): boolean {
 }
 
 export function verifyCaCertificate(): boolean {
-   return isCaCertificateValid();
+   return isCaCertificateInstalled();
    // todo add more verfication
 }

@@ -15,8 +15,7 @@ function getInstallCommand(caCertPath: string): string {
    return command;
 }
 
-export function installCaCertificate(caCertPath: string | undefined): void {
-   if (!caCertPath) { caCertPath = defaultCaCertPath; }
+export function installCaCertificate(caCertPath: string = defaultCaCertPath): void {
    const command = getInstallCommand(caCertPath);
    const execSync = require("child_process").execSync;
    try {
