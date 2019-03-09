@@ -27,7 +27,7 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[0].parameters[0].name, "first", "parameter name not created properly");
             assert.strictEqual(j.functions[0].parameters[0].description, "the first number", "description not created properly");
             assert.strictEqual(j.functions[0].parameters[0].type, "number", "type not created properly");
-            assert.strictEqual(j.functions[0].parameters[0].optional, false, "optional not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].optional, undefined, "optional not created properly");
             assert.strictEqual(j.functions[0].result.type, "number", "result type not created properly");
             assert.strictEqual(j.functions[0].options.volatile, true, "options volatile not created properly");
             assert.strictEqual(j.functions[0].options.stream, true, "options stream not created properly");
@@ -85,7 +85,7 @@ describe("verify json created in file by javascript", function() {
             assert.strictEqual(j.functions[0].parameters[0].name, "number1", "parameter name not created properly");
             assert.strictEqual(j.functions[0].parameters[0].description, "first number", "description not created properly");
             assert.strictEqual(j.functions[0].parameters[0].type, "number", "type not created properly");
-            assert.strictEqual(j.functions[0].parameters[0].optional, false, "optional not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].optional, undefined, "optional not created properly");
             assert.strictEqual(j.functions[0].result.type, "number", "result type not created properly");
             assert.strictEqual(j.functions[1].parameters[0].type, "boolean", "type boolean not created properly");
             assert.strictEqual(j.functions[1].result.type, "boolean", "result type boolean not created properly");
