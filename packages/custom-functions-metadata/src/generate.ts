@@ -507,6 +507,11 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             delete pMetadataItem.dimensionality;
         }
 
+        // only include optional if true
+        if (!pMetadataItem.optional) {
+            delete pMetadataItem.optional;
+        }
+
         parameterMetadata.push(pMetadataItem);
 
     })
