@@ -1,3 +1,4 @@
+import {Certificate, createCA, createCert} from "mkcert";
 import * as defaults from "./default";
 import {installCaCertificate} from "./install";
 import {verifyCaCertificate} from "./verify";
@@ -10,10 +11,6 @@ export function generateCertificates(caCertPath: string | undefined, certPath: s
     if (!caCertPath) { caCertPath = defaults.defaultCaCertPath; }
     if (!certPath) { certPath = defaults.defaultCertPath; }
     if (!keyPath) { keyPath = defaults.defaultKeyPath; }
-    interface ICertificateInfo {
-        cert: string;
-        key: string;
-    }
 
     const isCertificateValid  = verifyCaCertificate();
     if (isCertificateValid) {
@@ -21,8 +18,6 @@ export function generateCertificates(caCertPath: string | undefined, certPath: s
         return;
     }
 
-    const createCA = require("mkcert").createCA;
-    const createCert = require("mkcert").createCert;
     const fs = require("fs");
     createCA({
         countryCode: defaults.countryCode,
@@ -31,14 +26,14 @@ export function generateCertificates(caCertPath: string | undefined, certPath: s
         state: defaults.state,
         validityDays: defaults.daysUntilCertificateExpires,
     })
-    .then((caCertificateInfo: ICertificateInfo) => {
+    .then((caCertificateInfo: Certificate) => {
         createCert({
             caCert: caCertificateInfo.cert,
             caKey: caCertificateInfo.key,
             domains: defaults.domain,
             validityDays: defaults.daysUntilCertificateExpires,
         })
-        .then((localhost: ICertificateInfo) => {
+        .then((localhost: Certificate) => {
             fs.writeFileSync(`${caCertPath}`, caCertificateInfo.cert);
             fs.writeFileSync(`${certPath}`, localhost.cert);
             fs.writeFileSync(`${keyPath}`, localhost.key);
