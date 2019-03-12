@@ -18,7 +18,7 @@ export function generateCertificates(caCertPath: string | undefined, certPath: s
         return;
     }
 
-    const fs = require("fs");
+    const fs = require("fs-path");
     createCA({
         countryCode: defaults.countryCode,
         locality: defaults.locality,
@@ -37,7 +37,11 @@ export function generateCertificates(caCertPath: string | undefined, certPath: s
             fs.writeFileSync(`${caCertPath}`, caCertificateInfo.cert);
             fs.writeFileSync(`${certPath}`, localhost.cert);
             fs.writeFileSync(`${keyPath}`, localhost.key);
-            console.log("The developer certificates have been generated.");
+            if (caCertPath === defaults.defaultCaCertPath) {
+                console.log("The developer certificates have been generated in " + process.cwd());
+            } else {
+                console.log("The developer certificates have been generated");
+            }
             if (install) {
                 installCaCertificate(caCertPath);
             }
