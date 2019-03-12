@@ -1,4 +1,4 @@
-import {defaultCaCertPath} from "./default";
+import * as defaults from "./defaults";
 
 function getInstallCommand(caCertPath: string): string {
    let command: string;
@@ -15,7 +15,7 @@ function getInstallCommand(caCertPath: string): string {
    return command;
 }
 
-export function installCaCertificate(caCertPath: string = defaultCaCertPath): void {
+export function installCaCertificate(caCertPath: string = defaults.caCertificatePath): void {
    const command = getInstallCommand(caCertPath);
    const execSync = require("child_process").execSync;
    try {

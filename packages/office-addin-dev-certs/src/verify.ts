@@ -1,4 +1,4 @@
-import {certificateName} from "./default";
+import {certificateName} from "./defaults";
 
 function getVerifyCommand(): string {
     switch (process.platform) {

@@ -1,5 +1,5 @@
-import {Certificate, createCA, createCert} from "mkcert";
-import * as defaults from "./default";
+import * as mkcert from "mkcert";
+import * as defaults from "./defaults";
 import {installCaCertificate} from "./install";
 import {verifyCaCertificate} from "./verify";
 
@@ -7,10 +7,7 @@ import {verifyCaCertificate} from "./verify";
    if yes, then this operation will be no op.
    else, new certificates are generated and installed if --install was provided.
 */
-export function generateCertificates(caCertPath: string | undefined, certPath: string | undefined, keyPath: string | undefined, install: boolean = false): void {
-    if (!caCertPath) { caCertPath = defaults.defaultCaCertPath; }
-    if (!certPath) { certPath = defaults.defaultCertPath; }
-    if (!keyPath) { keyPath = defaults.defaultKeyPath; }
+export async function generateCertificates(caCertificatePath: string = defaults.caCertificatePath, certPath: string = defaults.localhostCertificatePath, keyPath: string = defaults.localhostKeyPath, install: boolean = false) {
 
     const isCertificateValid  = verifyCaCertificate();
     if (isCertificateValid) {
@@ -19,34 +16,63 @@ export function generateCertificates(caCertPath: string | undefined, certPath: s
     }
 
     const fs = require("fs-path");
-    createCA({
-        countryCode: defaults.countryCode,
-        locality: defaults.locality,
-        organization: defaults.certificateName,
-        state: defaults.state,
-        validityDays: defaults.daysUntilCertificateExpires,
-    })
-    .then((caCertificateInfo: Certificate) => {
-        createCert({
-            caCert: caCertificateInfo.cert,
-            caKey: caCertificateInfo.key,
-            domains: defaults.domain,
-            validityDays: defaults.daysUntilCertificateExpires,
-        })
-        .then((localhost: Certificate) => {
-            fs.writeFileSync(`${caCertPath}`, caCertificateInfo.cert);
-            fs.writeFileSync(`${certPath}`, localhost.cert);
-            fs.writeFileSync(`${keyPath}`, localhost.key);
-            if (caCertPath === defaults.defaultCaCertPath) {
-                console.log("The developer certificates have been generated in " + process.cwd());
-            } else {
-                console.log("The developer certificates have been generated");
-            }
-            if (install) {
-                installCaCertificate(caCertPath);
-            }
-        })
-        .catch((err: any) => console.error(err));
-    })
-    .catch((err: any) => console.error(err));
+    try {
+        const caCertificate= await mkcert.createCA({
+                                countryCode: defaults.countryCode,
+                                locality: defaults.locality,
+                                organization: defaults.certificateName,
+                                state: defaults.state,
+                                validityDays: defaults.daysUntilCertificateExpires,
+                            });
+        const localhostCertificate = await mkcert.createCert({
+                                            caCert: caCertificate.cert,
+                                            caKey: caCertificate.key,
+                                            domains: defaults.domain,
+                                            validityDays: defaults.daysUntilCertificateExpires,
+                                        });
+        fs.writeFileSync(`${caCertificatePath}`, caCertificate.cert);
+        fs.writeFileSync(`${certPath}`, localhostCertificate.cert);
+        fs.writeFileSync(`${keyPath}`, localhostCertificate.key);
+        if (caCertificatePath === defaults.caCertificatePath) {
+            console.log("The developer certificates have been generated in " + process.cwd());
+        } else {
+            console.log("The developer certificates have been generated");
+        }
+        if (install) {
+            installCaCertificate(caCertificatePath);
+        }
+     } catch (err) {
+        console.error(err);
+     }
+
+    // mkcert.createCA({
+    //     countryCode: defaults.countryCode,
+    //     locality: defaults.locality,
+    //     organization: defaults.certificateName,
+    //     state: defaults.state,
+    //     validityDays: defaults.daysUntilCertificateExpires,
+    // })
+    // .then((caCertificateInfo: mkcert.Certificate) => {
+    //     mkcert.createCert({
+    //         caCert: caCertificateInfo.cert,
+    //         caKey: caCertificateInfo.key,
+    //         domains: defaults.domain,
+    //         validityDays: defaults.daysUntilCertificateExpires,
+    //     })
+    //     .then((localhost: mkcert.Certificate) => {
+    //         fs.writeFileSync(`${caCertificatePath}`, caCertificateInfo.cert);
+    //         fs.writeFileSync(`${certPath}`, localhost.cert);
+    //         fs.writeFileSync(`${keyPath}`, localhost.key);
+    //         if (caCertificatePath === defaults.caCertificatePath) {
+    //             console.log("The developer certificates have been generated in " + process.cwd());
+    //         } else {
+    //             console.log("The developer certificates have been generated");
+    //         }
+    //         if (install) {
+    //             installCaCertificate(caCertificatePath);
+    //         }
+    //     })
+    //     .catch((err: any) => console.error(err));
+    // })
+    // .catch((err: any) => console.error(err));
 }

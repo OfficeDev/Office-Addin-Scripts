@@ -1,4 +1,4 @@
-import {certificateName} from "./default";
+import {certificateName} from "./defaults";
 
 function getUninstallCommand(): string {
    switch (process.platform) {
