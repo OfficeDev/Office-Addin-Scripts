@@ -138,7 +138,7 @@ async function closeDesktopApplication(application: string): Promise <void> {
             processName = "Winword";
             break;
         default:
-            throw new Error(`${application} is not a valid Office desktop application`);
+            throw new Error(`${application} is not a valid Office desktop application.`);
     }
 
     try {
@@ -158,7 +158,7 @@ async function closeDesktopApplication(application: string): Promise <void> {
 }
 
 async function _getProcessId(processName: string): Promise<number> {
-    return new Promise<number>(async function (resolve) {
+    return new Promise<number>(async function (resolve, reject) {
         cps.get(function (err: Error, processes: any) {
             try {
                 const p = processes.filter(function (p: any) {
@@ -167,7 +167,7 @@ async function _getProcessId(processName: string): Promise<number> {
                 resolve(p.length > 0 ? p[0].pid : undefined);
             }
             catch (err) {
-                console.log(`Unable to get list of processes: ${err}`);
+                reject(err);
             }
         });
     });
