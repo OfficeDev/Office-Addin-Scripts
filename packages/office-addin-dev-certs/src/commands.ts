@@ -1,36 +1,36 @@
 import * as commander from "commander";
-import {generateCertificates} from "./generate";
-import {installCaCertificate} from "./install";
-import {uninstallCaCertificate} from "./uninstall";
-import {verifyCaCertificate} from "./verify";
+import * as generate from "./generate";
+import * as install from "./install";
+import * as uninstall from "./uninstall";
+import * as verify from "./verify";
 
-export async function generate(command: commander.Command) {
+export async function generateCertificates(command: commander.Command) {
     try {
-        await generateCertificates(command.caCert, command.cert, command.key, command.install);
+        await generate.generateCertificates(command.caCert, command.cert, command.key, command.install);
     } catch (err) {
         console.error(`Unable to generate self-signed dev certificates.\n${err}`);
     }
 }
 
-export async function install(command: commander.Command) {
+export async function installCaCertificate(command: commander.Command) {
     try {
-        await installCaCertificate(command.caCert);
+        await install.installCaCertificate(command.caCert);
     } catch (err) {
         console.error(`Unable to install the CA certificate.\n${err}`);
     }
 }
 
-export async function verify(command: commander.Command) {
+export async function verifyCaCertificate(command: commander.Command) {
     try {
-        await verifyCaCertificate();
+        await verify.verifyCaCertificate();
     } catch (err) {
         console.error(`Unable to verify CA certificates.\n${err}`);
     }
 }
 
-export async function uninstall(command: commander.Command) {
+export async function uninstallCaCertificate(command: commander.Command) {
     try {
-        await uninstallCaCertificate();
+        await uninstall.uninstallCaCertificate();
     } catch (err) {
         console.error(`Unable to uninstall CA certificates.\n${err}`);
     }

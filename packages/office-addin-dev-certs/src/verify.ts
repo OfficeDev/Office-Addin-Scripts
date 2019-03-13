@@ -1,11 +1,11 @@
-import {certificateName} from "./defaults";
+import * as defaults from "./defaults";
 
 function getVerifyCommand(): string {
     switch (process.platform) {
        case "win32":
-          return `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=${certificateName}*' | Format-List"`;
+          return `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=${defaults.certificateName}*' | Format-List"`;
        case "darwin": // macOS
-          return `sudo security find-certificate -c "${certificateName}"`;
+          return `sudo security find-certificate -c "${defaults.certificateName}"`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }

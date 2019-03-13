@@ -1,11 +1,11 @@
-import {certificateName} from "./defaults";
+import * as defaults from "./defaults";
 
 function getUninstallCommand(): string {
    switch (process.platform) {
       case "win32":
-         return `powershell -command "Get-ChildItem cert:\\CurrentUser\\Root | where { $_.IssuerName.Name -like '*CN=${certificateName}*' } |  Remove-Item"`;
+         return `powershell -command "Get-ChildItem cert:\\CurrentUser\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`;
       case "darwin": // macOS
-         return `sudo security delete-certificate -c "${certificateName}"`;
+         return `sudo security delete-certificate -c "${defaults.certificateName}"`;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
    }
