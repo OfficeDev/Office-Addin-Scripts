@@ -1,7 +1,7 @@
 {
     "name": "office-addin-test-server",
     "version": "0.0.0",
-    "description": "Create test server that facilitates communication between taskpane add-in and mocha tests.",
+    "description": "Creates test server that facilitates communication between taskpane add-in and mocha tests.",
     "main": "./lib/main.js",
     "scripts": {
         "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",

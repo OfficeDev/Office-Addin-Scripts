@@ -13,14 +13,12 @@ export async function pingTestServer(portNumber: number | undefined): Promise<Ob
         }
 
         const serverResponse: any = {};
-        const serverStatus: string = "status";
-        const platform: string = "platform";
         const xhr = new XMLHttpRequest();
         const pingUrl: string = `https://localhost:${port}/ping`;
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                serverResponse[serverStatus] = xhr.status;
-                serverResponse[platform] = xhr.responseText;
+                serverResponse["status"] = xhr.status;
+                serverResponse["platform"] = xhr.responseText;
                 resolve(serverResponse);
             }
             else if (xhr.readyState === 4 && xhr.status === 0 && xhr.statusText.message === "XHR error") {
@@ -61,7 +59,7 @@ export async function sideloadDesktopApp(application: string): Promise<boolean> 
     return new Promise<boolean>(async function (resolve, reject) {
 
         if (process.platform !== 'win32' && process.platform !== 'darwin') {
-            reject();
+            reject(false);
         }
 
         try {
@@ -139,9 +137,8 @@ async function closeDesktopApplication(application: string): Promise <void> {
         case "word":
             processName = "Winword";
             break;
-        // Not sure yet what process names are for Visio or Proect
         default:
-            console.log(`${application} is not a valid Office desktop application`)
+            throw new Error(`${application} is not a valid Office desktop application`);
     }
 
     try {
@@ -170,7 +167,7 @@ async function _getProcessId(processName: string): Promise<number> {
                 resolve(p.length > 0 ? p[0].pid : undefined);
             }
             catch (err) {
-                console.log("Unable to get list of processes");
+                console.log(`Unable to get list of processes: ${err}`);
             }
         });
     });

@@ -1,7 +1,7 @@
 {
     "name": "office-addin-test-helpers",
     "version": "0.0.0",
-    "description": "Provides test helpers for automating validation of Office Addins.",
+    "description": "Provides test helpers for automating validation of Office Add-ins.",
     "main": "./lib/main.js",
     "scripts": {
         "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
