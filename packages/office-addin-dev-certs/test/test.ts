@@ -11,6 +11,7 @@ import * as verify from "../src/verify";
 describe("office-addin-dev-certs", function() {
     const sinon = require("sinon");
     const mkcert = require("mkcert");
+    const fs = require("fs");
     let sandbox = sinon.createSandbox();
     const testCertificateDir = "certs";
     const testCaCertificatePath = path.join(testCertificateDir, "ca.crt");
@@ -39,20 +40,28 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").rejects(cert);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
+            try{
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
+                // expecting exception
+                assert.strictEqual(0, 1);
+            } catch(err){
+                assert.strictEqual(err, cert);
+            }
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 0);
         });
         it("certificate not installed case", async function() {
             const verifyCertificate = sandbox.fake.returns(false);
             const createCert = sandbox.fake();
+            const writeSync = sandbox.fake();
             const cert = {cert: "cert", key: "key"};
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").resolves(cert);
-            sandbox.stub(mkcert, "createCert").callsFake(createCert);
+            sandbox.stub(mkcert, "createCert").resolves(cert);
+            sandbox.stub(fs, "writeSync").callsFake(writeSync);
             await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
             assert.strictEqual(verifyCertificate.callCount, 1);
-            assert.strictEqual(createCert.callCount, 1);
+            assert.strictEqual(writeSync.callCount, 3);
         });
     });
     describe("install-tests", function() {

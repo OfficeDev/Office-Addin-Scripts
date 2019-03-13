@@ -14,21 +14,21 @@ commander
     .option("--key <key-path>", `Specifies the path where the private key for the SSL certificate file is written. Default: ${defaults.localhostKeyPath}`)
     .option("--install", `Install the generated CA certificate`)
     .description(`Generate an SSL certificate for localhost and a CA certificate which has issued it.`)
-    .action(commands.generateCertificates);
+    .action(commands.generate);
 
 commander
     .command("install <ca-cert-path>")
     .description(`Install the CA certificate.`)
-    .action(commands.installCaCertificate);
+    .action(commands.install);
 
 commander
     .command("verify")
     .description(`Verify the CA certificate.`)
-    .action(commands.verifyCaCertificate);
+    .action(commands.verify);
 
 commander
     .command("uninstall")
     .description(`Uninstall the certificate.`)
-    .action(commands.uninstallCaCertificate);
+    .action(commands.uninstall);
 
 commander.parse(process.argv);
