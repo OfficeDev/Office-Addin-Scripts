@@ -77,7 +77,7 @@ describe("office-addin-dev-certs", function() {
             try {
                 await installCaCertificate(testCaCertificatePath);
             } catch (err) {
-                assert.strictEqual(err.message, "test error");
+                assert.strictEqual(err.message, "Unable to install the CA certificate. test error");
             }
         });
         it("install success case", async function() {
@@ -105,7 +105,7 @@ describe("office-addin-dev-certs", function() {
             try {
                 await uninstallCaCertificate();
             } catch (err) {
-                assert.strictEqual(err.message, "test error");
+                assert.strictEqual(err.message, "Unable to uninstall the CA certificate. test error");
             }
         });
         it("install success case", async function() {

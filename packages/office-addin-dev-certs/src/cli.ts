@@ -18,7 +18,7 @@ commander
     .action(commands.generate);
 
 commander
-    .command("install <ca-cert-path>")
+    .command("install <ca-cert>")
     .description(`Install the CA certificate.`)
     .action(commands.install);
 

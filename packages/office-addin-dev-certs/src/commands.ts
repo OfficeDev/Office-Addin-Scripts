@@ -54,9 +54,9 @@ export async function generate(command: commander.Command) {
     }
 }
 
-export async function install(command: commander.Command) {
+export async function install(caCertificatePath: string, command: commander.Command) {
     try {
-        await installCaCertificate(command.caCert);
+        await installCaCertificate(caCertificatePath);
     } catch (err) {
         console.error(`Unable to install the CA certificate.\n${err}`);
     }

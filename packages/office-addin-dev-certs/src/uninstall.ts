@@ -15,9 +15,10 @@ export function uninstallCaCertificate(): void {
    const command = getUninstallCommand();
    const execSync = require("child_process").execSync;
    try {
+      console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"`);
       execSync(command, {stdio : "pipe" });
-      console.log("Successfully removed certificate from trusted store");
+      console.log(`The CA certificate was uninstalled`);
    } catch (error) {
-      throw new Error(error.stderr.toString());
+      throw new Error(`Unable to uninstall the CA certificate. ${error.stderr.toString()}`);
    }
 }

@@ -1,13 +1,13 @@
 import * as defaults from "./defaults";
 
-function getInstallCommand(caCertPath: string): string {
+function getInstallCommand(caCertificatePath: string): string {
    let command: string;
    switch (process.platform) {
       case "win32":
-         command = `powershell Import-Certificate -CertStoreLocation cert:\\CurrentUser\\Root ${caCertPath}`;
+         command = `powershell Import-Certificate -CertStoreLocation cert:\\CurrentUser\\Root ${caCertificatePath}`;
          break;
       case "darwin": // macOS
-         command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${caCertPath}`;
+         command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${caCertificatePath}`;
          break;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
@@ -15,14 +15,14 @@ function getInstallCommand(caCertPath: string): string {
    return command;
 }
 
-export function installCaCertificate(caCertPath: string = defaults.caCertificatePath): void {
-   const command = getInstallCommand(caCertPath);
+export function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath): void {
+   const command = getInstallCommand(caCertificatePath);
    const execSync = require("child_process").execSync;
    try {
       console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"`);
       execSync(command, {stdio : "pipe" });
-      console.log(`Successfully installed certificate to trusted store`);
+      console.log(`The CA certificate was installed`);
    } catch (error) {
-      throw new Error(error.stderr.toString());
+      throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
    }
 }
