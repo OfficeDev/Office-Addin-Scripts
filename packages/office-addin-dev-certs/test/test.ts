@@ -29,7 +29,7 @@ describe("office-addin-dev-certs", function() {
             const createCA = sandbox.fake();
             sandbox.stub(mkcert, "createCA").callsFake(createCA);
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCA.callCount, 0);
         });
@@ -40,11 +40,11 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").rejects(cert);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
-            try{
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
+            try {
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
                 // expecting exception
                 assert.strictEqual(0, 1);
-            } catch(err){
+            } catch (err) {
                 assert.strictEqual(err, cert);
             }
             assert.strictEqual(verifyCertificate.callCount, 1);
@@ -59,7 +59,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").resolves(cert);
             sandbox.stub(fs, "writeSync").callsFake(writeSync);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, false);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(writeSync.callCount, 3);
         });
