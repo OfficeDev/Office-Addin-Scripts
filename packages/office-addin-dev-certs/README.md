@@ -1,6 +1,6 @@
 # Office-Addin-dev-certs
 
-Provides the ability to start and stop debugging Office Add-ins.
+Provides the ability to manage certificates for development server using https://localhost.
 
 ## Command-Line Interface
 * [generate](#generate)
