@@ -44,35 +44,4 @@ export async function generateCertificates(caCertificatePath: string = defaults.
      } catch (err) {
         console.error(err);
      }
-
-    // mkcert.createCA({
-    //     countryCode: defaults.countryCode,
-    //     locality: defaults.locality,
-    //     organization: defaults.certificateName,
-    //     state: defaults.state,
-    //     validityDays: defaults.daysUntilCertificateExpires,
-    // })
-    // .then((caCertificateInfo: mkcert.Certificate) => {
-    //     mkcert.createCert({
-    //         caCert: caCertificateInfo.cert,
-    //         caKey: caCertificateInfo.key,
-    //         domains: defaults.domain,
-    //         validityDays: defaults.daysUntilCertificateExpires,
-    //     })
-    //     .then((localhost: mkcert.Certificate) => {
-    //         fs.writeFileSync(`${caCertificatePath}`, caCertificateInfo.cert);
-    //         fs.writeFileSync(`${certPath}`, localhost.cert);
-    //         fs.writeFileSync(`${keyPath}`, localhost.key);
-    //         if (caCertificatePath === defaults.caCertificatePath) {
-    //             console.log("The developer certificates have been generated in " + process.cwd());
-    //         } else {
-    //             console.log("The developer certificates have been generated");
-    //         }
-    //         if (install) {
-    //             installCaCertificate(caCertificatePath);
-    //         }
-    //     })
-    //     .catch((err: any) => console.error(err));
-    // })
-    // .catch((err: any) => console.error(err));
 }
