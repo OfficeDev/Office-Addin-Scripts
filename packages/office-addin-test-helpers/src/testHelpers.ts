@@ -1,6 +1,7 @@
 
 import * as childProcess from "child_process";
 import * as cps from "current-processes";
+
 let devServerStarted: boolean = false;
 let port: number = 8080;
 var subProcess: any;
