@@ -32,6 +32,10 @@ Path where the SSL certificate is written. Default ./localhost.crt.
 
 Path where the private key for the SSL certificate is written. Default ./localhost.key.
 
+`--days <days>`
+
+Specifies the validity of CA certificate in days.
+
 `--install`
 
 Install the generated CA certificate.

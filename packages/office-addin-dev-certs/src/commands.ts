@@ -6,7 +6,7 @@ import {verifyCaCertificate} from "./verify";
 
 export async function generate(command: commander.Command) {
     try {
-        await generateCertificates(command.caCert, command.cert, command.key, command.install);
+        await generateCertificates(command.caCert, command.cert, command.key, command.days, command.install);
     } catch (err) {
         console.error(`Unable to generate self-signed dev certificates.\n${err}`);
     }

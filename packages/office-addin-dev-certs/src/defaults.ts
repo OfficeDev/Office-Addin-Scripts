@@ -11,7 +11,7 @@ export const localhostKeyPath = path.join(".", localhostKeyFileName);
 // Default certificate details
 export const certificateName = "Developer CA for Microsoft Office Add-ins";
 export const countryCode = "US";
-export const daysUntilCertificateExpires = 365;
+export const daysUntilCertificateExpires = 30;
 export const domain = ["127.0.0.1", "localhost"];
 export const locality = "Redmond";
 export const state = "WA";
