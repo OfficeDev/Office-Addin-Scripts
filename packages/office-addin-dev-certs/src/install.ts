@@ -19,8 +19,9 @@ export function installCaCertificate(caCertPath: string = defaults.caCertificate
    const command = getInstallCommand(caCertPath);
    const execSync = require("child_process").execSync;
    try {
+      console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"`);
       execSync(command, {stdio : "pipe" });
-      console.log("Successfully installed certificate to trusted store");
+      console.log(`Successfully installed certificate to trusted store`);
    } catch (error) {
       throw new Error(error.stderr.toString());
    }
