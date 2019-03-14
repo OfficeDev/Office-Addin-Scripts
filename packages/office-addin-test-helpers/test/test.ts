@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import * as mocha from "mocha";
 import * as testHelper from "../src/testHelpers";
-import { TestServer } from "office-addin-test-server";
+import { TestServer } from "./../../office-addin-test-server"
 const port: number = 8080;
 const testServer = new TestServer(port);
 const promiseStartTestServer = testServer.startTestServer(true /* mochaTest */);
