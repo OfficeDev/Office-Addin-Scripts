@@ -21,6 +21,7 @@
     "child_process": "^1.0.2",
     "commander": "^2.18.0",
     "fs": "0.0.1-security",
+    "office-addin-cli": "^0.0.0",
     "office-addin-manifest": "^1.2.4",
     "whatwg-url": "^7.0.0",
     "winreg": "^1.2.4"
