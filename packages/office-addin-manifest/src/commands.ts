@@ -3,6 +3,7 @@
 
 import * as commnder from "commander";
 import * as manifestInfo from "./manifestInfo";
+import { logErrorMessage } from "office-addin-cli";
 
 function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
@@ -18,10 +19,6 @@ export async function info(manifestPath: string) {
   } catch (err) {
     logErrorMessage(err);
   }
-}
-
-function logErrorMessage(err: any) {
-  console.error(`Error: ${err instanceof Error ? err.message : err}`);
 }
 
 function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestInfo) {

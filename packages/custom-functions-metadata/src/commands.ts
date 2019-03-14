@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import { logErrorMessage } from "office-addin-cli";
 import * as generateMetadata from "./generate";
 
 export async function generate(inputFile: string, outputFile: string) {
@@ -21,8 +22,4 @@ export async function generate(inputFile: string, outputFile: string) {
   } catch (err) {
     logErrorMessage(err);
   }
-}
-
-function logErrorMessage(err: any) {
-  console.error(`Error: ${err instanceof Error ? err.message : err}`);
 }
