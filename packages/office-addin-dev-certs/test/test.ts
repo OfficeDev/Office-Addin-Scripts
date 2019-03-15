@@ -3,8 +3,7 @@ import * as childProcess from "child_process";
 import * as fsExtra from "fs-extra";
 import * as mocha from "mocha";
 import * as path from "path";
-import {generateCertificates} from "../src/generate";
-import {installCaCertificate} from "../src/install";
+import * as install from "../src/install";
 import * as uninstall from "../src/uninstall";
 import * as verify from "../src/verify";
 
@@ -30,7 +29,7 @@ describe("office-addin-dev-certs", function() {
             const createCA = sandbox.fake();
             sandbox.stub(mkcert, "createCA").callsFake(createCA);
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+            await install.generateAndInstallCertificate(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCA.callCount, 0);
         });
@@ -41,7 +40,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(fsExtra, "ensureDirSync").throws(error);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await install.generateAndInstallCertificate(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -58,7 +57,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(mkcert, "createCA").rejects(error);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await install.generateAndInstallCertificate(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -75,7 +74,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").rejects(error);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await install.generateAndInstallCertificate(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -94,7 +93,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(fs, "writeSync").throws(error);
 
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await install.generateAndInstallCertificate(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -105,46 +104,16 @@ describe("office-addin-dev-certs", function() {
         });
         it("certificate not installed case", async function() {
             const verifyCertificate = sandbox.fake.returns(false);
-            const createCert = sandbox.fake();
+            const execSync = sandbox.fake();
             const writeSync = sandbox.fake();
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").resolves(cert);
             sandbox.stub(fs, "writeSync").callsFake(writeSync);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+            sandbox.stub(childProcess, "execSync").callsFake(execSync);
+            await install.generateAndInstallCertificate(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(writeSync.callCount, 3);
-        });
-    });
-    describe("install-tests", function() {
-        const uninstallCaCertificate = sandbox.fake();
-        beforeEach(function() {
-            sandbox = sinon.createSandbox();
-        });
-        afterEach(function() {
-            sandbox.restore();
-        });
-        it("execSync fail case", async function() {
-            const error = {stderr : "test error"};
-            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
-            sandbox.stub(childProcess, "execSync").throws(error);
-            try {
-                await installCaCertificate(testCaCertificatePath);
-            } catch (err) {
-                assert.strictEqual(err.message, "Unable to install the CA certificate. test error");
-            }
-        });
-        it("install success case", async function() {
-            const execSync = sandbox.fake();
-            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
-            sandbox.stub(childProcess, "execSync").callsFake(execSync);
-            try {
-                await installCaCertificate(testCaCertificatePath);
-                assert.strictEqual(execSync.callCount, 1);
-            } catch (err) {
-                // not expecting any exception
-                assert.strictEqual(0, 1);
-            }
         });
     });
     describe("uninstall-tests", function() {

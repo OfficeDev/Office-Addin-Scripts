@@ -1,7 +1,6 @@
 import * as commander from "commander";
 import {logErrorMessage, parseNumber} from "office-addin-cli";
-import {generateCertificates} from "./generate";
-import {installCaCertificate} from "./install";
+import {generateAndInstallCertificate} from "./install";
 import {uninstallCaCertificate} from "./uninstall";
 import {verifyCaCertificate} from "./verify";
 
@@ -18,20 +17,10 @@ function parseDays(optionValue: any): number | undefined {
     return days;
 }
 
-export async function generate(command: commander.Command) {
+export async function install(command: commander.Command) {
     try {
         const days =  parseDays(command.days);
-        await generateCertificates(command.caCert, command.cert, command.key, days, command.install);
-    } catch (err) {
-        logErrorMessage(err);
-    }
-}
-
-export async function install(caCertificatePath: string, command: commander.Command) {
-    try {
-        // uninstall previous CA certificate, if any
-        await  uninstallCaCertificate();
-        await installCaCertificate(caCertificatePath);
+        await generateAndInstallCertificate(command.caCert, command.cert, command.key, days);
     } catch (err) {
         logErrorMessage(err);
     }
