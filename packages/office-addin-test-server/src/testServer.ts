@@ -1,15 +1,16 @@
 import * as cors from "cors";
 import * as express from "express";
 import * as fs from "fs";
-const path = require("path");
+import * as path from "path";
+import * as https from "https";
 
 export class TestServer {
     m_jsonData: any;
     m_port: number;
-    m_testServerStarted;
-    m_app: any;
+    m_testServerStarted: boolean;
+    m_app: express.Express;
     m_resultsPromise: Promise<JSON>;
-    m_server: any;
+    m_server: https.Server;
 
     constructor(port: number) {
         this.m_app = express();
@@ -18,7 +19,7 @@ export class TestServer {
         this.m_resultsPromise = undefined;
         this.m_testServerStarted = false;
     }
-
+    
     public async startTestServer(mochaTest: boolean = false): Promise<any>{
         return new Promise<boolean>(async (resolve, reject) => {
             if (mochaTest) {
@@ -31,31 +32,29 @@ export class TestServer {
 
             // listen for 'ping'
             this.m_app.use(cors());
-            this.m_app.get("/ping", function (req: any, res: any, next: any) {
-                res.send(process.platform === "win32" ? "Win32" : "Mac");
+            this.m_app.get("/ping", function (req: any, res: any, next: any) {                
+                res.send(this.getPlatformName());
             });
 
             // listen for posting of test results
             this.m_resultsPromise = new Promise<JSON>(async (resolveResults) => {
-                this.m_app.post("/results", async function (req: any, res: any) {
+                this.m_app.post("/results", async (req: any, res: any) => {
                     res.send("200");
                     this.m_jsonData = JSON.parse(req.query.data);
                     resolveResults(this.m_jsonData);
-                }.bind(this));
-
+                });
             });
     
-            const https = require("https");
-            this.m_server = https.createServer(options,  this.m_app);
+            this.m_server = https.createServer(options, this.m_app);
     
             // start listening on specified port
             try {
-                this.m_server.listen(this.m_port, function () {
+                this.m_server.listen(this.m_port, () => {
                     this.m_testServerStarted = true;
                     resolve(true);
-                }.bind(this));
+                });
             } catch (err) {
-                reject(new Error(`Unable to start test server. \n${err}`));
+                reject(new Error(`Unable to start test server.\n${err}`));
             }
         });
     }
@@ -68,7 +67,7 @@ export class TestServer {
                     this.m_testServerStarted = false;
                     resolve(true);
                 } catch (err) {
-                    reject(new Error(`Unable to stop test server. \n${err}`));
+                    reject(new Error(`Unable to stop test server.\n${err}`));
                 }
             } else {
                 // test server not started
@@ -87,5 +86,16 @@ export class TestServer {
     
     public getTestServerPort(): number {
         return this.m_port;
+    }
+
+    public getPlatformName(): string {
+        switch (process.platform) {
+            case "win32":
+                return "Windows";
+            case "darwin":
+                return "macOS";
+            default:
+                return process.platform;
+        }
     }
 }

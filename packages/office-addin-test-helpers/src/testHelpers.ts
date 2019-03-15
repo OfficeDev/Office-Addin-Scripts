@@ -7,8 +7,8 @@ let port: number = 8080;
 var subProcess: any;
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-export async function pingTestServer(portNumber: number | undefined): Promise<Object> {
-    return new Promise<Object>(async (resolve, reject) => {
+export async function pingTestServer(portNumber: number | undefined): Promise<object> {
+    return new Promise<object>(async (resolve, reject) => {
         if (portNumber !== undefined) {
             port = portNumber;
         }
@@ -31,7 +31,7 @@ export async function pingTestServer(portNumber: number | undefined): Promise<Ob
     });
 }
 
-export async function sendTestResults(data: Object, portNumber: number | undefined): Promise<boolean> {
+export async function sendTestResults(data: object, portNumber: number | undefined): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
         if (portNumber !== undefined) {
             port = portNumber;

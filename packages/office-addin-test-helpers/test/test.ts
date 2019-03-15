@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import * as mocha from "mocha";
 import * as testHelper from "../src/testHelpers";
-import { TestServer } from "office-addin-test-server";
+import { TestServer } from "../../office-addin-test-server";
 const port: number = 8080;
 const testServer = new TestServer(port);
 const promiseStartTestServer = testServer.startTestServer(true /* mochaTest */);
@@ -16,7 +16,7 @@ describe("Start test server, validate pingTestServer and sendTestResults methods
             assert.equal(startTestServer, true);
         });
         it("Test server should have responded to ping", async function () {
-            const testServerResponse: any = await testHelper.pingTestServer(port);
+            const testServerResponse: object = await testHelper.pingTestServer(port);
             assert.equal(testServerResponse["status"], 200);
             assert.equal(testServerResponse["platform"], process.platform === "win32" ? "Win32" : "Mac");
         });
