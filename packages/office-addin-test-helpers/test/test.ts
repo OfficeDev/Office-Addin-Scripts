@@ -18,7 +18,7 @@ describe("Start test server, validate pingTestServer and sendTestResults methods
         it("Test server should have responded to ping", async function () {
             const testServerResponse: object = await testHelper.pingTestServer(port);
             assert.equal(testServerResponse["status"], 200);
-            assert.equal(testServerResponse["platform"], process.platform === "win32" ? "Win32" : "Mac");
+            assert.equal(testServerResponse["platform"], testServer.getPlatformName());
         });
         it("Send data should have succeeded", async function () {
             const sendData: boolean = await _sendTestData();

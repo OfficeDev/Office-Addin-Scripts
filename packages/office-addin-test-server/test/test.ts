@@ -1,9 +1,10 @@
 import * as assert from "assert";
 import * as mocha from "mocha";
-import * as testHelper from "office-addin-test-helpers";
+import * as testHelper from "../../office-addin-test-helpers"
 import { TestServer } from "../src/testServer";
 const port: number = 8080;
 const testServer = new TestServer(port);
+const platformName = testServer.getPlatformName();
 const promiseStartTestServer = testServer.startTestServer(true /* mochaTest */);
 const testKey: string = "TestString";
 const testValue: string = "Office-Addin-Test-Infrastructure";
@@ -28,13 +29,8 @@ describe("End-to-end validation of test server", function() {
         it("Test server should have responded to ping", async function () {
             testServerResponse = await testHelper.pingTestServer(port);
             assert.equal(testServerResponse != undefined, true);
-        });
-        it("Test server status should be '200'", async function () {
             assert.equal(testServerResponse["status"], 200);
-            assert.equal(testServerResponse["platform"], process.platform === "win32" ? "Win32" : "Mac");
-        });
-        it("Test server platform should reflect correct operating system", async function () {
-            assert.equal(testServerResponse["platform"], process.platform === "win32" ? "Win32" : "Mac");
+            assert.equal(testServerResponse["platform"], platformName);
         });
     });
     describe("Send data to server and get results", function () {

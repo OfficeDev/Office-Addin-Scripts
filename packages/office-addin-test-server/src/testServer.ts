@@ -29,11 +29,12 @@ export class TestServer {
             const key = fs.readFileSync(path.resolve(__dirname, '../certs/server.key'));
             const cert = fs.readFileSync(path.resolve(__dirname, '../certs/server.crt'));
             const options = { key: key, cert: cert };
+            const platformName = this.getPlatformName();
 
             // listen for 'ping'
             this.m_app.use(cors());
             this.m_app.get("/ping", function (req: any, res: any, next: any) {                
-                res.send(this.getPlatformName());
+                res.send(platformName);
             });
 
             // listen for posting of test results
