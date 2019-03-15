@@ -13,7 +13,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-debugging": "./lib/cli.js"
+    "office-addin-dev-certs": "./lib/cli.js"
   },
   "keywords": [
     "Office"
@@ -21,10 +21,14 @@
   "dependencies": {
     "child_process": "^1.0.2",
     "commander": "^2.19.0",
-    "mkcert": "^1.2.0"
+    "mkcert": "^1.2.0",
+    "office-addin-cli": "^0.0.1",
+    "sinon": "^7.2.7"
   },
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
+    "@types/fs-extra": "^5.0.5",
+    "@types/mkcert": "^1.2.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.0",
     "concurrently": "^3.5.0",

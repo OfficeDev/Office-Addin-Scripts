@@ -1,13 +1,12 @@
 # Office-Addin-dev-certs
 
-Provides the ability to start and stop debugging Office Add-ins.
+Provides the ability to manage certificates for a development server using https://localhost.
 
 ## Command-Line Interface
 * [generate](#generate)
 * [install](#install)
 * [verify](#verify)
 * [uninstall](#uninstall)
-* [clean](#clean)
 
 #
 
@@ -32,6 +31,14 @@ Path where the SSL certificate is written. Default ./localhost.crt.
 `--key <key-path>`
 
 Path where the private key for the SSL certificate is written. Default ./localhost.key.
+
+`--days <days>`
+
+Specifies the validity of CA certificate in days.
+
+`--install`
+
+Install the generated CA certificate.
  
 #
 
@@ -40,9 +47,9 @@ Install the certificate.
 
 Syntax:
 
-`office addin-dev-certs install <ca-certificate-path>`
+`office addin-dev-certs install <ca-cert-path>`
 
-`ca-certificate-path`: path to CA certificate file.
+`ca-cert-path`: Path to CA certificate file.
  
 #
 
@@ -62,13 +69,4 @@ Syntax:
 
 `office addin-dev-certs uninstall`
 
-#
-
-### clean
-Clean the certificates.
-
-Syntax:
-
-`office addin-dev-certs clean`
- 
 #

@@ -1,47 +1,54 @@
 import * as commander from "commander";
-import {cleanCertificates} from "./clean";
+import {logErrorMessage, parseNumber} from "office-addin-cli";
 import {generateCertificates} from "./generate";
-import {installCertificates} from "./install";
-import {uninstallCertificates} from "./uninstall";
-import {verifyCertificates} from "./verify";
+import {installCaCertificate} from "./install";
+import {uninstallCaCertificate} from "./uninstall";
+import {verifyCaCertificate} from "./verify";
+
+function parseDays(optionValue: any): number | undefined {
+    const days = parseNumber(optionValue, "--days should specify a number.");
+    if (days !== undefined) {
+        if (!Number.isInteger(days)) {
+            throw new Error("--days should be integer.");
+        }
+        if (days <= 0) {
+            throw new Error("--days should be greater than zero.");
+        }
+    }
+    return days;
+}
 
 export async function generate(command: commander.Command) {
     try {
-        await generateCertificates(command.path);
+        const days =  parseDays(command.days);
+        await generateCertificates(command.caCert, command.cert, command.key, days, command.install);
     } catch (err) {
-        console.error(`Unable to generate self-signed dev certificates.\n${err}`);
+        logErrorMessage(err);
     }
 }
 
-export async function install(command: commander.Command) {
+export async function install(caCertificatePath: string, command: commander.Command) {
     try {
-        await installCertificates(command.path);
+        // uninstall previous CA certificate, if any
+        await  uninstallCaCertificate();
+        await installCaCertificate(caCertificatePath);
     } catch (err) {
-        console.error(`Unable to install dev certificates.\n${err}`);
+        logErrorMessage(err);
     }
 }
 
 export async function verify(command: commander.Command) {
     try {
-        await verifyCertificates(command.path);
+        await verifyCaCertificate();
     } catch (err) {
-        console.error(`Unable to verify dev certificates.\n${err}`);
+        logErrorMessage(err);
     }
 }
 
 export async function uninstall(command: commander.Command) {
     try {
-        await uninstallCertificates();
+        await uninstallCaCertificate();
     } catch (err) {
-        console.error(`Unable to uninstall dev certificates.\n${err}`);
+        logErrorMessage(err);
     }
 }
-
-export async function clean(command: commander.Command) {
-    try {
-        await cleanCertificates(command.path);
-    } catch (err) {
-        console.error(`Unable to install self-signed dev certificates.\n${err}`);
-    }
-}
-
