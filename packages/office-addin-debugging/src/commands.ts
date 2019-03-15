@@ -1,51 +1,22 @@
 import * as commander from "commander";
+import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
-import { AppType, parseAppType, parseDebuggingMethod, startDebugging} from "./start";
-import { stopDebugging} from "./stop";
-
-function logErrorMessage(err: any) {
-    console.error(`Error: ${err instanceof Error ? err.message : err}`);
-}
+import { AppType, parseAppType, parseDebuggingMethod, startDebugging } from "./start";
+import { stopDebugging } from "./stop";
 
 function parseDevServerPort(optionValue: any): number | undefined {
-    const devServerPort = parseNumericCommandOption(optionValue, "--dev-server-port should specify a number.");
+    const devServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
 
     if (devServerPort !== undefined) {
+        if (!Number.isInteger(devServerPort)) {
+            throw new Error("--dev-server-port should be an integer.");
+        }
         if ((devServerPort < 0) || (devServerPort > 65535)) {
             throw new Error("--dev-server-port should be between 0 and 65535.");
         }
     }
 
     return devServerPort;
-}
-
-function parseNumericCommandOption(optionValue: any, errorMessage: string = "The value should be a number."): number | undefined {
-    switch (typeof(optionValue)) {
-        case "number": {
-            return optionValue;
-        }
-        case "string": {
-            let result;
-
-            try {
-                result = parseInt(optionValue, 10);
-            } catch (err) {
-                throw new Error(errorMessage);
-            }
-
-            if (Number.isNaN(result)) {
-                throw new Error(errorMessage);
-            }
-
-            return result;
-        }
-        case "undefined": {
-            return undefined;
-        }
-        default: {
-            throw new Error(errorMessage);
-        }
-    }
 }
 
 export async function start(manifestPath: string, appType: string | undefined, command: commander.Command) {

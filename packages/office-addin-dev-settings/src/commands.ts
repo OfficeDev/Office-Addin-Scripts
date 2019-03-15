@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import { logErrorMessage } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from "office-addin-manifest";
 import {
   addLoopbackExemptionForAppcontainer,
@@ -240,10 +241,6 @@ export async function liveReload(manifestPath: string, command: commander.Comman
   } else {
     await isLiveReloadEnabled(manifestPath);
   }
-}
-
-function logErrorMessage(err: any) {
-  console.error(`Error: ${err instanceof Error ? err.message : err}`);
 }
 
 function parseStringCommandOption(optionValue: any): string | undefined {
