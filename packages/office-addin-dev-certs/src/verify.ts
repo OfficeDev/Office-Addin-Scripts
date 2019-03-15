@@ -5,7 +5,7 @@ function getVerifyCommand(): string {
        case "win32":
           return `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=${defaults.certificateName}*' | Format-List"`;
        case "darwin": // macOS
-          return `sudo security find-certificate -c "${defaults.certificateName}"`;
+          return `security find-certificate -c "${defaults.certificateName}"`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
@@ -23,7 +23,7 @@ function isCaCertificateInstalled(): boolean {
             console.log("Certificate not found in trusted store");
         }
     } catch (error) {
-        console.log("Error occured while verifying certificate" + error);
+        console.log("Certificate not found in trusted store"); // Mac security command throws error if certifcate is not found
     }
     return false;
 }

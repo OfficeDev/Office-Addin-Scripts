@@ -1,64 +1,39 @@
 import * as commander from "commander";
+import {logErrorMessage, parseNumber} from "office-addin-cli";
 import {generateCertificates} from "./generate";
 import {installCaCertificate} from "./install";
 import {uninstallCaCertificate} from "./uninstall";
 import {verifyCaCertificate} from "./verify";
 
-function parseNumericCommandOption(optionValue: any, errorMessage: string = "The value should be a number."): number | undefined {
-    switch (typeof(optionValue)) {
-        case "number": {
-            return optionValue;
-        }
-        case "string": {
-            let result;
-
-            try {
-                result = parseInt(optionValue, 10);
-            } catch (err) {
-                throw new Error(errorMessage);
-            }
-
-            if (Number.isNaN(result)) {
-                throw new Error(errorMessage);
-            }
-
-            return result;
-        }
-        case "undefined": {
-            return undefined;
-        }
-        default: {
-            throw new Error(errorMessage);
-        }
-    }
-}
-
 function parseDays(optionValue: any): number | undefined {
-    const daysUntilCertificateExpires = parseNumericCommandOption(optionValue, "Days should specify a number.");
-
-    if (daysUntilCertificateExpires !== undefined) {
-        if (daysUntilCertificateExpires <= 0) {
-            throw new Error("Days should be greater than zero.");
+    const days = parseNumber(optionValue, "--days should specify a number.");
+    if (days !== undefined) {
+        if (!Number.isInteger(days)) {
+            throw new Error("--days should be integer.");
+        }
+        if (days <= 0) {
+            throw new Error("--days should be greater than zero.");
         }
     }
-
-    return daysUntilCertificateExpires;
+    return days;
 }
 
 export async function generate(command: commander.Command) {
     try {
-        const daysUntilCertificateExpires =  parseDays(command.days);
-        await generateCertificates(command.caCert, command.cert, command.key, daysUntilCertificateExpires, command.install);
+        const days =  parseDays(command.days);
+        await generateCertificates(command.caCert, command.cert, command.key, days, command.install);
     } catch (err) {
-        console.error(`Unable to generate self-signed dev certificates.\n${err}`);
+        logErrorMessage(err);
     }
 }
 
 export async function install(caCertificatePath: string, command: commander.Command) {
     try {
+        // uninstall previous CA certificate, if any
+        await  uninstallCaCertificate();
         await installCaCertificate(caCertificatePath);
     } catch (err) {
-        console.error(`Unable to install the CA certificate.\n${err}`);
+        logErrorMessage(err);
     }
 }
 
@@ -66,7 +41,7 @@ export async function verify(command: commander.Command) {
     try {
         await verifyCaCertificate();
     } catch (err) {
-        console.error(`Unable to verify CA certificates.\n${err}`);
+        logErrorMessage(err);
     }
 }
 
@@ -74,6 +49,6 @@ export async function uninstall(command: commander.Command) {
     try {
         await uninstallCaCertificate();
     } catch (err) {
-        console.error(`Unable to uninstall CA certificates.\n${err}`);
+        logErrorMessage(err);
     }
 }

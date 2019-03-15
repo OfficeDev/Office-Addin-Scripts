@@ -1,4 +1,5 @@
 import * as defaults from "./defaults";
+import { uninstallCaCertificate } from "./uninstall";
 
 function getInstallCommand(caCertificatePath: string): string {
    let command: string;

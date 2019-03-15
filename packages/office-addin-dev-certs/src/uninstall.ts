@@ -19,6 +19,6 @@ export function uninstallCaCertificate(): void {
       execSync(command, {stdio : "pipe" });
       console.log(`The CA certificate was uninstalled`);
    } catch (error) {
-      throw new Error(`Unable to uninstall the CA certificate. ${error.stderr.toString()}`);
+      throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
    }
 }

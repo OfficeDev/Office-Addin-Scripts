@@ -18,30 +18,56 @@ export async function generateCertificates(caCertificatePath: string = defaults.
         console.log("A valid CA certificate is already installed.");
         return;
     }
-    fsExtra.ensureDirSync(path.dirname(caCertificatePath));
-    fsExtra.ensureDirSync(path.dirname(localhostCertificatePath));
-    fsExtra.ensureDirSync(path.dirname(localhostKeyPath));
-    const caCertificate = await mkcert.createCA({
-                            countryCode: defaults.countryCode,
-                            locality: defaults.locality,
-                            organization: defaults.certificateName,
-                            state: defaults.state,
-                            validityDays: daysUntilCertificateExpires,
-                        });
-    const localhostCertificate = await mkcert.createCert({
-                                        caCert: caCertificate.cert,
-                                        caKey: caCertificate.key,
-                                        domains: defaults.domain,
-                                        validityDays: daysUntilCertificateExpires,
-                                    });
-    fs.writeFileSync(`${caCertificatePath}`, caCertificate.cert);
-    fs.writeFileSync(`${localhostCertificatePath}`, localhostCertificate.cert);
-    fs.writeFileSync(`${localhostKeyPath}`, localhostCertificate.key);
+
+    try {
+        fsExtra.ensureDirSync(path.dirname(caCertificatePath));
+        fsExtra.ensureDirSync(path.dirname(localhostCertificatePath));
+        fsExtra.ensureDirSync(path.dirname(localhostKeyPath));
+    } catch (err) {
+        throw new Error(`Unable to create directory\n${err}`);
+    }
+
+    const cACertificateInfo: mkcert.CACertificateInfo = {
+                                                            countryCode: defaults.countryCode,
+                                                            locality: defaults.locality,
+                                                            organization: defaults.certificateName,
+                                                            state: defaults.state,
+                                                            validityDays: daysUntilCertificateExpires,
+                                                        };
+    let caCertificate: mkcert.Certificate;
+    try {
+        caCertificate = await mkcert.createCA(cACertificateInfo);
+    } catch (err) {
+        throw new Error(`Unable to generate CA certificate\n${err}`);
+    }
+
+    const localhostCertificateInfo: mkcert.CertificateInfo = {
+                                                                caCert: caCertificate.cert,
+                                                                caKey: caCertificate.key,
+                                                                domains: defaults.domain,
+                                                                validityDays: daysUntilCertificateExpires,
+                                                            };
+    let localhostCertificate: mkcert.Certificate;
+    try {
+        localhostCertificate = await mkcert.createCert(localhostCertificateInfo);
+    } catch (err) {
+        throw new Error(`Unable to generate localhost certificate\n${err}`);
+    }
+
+    try {
+        fs.writeFileSync(`${caCertificatePath}`, caCertificate.cert);
+        fs.writeFileSync(`${localhostCertificatePath}`, localhostCertificate.cert);
+        fs.writeFileSync(`${localhostKeyPath}`, localhostCertificate.key);
+    } catch (err) {
+        throw new Error(`Unable to write generated certificates\n${err}`);
+    }
+
     if (caCertificatePath === defaults.caCertificatePath) {
         console.log("The developer certificates have been generated in " + process.cwd());
     } else {
         console.log("The developer certificates have been generated");
     }
+
     if (installCaCertificate) {
         install.installCaCertificate(caCertificatePath);
     }
