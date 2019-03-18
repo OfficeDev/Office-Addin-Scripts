@@ -21,11 +21,13 @@ function parseDays(optionValue: any): number | undefined {
 export async function install(command: commander.Command) {
     try {
         const days =  parseDays(command.days);
-        const isCertificateGenerated = await generateCertificates(command.caCert, command.cert, command.key, days);
-        if (isCertificateGenerated) {
-            await uninstallCaCertificate();
-            await installCaCertificate(command.caCert);
+        const isCertificateValid  = verifyCaCertificate();
+        if (isCertificateValid) {
+            throw new Error("A valid CA certificate is already installed.");
         }
+        await generateCertificates(command.caCert, command.cert, command.key, days);
+        await uninstallCaCertificate();
+        await installCaCertificate(command.caCert);
     } catch (err) {
         logErrorMessage(err);
     }
