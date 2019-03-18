@@ -37,20 +37,15 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[2].result.type, "boolean", "result type boolean not created properly");
             assert.strictEqual(j.functions[4].parameters[0].type, "string", "type string not created properly");
             assert.strictEqual(j.functions[4].result.type, "string", "result type string not created properly");
-            assert.strictEqual(j.functions[5].result.type, "any", "void type - result type any not created properly");
             assert.strictEqual(j.functions[6].parameters[0].type, "any", "object type - type any not created properly");
-            assert.strictEqual(j.functions[6].result.type, "any", "object type - result type any not created properly");
             assert.strictEqual(j.functions[8].parameters[0].type, "any", "enum type - type any not created properly");
             assert.strictEqual(j.functions[8].parameters[0].dimensionality, "matrix", "enum type - parameter dimensionality matrix any not created properly");
-            assert.strictEqual(j.functions[8].result.type, "any", "enum type - result type any not created properly");
             assert.strictEqual(j.functions[8].result.dimensionality, "matrix", "enum type - result dimensionality matrix any not created properly");
             assert.strictEqual(j.functions[9].parameters[0].type, "any", "tuple type - type any not created properly");
-            assert.strictEqual(j.functions[9].result.type, "any", "tuple type - result type any not created properly");
             assert.strictEqual(j.functions[10].options.stream, true, "CustomFunctions.StreamingHandler - options stream not created properly");
             assert.strictEqual(j.functions[10].result.type, "number", "CustomFunctions.StreamingHandler - result type number not created properly");
             assert.strictEqual(j.functions[11].parameters[0].optional, true, "optional true not created properly");
             assert.strictEqual(j.functions[12].parameters[0].type, "any", "any type - type any not created properly");
-            assert.strictEqual(j.functions[12].result.type, "any", "any type - result type any not created properly");
             assert.strictEqual(j.functions[13].options.cancelable, true, "CustomFunctions.CancelableHandler type not created properly");
             assert.strictEqual(j.functions[14].id, "UPDATEID", "@CustomFunction id not created properly");
             assert.strictEqual(j.functions[14].name, "updateName", "@CustomFunction name not created properly");
@@ -93,7 +88,6 @@ describe("verify json created in file by javascript", function() {
             assert.strictEqual(j.functions[3].parameters[0].type, "string", "type string not created properly");
             assert.strictEqual(j.functions[3].result.type, "string", "result type string not created properly");
             assert.strictEqual(j.functions[4].parameters[0].type, "any", "type any not created properly");
-            assert.strictEqual(j.functions[4].result.type, "any", "result type any not created properly");
             assert.strictEqual(j.functions[5].options.stream, true, "CustomFunctions.StreamingHandler type any not created properly");
             assert.strictEqual(j.functions[5].result.type, "string", "streaming result type any not created properly");
             assert.strictEqual(j.functions[6].options.cancelable, true, "CustomFunctions.CancelableHandler type any not created properly");
