@@ -4,6 +4,7 @@ import * as fsExtra from "fs-extra";
 import * as mocha from "mocha";
 import * as path from "path";
 import {generateCertificates} from "../src/generate";
+import {gethttpsServerOptions} from "../src/httpsServerOptions";
 import {installCaCertificate} from "../src/install";
 import * as uninstall from "../src/uninstall";
 import * as verify from "../src/verify";
@@ -189,6 +190,35 @@ describe("office-addin-dev-certs", function() {
             } catch (err) {
                 // not expecting any exception
                 assert.strictEqual(0, 1);
+            }
+        });
+    });
+    describe("getHttpsServerOptions-tests", function() {
+        beforeEach(function() {
+            sandbox = sinon.createSandbox();
+        });
+        afterEach(function() {
+            sandbox.restore();
+        });
+        it("valid certificate exists case", async function() {
+            const verifyCaCertificate = sandbox.fake.returns(true);
+            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCaCertificate);
+            sandbox.stub(fs, "readFileSync").returns("test");
+            const httpsServerOptions = await gethttpsServerOptions();
+            assert.strictEqual(httpsServerOptions.ca, "test");
+            assert.strictEqual(httpsServerOptions.cert, "test");
+            assert.strictEqual(httpsServerOptions.key, "test");
+        });
+        it("valid certificate exists and read file fails case", async function() {
+            const verifyCaCertificate = sandbox.fake.returns(true);
+            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCaCertificate);
+            sandbox.stub(fs, "readFileSync").throws("test error");
+            try {
+                const httpsServerOptions = await gethttpsServerOptions();
+                // expecting exception
+                assert.strictEqual(0, 1);
+            } catch (err) {
+                assert.strictEqual(err.toString().includes("Error occured while reading certificate files"), true);
             }
         });
     });

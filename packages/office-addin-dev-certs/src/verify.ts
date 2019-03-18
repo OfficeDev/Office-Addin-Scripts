@@ -17,13 +17,13 @@ function isCaCertificateInstalled(): boolean {
     try {
         const output = execSync(command, {stdio : "pipe" }).toString();
         if (output.length !== 0) {
-            console.log("Certificate found in trusted store");
+            console.log("Certificate found in trusted store.");
             return true;
         } else {
-            console.log("Certificate not found in trusted store");
+            console.log("Certificate not found in trusted store.");
         }
     } catch (error) {
-        console.log("Certificate not found in trusted store"); // Mac security command throws error if certifcate is not found
+        console.log("Certificate not found in trusted store."); // Mac security command throws error if certifcate is not found
     }
     return false;
 }
