@@ -18,20 +18,14 @@ function parseDays(optionValue: any): number | undefined {
     return days;
 }
 
-export async function generate(command: commander.Command) {
+export async function install(command: commander.Command) {
     try {
         const days =  parseDays(command.days);
-        await generateCertificates(command.caCert, command.cert, command.key, days, command.install);
-    } catch (err) {
-        logErrorMessage(err);
-    }
-}
-
-export async function install(caCertificatePath: string, command: commander.Command) {
-    try {
-        // uninstall previous CA certificate, if any
-        await  uninstallCaCertificate();
-        await installCaCertificate(caCertificatePath);
+        const isCertificateGenerated = await generateCertificates(command.caCert, command.cert, command.key, days);
+        if (isCertificateGenerated) {
+            await uninstallCaCertificate();
+            await installCaCertificate(command.caCert);
+        }
     } catch (err) {
         logErrorMessage(err);
     }

@@ -16,14 +16,14 @@ function getInstallCommand(caCertificatePath: string): string {
    return command;
 }
 
-export function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath): void {
-   const command = getInstallCommand(caCertificatePath);
-   const execSync = require("child_process").execSync;
-   try {
-      console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"`);
-      execSync(command, {stdio : "pipe" });
-      console.log(`The CA certificate was installed`);
-   } catch (error) {
-      throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
-   }
+export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath) {
+    const command = getInstallCommand(caCertificatePath);
+    const execSync = require("child_process").execSync;
+    try {
+        console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"`);
+        execSync(command, {stdio : "pipe" });
+        console.log(`The CA certificate was installed`);
+    } catch (error) {
+        throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
+    }
 }

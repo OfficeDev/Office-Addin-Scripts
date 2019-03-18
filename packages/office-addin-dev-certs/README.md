@@ -10,9 +10,8 @@ Provides the ability to manage certificates for a development server using https
 
 #
 
-
 ### generate
-If not installed, generate an SSL certificate for localhost and a CA certificate which has issued it and install it.
+Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.
 
 Syntax:
 

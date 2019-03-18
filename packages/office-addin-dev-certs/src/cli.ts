@@ -13,7 +13,7 @@ commander
     .option("--cert <cert-path>", `Specifies the path where the SSL certificate file is written. Default: ${defaults.localhostCertificatePath}`)
     .option("--key <key-path>", `Specifies the path where the private key for the SSL certificate file is written. Default: ${defaults.localhostKeyPath}`)
     .option("--days <days>", `Specifies the validity of CA certificate in days. Default: ${defaults.daysUntilCertificateExpires}`)
-    .description(`If not installed, generate an SSL certificate for localhost and a CA certificate which has issued it and install it.`)
+    .description(`Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`)
     .action(commands.install);
 
 commander
