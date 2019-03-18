@@ -30,7 +30,7 @@ describe("office-addin-dev-certs", function() {
             const createCA = sandbox.fake();
             sandbox.stub(mkcert, "createCA").callsFake(createCA);
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCA.callCount, 0);
         });
@@ -41,7 +41,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(fsExtra, "ensureDirSync").throws(error);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -58,7 +58,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(mkcert, "createCA").rejects(error);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -75,7 +75,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").rejects(error);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -94,7 +94,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(fs, "writeSync").throws(error);
 
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
@@ -111,7 +111,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").resolves(cert);
             sandbox.stub(fs, "writeSync").callsFake(writeSync);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
             assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(writeSync.callCount, 3);
         });

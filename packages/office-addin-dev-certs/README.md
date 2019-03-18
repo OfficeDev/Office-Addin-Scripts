@@ -12,11 +12,11 @@ Provides the ability to manage certificates for a development server using https
 
 
 ### generate
-Generate an SSL certificate for localhost and a CA certificate which has issued it.
+If not installed, generate an SSL certificate for localhost and a CA certificate which has issued it and install it.
 
 Syntax:
 
-`office addin-dev-certs generate [options]`
+`office addin-dev-certs install [options]`
 
 Options:
 
@@ -35,21 +35,6 @@ Path where the private key for the SSL certificate is written. Default ./localho
 `--days <days>`
 
 Specifies the validity of CA certificate in days.
-
-`--install`
-
-Install the generated CA certificate.
- 
-#
-
-### install
-Install the certificate.
-
-Syntax:
-
-`office addin-dev-certs install <ca-cert-path>`
-
-`ca-cert-path`: Path to CA certificate file.
  
 #
 
