@@ -25,94 +25,70 @@ describe("office-addin-dev-certs", function() {
         afterEach(function() {
             sandbox.restore();
         });
-        it("certificate already installed case", async function() {
-            const verifyCertificate = sandbox.fake.returns(true);
-            const createCA = sandbox.fake();
-            sandbox.stub(mkcert, "createCA").callsFake(createCA);
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
-            assert.strictEqual(verifyCertificate.callCount, 1);
-            assert.strictEqual(createCA.callCount, 0);
-        });
         it("certificate not installed, ensureDir fails case", async function() {
-            const verifyCertificate = sandbox.fake.returns(false);
             const createCert = sandbox.fake();
             const error = "test error";
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(fsExtra, "ensureDirSync").throws(error);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes("Unable to create directory"), true);
             }
-            assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 0);
         });
         it("certificate not installed, createCA fails case", async function() {
-            const verifyCertificate = sandbox.fake.returns(false);
             const createCert = sandbox.fake();
             const error = "test error";
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").rejects(error);
             sandbox.stub(mkcert, "createCert").callsFake(createCert);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes("Unable to generate CA certificate"), true);
             }
-            assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 0);
         });
         it("certificate not installed, createCert fails case", async function() {
-            const verifyCertificate = sandbox.fake.returns(false);
             const createCert = sandbox.fake();
             const error = "test error";
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").rejects(error);
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes("Unable to generate localhost certificate"), true);
             }
-            assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 0);
         });
         it("certificate not installed, fs write sync fails case", async function() {
-            const verifyCertificate = sandbox.fake.returns(false);
             const createCert = sandbox.fake();
             const error = "test error";
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").resolves(cert);
             sandbox.stub(fs, "writeSync").throws(error);
 
             try {
-                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
+                await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes("Unable to write generated certificates"), true);
             }
-            assert.strictEqual(verifyCertificate.callCount, 1);
             assert.strictEqual(createCert.callCount, 0);
         });
         it("certificate not installed case", async function() {
-            const verifyCertificate = sandbox.fake.returns(false);
             const createCert = sandbox.fake();
             const writeSync = sandbox.fake();
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCertificate);
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").resolves(cert);
             sandbox.stub(fs, "writeSync").callsFake(writeSync);
-            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30, false);
-            assert.strictEqual(verifyCertificate.callCount, 1);
+            await generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
             assert.strictEqual(writeSync.callCount, 3);
         });
     });

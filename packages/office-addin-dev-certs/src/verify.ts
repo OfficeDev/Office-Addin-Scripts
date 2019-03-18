@@ -3,7 +3,7 @@ import * as defaults from "./defaults";
 function getVerifyCommand(): string {
     switch (process.platform) {
        case "win32":
-          return `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=${defaults.certificateName}*' | Format-List"`;
+          return `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=${defaults.certificateName}*' | Where-Object { $_.NotAfter -gt [datetime]::today } | Format-List"`;
        case "darwin": // macOS
           return `security find-certificate -c "${defaults.certificateName}"`;
        default:

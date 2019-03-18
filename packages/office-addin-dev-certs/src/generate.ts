@@ -11,13 +11,7 @@ import * as verify from "./verify";
    else, new certificates are generated and installed if --install was provided.
 */
 export async function generateCertificates(caCertificatePath: string = defaults.caCertificatePath, localhostCertificatePath: string = defaults.localhostCertificatePath, localhostKeyPath: string = defaults.localhostKeyPath,
-                                           daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, installCaCertificate: boolean = false) {
-
-    const isCertificateValid  = verify.verifyCaCertificate();
-    if (isCertificateValid) {
-        console.log("A valid CA certificate is already installed.");
-        return;
-    }
+                                           daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires) {
 
     try {
         fsExtra.ensureDirSync(path.dirname(caCertificatePath));
@@ -66,9 +60,5 @@ export async function generateCertificates(caCertificatePath: string = defaults.
         console.log("The developer certificates have been generated in " + process.cwd());
     } else {
         console.log("The developer certificates have been generated");
-    }
-
-    if (installCaCertificate) {
-        install.installCaCertificate(caCertificatePath);
     }
 }
