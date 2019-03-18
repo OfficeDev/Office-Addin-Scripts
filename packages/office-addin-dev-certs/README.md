@@ -33,7 +33,7 @@ Path where the private key for the SSL certificate is written. Default ./localho
 
 `--days <days>`
 
-Specifies the validity of CA certificate in days.
+Specifies the number of days until the CA certificate expires. Default: 30 days.
  
 #
 
