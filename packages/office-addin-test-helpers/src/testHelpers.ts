@@ -1,62 +1,59 @@
 
 import * as childProcess from "child_process";
 import * as cps from "current-processes";
+import * as fetch from "isomorphic-fetch";
 
 let devServerStarted: boolean = false;
 let port: number = 8080;
 var subProcess: any;
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-export async function pingTestServer(portNumber: number | undefined): Promise<object> {
-    return new Promise<object>(async (resolve, reject) => {
+export async function pingTestServer(portNumber: number | undefined): Promise<Object> {
+    return new Promise<Object>(async (resolve, reject) => {
         if (portNumber !== undefined) {
             port = portNumber;
         }
 
         const serverResponse: any = {};
-        const xhr = new XMLHttpRequest();
-        const pingUrl: string = `https://localhost:${port}/ping`;
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                serverResponse["status"] = xhr.status;
-                serverResponse["platform"] = xhr.responseText;
-                resolve(serverResponse);
-            }
-            else if (xhr.readyState === 4 && xhr.status === 0 && xhr.statusText.message === "XHR error") {
-                reject(serverResponse);
-            }
-        };
-        xhr.open("GET", pingUrl, true);
-        xhr.send();
+
+        try {
+            const pingUrl: string = `https://localhost:${port}/ping`;
+            const response = await fetch(pingUrl);
+            serverResponse["status"] = response.status;
+            const text = await response.text();
+            serverResponse["platform"] = text;
+            resolve(serverResponse);
+        } catch (err) {
+            serverResponse["status"] = err;
+            reject(serverResponse);
+        }
     });
 }
 
-export async function sendTestResults(data: object, portNumber: number | undefined): Promise<boolean> {
+export async function sendTestResults(data: Object, portNumber: number | undefined): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
         if (portNumber !== undefined) {
             port = portNumber;
         }
 
         const json = JSON.stringify(data);
-        const xhr = new XMLHttpRequest();
         const url: string = `https://localhost:${port}/results/`;
         const dataUrl: string = url + "?data=" + encodeURIComponent(json);
 
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4 && xhr.status === 200 && xhr.responseText === "200") {
-                resolve(true);
-            }
-            else if (xhr.readyState === 4 && xhr.status === 0 && xhr.statusTest === "XHR error") {
-                resolve(false);
-            }
-        };
-        xhr.open("POST", dataUrl, true);
-        xhr.send();
+        try {
+            fetch(dataUrl, {
+                method: 'post',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' },
+            })
+            resolve(true);
+        } catch (err) {
+            reject(false);
+        }
     });
 }
 
 
-export async function sideloadDesktopApp(application: string): Promise<boolean> {
+export async function sideloadDesktopApp(application: string, manifestPath: string): Promise<boolean> {
     return new Promise<boolean>(async function (resolve, reject) {
 
         if (process.platform !== 'win32' && process.platform !== 'darwin') {
@@ -64,7 +61,7 @@ export async function sideloadDesktopApp(application: string): Promise<boolean> 
         }
 
         try {
-            const cmdLine = `npm run sideload:${application}`;
+            const cmdLine = `office-toolbox sideload -m ${manifestPath} -a ${application}`;
             const sideloadSucceeded = await _executeCommandLine(cmdLine);
             resolve(sideloadSucceeded);
         } catch (err) {
@@ -117,9 +114,9 @@ export async function teardownTestEnvironment(application: string): Promise<void
     }
 }
 
-async function closeDesktopApplication(application: string): Promise <void> {
+async function closeDesktopApplication(application: string): Promise<void> {
     let processName: string = "";
-    switch(application.toLowerCase()) {
+    switch (application.toLowerCase()) {
         case "excel":
             processName = "Excel";
             break;
