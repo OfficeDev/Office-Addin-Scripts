@@ -271,6 +271,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                         delete functionMetadata.description;
                     }
 
+                    if (!functionMetadata.result) {
+                        delete functionMetadata.result;
+                    }
+
                     extras.push(extra);
                     functions.push(functionMetadata);
                 }
@@ -451,6 +455,10 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
     // Only return dimensionality = matrix.  Default assumed scalar
     if (resultDim === "scalar") {
         delete resultItem.dimensionality;
+    }
+
+    if (resultType === "any") {
+        delete resultItem.type;
     }
 
     return resultItem;
