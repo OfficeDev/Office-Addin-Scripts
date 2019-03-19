@@ -1,5 +1,6 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
+import {logErrorMessage } from "office-addin-cli";
 import * as os from "os";
 import * as path from "path";
 import * as defaults from "./defaults";
@@ -7,7 +8,6 @@ import { generateCertificates } from "./generate";
 import { installCaCertificate } from "./install";
 import { uninstallCaCertificate } from "./uninstall";
 import { isCaCertificateInstalled } from "./verify";
-import {logErrorMessage } from "office-addin-cli";
 interface IHttpsServerOptions {
     cert: Buffer;
     key: Buffer;
@@ -29,7 +29,7 @@ function validateCertificateAndKey(certificate: string, key: string) {
     try {
         crypto.privateDecrypt(key, encrypted);
     } catch (err) {
-        throw new Error(`The localhost certificate key is invalid.\n${err}`);
+        throw new Error(`The certificate key is invalid.\n${err}`);
     }
 }
 
@@ -53,13 +53,16 @@ export async function gethttpsServerOptions(): Promise<IHttpsServerOptions> {
         localhostCertificate = fs.readFileSync(localhostCertificatePath);
         localhostKey = fs.readFileSync(localhostKeyPath);
         validateCertificateAndKey(localhostCertificate.toString(), localhostKey.toString());
-        isCaCertificateInstalled();
     } catch (err) {
         logErrorMessage(err);
         needToGenerateCertificates = true;
     }
 
     if (needToGenerateCertificates) {
+        await generateAndInstallCertificate(caCertificatePath, localhostCertificatePath, localhostKeyPath);
+        localhostCertificate = fs.readFileSync(localhostCertificatePath);
+        localhostKey = fs.readFileSync(localhostKeyPath);
+    } else if (!isCaCertificateInstalled()) {
         await generateAndInstallCertificate(caCertificatePath, localhostCertificatePath, localhostKeyPath);
         localhostCertificate = fs.readFileSync(localhostCertificatePath);
         localhostKey = fs.readFileSync(localhostKeyPath);
