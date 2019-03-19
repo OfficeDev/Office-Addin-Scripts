@@ -85,17 +85,3 @@ export function run(host: string = "localhost", port: string = "8081",
   }
   connectToDebuggerProxy();
 }
-
-// if this package is being run from the command line
-// (related to "main" and "bin" in package.json)
-if (process.argv[1].endsWith(path.join("lib", "debugger.js"))
-    || process.argv[1].endsWith(path.join(".bin", "office-addin-node-debugger"))) {
-  commander
-  .option('-h, --host <host>', 'The hostname where the packager is running.')
-  .option('-p, --port <port>', 'The port where the packager is running.')  
-  .parse(process.argv);
-
-  run(commander.host, commander.port);
-}
-
-
