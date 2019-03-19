@@ -218,39 +218,24 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(crypto, "privateDecrypt").callsFake(fakeCrypto);
             sandbox.stub(fs, "readFileSync").returns("test");
             const serverOptions = await gethttpsServerOptions();
-            assert.strictEqual(serverOptions.ca, "test");
             assert.strictEqual(serverOptions.cert, "test");
             assert.strictEqual(serverOptions.key, "test");
             assert.strictEqual(generateCertificates.callCount, 0);
             assert.strictEqual(installCaCertificate.callCount, 0);
             assert.strictEqual(uninstallCaCertificate.callCount, 0);
         });
-        // it("valid certificate exists and read file fails case", async function() {
-        //     const verifyCaCertificate = sandbox.fake.returns(true);
-        //     sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCaCertificate);
-        //     sandbox.stub(fs, "readFileSync").throws("test error");
-        //     try {
-        //         const httpsServerOptions = await gethttpsServerOptions();
-        //         // expecting exception
-        //         assert.strictEqual(0, 1);
-        //     } catch (err) {
-        //         assert.strictEqual(err.toString().includes("Error occured while reading certificate files"), true);
-        //     }
-        // });
         it("not installed certificate case", async function() {
-            const verifyCaCertificate = sandbox.fake.returns(false);
             const generateCertificates = sandbox.fake();
             const installCaCertificate = sandbox.fake();
             const uninstallCaCertificate = sandbox.fake();
             sandbox.stub(generate, "generateCertificates").callsFake(generateCertificates);
             sandbox.stub(install, "installCaCertificate").callsFake(installCaCertificate);
             sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCaCertificate);
+            sandbox.stub(verify, "isCaCertificateInstalled").throws("test error");
             sandbox.stub(crypto, "publicEncrypt").callsFake(fakeCrypto);
             sandbox.stub(crypto, "privateDecrypt").callsFake(fakeCrypto);
             sandbox.stub(fs, "readFileSync").returns("test");
             const serverOptions = await gethttpsServerOptions();
-            assert.strictEqual(serverOptions.ca, "test");
             assert.strictEqual(serverOptions.cert, "test");
             assert.strictEqual(serverOptions.key, "test");
             assert.strictEqual(generateCertificates.callCount, 1);
@@ -265,13 +250,12 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(generate, "generateCertificates").callsFake(generateCertificates);
             sandbox.stub(install, "installCaCertificate").callsFake(installCaCertificate);
             sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCaCertificate);
             sandbox.stub(crypto, "publicEncrypt").callsFake(fakeCrypto);
+            sandbox.stub(verify, "isCaCertificateInstalled").throws("test error");
             sandbox.stub(crypto, "privateDecrypt").callsFake(fakeCrypto);
             sandbox.stub(fs, "existsSync").returns(false);
             sandbox.stub(fs, "readFileSync").returns("test");
             const serverOptions = await gethttpsServerOptions();
-            assert.strictEqual(serverOptions.ca, "test");
             assert.strictEqual(serverOptions.cert, "test");
             assert.strictEqual(serverOptions.key, "test");
             assert.strictEqual(generateCertificates.callCount, 1);
@@ -279,20 +263,18 @@ describe("office-addin-dev-certs", function() {
             assert.strictEqual(uninstallCaCertificate.callCount, 1);
         });
         it("installed certificate, but certificate on disk is invalid", async function() {
-            const verifyCaCertificate = sandbox.fake.returns(false);
             const generateCertificates = sandbox.fake();
             const installCaCertificate = sandbox.fake();
             const uninstallCaCertificate = sandbox.fake();
             sandbox.stub(generate, "generateCertificates").callsFake(generateCertificates);
             sandbox.stub(install, "installCaCertificate").callsFake(installCaCertificate);
             sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
-            sandbox.stub(verify, "verifyCaCertificate").callsFake(verifyCaCertificate);
+            sandbox.stub(verify, "isCaCertificateInstalled").throws("test error");
             sandbox.stub(crypto, "publicEncrypt").throws("error");
             sandbox.stub(crypto, "privateDecrypt").callsFake(fakeCrypto);
             sandbox.stub(fs, "existsSync").returns(true);
             sandbox.stub(fs, "readFileSync").returns("test");
             const serverOptions = await gethttpsServerOptions();
-            assert.strictEqual(serverOptions.ca, "test");
             assert.strictEqual(serverOptions.cert, "test");
             assert.strictEqual(serverOptions.key, "test");
             assert.strictEqual(generateCertificates.callCount, 1);

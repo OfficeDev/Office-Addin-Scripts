@@ -6,10 +6,9 @@ import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { installCaCertificate } from "./install";
 import { uninstallCaCertificate } from "./uninstall";
-import { verifyCaCertificate } from "./verify";
-
+import { isCaCertificateInstalled } from "./verify";
+import {logErrorMessage } from "office-addin-cli";
 interface IHttpsServerOptions {
-    ca: Buffer;
     cert: Buffer;
     key: Buffer;
 }
@@ -19,30 +18,19 @@ function getCertificateDirectory(): string {
     return path.join(userHomeDirectory, defaults.certificateDirectory);
 }
 
-function checkIfCertificatesExistsOnDisk(caCertificatePath: string, localhostCertificatePath: string, localhostKeyPath: string): boolean {
-    const ret = fs.existsSync(caCertificatePath) && fs.existsSync(localhostCertificatePath) && fs.existsSync(localhostKeyPath);
-    if (!ret) {
-        console.log(`Certificate's not present on the disk.`);
-    }
-    return ret;
-}
-
-function validateKeyAndCerts(localhostCertificate: string, localhostKey: string): boolean {
+function validateCertificateAndKey(certificate: string, key: string) {
     let encrypted;
     try {
-        encrypted = crypto.publicEncrypt(localhostCertificate, Buffer.from("test"));
+        encrypted = crypto.publicEncrypt(certificate, Buffer.from("test"));
     } catch (err) {
-        console.log(`The localhost certificate is invalid.`);
-        return false;
+        throw new Error(`The certificate is not valid.\n${err}`);
     }
 
     try {
-        crypto.privateDecrypt(localhostKey, encrypted);
+        crypto.privateDecrypt(key, encrypted);
     } catch (err) {
-        console.log(`The localhost certificate key is invalid.`);
-        return false;
+        throw new Error(`The localhost certificate key is invalid.\n${err}`);
     }
-    return true;
 }
 
 async function generateAndInstallCertificate(caCertificatePath: string, localhostCertificatePath: string, localhostKeyPath: string) {
@@ -56,30 +44,31 @@ export async function gethttpsServerOptions(): Promise<IHttpsServerOptions> {
     const caCertificatePath = path.join(certificateDirectory, defaults.caCertificateFileName);
     const localhostCertificatePath = path.join(certificateDirectory, defaults.localhostCertificateFileName);
     const localhostKeyPath = path.join(certificateDirectory, defaults.localhostKeyFileName);
-    const certificatesExistsOnDisk = checkIfCertificatesExistsOnDisk(caCertificatePath, localhostCertificatePath, localhostKeyPath);
-    const isCertificateInstalled  = verifyCaCertificate();
+
     let localhostCertificate: Buffer = Buffer.alloc(0);
     let localhostKey: Buffer = Buffer.alloc(0);
-    let isCertificateValid: boolean;
+    let needToGenerateCertificates: boolean = false;
+
     try {
         localhostCertificate = fs.readFileSync(localhostCertificatePath);
         localhostKey = fs.readFileSync(localhostKeyPath);
-        isCertificateValid = validateKeyAndCerts(localhostCertificate.toString(), localhostKey.toString());
+        validateCertificateAndKey(localhostCertificate.toString(), localhostKey.toString());
+        isCaCertificateInstalled();
     } catch (err) {
-        isCertificateValid = false;
+        logErrorMessage(err);
+        needToGenerateCertificates = true;
     }
 
-    let newCertificateGenerated = false;
-    if (!isCertificateInstalled || !certificatesExistsOnDisk || !isCertificateValid) {
+    if (needToGenerateCertificates) {
         await generateAndInstallCertificate(caCertificatePath, localhostCertificatePath, localhostKeyPath);
-        newCertificateGenerated = true;
+        localhostCertificate = fs.readFileSync(localhostCertificatePath);
+        localhostKey = fs.readFileSync(localhostKeyPath);
     }
 
     const httpsServerOptions = {} as IHttpsServerOptions;
     try {
-        httpsServerOptions.ca = fs.readFileSync(caCertificatePath);
-        httpsServerOptions.cert = newCertificateGenerated ? fs.readFileSync(localhostCertificatePath) : localhostCertificate;
-        httpsServerOptions.key = newCertificateGenerated ? fs.readFileSync(localhostKeyPath) : localhostKey;
+        httpsServerOptions.cert = localhostCertificate;
+        httpsServerOptions.key = localhostKey;
     } catch (err) {
         throw new Error(`Error occured while reading certificate files.\n${err}`);
     }

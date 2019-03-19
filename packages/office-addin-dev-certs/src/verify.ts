@@ -11,24 +11,26 @@ function getVerifyCommand(): string {
     }
  }
 
-function isCaCertificateInstalled(): boolean {
+export function isCaCertificateInstalled() {
     const command = getVerifyCommand();
     const execSync = require("child_process").execSync;
     try {
         const output = execSync(command, {stdio : "pipe" }).toString();
         if (output.length !== 0) {
-            console.log("Certificate found in trusted store.");
-            return true;
+            console.log("CA Certificate is installed.");
         } else {
-            console.log("Certificate not found in trusted store.");
+            throw new Error("CA Certificate is not installed.");
         }
     } catch (error) {
-        console.log("Certificate not found in trusted store."); // Mac security command throws error if certifcate is not found
+        throw new Error("CA Certificate is not installed."); // Mac security command throws error if certifcate is not found
     }
-    return false;
 }
 
 export function verifyCaCertificate(): boolean {
-   return isCaCertificateInstalled();
-   // todo add more verfication
+    try {
+        isCaCertificateInstalled();
+    } catch (err) {
+        return false;
+    }
+    return true;
 }
