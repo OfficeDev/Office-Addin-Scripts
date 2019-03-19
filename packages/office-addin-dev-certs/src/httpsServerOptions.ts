@@ -29,7 +29,7 @@ function validateCertificateAndKey(certificate: string, key: string) {
     try {
         crypto.privateDecrypt(key, encrypted);
     } catch (err) {
-        throw new Error(`The certificate key is invalid.\n${err}`);
+        throw new Error(`The certificate key is not valid.\n${err}`);
     }
 }
 
