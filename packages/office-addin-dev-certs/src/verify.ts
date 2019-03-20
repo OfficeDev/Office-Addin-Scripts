@@ -38,13 +38,13 @@ function validateCertificateAndKey(certificatePath: string, keyPath: string) {
     try {
         certificate = fs.readFileSync(certificatePath).toString();
     } catch (err) {
-        throw new Error(`Failed to read certificate.\n${err}`);
+        throw new Error(`Unable to read the certificate.\n${err}`);
     }
 
     try {
         key = fs.readFileSync(keyPath).toString();
     } catch (err) {
-        throw new Error(`Failed to read certificate key.\n${err}`);
+        throw new Error(`Unable to read the certificate key.\n${err}`);
     }
 
     let encrypted;
