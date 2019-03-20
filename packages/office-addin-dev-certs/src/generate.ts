@@ -18,7 +18,7 @@ export async function generateCertificates(caCertificatePath: string = defaults.
         fsExtra.ensureDirSync(path.dirname(localhostCertificatePath));
         fsExtra.ensureDirSync(path.dirname(localhostKeyPath));
     } catch (err) {
-        throw new Error(`Unable to create directory\n${err}`);
+        throw new Error(`Unable to create the directory.\n${err}`);
     }
 
     const cACertificateInfo: mkcert.CACertificateInfo = {
@@ -32,7 +32,7 @@ export async function generateCertificates(caCertificatePath: string = defaults.
     try {
         caCertificate = await mkcert.createCA(cACertificateInfo);
     } catch (err) {
-        throw new Error(`Unable to generate CA certificate\n${err}`);
+        throw new Error(`Unable to generate the CA certificate.\n${err}`);
     }
 
     const localhostCertificateInfo: mkcert.CertificateInfo = {
@@ -45,7 +45,7 @@ export async function generateCertificates(caCertificatePath: string = defaults.
     try {
         localhostCertificate = await mkcert.createCert(localhostCertificateInfo);
     } catch (err) {
-        throw new Error(`Unable to generate localhost certificate\n${err}`);
+        throw new Error(`Unable to generate the localhost certificate.\n${err}`);
     }
 
     try {
@@ -53,12 +53,12 @@ export async function generateCertificates(caCertificatePath: string = defaults.
         fs.writeFileSync(`${localhostCertificatePath}`, localhostCertificate.cert);
         fs.writeFileSync(`${localhostKeyPath}`, localhostCertificate.key);
     } catch (err) {
-        throw new Error(`Unable to write generated certificates\n${err}`);
+        throw new Error(`Unable to write generated certificates.\n${err}`);
     }
 
     if (caCertificatePath === defaults.caCertificatePath) {
         console.log("The developer certificates have been generated in " + process.cwd());
     } else {
-        console.log("The developer certificates have been generated");
+        console.log("The developer certificates have been generated.");
     }
 }
