@@ -1,5 +1,8 @@
 import { execSync } from "child_process";
 import * as defaults from "./defaults";
+import { generateCertificates } from "./generate";
+import { uninstallCaCertificate } from "./uninstall";
+import { verifyCertificates } from "./verify";
 
 function getInstallCommand(caCertificatePath: string): string {
    let command: string;
@@ -14,6 +17,20 @@ function getInstallCommand(caCertificatePath: string): string {
          throw new Error(`Platform not supported: ${process.platform}`);
    }
    return command;
+}
+
+export async function ensureCertificatesAreInstalled(caCertificatePath: string = defaults.caCertificatePath,
+   localhostCertificatePath: string = defaults.localhostCertificatePath,
+   localhostKeyPath: string = defaults.localhostKeyPath,
+   daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires) {
+
+   const areCertificatesValid = verifyCertificates();
+
+   if (!areCertificatesValid) {
+      await generateCertificates();
+      await uninstallCaCertificate();
+      await installCaCertificate();
+   }
 }
 
 export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath) {

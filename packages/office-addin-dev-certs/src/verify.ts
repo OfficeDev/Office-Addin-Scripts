@@ -1,4 +1,6 @@
 import { execSync } from "child_process";
+import * as crypto from "crypto";
+import * as fs from "fs";
 import * as defaults from "./defaults";
 
 function getVerifyCommand(): string {
@@ -10,7 +12,7 @@ function getVerifyCommand(): string {
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
- }
+}
 
 export function isCaCertificateInstalled(): boolean {
     const command = getVerifyCommand();
@@ -27,6 +29,43 @@ export function isCaCertificateInstalled(): boolean {
     return false;
 }
 
-export function verifyCaCertificate(): boolean {
-    return isCaCertificateInstalled();
+function validateCertificateAndKey(certificatePath: string, keyPath: string) {
+    let certificate: string = "";
+    let key: string = "";
+
+    try {
+        certificate = fs.readFileSync(certificatePath).toString();
+    } catch (err) {
+        throw new Error(`Failed to read certificate.\n${err}`);
+    }
+
+    try {
+        key = fs.readFileSync(keyPath).toString();
+    } catch (err) {
+        throw new Error(`Failed to read certificate key.\n${err}`);
+    }
+
+    let encrypted;
+
+    try {
+        encrypted = crypto.publicEncrypt(certificate, Buffer.from("test"));
+    } catch (err) {
+        throw new Error(`The certificate is not valid.\n${err}`);
+    }
+
+    try {
+        crypto.privateDecrypt(key, encrypted);
+    } catch (err) {
+        throw new Error(`The certificate key is not valid.\n${err}`);
+    }
+}
+
+export function verifyCertificates(certificatePath: string = defaults.localhostCertificatePath, keyPath: string = defaults.localhostKeyPath): boolean {
+    let isCertificateValid: boolean = true;
+    try {
+        validateCertificateAndKey(certificatePath, keyPath);
+    } catch (err) {
+        isCertificateValid = false;
+    }
+    return isCertificateValid && isCaCertificateInstalled();
 }
