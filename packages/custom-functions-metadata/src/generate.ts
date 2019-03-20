@@ -367,6 +367,12 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             const errorString = "Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :";
             extra.errors.push(logError(errorString, functionPosition));
         }
+
+        if (isStreamingFunction) {
+            const functionPosition =  getPosition(func);
+            const errorString = "@requiresAddress cannot be used with @streaming.";
+            extra.errors.push(logError(errorString, functionPosition));
+        }
     }
 
     return optionsItem;
