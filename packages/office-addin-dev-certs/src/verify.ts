@@ -8,7 +8,7 @@ function getVerifyCommand(): string {
        case "win32":
           return `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=${defaults.certificateName}*' | Where-Object { $_.NotAfter -gt [datetime]::today } | Format-List"`;
        case "darwin": // macOS
-          return `security find-certificate -c "${defaults.certificateName}"`;
+          return `security find-certificate -c "${defaults.certificateName}" -p | openssl x509 -checkend 86400 -noout`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
@@ -19,11 +19,13 @@ export function isCaCertificateInstalled(): boolean {
 
     try {
         const output = execSync(command, {stdio : "pipe" }).toString();
-        if (output.length !== 0) {
+        if (process.platform === "darwin") {
             return true;
+        } else if (output.length !== 0) {
+            return true; // powershell command return empty string if the certificate not-found/expired
         }
     } catch (error) {
-        // Mac security command throws error if certifcate is not found
+        // Mac security command throws error if the certifcate is not-found/expired
     }
 
     return false;
