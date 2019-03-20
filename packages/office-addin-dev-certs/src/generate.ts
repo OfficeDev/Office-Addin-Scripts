@@ -3,15 +3,15 @@ import * as fsExtra from "fs-extra";
 import * as mkcert from "mkcert";
 import * as path from "path";
 import * as defaults from "./defaults";
-import * as install from "./install";
-import * as verify from "./verify";
 
 /* Generate operation will check if there is already valid certificate installed.
    if yes, then this operation will be no op.
    else, new certificates are generated and installed if --install was provided.
 */
-export async function generateCertificates(caCertificatePath: string = defaults.caCertificatePath, localhostCertificatePath: string = defaults.localhostCertificatePath, localhostKeyPath: string = defaults.localhostKeyPath,
-                                           daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires) {
+export async function generateCertificates(caCertificatePath: string = defaults.caCertificatePath,
+    localhostCertificatePath: string = defaults.localhostCertificatePath,
+    localhostKeyPath: string = defaults.localhostKeyPath,
+    daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires) {
 
     try {
         fsExtra.ensureDirSync(path.dirname(caCertificatePath));
@@ -22,12 +22,12 @@ export async function generateCertificates(caCertificatePath: string = defaults.
     }
 
     const cACertificateInfo: mkcert.CACertificateInfo = {
-                                                            countryCode: defaults.countryCode,
-                                                            locality: defaults.locality,
-                                                            organization: defaults.certificateName,
-                                                            state: defaults.state,
-                                                            validityDays: daysUntilCertificateExpires,
-                                                        };
+        countryCode: defaults.countryCode,
+        locality: defaults.locality,
+        organization: defaults.certificateName,
+        state: defaults.state,
+        validityDays: daysUntilCertificateExpires,
+    };
     let caCertificate: mkcert.Certificate;
     try {
         caCertificate = await mkcert.createCA(cACertificateInfo);
@@ -36,11 +36,11 @@ export async function generateCertificates(caCertificatePath: string = defaults.
     }
 
     const localhostCertificateInfo: mkcert.CertificateInfo = {
-                                                                caCert: caCertificate.cert,
-                                                                caKey: caCertificate.key,
-                                                                domains: defaults.domain,
-                                                                validityDays: daysUntilCertificateExpires,
-                                                            };
+        caCert: caCertificate.cert,
+        caKey: caCertificate.key,
+        domains: defaults.domain,
+        validityDays: daysUntilCertificateExpires,
+    };
     let localhostCertificate: mkcert.Certificate;
     try {
         localhostCertificate = await mkcert.createCert(localhostCertificateInfo);

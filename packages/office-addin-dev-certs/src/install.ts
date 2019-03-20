@@ -1,5 +1,5 @@
+import { execSync } from "child_process";
 import * as defaults from "./defaults";
-import { uninstallCaCertificate } from "./uninstall";
 
 function getInstallCommand(caCertificatePath: string): string {
    let command: string;
@@ -18,7 +18,7 @@ function getInstallCommand(caCertificatePath: string): string {
 
 export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath) {
     const command = getInstallCommand(caCertificatePath);
-    const execSync = require("child_process").execSync;
+
     try {
         console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
         execSync(command, {stdio : "pipe" });

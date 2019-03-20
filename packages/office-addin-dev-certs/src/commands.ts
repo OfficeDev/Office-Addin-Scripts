@@ -7,6 +7,7 @@ import {verifyCaCertificate} from "./verify";
 
 function parseDays(optionValue: any): number | undefined {
     const days = parseNumber(optionValue, "--days should specify a number.");
+
     if (days !== undefined) {
         if (!Number.isInteger(days)) {
             throw new Error("--days should be integer.");
@@ -22,6 +23,7 @@ export async function install(command: commander.Command) {
     try {
         const days =  parseDays(command.days);
         const isCertificateValid  = verifyCaCertificate();
+
         if (isCertificateValid) {
             throw new Error("A valid CA certificate is already installed.");
         }

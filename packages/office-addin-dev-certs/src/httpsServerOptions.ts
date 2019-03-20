@@ -15,11 +15,12 @@ interface IHttpsServerOptions {
 
 function getCertificateDirectory(): string {
     const userHomeDirectory = os.homedir();
-    return path.join(userHomeDirectory, defaults.certificateDirectory);
+    return path.join(userHomeDirectory, defaults.certificateDirectoryName);
 }
 
 function validateCertificateAndKey(certificate: string, key: string) {
     let encrypted;
+
     try {
         encrypted = crypto.publicEncrypt(certificate, Buffer.from("test"));
     } catch (err) {

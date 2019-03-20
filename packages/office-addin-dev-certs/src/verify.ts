@@ -1,3 +1,4 @@
+import { execSync } from "child_process";
 import * as defaults from "./defaults";
 
 function getVerifyCommand(): string {
@@ -13,7 +14,7 @@ function getVerifyCommand(): string {
 
 export function isCaCertificateInstalled(): boolean {
     const command = getVerifyCommand();
-    const execSync = require("child_process").execSync;
+
     try {
         const output = execSync(command, {stdio : "pipe" }).toString();
         if (output.length !== 0) {
@@ -22,6 +23,7 @@ export function isCaCertificateInstalled(): boolean {
     } catch (error) {
         // Mac security command throws error if certifcate is not found
     }
+
     return false;
 }
 

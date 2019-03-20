@@ -1,3 +1,4 @@
+import { execSync } from "child_process";
 import * as defaults from "./defaults";
 
 function getUninstallCommand(): string {
@@ -13,7 +14,6 @@ function getUninstallCommand(): string {
 
 export function uninstallCaCertificate(): void {
    const command = getUninstallCommand();
-   const execSync = require("child_process").execSync;
    try {
       console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       execSync(command, {stdio : "pipe" });
