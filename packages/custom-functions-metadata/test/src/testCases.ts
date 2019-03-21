@@ -28,6 +28,7 @@ describe("test cases", function() {
 
             if (source) {
                 it(`${testCaseDirName}\\${sourceFileName}`, async function() {
+                    // add a file named "skip" to skip the test case
                     if (fs.existsSync(path.resolve(testCaseDirPath, "skip"))) {
                         this.skip();
                     } else {
@@ -36,6 +37,12 @@ describe("test cases", function() {
                         const actualMetadataFile = path.join(testCaseDirPath, `actual.${scriptType}.json`);
                         const expectedMetadataFile = path.join(testCaseDirPath, "expected.json");
                         const expectedMetadata: string | undefined = readFileIfExists(expectedMetadataFile);
+
+                        // add a file named "debugger" to break on the test case
+                        if (fs.existsSync(path.resolve(testCaseDirPath, "debugger"))) {
+                            // tslint:disable-next-line: no-debugger
+                            debugger;
+                        }
 
                         // generate metadata
                         const result = await generate(sourceFile, actualMetadataFile);
