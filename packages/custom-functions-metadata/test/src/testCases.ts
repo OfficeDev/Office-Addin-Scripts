@@ -28,33 +28,37 @@ describe("test cases", function() {
 
             if (source) {
                 it(`${testCaseDirName}\\${sourceFileName}`, async function() {
-                    const actualErrorsFile = path.join(testCaseDirPath, `actual.${scriptType}.errors.txt`);
-                    const expectedErrorsFile = path.join(testCaseDirPath, `expected.${scriptType}.errors.txt`);
-                    const actualMetadataFile = path.join(testCaseDirPath, `actual.${scriptType}.json`);
-                    const expectedMetadataFile = path.join(testCaseDirPath, "expected.json");
-                    const expectedMetadata: string | undefined = readFileIfExists(expectedMetadataFile);
-
-                    // generate metadata
-                    const result = await generate(sourceFile, actualMetadataFile);
-
-                    const actualMetadata = readFileIfExists(actualMetadataFile);
-                    const actualErrors = (result.errors.length > 0) ? result.errors.join("\n") : undefined;
-                    const expectedErrors = readFileIfExists(expectedErrorsFile);
-
-                    // if actual errors are different than expected, write out the actual errors to a file
-                    // otherwise, delete the actual errors file if it exists
-                    if (actualErrors !== expectedErrors) {
-                        fs.writeFileSync(actualErrorsFile, actualErrors);
+                    if (fs.existsSync(path.resolve(testCaseDirPath, "skip"))) {
+                        this.skip();
                     } else {
-                        deleteFileIfExists(actualErrorsFile);
-                    }
+                        const actualErrorsFile = path.join(testCaseDirPath, `actual.${scriptType}.errors.txt`);
+                        const expectedErrorsFile = path.join(testCaseDirPath, `expected.${scriptType}.errors.txt`);
+                        const actualMetadataFile = path.join(testCaseDirPath, `actual.${scriptType}.json`);
+                        const expectedMetadataFile = path.join(testCaseDirPath, "expected.json");
+                        const expectedMetadata: string | undefined = readFileIfExists(expectedMetadataFile);
 
-                    assert.strictEqual(actualMetadata, expectedMetadata, "verify metadata");
-                    assert.strictEqual(actualErrors, expectedErrors, "verify errors");
+                        // generate metadata
+                        const result = await generate(sourceFile, actualMetadataFile);
 
-                    // if actual metadata is what was expected, delete the actual metadata file
-                    if (actualMetadata === expectedMetadata) {
-                        deleteFileIfExists(actualMetadataFile);
+                        const actualMetadata = readFileIfExists(actualMetadataFile);
+                        const actualErrors = (result.errors.length > 0) ? result.errors.join("\n") : undefined;
+                        const expectedErrors = readFileIfExists(expectedErrorsFile);
+
+                        // if actual errors are different than expected, write out the actual errors to a file
+                        // otherwise, delete the actual errors file if it exists
+                        if (actualErrors !== expectedErrors) {
+                            fs.writeFileSync(actualErrorsFile, actualErrors);
+                        } else {
+                            deleteFileIfExists(actualErrorsFile);
+                        }
+
+                        assert.strictEqual(actualMetadata, expectedMetadata, "metadata does not match expected");
+                        assert.strictEqual(actualErrors, expectedErrors, "errors do not match expected");
+
+                        // if actual metadata is what was expected, delete the actual metadata file
+                        if (actualMetadata === expectedMetadata) {
+                            deleteFileIfExists(actualMetadataFile);
+                        }
                     }
                 });
             }
