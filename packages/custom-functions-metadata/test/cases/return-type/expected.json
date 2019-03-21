@@ -1,0 +1,10 @@
+{
+    "functions": [
+        {
+            "id": "RETURNBOOLEAN",
+            "name": "RETURNBOOLEAN",
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}
