@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "@types/inquirer": "0.0.44",
+    "@types/sinon": "^7.0.10",
     "child_process": "^1.0.2",
     "commander": "^2.18.0",
     "fs": "0.0.1-security",
@@ -40,6 +41,7 @@
     "inquirer": "^6.2.2",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
+    "sinon": "^7.3.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.0.3"

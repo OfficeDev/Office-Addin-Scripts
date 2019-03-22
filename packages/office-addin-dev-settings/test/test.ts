@@ -4,6 +4,7 @@ import * as fsextra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as mocha from "mocha";
 import * as fspath from "path";
+import * as sinon from "sinon";
 import * as appcontainer from "../src/appcontainer";
 import * as commands from "../src/commands"
 import * as devSettings from "../src/dev-settings";
@@ -170,7 +171,6 @@ describe("DevSettingsForAddIn", function() {
 });
 
 describe("Appcontainer", async function() {
-  const sinon = require("sinon");
   let sandbox = sinon.createSandbox();
   beforeEach(function() {
     sandbox = sinon.createSandbox();
@@ -189,8 +189,8 @@ describe("Appcontainer", async function() {
   it("loopback already enabled", async function() {
     const command: commander.Command = new commander.Command();
     command.loopback = true;
-    const isLoopbackExemptionForAppcontainer = sandbox.fake.returns(true);
-    const addLoopbackExemptionForAppcontainer = sandbox.fake();
+    const isLoopbackExemptionForAppcontainer = sinon.fake.returns(true);
+    const addLoopbackExemptionForAppcontainer = sinon.fake();
     sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
     sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
     await commands.appcontainer("EdgeWebView", command);
@@ -200,8 +200,8 @@ describe("Appcontainer", async function() {
   it("loopback not enabled, user doesn't gives consent", async function() {
     const command: commander.Command = new commander.Command();
     command.loopback = true;
-    const isLoopbackExemptionForAppcontainer = sandbox.fake.returns(false);
-    const addLoopbackExemptionForAppcontainer = sandbox.fake();
+    const isLoopbackExemptionForAppcontainer = sinon.fake.returns(false);
+    const addLoopbackExemptionForAppcontainer = sinon.fake();
     sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
     sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
     sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: false});
@@ -212,8 +212,8 @@ describe("Appcontainer", async function() {
   it("loopback not enabled, user gives consent", async function() {
     const command: commander.Command = new commander.Command();
     command.loopback = true;
-    const isLoopbackExemptionForAppcontainer = sandbox.fake.returns(false);
-    const addLoopbackExemptionForAppcontainer = sandbox.fake();
+    const isLoopbackExemptionForAppcontainer = sinon.fake.returns(false);
+    const addLoopbackExemptionForAppcontainer = sinon.fake();
     sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
     sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
     sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: true});
