@@ -1,5 +1,6 @@
 import * as childProcess from "child_process";
 import { URL } from "whatwg-url";
+import { readManifestFile } from "office-addin-manifest";
 
 /**
  * Adds a loopback exemption for the appcontainer.
@@ -73,6 +74,21 @@ export function getAppcontainerName(sourceLocation: string, isFromStore = false)
   const name = `${addinType}_${origin}${guid}`.replace(/[://]/g, "_");
 
   return name;
+}
+
+/**
+ * Returns the name of the appcontainer used to run an Office Add-in.
+ * @param manifestPath Path of the manifest file.
+ */
+export async function getAppcontainerNameFromManifest(manifestPath: string): Promise<string>{
+  const manifest = await readManifestFile(manifestPath);
+  const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
+
+  if (sourceLocation === undefined) {
+    throw new Error(`The source location could not be retrieved from the manifest.`);
+  }
+
+  return getAppcontainerName(sourceLocation, false);
 }
 
 /**
