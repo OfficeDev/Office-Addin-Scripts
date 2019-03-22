@@ -1,10 +1,12 @@
 import * as assert from "assert";
+import * as commander from "commander";
 import * as fsextra from "fs-extra";
+import * as inquirer from "inquirer";
 import * as mocha from "mocha";
 import * as fspath from "path";
 import * as appcontainer from "../src/appcontainer";
+import * as commands from "../src/commands"
 import * as devSettings from "../src/dev-settings";
-
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 
 async function testSetSourceBundleUrlComponents(components: devSettings.SourceBundleUrlComponents, expected: devSettings.SourceBundleUrlComponents) {
@@ -168,6 +170,14 @@ describe("DevSettingsForAddIn", function() {
 });
 
 describe("Appcontainer", async function() {
+  const sinon = require("sinon");
+  let sandbox = sinon.createSandbox();
+  beforeEach(function() {
+    sandbox = sinon.createSandbox();
+  });
+  afterEach(function() {
+    sandbox.restore();
+  });
   describe("getAppcontainerName()", function() {
     it("developer add-in from https://localhost:3000", function() {
       assert.strictEqual(appcontainer.getAppcontainerName("https://localhost:3000/index.html"), "1_https___localhost_300004ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
@@ -175,6 +185,41 @@ describe("Appcontainer", async function() {
     it("store add-in (ScriptLab)", function() {
       assert.strictEqual(appcontainer.getAppcontainerName("https://script-lab.azureedge.net", true), "0_https___script-lab.azureedge.net04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
+  });
+  it("loopback already enabled", async function() {
+    const command: commander.Command = new commander.Command();
+    command.loopback = true;
+    const isLoopbackExemptionForAppcontainer = sandbox.fake.returns(true);
+    const addLoopbackExemptionForAppcontainer = sandbox.fake();
+    sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
+    sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
+    await commands.appcontainer("EdgeWebView", command);
+    assert.strictEqual(isLoopbackExemptionForAppcontainer.calledWith("Microsoft.win32webviewhost_cw5n1h2txyewy"), true);
+    assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 0);
+  });
+  it("loopback not enabled, user doesn't gives consent", async function() {
+    const command: commander.Command = new commander.Command();
+    command.loopback = true;
+    const isLoopbackExemptionForAppcontainer = sandbox.fake.returns(false);
+    const addLoopbackExemptionForAppcontainer = sandbox.fake();
+    sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
+    sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
+    sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: false});
+    await commands.appcontainer("EdgeWebView", command);
+    assert.strictEqual(isLoopbackExemptionForAppcontainer.calledWith("Microsoft.win32webviewhost_cw5n1h2txyewy"), true);
+    assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 0);
+  });
+  it("loopback not enabled, user gives consent", async function() {
+    const command: commander.Command = new commander.Command();
+    command.loopback = true;
+    const isLoopbackExemptionForAppcontainer = sandbox.fake.returns(false);
+    const addLoopbackExemptionForAppcontainer = sandbox.fake();
+    sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
+    sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
+    sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: true});
+    await commands.appcontainer("EdgeWebView", command);
+    assert.strictEqual(isLoopbackExemptionForAppcontainer.calledWith("Microsoft.win32webviewhost_cw5n1h2txyewy"), true);
+    assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 1);
   });
 });
 
