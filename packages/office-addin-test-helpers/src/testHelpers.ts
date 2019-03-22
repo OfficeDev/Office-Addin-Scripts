@@ -5,13 +5,9 @@ import * as fetch from "isomorphic-fetch";
 let applicationSideloaded: boolean = false;
 let devServerProcess: any;
 let devServerStarted: boolean = false;
-let port: number = 8080;
 
-export async function pingTestServer(portNumber: number | undefined): Promise<Object> {
-    return new Promise<Object>(async (resolve, reject) => {
-        if (portNumber !== undefined) {
-            port = portNumber;
-        }
+export async function pingTestServer(port: number = 8080): Promise<object> {
+    return new Promise<object>(async (resolve, reject) => {
         const serverResponse: any = {};
         try {
             const pingUrl: string = `https://localhost:${port}/ping`;
@@ -27,11 +23,8 @@ export async function pingTestServer(portNumber: number | undefined): Promise<Ob
     });
 }
 
-export async function sendTestResults(data: object, portNumber: number | undefined): Promise<boolean> {
+export async function sendTestResults(data: object, port: number = 8080): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
-        if (portNumber !== undefined) {
-            port = portNumber;
-        }
         const json = JSON.stringify(data);
         const url: string = `https://localhost:${port}/results/`;
         const dataUrl: string = url + "?data=" + encodeURIComponent(json);
