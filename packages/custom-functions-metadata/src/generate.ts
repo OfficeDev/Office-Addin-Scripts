@@ -271,6 +271,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                         delete functionMetadata.description;
                     }
 
+                    if (!functionMetadata.result) {
+                        delete functionMetadata.result;
+                    }
+
                     extras.push(extra);
                     functions.push(functionMetadata);
                 }
@@ -363,6 +367,12 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             const errorString = "Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :";
             extra.errors.push(logError(errorString, functionPosition));
         }
+
+        if (isStreamingFunction) {
+            const functionPosition =  getPosition(func);
+            const errorString = "@requiresAddress cannot be used with @streaming.";
+            extra.errors.push(logError(errorString, functionPosition));
+        }
     }
 
     return optionsItem;
@@ -451,6 +461,10 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
     // Only return dimensionality = matrix.  Default assumed scalar
     if (resultDim === "scalar") {
         delete resultItem.dimensionality;
+    }
+
+    if (resultType === "any") {
+        delete resultItem.type;
     }
 
     return resultItem;
