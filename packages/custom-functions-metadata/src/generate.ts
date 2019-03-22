@@ -263,11 +263,11 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                         }
                     }
 
-                    if (functionMetadata.helpUrl === "") {
+                    if (!functionMetadata.helpUrl) {
                         delete functionMetadata.helpUrl;
                     }
 
-                    if (functionMetadata.description === "") {
+                    if (!functionMetadata.description) {
                         delete functionMetadata.description;
                     }
 
