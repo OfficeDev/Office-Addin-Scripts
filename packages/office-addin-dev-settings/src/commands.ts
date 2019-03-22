@@ -25,11 +25,12 @@ async function getUserConfirmation(): Promise<boolean> {
   return (answers as any).didUserConfirm;
 }
 
-async function getAppcontainerName(manifestPath: string): Promise<string> {
+export async function getAppcontainerName(manifestPath: string): Promise<string> {
   switch (manifestPath.toLowerCase()) {
     case "edgewebview":
       return "Microsoft.win32webviewhost_cw5n1h2txyewy";
     case "edgewebbrowser":
+    case "edge":
       return "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
     default:
       return await getAppcontainerNameFromManifest(manifestPath);
@@ -46,6 +47,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           const loopbackAlreadyEnabled = await isLoopbackExemptionForAppcontainer(name);
 
           if (loopbackAlreadyEnabled) {
+            console.log(`Loopback is already allowed.`);
             return;
           }
           if (await getUserConfirmation()) {

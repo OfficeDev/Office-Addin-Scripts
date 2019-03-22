@@ -3,14 +3,16 @@ import * as commander from "commander";
 import * as inquirer from "inquirer";
 import * as mocha from "mocha";
 import * as sinon from "sinon";
-import * as appcontainer from "../src/appcontainer";
-import * as commands from "../src/commands"
-import * as devSettings from "../src/dev-settings";
+import * as appcontainer from "../../src/appcontainer";
+import * as commands from "../../src/commands";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 
-
-describe("Appcontainer", async function() {
+describe("Appcontainer edgewebview tests", async function() {
+  const appcontainerName = "edgewebview";
   let sandbox: sinon.SinonSandbox;
+  const command: commander.Command = new commander.Command();
+  command.loopback = true;
+
   beforeEach(function() {
     sandbox = sinon.createSandbox();
   });
@@ -18,38 +20,26 @@ describe("Appcontainer", async function() {
     sandbox.restore();
   });
   it("loopback already enabled", async function() {
-    const command: commander.Command = new commander.Command();
     command.loopback = true;
-    const isLoopbackExemptionForAppcontainer = sinon.fake.returns(true);
-    const addLoopbackExemptionForAppcontainer = sinon.fake();
-    sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
-    sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
-    await commands.appcontainer("EdgeWebView", command);
-    assert.strictEqual(isLoopbackExemptionForAppcontainer.calledWith("Microsoft.win32webviewhost_cw5n1h2txyewy"), true);
+    const appcontaineId = await commands.getAppcontainerName(appcontainerName);
+    await appcontainer.addLoopbackExemptionForAppcontainer(appcontaineId);
+    const addLoopbackExemptionForAppcontainer = sandbox.spy(appcontainer, "addLoopbackExemptionForAppcontainer");
+    await commands.appcontainer(appcontainerName, command);
     assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 0);
+    await appcontainer.removeLoopbackExemptionForAppcontainer("Microsoft.win32webviewhost_cw5n1h2txyewy");
   });
   it("loopback not enabled, user doesn't gives consent", async function() {
-    const command: commander.Command = new commander.Command();
-    command.loopback = true;
-    const isLoopbackExemptionForAppcontainer = sinon.fake.returns(false);
-    const addLoopbackExemptionForAppcontainer = sinon.fake();
-    sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
-    sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
     sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: false});
-    await commands.appcontainer("EdgeWebView", command);
-    assert.strictEqual(isLoopbackExemptionForAppcontainer.calledWith("Microsoft.win32webviewhost_cw5n1h2txyewy"), true);
+    const addLoopbackExemptionForAppcontainer = sandbox.spy(appcontainer, "addLoopbackExemptionForAppcontainer");
+    await commands.appcontainer(appcontainerName, command);
     assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 0);
   });
   it("loopback not enabled, user gives consent", async function() {
-    const command: commander.Command = new commander.Command();
-    command.loopback = true;
-    const isLoopbackExemptionForAppcontainer = sinon.fake.returns(false);
-    const addLoopbackExemptionForAppcontainer = sinon.fake();
-    sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(isLoopbackExemptionForAppcontainer);
-    sandbox.stub(appcontainer, "addLoopbackExemptionForAppcontainer").callsFake(addLoopbackExemptionForAppcontainer);
+    const appcontaineId = await commands.getAppcontainerName(appcontainerName);
+    await appcontainer.removeLoopbackExemptionForAppcontainer(appcontaineId);
     sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: true});
-    await commands.appcontainer("EdgeWebView", command);
-    assert.strictEqual(isLoopbackExemptionForAppcontainer.calledWith("Microsoft.win32webviewhost_cw5n1h2txyewy"), true);
+    const addLoopbackExemptionForAppcontainer = sandbox.spy(appcontainer, "addLoopbackExemptionForAppcontainer");
+    await commands.appcontainer(appcontainerName, command);
     assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 1);
   });
 });
