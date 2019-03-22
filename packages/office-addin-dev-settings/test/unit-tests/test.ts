@@ -3,6 +3,7 @@ import * as commander from "commander";
 import * as fsextra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as mocha from "mocha";
+import * as addinManifext from "office-addin-manifest";
 import * as fspath from "path";
 import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
@@ -189,7 +190,7 @@ describe("Appcontainer", async function() {
     it("undefined source location", async function() {
       const manifest = {defaultSettings: ""};
       const readManifestFile = sinon.fake.returns(manifest);
-      sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(readManifestFile);
+      sandbox.stub(addinManifext, "readManifestFile").callsFake(readManifestFile);
       try {
         await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
         assert.strictEqual(0, 1); // expecting exception
@@ -197,13 +198,13 @@ describe("Appcontainer", async function() {
         assert.strictEqual(err.toString().includes("The source location could not be retrieved from the manifest."), true);
       }
     });
-    it("undefined source location", async function() {
-      const sourceLocation = {sourceLocation: "home"};
+    it("valid source location", async function() {
+      const sourceLocation = {sourceLocation: "https://localhost"};
       const manifest = {defaultSettings: sourceLocation};
       const readManifestFile = sinon.fake.returns(manifest);
-      sandbox.stub(appcontainer, "isLoopbackExemptionForAppcontainer").callsFake(readManifestFile);
-      const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
-      assert.strictEqual(appcontainerName, "home");
+      sandbox.stub(addinManifext, "readManifestFile").callsFake(readManifestFile);
+      const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost");
+      assert.strictEqual(appcontainerName, "1_https___localhost04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
   });
 });
