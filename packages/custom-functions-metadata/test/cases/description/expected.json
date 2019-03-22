@@ -1,0 +1,24 @@
+{
+    "functions": [
+        {
+            "id": "NODESCRIPTION",
+            "name": "NODESCRIPTION",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "description": "Simple description",
+            "id": "SIMPLEDESCRIPTION",
+            "name": "SIMPLEDESCRIPTION",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "description": "Multiple line\r\ndescription",
+            "id": "MULTIPLELINEDESCRIPTION",
+            "name": "MULTIPLELINEDESCRIPTION",
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}
