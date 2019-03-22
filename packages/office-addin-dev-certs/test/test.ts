@@ -39,7 +39,7 @@ describe("office-addin-dev-certs", function() {
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
-                assert.strictEqual(err.toString().includes("Unable to create directory"), true);
+                assert.strictEqual(err.toString().includes("Unable to create the directory"), true);
             }
             assert.strictEqual(createCert.callCount, 0);
         });
@@ -53,7 +53,7 @@ describe("office-addin-dev-certs", function() {
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
-                assert.strictEqual(err.toString().includes("Unable to generate CA certificate"), true);
+                assert.strictEqual(err.toString().includes("Unable to generate the CA certificate"), true);
             }
             assert.strictEqual(createCert.callCount, 0);
         });
@@ -67,7 +67,7 @@ describe("office-addin-dev-certs", function() {
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
-                assert.strictEqual(err.toString().includes("Unable to generate localhost certificate"), true);
+                assert.strictEqual(err.toString().includes("Unable to generate the localhost certificate"), true);
             }
             assert.strictEqual(createCert.callCount, 0);
         });
@@ -221,7 +221,7 @@ describe("office-addin-dev-certs", function() {
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
-                assert.strictEqual(err.toString().includes("Error occured while reading certificate files"), true);
+                assert.strictEqual(err.toString().includes("Unable to read the certificate file."), true);
             }
         });
     });
