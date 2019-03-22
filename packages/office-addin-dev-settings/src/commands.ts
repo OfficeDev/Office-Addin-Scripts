@@ -8,47 +8,47 @@ import { logErrorMessage } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from "office-addin-manifest";
 import {
   addLoopbackExemptionForAppcontainer,
-  getAppcontainerName,
+  getAppcontainerNameFromManifest,
   isAppcontainerSupported,
   isLoopbackExemptionForAppcontainer,
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
 
+async function getUserConfirmation(): Promise<boolean> {
+  const question = {
+    message: "Enable loopback?",
+    name: "didUserConfirm",
+    type: "confirm",
+  };
+  const answers = await inquirer.prompt(question);
+  return (answers as any).didUserConfirm;
+}
+
+async function getAppcontainerName(manifestPath: string): Promise<string> {
+  switch (manifestPath.toLowerCase()) {
+    case "edgewebview":
+      return "Microsoft.win32webviewhost_cw5n1h2txyewy";
+    case "edgewebbrowser":
+      return "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
+    default:
+      return await getAppcontainerNameFromManifest(manifestPath);
+  }
+}
+
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
     try {
-      let name: string;
-      if (manifestPath === "EdgeWebView") {
-          name = "Microsoft.win32webviewhost_cw5n1h2txyewy";
-      } else {
-        const manifest = await readManifestFile(manifestPath);
-        const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
-
-        if (sourceLocation === undefined) {
-          throw new Error(`The source location could not be retrieved from the manifest.`);
-        }
-        name = getAppcontainerName(sourceLocation, false);
-        console.log(`Appcontainer name: ${name}`);
-      }
+      const name = await getAppcontainerName(manifestPath);
 
       if (command.loopback) {
         try {
           const loopbackAlreadyEnabled = await isLoopbackExemptionForAppcontainer(name);
+
           if (loopbackAlreadyEnabled) {
             return;
           }
-          let didUserConfirm = false;
-          const question = {
-            message: "Enable loopback?",
-            name: "didUserConfirm",
-            type: "confirm",
-          };
-          await inquirer.prompt(question)
-          .then((answers) => {
-            didUserConfirm = (answers as any).didUserConfirm;
-          });
-          if (didUserConfirm) {
+          if (await getUserConfirmation()) {
             await addLoopbackExemptionForAppcontainer(name);
             console.log(`Loopback is allowed.`);
           }
