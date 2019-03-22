@@ -11,7 +11,8 @@ function deleteFileIfExists(filePath: string): void {
 }
 
 function readFileIfExists(filePath: string): string | undefined {
-    return (fs.existsSync(filePath)) ? fs.readFileSync(filePath).toString() : undefined;
+    // normalize line endings
+    return (fs.existsSync(filePath)) ? fs.readFileSync(filePath).toString().replace("\r\n", "\n") : undefined;
 }
 
 describe("test cases", function() {
