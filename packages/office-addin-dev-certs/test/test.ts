@@ -4,11 +4,11 @@ import * as crypto from "crypto";
 import * as fsExtra from "fs-extra";
 import * as mocha from "mocha";
 import * as path from "path";
-import * as generate from "../src/generate";
 import { generateCertificates } from "../src/generate";
+import * as generate from "../src/generate";
 import { gethttpsServerOptions } from "../src/httpsServerOptions";
-import { installCaCertificate } from "../src/install";
 import * as install from "../src/install";
+import { installCaCertificate } from "../src/install";
 import * as uninstall from "../src/uninstall";
 import { uninstallCaCertificate } from "../src/uninstall";
 import * as verify from "../src/verify";
@@ -23,6 +23,10 @@ describe("office-addin-dev-certs", function() {
     const testCertificatePath = path.join(testCertificateDir, "localhost.crt");
     const testKeyPath = path.join(testCertificateDir, "localhost.key");
     const cert = {cert: "cert", key: "key"};
+
+    this.afterAll(function() {
+        fsExtra.removeSync(testCertificateDir);
+    });
     describe("generate-tests", function() {
         beforeEach(function() {
             sandbox = sinon.createSandbox();
