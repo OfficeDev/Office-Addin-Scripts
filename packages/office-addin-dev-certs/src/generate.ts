@@ -57,7 +57,7 @@ export async function generateCertificates(caCertificatePath: string = defaults.
     }
 
     if (caCertificatePath === defaults.caCertificatePath) {
-        console.log("The developer certificates have been generated in " + process.cwd());
+        console.log("The developer certificates have been generated in " + defaults.certificateDirectory);
     } else {
         console.log("The developer certificates have been generated.");
     }
