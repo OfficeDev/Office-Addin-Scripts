@@ -28,7 +28,11 @@ export async function install(command: commander.Command) {
 
 export async function verify(command: commander.Command) {
     try {
-        await verifyCertificates();
+        if (await verifyCertificates()) {
+            console.log("The certificates are valid");
+        } else {
+            console.log("The certificates are not valid");
+        }
     } catch (err) {
         logErrorMessage(err);
     }
