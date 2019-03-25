@@ -1,6 +1,7 @@
 import * as commander from "commander";
 import {logErrorMessage, parseNumber} from "office-addin-cli";
 import {ensureCertificatesAreInstalled, installCaCertificate} from "./install";
+import * as logmessages from "./logmessages";
 import {uninstallCaCertificate} from "./uninstall";
 import {verifyCertificates} from "./verify";
 
@@ -29,9 +30,9 @@ export async function install(command: commander.Command) {
 export async function verify(command: commander.Command) {
     try {
         if (await verifyCertificates()) {
-            console.log("The certificates are valid");
+            console.log(logmessages.VERIFY_SUCCESS_MSG);
         } else {
-            console.log("The certificates are not valid");
+            console.log(logmessages.VERIFY_FAILURE_MSG);
         }
     } catch (err) {
         logErrorMessage(err);

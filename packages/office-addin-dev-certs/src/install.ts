@@ -1,6 +1,7 @@
 import { execSync } from "child_process";
 import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
+import * as logmessages from "./logmessages";
 import { uninstallCaCertificate } from "./uninstall";
 import { verifyCertificates } from "./verify";
 
@@ -26,9 +27,11 @@ export async function ensureCertificatesAreInstalled(caCertificatePath: string =
 
    const areCertificatesValid = verifyCertificates();
 
-   if (!areCertificatesValid) {
+   if (areCertificatesValid) {
+      console.log(logmessages.ALREADY_INSTALL_MSG);
+   } else {
       await generateCertificates();
-      await uninstallCaCertificate();
+      await uninstallCaCertificate(false);
       await installCaCertificate();
    }
 }
@@ -39,7 +42,7 @@ export async function installCaCertificate(caCertificatePath: string = defaults.
     try {
         console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
         execSync(command, {stdio : "pipe" });
-        console.log(`The CA certificate was installed.`);
+        console.log(logmessages.INSTALL_SUCCESS_MSG);
     } catch (error) {
         throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
     }
