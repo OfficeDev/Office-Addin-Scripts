@@ -188,7 +188,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                         errors: functionErrors,
                         javascriptFunctionName: functionName,
                     };
-                    const idName = getIdName(functionDeclaration);
+                    const idName = getTagComment(functionDeclaration, CUSTOM_FUNCTION);
                     const idNameArray = idName.split(" ");
                     const jsDocParamInfo = getJSDocParams(functionDeclaration);
                     const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
@@ -206,7 +206,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     const parameters = getParameters(paramsToParse, jsDocParamTypeInfo, jsDocParamInfo, jsDocsParamOptionalInfo, extra, enumList);
 
                     const description = getDescription(functionDeclaration);
-                    const helpUrl = getHelpUrl(functionDeclaration);
+                    const helpUrl = normalizeLineEndings(getTagComment(functionDeclaration, HELPURL_PARAM));
 
                     const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo, extra, enumList);
 
@@ -534,18 +534,24 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     return parameterMetadata;
 }
 
+function normalizeLineEndings(text: string): string {
+    return text ? text.replace(/\r\n|\r/g, "\n") : text;
+}
+
 /**
  * Determines the description parameter for the json
  * @param node - jsDoc node
  */
-export function getDescription(node: ts.Node): string {
+function getDescription(node: ts.Node): string {
     let description: string = "";
+
     // @ts-ignore
     if (node.jsDoc[0]) {
         // @ts-ignore
         description = node.jsDoc[0].comment;
     }
-    return description;
+
+    return normalizeLineEndings(description);
 }
 
 /**
@@ -555,6 +561,14 @@ export function getDescription(node: ts.Node): string {
  */
 function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
     return  ts.getJSDocTags(node).find((tag: ts.JSDocTag) => containsTag(tag, tagName));
+}
+
+/**
+ * If a node contains the named tag, returns the tag comment, otherwise returns "".
+ */
+function getTagComment(node: ts.Node, tagName: string) {
+    const tag = findTag(node, tagName);
+    return (tag && tag.comment) ? tag.comment : "";
 }
 
 /**
@@ -572,15 +586,6 @@ function hasTag(node: ts.Node, tagName: string): boolean {
  */
 function isCustomFunction(node: ts.Node): boolean {
     return  hasTag(node, CUSTOM_FUNCTION);
-}
-
-/**
- * Returns the @helpurl of the JSDoc
- * @param node Node
- */
-function getHelpUrl(node: ts.Node): string {
-    const tag = findTag(node, HELPURL_PARAM);
-    return tag ? tag.comment || "" : "";
 }
 
 /**
@@ -619,15 +624,6 @@ function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
  */
 function isCancelableTag(node: ts.Node, cancelableFunction: boolean): boolean {
     return cancelableFunction || hasTag(node, CANCELABLE);
-}
-
-/**
- * Returns custom id and name from custom functions tag (@CustomFunction id name)
- * @param node - jsDocs node
- */
-function getIdName(node: ts.Node): string {
-    const tag = findTag(node, CUSTOM_FUNCTION);
-    return tag ? tag.comment || "" : "";
 }
 
 /**

@@ -10,15 +10,6 @@ function deleteFileIfExists(filePath: string): void {
     }
 }
 
-function getPlatformSuffix(): string {
-    switch (process.platform) {
-        case "darwin":
-            return "mac";
-        default:
-            return process.platform;
-    }
-}
-
 function normalizeLineEndings(text: string | undefined): string | undefined {
     return text ? text.replace(/\r\n|\r/g, "\n") : text;
 }
@@ -47,9 +38,8 @@ describe("test cases", function() {
                         const actualErrorsFile = path.join(testCaseDirPath, `actual.${scriptType}.errors.txt`);
                         const expectedErrorsFile = path.join(testCaseDirPath, `expected.${scriptType}.errors.txt`);
                         const actualMetadataFile = path.join(testCaseDirPath, `actual.${scriptType}.json`);
-                        const expectedMetadata: string | undefined =
-                            readFileIfExists(path.join(testCaseDirPath, `expected.${getPlatformSuffix()}.json`))
-                            || readFileIfExists(path.join(testCaseDirPath, "expected.json"));
+                        const expectedMetadataFile = path.join(testCaseDirPath, "expected.json");
+                        const expectedMetadata: string | undefined = readFileIfExists(expectedMetadataFile);
 
                         // add a file named "debugger" to break on the test case
                         if (fs.existsSync(path.resolve(testCaseDirPath, "debugger"))) {

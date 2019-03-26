@@ -14,7 +14,7 @@
             "result": {}
         },
         {
-            "helpUrl": "multiple\rlines",
+            "helpUrl": "multiple\nlines",
             "id": "MULTIPLELINEHELPURL",
             "name": "MULTIPLELINEHELPURL",
             "parameters": [],

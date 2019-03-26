@@ -14,7 +14,7 @@
             "result": {}
         },
         {
-            "description": "Multiple line\r\ndescription",
+            "description": "Multiple line\ndescription",
             "id": "MULTIPLELINEDESCRIPTION",
             "name": "MULTIPLELINEDESCRIPTION",
             "parameters": [],
