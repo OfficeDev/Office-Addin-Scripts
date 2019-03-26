@@ -7,7 +7,7 @@ interface IHttpsServerOptions {
     key: Buffer;
 }
 
-export async function gethttpsServerOptions(): Promise<IHttpsServerOptions> {
+export async function getHttpsServerOptions(): Promise<IHttpsServerOptions> {
     await ensureCertificatesAreInstalled();
 
     const httpsServerOptions = {} as IHttpsServerOptions;

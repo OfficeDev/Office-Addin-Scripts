@@ -4,7 +4,7 @@ import * as fsExtra from "fs-extra";
 import * as mocha from "mocha";
 import * as path from "path";
 import * as generate from "../src/generate";
-import { gethttpsServerOptions } from "../src/httpsServerOptions";
+import { getHttpsServerOptions } from "../src/httpsServerOptions";
 import * as install from "../src/install";
 import * as uninstall from "../src/uninstall";
 import * as verify from "../src/verify";
@@ -210,7 +210,7 @@ describe("office-addin-dev-certs", function() {
             const ensureCertificatesAreInstalled = sandbox.fake();
             sandbox.stub(install, "ensureCertificatesAreInstalled").callsFake(ensureCertificatesAreInstalled);
             sandbox.stub(fs, "readFileSync").returns("test");
-            const serverOptions = await gethttpsServerOptions();
+            const serverOptions = await getHttpsServerOptions();
             assert.strictEqual(serverOptions.cert, "test");
             assert.strictEqual(serverOptions.key, "test");
         });
@@ -219,7 +219,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(install, "ensureCertificatesAreInstalled").callsFake(ensureCertificatesAreInstalled);
             sandbox.stub(fs, "readFileSync").throws("test error");
             try {
-                await gethttpsServerOptions();
+                await getHttpsServerOptions();
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
