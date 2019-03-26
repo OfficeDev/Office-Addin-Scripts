@@ -1,7 +1,7 @@
 import * as commander from "commander";
 import {logErrorMessage, parseNumber} from "office-addin-cli";
-import {ensureCertificatesAreInstalled, installCaCertificate} from "./install";
-import * as logmessages from "./logmessages";
+import * as defaults from "./defaults";
+import {ensureCertificatesAreInstalled} from "./install";
 import {uninstallCaCertificate} from "./uninstall";
 import {verifyCertificates} from "./verify";
 
@@ -30,9 +30,9 @@ export async function install(command: commander.Command) {
 export async function verify(command: commander.Command) {
     try {
         if (await verifyCertificates()) {
-            console.log(logmessages.VERIFY_SUCCESS_MSG);
+            console.log(`You have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
         } else {
-            console.log(logmessages.VERIFY_FAILURE_MSG);
+            console.log(`Use "install" for trusted access to https://localhost`);
         }
     } catch (err) {
         logErrorMessage(err);
