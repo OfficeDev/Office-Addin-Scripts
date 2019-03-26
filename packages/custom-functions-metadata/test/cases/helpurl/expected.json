@@ -1,0 +1,31 @@
+{
+    "functions": [
+        {
+            "helpUrl": "https://www.contoso.com/help",
+            "id": "HELPURL",
+            "name": "HELPURL",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "EMPTYHELPURL",
+            "name": "EMPTYHELPURL",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "helpUrl": "multiple\nlines",
+            "id": "MULTIPLELINEHELPURL",
+            "name": "MULTIPLELINEHELPURL",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "helpUrl": "first",
+            "id": "MULTIPLEHELPURLS",
+            "name": "MULTIPLEHELPURLS",
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}
