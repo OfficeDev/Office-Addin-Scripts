@@ -10,17 +10,19 @@ function deleteFileIfExists(filePath: string): void {
     }
 }
 
+function normalizeLineEndings(text: string | undefined): string | undefined {
+    return text ? text.replace(/\r\n|\r/g, "\n") : text;
+}
+
 function readFileIfExists(filePath: string): string | undefined {
-    // normalize line endings
-    return (fs.existsSync(filePath)) ? fs.readFileSync(filePath).toString().replace("\r\n", "\n") : undefined;
+    return normalizeLineEndings(fs.existsSync(filePath) ? fs.readFileSync(filePath).toString() : undefined);
 }
 
 describe("test cases", function() {
     const testCasesDirPath = path.resolve("./test/cases");
-    const testCases = fs.readdirSync(testCasesDirPath, {withFileTypes: true});
+    const testCases = fs.readdirSync(testCasesDirPath);
 
-    testCases.forEach((testCaseDir: fs.Dirent) => {
-        const testCaseDirName = testCaseDir.name;
+    testCases.forEach((testCaseDirName: string) => {
         ["ts", "js"].forEach((scriptType: string) => {
             const testCaseDirPath = path.resolve(testCasesDirPath, testCaseDirName);
             const sourceFileName = `functions.${scriptType}`;
