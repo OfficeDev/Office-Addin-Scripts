@@ -15,9 +15,9 @@ import {
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
 
-async function getUserConfirmation(): Promise<boolean> {
+async function getUserConfirmation(appcontainerName: string): Promise<boolean> {
   const question = {
-    message: "Enable loopback?",
+    message: `Enable loopback for ${appcontainerName}?`,
     name: "didUserConfirm",
     type: "confirm",
   };
@@ -50,7 +50,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
             console.log(`Loopback is already allowed.`);
             return;
           }
-          if (await getUserConfirmation()) {
+          if (await getUserConfirmation(manifestPath)) {
             await addLoopbackExemptionForAppcontainer(name);
             console.log(`Loopback is allowed.`);
           }
