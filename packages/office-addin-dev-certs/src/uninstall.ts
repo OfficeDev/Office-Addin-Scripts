@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import * as defaults from "./defaults";
+import { isCaCertificateInstalled } from "./verify";
 
 function getUninstallCommand(): string {
    switch (process.platform) {
@@ -12,12 +13,18 @@ function getUninstallCommand(): string {
    }
 }
 
-export function uninstallCaCertificate(): void {
+export function uninstallCaCertificate(verbose: boolean = true): void {
+   if (!isCaCertificateInstalled()) {
+      if (verbose) {
+          console.log(`The CA certificate is not installed.`);
+      }
+      return;
+   }
    const command = getUninstallCommand();
    try {
       console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       execSync(command, {stdio : "pipe" });
-      console.log(`The CA certificate was uninstalled.`);
+      console.log(`You no longer have trusted access to https://localhost.`);
    } catch (error) {
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
    }

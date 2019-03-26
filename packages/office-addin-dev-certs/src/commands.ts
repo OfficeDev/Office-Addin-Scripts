@@ -1,6 +1,7 @@
 import * as commander from "commander";
 import {logErrorMessage, parseNumber} from "office-addin-cli";
-import {ensureCertificatesAreInstalled, installCaCertificate} from "./install";
+import * as defaults from "./defaults";
+import {ensureCertificatesAreInstalled} from "./install";
 import {uninstallCaCertificate} from "./uninstall";
 import {verifyCertificates} from "./verify";
 
@@ -29,9 +30,9 @@ export async function install(command: commander.Command) {
 export async function verify(command: commander.Command) {
     try {
         if (await verifyCertificates()) {
-            console.log("The certificates are valid");
+            console.log(`You have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
         } else {
-            console.log("The certificates are not valid");
+            console.log(`You need to install certificates for trusted access to https://localhost.`);
         }
     } catch (err) {
         logErrorMessage(err);

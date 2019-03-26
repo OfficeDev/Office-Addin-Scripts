@@ -26,9 +26,11 @@ export async function ensureCertificatesAreInstalled(caCertificatePath: string =
 
    const areCertificatesValid = verifyCertificates();
 
-   if (!areCertificatesValid) {
+   if (areCertificatesValid) {
+      console.log(`You already have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
+   } else {
       await generateCertificates();
-      await uninstallCaCertificate();
+      await uninstallCaCertificate(false);
       await installCaCertificate();
    }
 }
@@ -39,7 +41,7 @@ export async function installCaCertificate(caCertificatePath: string = defaults.
     try {
         console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
         execSync(command, {stdio : "pipe" });
-        console.log(`The CA certificate was installed.`);
+        console.log(`You now have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
     } catch (error) {
         throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
     }
