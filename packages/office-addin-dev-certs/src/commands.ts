@@ -32,7 +32,7 @@ export async function verify(command: commander.Command) {
         if (await verifyCertificates()) {
             console.log(`You have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
         } else {
-            console.log(`Use "install" for trusted access to https://localhost`);
+            console.log(`You need to install certificates for trusted access to https://localhost.`);
         }
     } catch (err) {
         logErrorMessage(err);
