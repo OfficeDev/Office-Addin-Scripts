@@ -19,7 +19,7 @@ function getPlatformSuffix(): string {
     }
 }
 
-function normalizeLineEndings(text: string | undefined): string | undefined {    
+function normalizeLineEndings(text: string | undefined): string | undefined {
     return text ? text.replace(/\r\n|\r/g, "\n") : text;
 }
 
