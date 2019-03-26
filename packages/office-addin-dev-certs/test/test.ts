@@ -170,7 +170,12 @@ describe("office-addin-dev-certs", function() {
             }
         });
         it("certificate not found in trusted store case", async function() {
-            const execSync = sandbox.fake.returns("");
+            let execSync;
+            if (process.platform === "darwin") {
+                execSync = sandbox.fake.throws("test error");
+            } else {
+                execSync = sandbox.fake.returns("");
+            }
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
                 const ret = await verify.isCaCertificateInstalled();
