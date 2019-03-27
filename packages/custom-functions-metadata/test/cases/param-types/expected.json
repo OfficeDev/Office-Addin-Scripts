@@ -1,0 +1,64 @@
+{
+    "functions": [
+        {
+            "description": "Parameter type not specified",
+            "id": "PARAMTYPENOTSPECIFIED",
+            "name": "PARAMTYPENOTSPECIFIED",
+            "parameters": [
+                {
+                    "name": "p",
+                    "type": "any"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Parameter type: any",
+            "id": "PARAMTYPEANY",
+            "name": "PARAMTYPEANY",
+            "parameters": [
+                {
+                    "name": "p",
+                    "type": "any"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Parameter type: boolean",
+            "id": "PARAMTYPEBOOLEAN",
+            "name": "PARAMTYPEBOOLEAN",
+            "parameters": [
+                {
+                    "name": "p",
+                    "type": "boolean"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Parameter type: number",
+            "id": "PARAMTYPENUMBER",
+            "name": "PARAMTYPENUMBER",
+            "parameters": [
+                {
+                    "name": "p",
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Parameter type: string",
+            "id": "PARAMTYPESTRING",
+            "name": "PARAMTYPESTRING",
+            "parameters": [
+                {
+                    "name": "p",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

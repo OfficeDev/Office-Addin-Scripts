@@ -526,6 +526,11 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             delete pMetadataItem.optional;
         }
 
+        // only include description if it has a value
+        if (!pMetadataItem.description) {
+            delete pMetadataItem.description;
+        }
+
         parameterMetadata.push(pMetadataItem);
 
     })
