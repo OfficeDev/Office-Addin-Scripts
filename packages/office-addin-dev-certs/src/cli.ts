@@ -9,6 +9,7 @@ import * as defaults from "./defaults";
 
 commander
     .command("install")
+    .option("--days <days>", `Specifies the validity of CA certificate in days. Default: ${defaults.daysUntilCertificateExpires}`)
     .description(`Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`)
     .action(commands.install);
 
