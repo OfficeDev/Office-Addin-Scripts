@@ -21,7 +21,9 @@ function parseDays(optionValue: any): number | undefined {
 
 export async function install(command: commander.Command) {
     try {
-        ensureCertificatesAreInstalled();
+        const days = parseDays(command.days);
+
+        ensureCertificatesAreInstalled(days);
     } catch (err) {
         logErrorMessage(err);
     }
