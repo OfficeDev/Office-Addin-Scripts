@@ -22,7 +22,7 @@
         "cors": "^2.8.5",
         "es6-promise": "^4.2.6",
         "express": "^4.16.4",
-        "fs": "0.0.1-security"
+        "office-addin-dev-certs": "^0.0.4"
     },
     "devDependencies": {
         "@types/cors": "^2.8.4",

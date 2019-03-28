@@ -1,6 +1,6 @@
 import * as cors from "cors";
+const devCerts = require("office-addin-dev-certs");
 import * as express from "express";
-import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
 
@@ -26,9 +26,7 @@ export class TestServer {
                 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
             }
 
-            const key = fs.readFileSync(path.resolve(__dirname, '../certs/server.key'));
-            const cert = fs.readFileSync(path.resolve(__dirname, '../certs/server.crt'));
-            const options = { key: key, cert: cert };
+            const options = await devCerts.getHttpsServerOptions();
             const platformName = this.getPlatformName();
 
             // listen for 'ping'
