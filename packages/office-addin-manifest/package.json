@@ -1,6 +1,6 @@
 {
   "name": "office-addin-manifest",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "Read and modify Office Add-in manifest files.",
   "main": "./lib/main.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "commander": "^2.19.0",
     "fs": "0.0.1-security",
     "node-fetch": "^2.2.0",
-    "office-addin-cli": "^0.0.3",
+    "office-addin-cli": "^0.0.4",
     "path": "^0.12.7",
     "uuid": "^3.3.2",
     "xml2js": "^0.4.19"
