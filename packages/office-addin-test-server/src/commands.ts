@@ -1,6 +1,6 @@
 import * as commnder from "commander";
 import { TestServer } from "./testServer"
-const defaultPort: number = 8080
+const defaultPort: number = 4201;
 
 export async function start(command: commnder.Command) {
     const testServerPort: number = (command.port !== undefined) ? parseTestServerPort(command.port) : defaultPort;
