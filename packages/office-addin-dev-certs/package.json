@@ -21,6 +21,7 @@
   "dependencies": {
     "child_process": "^1.0.2",
     "commander": "^2.19.0",
+    "fs-extra": "^7.0.1",
     "mkcert": "^1.2.0",
     "office-addin-cli": "^0.0.1",
     "sinon": "^7.2.7"
