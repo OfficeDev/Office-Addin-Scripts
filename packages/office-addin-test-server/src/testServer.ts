@@ -26,8 +26,7 @@ export class TestServer {
                 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
             }
 
-            const certInfo = await devCerts.getHttpsServerOptions()
-            const options = { key: certInfo.key, cert: certInfo.cert };
+            const options = await devCerts.getHttpsServerOptions()
             const platformName = this.getPlatformName();
 
             // listen for 'ping'
