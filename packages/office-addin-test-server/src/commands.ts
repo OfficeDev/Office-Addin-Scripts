@@ -1,6 +1,6 @@
 import * as commnder from "commander";
-import { TestServer } from "./testServer"
-const defaultPort: number = 8080
+import { defaultPort, TestServer } from "./testServer"
+import { parseNumber } from "office-addin-cli";
 
 export async function start(command: commnder.Command) {
     const testServerPort: number = (command.port !== undefined) ? parseTestServerPort(command.port) : defaultPort;
@@ -45,7 +45,7 @@ function parseNumericCommandOption(optionValue: any, errorMessage: string = "The
 }
 
 function parseTestServerPort(optionValue: any): number {
-    const testServerPort = parseNumericCommandOption(optionValue, "--dev-server-port should specify a number.");
+    const testServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
 
     if (testServerPort !== undefined) {
         if ((testServerPort < 0) || (testServerPort > 65535)) {
