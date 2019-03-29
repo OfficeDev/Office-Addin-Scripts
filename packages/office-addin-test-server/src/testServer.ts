@@ -1,8 +1,10 @@
 import * as cors from "cors";
-const devCerts = require("office-addin-dev-certs");
+import * as devCerts from "office-addin-dev-certs";
 import * as express from "express";
 import * as path from "path";
 import * as https from "https";
+
+export const defaultPort: number = 4201;
 
 export class TestServer {
     m_jsonData: any;

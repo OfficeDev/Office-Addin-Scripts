@@ -6,7 +6,9 @@ let applicationSideloaded: boolean = false;
 let devServerProcess: any;
 let devServerStarted: boolean = false;
 
-export async function pingTestServer(port: number = 4201): Promise<object> {
+export const defaultPort: number = 4201;
+
+export async function pingTestServer(port: number = defaultPort): Promise<object> {
     return new Promise<object>(async (resolve, reject) => {
         const serverResponse: any = {};
         try {
@@ -23,7 +25,7 @@ export async function pingTestServer(port: number = 4201): Promise<object> {
     });
 }
 
-export async function sendTestResults(data: object, port: number = 4201): Promise<boolean> {
+export async function sendTestResults(data: object, port: number = defaultPort): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
         const json = JSON.stringify(data);
         const url: string = `https://localhost:${port}/results/`;
