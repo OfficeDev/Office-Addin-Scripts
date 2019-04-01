@@ -174,7 +174,7 @@ export async function startDebugging(manifestPath: string, appType: AppType,
         }
     }
 
-    //enable loopback for edge browser
+    // enable loopback for edge browser
     if (isDesktopAppType && isWindowsPlatform) {
         try {
             await devSettings.enableLoopBackIfNotEnabled("Microsoft.MicrosoftEdge_8wekyb3d8bbwe", "EdgeWebBrowser");
