@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import * as childProcess from "child_process";
 import * as commander from "commander";
 import * as inquirer from "inquirer";
 import * as mocha from "mocha";
@@ -30,16 +31,16 @@ describe("Appcontainer edgewebview tests", async function() {
   });
   it("loopback not enabled, user doesn't gives consent", async function() {
     sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: false});
-    const addLoopbackExemptionForAppcontainer = sandbox.spy(appcontainer, "addLoopbackExemptionForAppcontainer");
+    const exec = sandbox.spy(childProcess, "exec");
     await commands.appcontainer(appcontainerName, command);
-    assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 0);
+    assert.strictEqual(exec.callCount, 1); // because one query to check if loopback status 
   });
   it("loopback not enabled, user gives consent", async function() {
     const appcontaineId = await commands.getAppcontainerName(appcontainerName);
     await appcontainer.removeLoopbackExemptionForAppcontainer(appcontaineId);
     sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: true});
-    const addLoopbackExemptionForAppcontainer = sandbox.spy(appcontainer, "addLoopbackExemptionForAppcontainer");
+    const exec = sandbox.spy(childProcess, "exec");
     await commands.appcontainer(appcontainerName, command);
-    assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 1);
+    assert.strictEqual(exec.callCount, 2);
   });
 });

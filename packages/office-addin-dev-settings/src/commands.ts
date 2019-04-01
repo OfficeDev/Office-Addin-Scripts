@@ -3,27 +3,16 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import * as inquirer from "inquirer";
 import { logErrorMessage } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from "office-addin-manifest";
 import {
-  addLoopbackExemptionForAppcontainer,
+  enableLoopBackIfNotEnabled,
   getAppcontainerNameFromManifest,
   isAppcontainerSupported,
   isLoopbackExemptionForAppcontainer,
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
-
-async function getUserConfirmation(appcontainerName: string): Promise<boolean> {
-  const question = {
-    message: `Enable loopback for ${appcontainerName}?`,
-    name: "didUserConfirm",
-    type: "confirm",
-  };
-  const answers = await inquirer.prompt(question);
-  return (answers as any).didUserConfirm;
-}
 
 export async function getAppcontainerName(manifestPath: string): Promise<string> {
   switch (manifestPath.toLowerCase()) {
@@ -44,16 +33,8 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
 
       if (command.loopback) {
         try {
-          const loopbackAlreadyEnabled = await isLoopbackExemptionForAppcontainer(name);
-
-          if (loopbackAlreadyEnabled) {
-            console.log(`Loopback is already allowed.`);
-            return;
-          }
-          if (await getUserConfirmation(manifestPath)) {
-            await addLoopbackExemptionForAppcontainer(name);
-            console.log(`Loopback is allowed.`);
-          }
+          await enableLoopBackIfNotEnabled(name, manifestPath);
+          console.log(`Loopback is allowed.`);
         } catch (err) {
           throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
         }

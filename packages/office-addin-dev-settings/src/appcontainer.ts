@@ -1,4 +1,5 @@
 import * as childProcess from "child_process";
+import inquirer = require("inquirer");
 import { readManifestFile } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 
@@ -74,6 +75,29 @@ export function getAppcontainerName(sourceLocation: string, isFromStore = false)
   const name = `${addinType}_${origin}${guid}`.replace(/[://]/g, "_");
 
   return name;
+}
+
+export async function getUserConfirmation(appcontainerName: string): Promise<boolean> {
+  const question = {
+    message: `Allow localhost loopback for ${appcontainerName}?`,
+    name: "didUserConfirm",
+    type: "confirm",
+  };
+  const answers = await inquirer.prompt(question);
+  return (answers as any).didUserConfirm;
+}
+
+export async function enableLoopBackIfNotEnabled(appcontainerName: string, name: string): Promise<void> {
+  const loopbackAlreadyEnabled = await isLoopbackExemptionForAppcontainer(appcontainerName);
+
+  if (loopbackAlreadyEnabled) {
+    throw new Error(`Loopback is already allowed.`);
+  }
+  if (await getUserConfirmation(name)) {
+    await addLoopbackExemptionForAppcontainer(appcontainerName);
+  } else {
+    throw new Error(`Please give consent to enable loopback.`);
+  }
 }
 
 /**
