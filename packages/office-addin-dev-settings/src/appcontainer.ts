@@ -5,6 +5,8 @@ import { URL } from "whatwg-url";
 
 export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
 export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
+export const EdgeBrowserName: string = "Microsoft Edge Web Browser";
+export const EdgeWebViewName: string = "Microsoft Edge WebView";
 
 /**
  * Adds a loopback exemption for the appcontainer.
@@ -102,12 +104,24 @@ export async function getAppcontainerNameFromManifestPath(manifestPath: string):
   }
 }
 
+export function getDisplayNameFromManifestPath(manifestPath: string): string {
+  switch (manifestPath.toLowerCase()) {
+    case "edgewebview":
+      return EdgeWebViewName;
+    case "edgewebbrowser":
+    case "edge":
+      return EdgeBrowserName;
+    default:
+      return manifestPath;
+  }
+}
+
 export async function ensureLoopbackIsEnabled(manifestPath: string, askForConfirmation: boolean = true): Promise<boolean> {
   const name = await getAppcontainerNameFromManifestPath(manifestPath);
   let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (!isEnabled) {
-    if (!askForConfirmation || await getUserConfirmation(manifestPath)) {
+    if (!askForConfirmation || await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath))) {
       await addLoopbackExemptionForAppcontainer(name);
       isEnabled = true;
     }
