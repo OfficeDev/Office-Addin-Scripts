@@ -164,11 +164,12 @@ export async function startDebugging(manifestPath: string, appType: AppType,
         throw new Error("Manifest does not contain the id for the Office Add-in.");
     }
 
+    // DISABLE FOR NOW
     // enable loopback for Edge
-    if (isWindowsPlatform) {
-        const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
-        await devSettings.ensureLoopbackIsEnabled(name);
-    }
+    // if (isWindowsPlatform) {
+    //     const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
+    //     await devSettings.ensureLoopbackIsEnabled(name);
+    // }
 
     // enable debugging
     if (isDesktopAppType && isWindowsPlatform) {
