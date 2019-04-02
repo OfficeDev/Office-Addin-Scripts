@@ -165,23 +165,9 @@ export async function startDebugging(manifestPath: string, appType: AppType,
     }
 
     // enable loopback for edge webview
-    if (isWebAppType && isWindowsPlatform) {
-        try {
-            await devSettings.enableLoopBackIfNotEnabled("Microsoft.win32webviewhost_cw5n1h2txyewy", "EdgeWebView");
-            console.log("Loopback is allowed");
-        } catch (err) {
-            // if already enabled do nothing
-        }
-    }
-
-    // enable loopback for edge browser
-    if (isDesktopAppType && isWindowsPlatform) {
-        try {
-            await devSettings.enableLoopBackIfNotEnabled("Microsoft.MicrosoftEdge_8wekyb3d8bbwe", "EdgeWebBrowser");
-            console.log("Loopback is allowed");
-        } catch (err) {
-            // if already enabled do nothing
-        }
+    if (isWindowsPlatform) {
+        const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
+        await devSettings.ensureLoopbackIsEnabled(name);
     }
 
     // enable debugging

@@ -23,7 +23,7 @@ if (process.platform === "win32") { // only windows is supported
     });
     it("loopback already enabled", async function() {
       command.loopback = true;
-      const appcontaineId = await commands.getAppcontainerName(appcontainerName);
+      const appcontaineId = await appcontainer.getAppcontainerName(appcontainerName);
       await appcontainer.addLoopbackExemptionForAppcontainer(appcontaineId);
       const addLoopbackExemptionForAppcontainer = sandbox.spy(appcontainer, "addLoopbackExemptionForAppcontainer");
       await commands.appcontainer(appcontainerName, command);
@@ -37,7 +37,7 @@ if (process.platform === "win32") { // only windows is supported
       assert.strictEqual(exec.callCount, 1); // because one query to check if loopback status 
     });
     it("loopback not enabled, user gives consent", async function() {
-      const appcontaineId = await commands.getAppcontainerName(appcontainerName);
+      const appcontaineId = await appcontainer.getAppcontainerName(appcontainerName);
       await appcontainer.removeLoopbackExemptionForAppcontainer(appcontaineId);
       sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: true});
       const exec = sandbox.spy(childProcess, "exec");

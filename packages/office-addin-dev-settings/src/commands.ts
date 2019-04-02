@@ -6,40 +6,27 @@ import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from "office-addin-manifest";
 import {
-  enableLoopBackIfNotEnabled,
-  getAppcontainerNameFromManifest,
+  ensureLoopbackIsEnabled,
+  getAppcontainerName,
   isAppcontainerSupported,
   isLoopbackExemptionForAppcontainer,
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
 
-export async function getAppcontainerName(manifestPath: string): Promise<string> {
-  switch (manifestPath.toLowerCase()) {
-    case "edgewebview":
-      return "Microsoft.win32webviewhost_cw5n1h2txyewy";
-    case "edgewebbrowser":
-    case "edge":
-      return "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
-    default:
-      return await getAppcontainerNameFromManifest(manifestPath);
-  }
-}
-
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
     try {
-      const name = await getAppcontainerName(manifestPath);
-
       if (command.loopback) {
         try {
-          await enableLoopBackIfNotEnabled(name, manifestPath);
+          await ensureLoopbackIsEnabled(manifestPath);
           console.log(`Loopback is allowed.`);
         } catch (err) {
           throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
         }
       } else if (command.preventLoopback) {
         try {
+          const name = await getAppcontainerName(manifestPath);
           await removeLoopbackExemptionForAppcontainer(name);
           console.log(`Loopback is no longer allowed.`);
         } catch (err) {
@@ -47,6 +34,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
         }
       } else {
         try {
+          const name = await getAppcontainerName(manifestPath);
           const allowed = await isLoopbackExemptionForAppcontainer(name);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {

@@ -64,7 +64,7 @@ export function isLoopbackExemptionForAppcontainer(name: string): Promise<boolea
  * @param sourceLocation Source location of the Office Add-in.
  * @param isFromStore True if installed from the Store; false otherwise.
  */
-export function getAppcontainerName(sourceLocation: string, isFromStore = false): string {
+export function getAppcontainerNameFromManifestHelper(sourceLocation: string, isFromStore = false): string {
   const url: URL = new URL(sourceLocation);
   const origin: string = url.origin;
   const addinType: number = isFromStore ? 0 : 1; // 0 if from Office Add-in store, 1 otherwise.
@@ -87,17 +87,30 @@ export async function getUserConfirmation(appcontainerName: string): Promise<boo
   return (answers as any).didUserConfirm;
 }
 
-export async function enableLoopBackIfNotEnabled(appcontainerName: string, name: string): Promise<void> {
-  const loopbackAlreadyEnabled = await isLoopbackExemptionForAppcontainer(appcontainerName);
+export async function getAppcontainerName(manifestPath: string): Promise<string> {
+  switch (manifestPath.toLowerCase()) {
+    case "edgewebview":
+      return "Microsoft.win32webviewhost_cw5n1h2txyewy";
+    case "edgewebbrowser":
+    case "edge":
+      return "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
+    default:
+      return await getAppcontainerNameFromManifest(manifestPath);
+  }
+}
+
+export async function ensureLoopbackIsEnabled(manifestPath: string): Promise<boolean> {
+  const name = await getAppcontainerName(manifestPath);
+  const loopbackAlreadyEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (loopbackAlreadyEnabled) {
-    throw new Error(`Loopback is already allowed.`);
+    return true;
   }
-  if (await getUserConfirmation(name)) {
-    await addLoopbackExemptionForAppcontainer(appcontainerName);
-  } else {
-    throw new Error(`Please give consent to enable loopback.`);
+  const confirmed = await getUserConfirmation(manifestPath);
+  if (confirmed) {
+    await addLoopbackExemptionForAppcontainer(name);
   }
+  return confirmed;
 }
 
 /**
@@ -112,7 +125,7 @@ export async function getAppcontainerNameFromManifest(manifestPath: string): Pro
     throw new Error(`The source location could not be retrieved from the manifest.`);
   }
 
-  return getAppcontainerName(sourceLocation, false);
+  return getAppcontainerNameFromManifestHelper(sourceLocation, false);
 }
 
 /**
