@@ -19,8 +19,9 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
     try {
       if (command.loopback) {
         try {
-          await ensureLoopbackIsEnabled(manifestPath);
-          console.log(`Loopback is allowed.`);
+          const askForConfirmation: boolean = (command.yes !== true);
+          const allowed = await ensureLoopbackIsEnabled(manifestPath, askForConfirmation);
+          console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
           throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
         }

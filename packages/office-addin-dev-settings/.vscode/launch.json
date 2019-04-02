@@ -8,42 +8,42 @@
       "name": "Command Line: appcontainer",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
       "name": "Command Line: appcontainer --loopback",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
-      "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml", "--loopback"]
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["appcontainer", "EdgeWebView", "--loopback", "-y"]
     },
     {
       "name": "Command Line: appcontainer --prevent-loopback",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml", "--prevent-loopback"]
     },
     {
       "name": "Command Line: clear",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["clear", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
       "name": "Command Line: debugging",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["debugging", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
       "name": "Command Line: debugging --disable",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "debugging",
         "${workspaceFolder}\\test\\manifest.xml",
@@ -54,7 +54,7 @@
       "name": "Command Line: debugging --enable",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "debugging",
         "${workspaceFolder}\\test\\manifest.xml",
@@ -65,14 +65,14 @@
       "name": "Command Line: live-reload",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["live-reload", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
       "name": "Command Line: live-reload --disable",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "live-reload",
         "${workspaceFolder}\\test\\manifest.xml",
@@ -83,7 +83,7 @@
       "name": "Command Line: live-reload --enable",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "live-reload",
         "${workspaceFolder}\\test\\manifest.xml",
@@ -94,35 +94,35 @@
       "name": "Command Line: runtime-log",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["runtime-log"]
     },
     {
       "name": "Command Line: runtime-log --disable",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["runtime-log", "--disable"]
     },
     {
       "name": "Command Line: runtime-log --enable",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["runtime-log", "--enable"]
     },
     {
       "name": "Command Line: source-bundle-url",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": ["source-bundle-url", "${workspaceFolder}\\test\\manifest.xml"]
     },
     {
       "name": "Command Line: source-bundle-url (set)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "source-bundle-url",
         "${workspaceFolder}\\test\\manifest.xml",
@@ -134,7 +134,7 @@
       "name": "Command Line: source-bundle-url (set to defaults)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "source-bundle-url",
         "${workspaceFolder}\\test\\manifest.xml",
@@ -148,7 +148,7 @@
       "name": "Command Line: source-bundle-url (some params)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/dev-settings.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "source-bundle-url",
         "${workspaceFolder}\\test\\manifest.xml",
