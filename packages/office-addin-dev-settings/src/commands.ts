@@ -7,7 +7,7 @@ import { logErrorMessage } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
-  getAppcontainerName,
+  getAppcontainerNameFromManifestPath,
   isAppcontainerSupported,
   isLoopbackExemptionForAppcontainer,
   removeLoopbackExemptionForAppcontainer,
@@ -26,7 +26,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
         }
       } else if (command.preventLoopback) {
         try {
-          const name = await getAppcontainerName(manifestPath);
+          const name = await getAppcontainerNameFromManifestPath(manifestPath);
           await removeLoopbackExemptionForAppcontainer(name);
           console.log(`Loopback is no longer allowed.`);
         } catch (err) {
@@ -34,7 +34,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
         }
       } else {
         try {
-          const name = await getAppcontainerName(manifestPath);
+          const name = await getAppcontainerNameFromManifestPath(manifestPath);
           const allowed = await isLoopbackExemptionForAppcontainer(name);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {

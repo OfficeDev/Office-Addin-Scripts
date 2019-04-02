@@ -173,10 +173,10 @@ describe("DevSettingsForAddIn", function() {
 describe("Appcontainer", async function() {
   describe("getAppcontainerName()", function() {
     it("developer add-in from https://localhost:3000", function() {
-      assert.strictEqual(appcontainer.getAppcontainerNameFromManifestHelper("https://localhost:3000/index.html"), "1_https___localhost_300004ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
+      assert.strictEqual(appcontainer.getAppcontainerName("https://localhost:3000/index.html"), "1_https___localhost_300004ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
     it("store add-in (ScriptLab)", function() {
-      assert.strictEqual(appcontainer.getAppcontainerNameFromManifestHelper("https://script-lab.azureedge.net", true), "0_https___script-lab.azureedge.net04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
+      assert.strictEqual(appcontainer.getAppcontainerName("https://script-lab.azureedge.net", true), "0_https___script-lab.azureedge.net04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
   });
   describe("getAppcontainerNameFromManifest()", function() {

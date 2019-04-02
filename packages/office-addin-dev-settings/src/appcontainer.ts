@@ -3,6 +3,9 @@ import inquirer = require("inquirer");
 import { readManifestFile } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 
+export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
+export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
+
 /**
  * Adds a loopback exemption for the appcontainer.
  * @param name Appcontainer name
@@ -64,7 +67,7 @@ export function isLoopbackExemptionForAppcontainer(name: string): Promise<boolea
  * @param sourceLocation Source location of the Office Add-in.
  * @param isFromStore True if installed from the Store; false otherwise.
  */
-export function getAppcontainerNameFromManifestHelper(sourceLocation: string, isFromStore = false): string {
+export function getAppcontainerName(sourceLocation: string, isFromStore = false): string {
   const url: URL = new URL(sourceLocation);
   const origin: string = url.origin;
   const addinType: number = isFromStore ? 0 : 1; // 0 if from Office Add-in store, 1 otherwise.
@@ -87,30 +90,30 @@ export async function getUserConfirmation(appcontainerName: string): Promise<boo
   return (answers as any).didUserConfirm;
 }
 
-export async function getAppcontainerName(manifestPath: string): Promise<string> {
+export async function getAppcontainerNameFromManifestPath(manifestPath: string): Promise<string> {
   switch (manifestPath.toLowerCase()) {
     case "edgewebview":
-      return "Microsoft.win32webviewhost_cw5n1h2txyewy";
+      return EdgeWebViewAppcontainerName;
     case "edgewebbrowser":
     case "edge":
-      return "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
+      return EdgeBrowserAppcontainerName;
     default:
       return await getAppcontainerNameFromManifest(manifestPath);
   }
 }
 
 export async function ensureLoopbackIsEnabled(manifestPath: string): Promise<boolean> {
-  const name = await getAppcontainerName(manifestPath);
-  const loopbackAlreadyEnabled = await isLoopbackExemptionForAppcontainer(name);
+  const name = await getAppcontainerNameFromManifestPath(manifestPath);
+  let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
-  if (loopbackAlreadyEnabled) {
-    return true;
+  if (!isEnabled) {
+    if (await getUserConfirmation(manifestPath)) {
+      await addLoopbackExemptionForAppcontainer(name);
+      isEnabled = true;
+    }
   }
-  const confirmed = await getUserConfirmation(manifestPath);
-  if (confirmed) {
-    await addLoopbackExemptionForAppcontainer(name);
-  }
-  return confirmed;
+
+  return isEnabled;
 }
 
 /**
@@ -125,7 +128,7 @@ export async function getAppcontainerNameFromManifest(manifestPath: string): Pro
     throw new Error(`The source location could not be retrieved from the manifest.`);
   }
 
-  return getAppcontainerNameFromManifestHelper(sourceLocation, false);
+  return getAppcontainerName(sourceLocation, false);
 }
 
 /**
