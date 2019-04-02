@@ -1,10 +1,13 @@
 import * as assert from "assert";
+import * as commander from "commander";
 import * as fsextra from "fs-extra";
+import * as inquirer from "inquirer";
 import * as mocha from "mocha";
+import * as addinManifext from "office-addin-manifest";
 import * as fspath from "path";
-import * as appcontainer from "../src/appcontainer";
-import * as devSettings from "../src/dev-settings";
-
+import * as sinon from "sinon";
+import * as appcontainer from "../../src/appcontainer";
+import * as devSettings from "../../src/dev-settings";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 
 async function testSetSourceBundleUrlComponents(components: devSettings.SourceBundleUrlComponents, expected: devSettings.SourceBundleUrlComponents) {
@@ -174,6 +177,34 @@ describe("Appcontainer", async function() {
     });
     it("store add-in (ScriptLab)", function() {
       assert.strictEqual(appcontainer.getAppcontainerName("https://script-lab.azureedge.net", true), "0_https___script-lab.azureedge.net04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
+    });
+  });
+  describe("getAppcontainerNameFromManifest()", function() {
+    let sandbox: sinon.SinonSandbox;
+    beforeEach(function() {
+      sandbox = sinon.createSandbox();
+    });
+    afterEach(function() {
+      sandbox.restore();
+    });
+    it("undefined source location", async function() {
+      const manifest = {defaultSettings: ""};
+      const readManifestFile = sinon.fake.returns(manifest);
+      sandbox.stub(addinManifext, "readManifestFile").callsFake(readManifestFile);
+      try {
+        await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
+        assert.strictEqual(0, 1); // expecting exception
+      } catch (err) {
+        assert.strictEqual(err.toString().includes("The source location could not be retrieved from the manifest."), true);
+      }
+    });
+    it("valid source location", async function() {
+      const sourceLocation = {sourceLocation: "https://localhost"};
+      const manifest = {defaultSettings: sourceLocation};
+      const readManifestFile = sinon.fake.returns(manifest);
+      sandbox.stub(addinManifext, "readManifestFile").callsFake(readManifestFile);
+      const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost");
+      assert.strictEqual(appcontainerName, "1_https___localhost04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
   });
 });

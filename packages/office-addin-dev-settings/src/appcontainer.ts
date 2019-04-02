@@ -1,5 +1,10 @@
 import * as childProcess from "child_process";
+import inquirer = require("inquirer");
+import { readManifestFile } from "office-addin-manifest";
 import { URL } from "whatwg-url";
+
+export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
+export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
 
 /**
  * Adds a loopback exemption for the appcontainer.
@@ -73,6 +78,57 @@ export function getAppcontainerName(sourceLocation: string, isFromStore = false)
   const name = `${addinType}_${origin}${guid}`.replace(/[://]/g, "_");
 
   return name;
+}
+
+export async function getUserConfirmation(name: string): Promise<boolean> {
+  const question = {
+    message: `Allow localhost loopback for ${name}?`,
+    name: "didUserConfirm",
+    type: "confirm",
+  };
+  const answers = await inquirer.prompt(question);
+  return (answers as any).didUserConfirm;
+}
+
+export async function getAppcontainerNameFromManifestPath(manifestPath: string): Promise<string> {
+  switch (manifestPath.toLowerCase()) {
+    case "edgewebview":
+      return EdgeWebViewAppcontainerName;
+    case "edgewebbrowser":
+    case "edge":
+      return EdgeBrowserAppcontainerName;
+    default:
+      return await getAppcontainerNameFromManifest(manifestPath);
+  }
+}
+
+export async function ensureLoopbackIsEnabled(manifestPath: string): Promise<boolean> {
+  const name = await getAppcontainerNameFromManifestPath(manifestPath);
+  let isEnabled = await isLoopbackExemptionForAppcontainer(name);
+
+  if (!isEnabled) {
+    if (await getUserConfirmation(manifestPath)) {
+      await addLoopbackExemptionForAppcontainer(name);
+      isEnabled = true;
+    }
+  }
+
+  return isEnabled;
+}
+
+/**
+ * Returns the name of the appcontainer used to run an Office Add-in.
+ * @param manifestPath Path of the manifest file.
+ */
+export async function getAppcontainerNameFromManifest(manifestPath: string): Promise<string> {
+  const manifest = await readManifestFile(manifestPath);
+  const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
+
+  if (sourceLocation === undefined) {
+    throw new Error(`The source location could not be retrieved from the manifest.`);
+  }
+
+  return getAppcontainerName(sourceLocation, false);
 }
 
 /**
