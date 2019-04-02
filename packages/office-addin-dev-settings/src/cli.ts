@@ -11,6 +11,7 @@ commander
 .description("Display or configure the appcontainer used to run the Office Add-in.")
 .option("--loopback", `Allow access to loopback addresses such as "localhost".`)
 .option("--prevent-loopback", `Prevent access to loopback addresses such as "localhost".`)
+.option("-y,--yes", "Provide approval without any prompts.")
 .action(commands.appcontainer);
 
 commander

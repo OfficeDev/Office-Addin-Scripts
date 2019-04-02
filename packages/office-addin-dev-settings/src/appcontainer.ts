@@ -102,12 +102,12 @@ export async function getAppcontainerNameFromManifestPath(manifestPath: string):
   }
 }
 
-export async function ensureLoopbackIsEnabled(manifestPath: string): Promise<boolean> {
+export async function ensureLoopbackIsEnabled(manifestPath: string, askForConfirmation: boolean = true): Promise<boolean> {
   const name = await getAppcontainerNameFromManifestPath(manifestPath);
   let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (!isEnabled) {
-    if (await getUserConfirmation(manifestPath)) {
+    if (!askForConfirmation || await getUserConfirmation(manifestPath)) {
       await addLoopbackExemptionForAppcontainer(name);
       isEnabled = true;
     }
