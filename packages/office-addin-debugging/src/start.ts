@@ -164,7 +164,7 @@ export async function startDebugging(manifestPath: string, appType: AppType,
         throw new Error("Manifest does not contain the id for the Office Add-in.");
     }
 
-    // enable loopback for edge webview
+    // enable loopback for edge
     if (isWindowsPlatform) {
         const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
         await devSettings.ensureLoopbackIsEnabled(name);

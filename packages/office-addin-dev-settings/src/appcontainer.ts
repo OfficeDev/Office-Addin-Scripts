@@ -80,9 +80,9 @@ export function getAppcontainerName(sourceLocation: string, isFromStore = false)
   return name;
 }
 
-export async function getUserConfirmation(appcontainerName: string): Promise<boolean> {
+export async function getUserConfirmation(name: string): Promise<boolean> {
   const question = {
-    message: `Allow localhost loopback for ${appcontainerName}?`,
+    message: `Allow localhost loopback for ${name}?`,
     name: "didUserConfirm",
     type: "confirm",
   };
