@@ -3,7 +3,7 @@ import * as path from "path";
 
 // Default certificate names
 export const certificateDirectoryName = ".office-addin-dev-certs";
-export const certificateDirectory =  path.join(".", certificateDirectoryName);
+export const certificateDirectory =  path.join(os.homedir(), certificateDirectoryName);
 export const caCertificateFileName = "ca.crt";
 export const caCertificatePath = path.join(certificateDirectory, caCertificateFileName);
 export const localhostCertificateFileName = "localhost.crt";

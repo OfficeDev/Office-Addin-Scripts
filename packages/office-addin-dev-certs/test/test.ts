@@ -229,29 +229,34 @@ describe("office-addin-dev-certs", function() {
         });
     });
     describe("deleteCertificateFiles-tests", function() {
-        const testFile = "test.txt";
-        const testFilePath = path.join(defaults.certificateDirectory, testFile);
         beforeEach(function() {
-            fsExtra.ensureDirSync(defaults.certificateDirectory);
-            fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
-            fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
-            fsExtra.outputFileSync(defaults.caCertificatePath, "test");
+            sandbox = sinon.createSandbox();
         });
         afterEach(function() {
-            fsExtra.removeSync(defaults.certificateDirectory);
+            sandbox.restore();
+        });
+        it("certificate folder doesn't exist case", async function() {
+            const removeSync = sandbox.fake();
+            sandbox.stub(fsExtra, "removeSync").callsFake(removeSync);
+            sandbox.stub(fsExtra, "existsSync").returns(false);
+            await uninstall.deleteCertificateFiles();
+            assert.strictEqual(removeSync.callCount, 0);
         });
         it("extrafile in certificate folder case", async function() {
-            fsExtra.outputFileSync(testFilePath, "test");
+            const removeSync = sandbox.fake();
+            sandbox.stub(fsExtra, "removeSync").callsFake(removeSync);
+            sandbox.stub(fsExtra, "existsSync").returns(true);
+            sandbox.stub(fsExtra, "readdirSync").returns(["test.txt"]);
             await uninstall.deleteCertificateFiles();
-            assert.strictEqual(fsExtra.existsSync(defaults.certificateDirectory), true);
-            assert.strictEqual(fsExtra.existsSync(testFilePath), true);
-            assert.strictEqual(fsExtra.existsSync(defaults.localhostCertificatePath), false);
-            assert.strictEqual(fsExtra.existsSync(defaults.localhostCertificatePath), false);
-            assert.strictEqual(fsExtra.existsSync(defaults.caCertificatePath), false);
+            assert.strictEqual(removeSync.callCount, 3);
         });
         it("clean certificate folder case", async function() {
+            const removeSync = sandbox.fake();
+            sandbox.stub(fsExtra, "removeSync").callsFake(removeSync);
+            sandbox.stub(fsExtra, "existsSync").returns(true);
+            sandbox.stub(fsExtra, "readdirSync").returns([]);
             await uninstall.deleteCertificateFiles();
-            assert.strictEqual(fsExtra.existsSync(defaults.certificateDirectory), false);
+            assert.strictEqual(removeSync.callCount, 4);
         });
     });
 });
