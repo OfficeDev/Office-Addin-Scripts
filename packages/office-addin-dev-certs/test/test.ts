@@ -231,11 +231,16 @@ describe("office-addin-dev-certs", function() {
     describe("deleteCertificateFiles-tests", function() {
         const testFile = "test.txt";
         const testFilePath = path.join(defaults.certificateDirectory, testFile);
-        it("extrafile in certificate folder case", async function() {
+        beforeEach(function() {
             fsExtra.ensureDirSync(defaults.certificateDirectory);
             fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
             fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
             fsExtra.outputFileSync(defaults.caCertificatePath, "test");
+        });
+        afterEach(function() {
+            fsExtra.removeSync(defaults.certificateDirectory);
+        });
+        it("extrafile in certificate folder case", async function() {
             fsExtra.outputFileSync(testFilePath, "test");
             await uninstall.deleteCertificateFiles();
             assert.strictEqual(fsExtra.existsSync(defaults.certificateDirectory), true);
@@ -243,16 +248,10 @@ describe("office-addin-dev-certs", function() {
             assert.strictEqual(fsExtra.existsSync(defaults.localhostCertificatePath), false);
             assert.strictEqual(fsExtra.existsSync(defaults.localhostCertificatePath), false);
             assert.strictEqual(fsExtra.existsSync(defaults.caCertificatePath), false);
-            fsExtra.removeSync(defaults.certificateDirectory);
         });
         it("clean certificate folder case", async function() {
-            fsExtra.ensureDirSync(defaults.certificateDirectory);
-            fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
-            fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
-            fsExtra.outputFileSync(defaults.caCertificatePath, "test");
             await uninstall.deleteCertificateFiles();
             assert.strictEqual(fsExtra.existsSync(defaults.certificateDirectory), false);
-            fsExtra.removeSync(defaults.certificateDirectory);
         });
     });
 });
