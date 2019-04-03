@@ -15,12 +15,12 @@ function getUninstallCommand(): string {
 }
 
 // Deletes the generated certificate files and delete the certificate directory if its empty
-function cleanup(): void {
+export function deleteCertificateFiles(): void {
    fsExtra.removeSync(defaults.localhostCertificatePath);
    fsExtra.removeSync(defaults.localhostKeyPath);
    fsExtra.removeSync(defaults.caCertificatePath);
 
-   if (fsExtra.readdirSync(defaults.certificateDirectory).length === 0) {
+   if (fsExtra.existsSync(defaults.certificateDirectory) && fsExtra.readdirSync(defaults.certificateDirectory).length === 0) {
       fsExtra.removeSync(defaults.certificateDirectory);
    }
 }
@@ -36,7 +36,6 @@ export function uninstallCaCertificate(verbose: boolean = true): void {
    try {
       console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       execSync(command, {stdio : "pipe" });
-      cleanup();
       console.log(`You no longer have trusted access to https://localhost.`);
    } catch (error) {
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
