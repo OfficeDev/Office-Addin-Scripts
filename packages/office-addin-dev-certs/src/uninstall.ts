@@ -14,8 +14,15 @@ function getUninstallCommand(): string {
    }
 }
 
+// Deletes the generated certificate files and delete the certificate directory if its empty
 function cleanup(): void {
-   fsExtra.removeSync(defaults.certificateDirectory);
+   fsExtra.removeSync(defaults.localhostCertificatePath);
+   fsExtra.removeSync(defaults.localhostKeyPath);
+   fsExtra.removeSync(defaults.caCertificatePath);
+
+   if (fsExtra.readdirSync(defaults.certificateDirectory).length === 0) {
+      fsExtra.removeSync(defaults.certificateDirectory);
+   }
 }
 
 export function uninstallCaCertificate(verbose: boolean = true): void {
