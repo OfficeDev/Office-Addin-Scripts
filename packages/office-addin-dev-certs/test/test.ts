@@ -250,7 +250,7 @@ describe("office-addin-dev-certs", function() {
             fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
             fsExtra.outputFileSync(defaults.localhostCertificatePath, "test");
             fsExtra.outputFileSync(defaults.caCertificatePath, "test");
-            uninstall.deleteCertificateFiles();
+            await uninstall.deleteCertificateFiles();
             assert.strictEqual(fsExtra.existsSync(defaults.certificateDirectory), false);
             fsExtra.removeSync(defaults.certificateDirectory);
         });
