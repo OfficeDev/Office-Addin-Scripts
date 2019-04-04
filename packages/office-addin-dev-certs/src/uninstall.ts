@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import * as fsExtra from "fs-extra";
+import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 
@@ -15,14 +16,14 @@ function getUninstallCommand(): string {
 }
 
 // Deletes the generated certificate files and delete the certificate directory if its empty
-export function deleteCertificateFiles(): void {
-   if (fsExtra.existsSync(defaults.certificateDirectory)) {
-      fsExtra.removeSync(defaults.localhostCertificatePath);
-      fsExtra.removeSync(defaults.localhostKeyPath);
-      fsExtra.removeSync(defaults.caCertificatePath);
+export function deleteCertificateFiles(certificateDirectory: string): void {
+   if (fsExtra.existsSync(certificateDirectory)) {
+      fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostCertificateFileName));
+      fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostKeyFileName));
+      fsExtra.removeSync(path.join(certificateDirectory, defaults.caCertificateFileName));
 
-      if (fsExtra.readdirSync(defaults.certificateDirectory).length === 0) {
-         fsExtra.removeSync(defaults.certificateDirectory);
+      if (fsExtra.readdirSync(certificateDirectory).length === 0) {
+         fsExtra.removeSync(certificateDirectory);
       }
    }
 }

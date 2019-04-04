@@ -44,7 +44,7 @@ export async function verify(command: commander.Command) {
 export async function uninstall(command: commander.Command) {
     try {
         await uninstallCaCertificate();
-        await deleteCertificateFiles();
+        await deleteCertificateFiles(defaults.certificateDirectory);
     } catch (err) {
         logErrorMessage(err);
     }
