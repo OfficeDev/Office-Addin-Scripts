@@ -229,7 +229,7 @@ describe("office-addin-dev-certs", function() {
         });
     });
     describe("deleteCertificateFiles-tests", function() {
-        const certificateDirectory: string = path.join(path.resolve(), "certs");
+        const certificateDirectory: string =path.resolve("./certs");
         const testFile = "test.txt";
         const testFilePath = path.join(certificateDirectory, testFile);
         const localhostCertificatePath = path.join(certificateDirectory, defaults.localhostCertificateFileName);
