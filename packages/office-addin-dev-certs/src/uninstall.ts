@@ -16,7 +16,7 @@ function getUninstallCommand(): string {
 }
 
 // Deletes the generated certificate files and delete the certificate directory if its empty
-export function deleteCertificateFiles(certificateDirectory: string): void {
+export function deleteCertificateFiles(certificateDirectory: string = defaults.certificateDirectory): void {
    if (fsExtra.existsSync(certificateDirectory)) {
       fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostCertificateFileName));
       fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostKeyFileName));
