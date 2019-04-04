@@ -1,4 +1,6 @@
 import { execSync } from "child_process";
+import * as fsExtra from "fs-extra";
+import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 
@@ -10,6 +12,19 @@ function getUninstallCommand(): string {
          return `sudo security delete-certificate -c "${defaults.certificateName}"`;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
+   }
+}
+
+// Deletes the generated certificate files and delete the certificate directory if its empty
+export function deleteCertificateFiles(certificateDirectory: string = defaults.certificateDirectory): void {
+   if (fsExtra.existsSync(certificateDirectory)) {
+      fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostCertificateFileName));
+      fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostKeyFileName));
+      fsExtra.removeSync(path.join(certificateDirectory, defaults.caCertificateFileName));
+
+      if (fsExtra.readdirSync(certificateDirectory).length === 0) {
+         fsExtra.removeSync(certificateDirectory);
+      }
    }
 }
 

@@ -2,7 +2,7 @@ import * as commander from "commander";
 import {logErrorMessage, parseNumber} from "office-addin-cli";
 import * as defaults from "./defaults";
 import {ensureCertificatesAreInstalled} from "./install";
-import {uninstallCaCertificate} from "./uninstall";
+import {deleteCertificateFiles, uninstallCaCertificate} from "./uninstall";
 import {verifyCertificates} from "./verify";
 
 function parseDays(optionValue: any): number | undefined {
@@ -44,6 +44,7 @@ export async function verify(command: commander.Command) {
 export async function uninstall(command: commander.Command) {
     try {
         await uninstallCaCertificate();
+        await deleteCertificateFiles(defaults.certificateDirectory);
     } catch (err) {
         logErrorMessage(err);
     }
