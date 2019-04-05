@@ -4,7 +4,6 @@
 import * as fs from "fs";
 import * as ts from "typescript";
 import * as XRegExp from "xregexp";
-import { stringify } from "querystring";
 
 export interface ICustomFunctionsMetadata {
     functions: IFunction[];
