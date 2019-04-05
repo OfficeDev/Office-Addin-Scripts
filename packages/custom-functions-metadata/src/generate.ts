@@ -219,12 +219,15 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     validateId(id, position, extra);
                     validateName(name, position, extra);
 
-                    if (functionNames.indexOf(name) > -1) {
-                        const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
-                        functionErrors.push(logError(errorString, position));
-                    }
+                    // If the function name is capitalized don't check for duplicate or add to list since it has been added already
+                    if (name !== funcName) {
+                        if (functionNames.indexOf(name) > -1) {
+                            const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
+                            functionErrors.push(logError(errorString, position));
+                        }
 
-                    functionNames.push(name);
+                        functionNames.push(name);
+                    }
 
                     if (ids.indexOf(id) > -1) {
                         const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
