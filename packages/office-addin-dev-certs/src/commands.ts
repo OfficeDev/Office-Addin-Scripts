@@ -23,7 +23,7 @@ export async function install(command: commander.Command) {
     try {
         const days = parseDays(command.days);
 
-        ensureCertificatesAreInstalled(days);
+        await ensureCertificatesAreInstalled(days);
     } catch (err) {
         logErrorMessage(err);
     }
