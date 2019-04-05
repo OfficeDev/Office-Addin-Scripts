@@ -150,6 +150,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     const extras: IFunctionExtras[] = [];
     const enumList: string[] = [];
     const functionNames: string[] = [];
+    const metadataFunctionNames: string[] = [];
     const ids: string[] = [];
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -219,15 +220,12 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     validateId(id, position, extra);
                     validateName(name, position, extra);
 
-                    // If the function name is capitalized don't check for duplicate or add to list since it has been added already
-                    if (name !== funcName) {
-                        if (functionNames.indexOf(name) > -1) {
-                            const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
-                            functionErrors.push(logError(errorString, position));
-                        }
-
-                        functionNames.push(name);
+                    if (metadataFunctionNames.indexOf(name) > -1) {
+                        const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
+                        functionErrors.push(logError(errorString, position));
                     }
+
+                    metadataFunctionNames.push(name);
 
                     if (ids.indexOf(id) > -1) {
                         const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
