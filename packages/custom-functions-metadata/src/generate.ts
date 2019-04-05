@@ -4,6 +4,7 @@
 import * as fs from "fs";
 import * as ts from "typescript";
 import * as XRegExp from "xregexp";
+import { stringify } from "querystring";
 
 export interface ICustomFunctionsMetadata {
     functions: IFunction[];
@@ -177,7 +178,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                 const functionErrors: string[] = [];
                 const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
 
-                if (functionNames.indexOf(functionName) > -1) {
+                if (checkForDuplicate(functionNames, functionName)) {
                     const errorString = `Duplicate function name: ${functionName}`;
                     functionErrors.push(logError(errorString, position));
                 }
@@ -220,14 +221,14 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     validateId(id, position, extra);
                     validateName(name, position, extra);
 
-                    if (metadataFunctionNames.indexOf(name) > -1) {
+                    if (checkForDuplicate(metadataFunctionNames, name)) {
                         const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
                         functionErrors.push(logError(errorString, position));
                     }
 
                     metadataFunctionNames.push(name);
 
-                    if (ids.indexOf(id) > -1) {
+                    if (checkForDuplicate(ids, id)) {
                         const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
                         functionErrors.push(logError(errorString, position));
                     }
@@ -284,6 +285,22 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
         ts.forEachChild(node, visit);
     }
+}
+
+/**
+ * Case insensitive check of item in list
+ * @param list Array of strings
+ * @param item String to check against the list
+ */
+function checkForDuplicate(list: string[], item: string): boolean {
+    let duplicate: boolean = false;
+    list.forEach((value: string) => {
+        if (value.toLocaleLowerCase() === item.toLocaleLowerCase()) {
+            duplicate = true;
+        }
+    });
+
+    return duplicate;
 }
 
 /**
