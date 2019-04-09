@@ -32,6 +32,7 @@ export interface IFunctionParameter {
     type: string;
     dimensionality: string;
     optional: boolean;
+    repeating: boolean;
 }
 
 export interface IFunctionResult {
@@ -74,10 +75,16 @@ const TYPE_MAPPINGS = {
 };
 
 const TYPE_MAPPINGS_COMMENT = {
-    ["number"]: 1,
-    ["string"]: 2,
-    ["boolean"]: 3,
-    ["any"]: 4,
+    ["number"]: "number",
+    ["string"]: "string",
+    ["boolean"]: "boolean",
+    ["any"]: "any",
+    ["number[]"]: "number",
+    ["number[][]"]: "number",
+    ["number[][][]"]: "number",
+    ["string[]"]: "string",
+    ["string[][]"]: "string",
+    ["string[][][]"]: "string",
 };
 
 const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
@@ -509,6 +516,8 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
                 if (!checkType) {
                     const errorString = `Unsupported type in code comment:${ptype}`;
                     extra.errors.push(logError(errorString, parameterPosition));
+                } else {
+                    ptype = checkType;
                 }
             } else {
                 // If type not found in comment section set to any type
@@ -518,7 +527,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
 
         // Verify parameter types match between typescript and @param {type}
         const jsDocType = jsDocParamTypeInfo[name];
-        if (jsDocType && jsDocType !== "any") {
+        if (jsDocType && jsDocType !== "any" && !jsDocType.includes("[]")) {
             if (jsDocType.toLocaleLowerCase() !== ptype.toLocaleLowerCase()) {
                 const errorString = `Type {${jsDocType}:${ptype}} doesn't match for parameter : ${name}`;
                 extra.errors.push(logError(errorString, parameterPosition));
@@ -527,9 +536,10 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
 
         const pMetadataItem: IFunctionParameter = {
             description: jsDocParamInfo[name],
-            dimensionality: getParamDim(p.type as ts.TypeNode),
+            dimensionality: getParamDim(p.type as ts.TypeNode, jsDocParamTypeInfo[name]),
             name,
             optional: getParamOptional(p, jsDocParamOptionalInfo),
+            repeating: getRepeatingParameter(p.type as ts.TypeNode, jsDocParamTypeInfo[name]),
             type: ptype,
         };
 
@@ -548,12 +558,47 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             delete pMetadataItem.description;
         }
 
+        // only return repeating if true
+        if (!pMetadataItem.repeating) {
+            delete pMetadataItem.repeating;
+        }
+
         parameterMetadata.push(pMetadataItem);
 
     })
     .filter((meta) => meta);
 
     return parameterMetadata;
+}
+
+function getRepeatingParameter(type: ts.TypeNode, jsDocParamType: string) {
+    let repeating: boolean = false;
+    // Set repeating true for 1D and 3D array types
+    if (type) {
+        if (ts.isTypeReferenceNode(type) || ts.isArrayTypeNode(type)) {
+            const inner = (type as ts.ArrayTypeNode).elementType;
+            if (inner && !ts.isArrayTypeNode(inner)) {
+                // 1D array
+                repeating = true;
+            } else if (inner) {
+                // Check for 3D array
+                const innerArray = (inner as ts.ArrayTypeNode).elementType;
+                if (innerArray && ts.isArrayTypeNode(innerArray)) {
+                    repeating = true;
+                }
+            }
+         }
+    }
+    if (jsDocParamType) {
+        if (jsDocParamType.endsWith("[][][]")) {
+            repeating = true;
+        } else if (jsDocParamType.endsWith("[][]")) {
+            repeating = false;
+        } else if (jsDocParamType.endsWith("[]")) {
+            repeating = true;
+        }
+    }
+    return repeating;
 }
 
 function normalizeLineEndings(text: string): string {
@@ -877,9 +922,21 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
         } else if (ts.isArrayTypeNode(t)) {
             const inner = (t as ts.ArrayTypeNode).elementType;
             if (!ts.isArrayTypeNode(inner)) {
-                extra.errors.push(logError("Invalid array type node: " + inner.getText(), typePosition));
+                // extra.errors.push(logError("Invalid array type node: " + inner.getText(), typePosition));
+                // 1D Array
+                type = inner.getText();
                 return type;
             }
+            const innerArray = (inner as ts.ArrayTypeNode).elementType;
+            if (ts.isArrayTypeNode(innerArray)) {
+                const innerArrayType = (innerArray as ts.ArrayTypeNode).elementType;
+                if (!ts.isArrayTypeNode(innerArrayType)) {
+                    // 3D Array
+                    type = innerArrayType.getText();
+                    return type;
+                }
+            }
+
             // Expectation is that at this point, "kind" is a primitive type (not 3D array).
             // However, if not, the TYPE_MAPPINGS check below will fail.
             kind = inner.elementType.kind;
@@ -897,10 +954,20 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
  * Get the parameter dimensionality of the node
  * @param t TypeNode
  */
-function getParamDim(t: ts.TypeNode): string {
+function getParamDim(t: ts.TypeNode, jsDocType?: string): string {
     let dimensionality: CustomFunctionsSchemaDimensionality = "scalar";
     if (t) {
         if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
+            const inner = (t as ts.ArrayTypeNode).elementType;
+            if (inner && ts.isArrayTypeNode(inner)) {
+                dimensionality = "matrix";
+            }
+         }
+    }
+    if (jsDocType) {
+        if (jsDocType.endsWith("[][][]")) {
+            dimensionality = "matrix";
+        } else if (jsDocType.endsWith("[][]")) {
             dimensionality = "matrix";
         }
     }
