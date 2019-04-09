@@ -62,6 +62,13 @@ const RETURN = "return";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
 
+const TYPE_MAPPINGS_SIMPLE = {
+    [ts.SyntaxKind.NumberKeyword]: "number",
+    [ts.SyntaxKind.StringKeyword]: "string",
+    [ts.SyntaxKind.BooleanKeyword]: "boolean",
+    [ts.SyntaxKind.AnyKeyword]: "any",
+};
+
 const TYPE_MAPPINGS = {
     [ts.SyntaxKind.NumberKeyword]: "number",
     [ts.SyntaxKind.StringKeyword]: "string",
@@ -571,13 +578,18 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     return parameterMetadata;
 }
 
-function getRepeatingParameter(type: ts.TypeNode, jsDocParamType: string) {
+/**
+ * Used to set repeating parameter true for 1d and 3d arrays
+ * @param type Node to check
+ * @param jsDocParamType Type from jsDoc
+ */
+function getRepeatingParameter(type: ts.TypeNode, jsDocParamType: string): boolean {
     let repeating: boolean = false;
     // Set repeating true for 1D and 3D array types
     if (type) {
         if (ts.isTypeReferenceNode(type) || ts.isArrayTypeNode(type)) {
             const inner = (type as ts.ArrayTypeNode).elementType;
-            if (inner && !ts.isArrayTypeNode(inner)) {
+            if (inner && !ts.isArrayTypeNode(inner) || validate1DArray(type as ts.TypeReferenceNode)) {
                 // 1D array
                 repeating = true;
             } else if (inner) {
@@ -586,6 +598,10 @@ function getRepeatingParameter(type: ts.TypeNode, jsDocParamType: string) {
                 if (innerArray && ts.isArrayTypeNode(innerArray)) {
                     repeating = true;
                 }
+            }
+            if (validate3DArray(type as ts.TypeReferenceNode)) {
+                // 3D array of TypeReferenceNode
+                repeating = true;
             }
          }
     }
@@ -907,22 +923,29 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
                 return type;
             }
             if (arrTr.typeArguments) {
-            const isArrayWithTypeRefWithin = validateArray(t) && ts.isTypeReferenceNode(arrTr.typeArguments[0]);
-            if (isArrayWithTypeRefWithin) {
-                    const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
-                    if (!validateArray(inner)) {
-                        extra.errors.push(logError("Invalid type array: " + inner.getText(), typePosition));
-                        return type;
+                const is1DArray = validate1DArray(t);
+                if (is1DArray) {
+                    kind = arrTr.typeArguments[0].kind;
+                }
+                const isArrayWithTypeRefWithin = validateArray(t) && ts.isTypeReferenceNode(arrTr.typeArguments[0]);
+                if (isArrayWithTypeRefWithin) {
+                        const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
+                        if (!validateArray(inner)) {
+                            extra.errors.push(logError("Invalid type array: " + inner.getText(), typePosition));
+                            return type;
+                        }
+                        if (inner.typeArguments) {
+                            kind = inner.typeArguments[0].kind;
+                        }
                     }
-                    if (inner.typeArguments) {
-                        kind = inner.typeArguments[0].kind;
-                    }
+                const is3DArry = validate3DArray(t);
+                if (is3DArry) {
+                    kind = is3DArry;
                 }
             }
         } else if (ts.isArrayTypeNode(t)) {
             const inner = (t as ts.ArrayTypeNode).elementType;
             if (!ts.isArrayTypeNode(inner)) {
-                // extra.errors.push(logError("Invalid array type node: " + inner.getText(), typePosition));
                 // 1D Array
                 type = inner.getText();
                 return type;
@@ -951,6 +974,42 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
 }
 
 /**
+ * Determines if node is a 3-dimensional array and returns kind if true
+ * @param node Node to validate
+ */
+function validate3DArray(node: ts.TypeReferenceNode): ts.SyntaxKind | undefined {
+    if (node.typeArguments && node.typeArguments.length === 1) {
+        const inner = node.typeArguments[0] as ts.TypeReferenceNode;
+        if (inner && ts.isTypeReferenceNode(inner)) {
+            if (inner.typeArguments) {
+                const innerArray = inner.typeArguments[0] as ts.TypeReferenceNode;
+                if (innerArray.typeArguments) {
+                    // @ts-ignore
+                    if (TYPE_MAPPINGS_SIMPLE[innerArray.typeArguments[0].kind]) {
+                        return innerArray.typeArguments[0].kind;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Determines if the node is a simple 1 dimensionality array
+ * @param node Node to validate
+ */
+function validate1DArray(node: ts.TypeReferenceNode): boolean {
+    let simpleArray: boolean = false;
+    if (node.typeArguments && node.typeArguments.length === 1) {
+        // @ts-ignore
+        if (TYPE_MAPPINGS_SIMPLE[node.typeArguments[0].kind]) {
+            simpleArray = true;
+        }
+    }
+    return simpleArray;
+}
+
+/**
  * Get the parameter dimensionality of the node
  * @param t TypeNode
  */
@@ -959,9 +1018,12 @@ function getParamDim(t: ts.TypeNode, jsDocType?: string): string {
     if (t) {
         if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
             const inner = (t as ts.ArrayTypeNode).elementType;
-            if (inner && ts.isArrayTypeNode(inner)) {
+            if (inner && ts.isArrayTypeNode(inner) || inner && ts.isTypeReferenceNode(inner)) {
                 dimensionality = "matrix";
             }
+         }
+        if (validate3DArray(t as ts.TypeReferenceNode)) {
+            dimensionality = "matrix";
          }
     }
     if (jsDocType) {
