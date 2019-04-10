@@ -11,26 +11,19 @@ const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
 
 describe("End-to-end validation of test server", function() {
-    describe("Setup test server", function() {
-        it("Test server should have started", async function() {
+    before("Test Server should have started and responded to ping", async function() {
             const startTestServer = await promiseStartTestServer;
             assert.equal(startTestServer, true);
-        });
+            const serverResponse = await testHelper.pingTestServer(port);
+            assert.equal(serverResponse["status"], 200);
+            assert.equal(serverResponse["platform"], platformName);
+    });
+    describe("Get test server properties", function() {
         it(`Test server port should be ${port}`, async function () {
             assert.equal(testServer.getTestServerPort(), port);
         });
         it(`Test server state should be set to true (i.e. started)`, async function () {
             assert.equal(testServer.getTestServerState(), true);
-        });
-    });
-
-    describe("Ping server for response", function () {
-        let testServerResponse: any;
-        it("Test server should have responded to ping", async function () {
-            testServerResponse = await testHelper.pingTestServer(port);
-            assert.equal(testServerResponse != undefined, true);
-            assert.equal(testServerResponse["status"], 200);
-            assert.equal(testServerResponse["platform"], platformName);
         });
     });
     describe("Send data to server and get results", function () {
@@ -44,15 +37,10 @@ describe("End-to-end validation of test server", function() {
             assert.equal(getResults[0].Value, testValue);
         });
     });
-
-    describe("Stop test server", function () {
-        it("Test server should have stopped ", async function () {
-            const stopTestServer: boolean = await testServer.stopTestServer();
-            assert.equal(stopTestServer, true);
-        });
-        it(`Dev-server state should be set to false (i.e. stopped)`, async function () {
-            assert.equal(testServer.getTestServerState(), false);
-        });
+    after("Test server should have stopped and server state should be set to false", async function () {
+        const stopTestServer: boolean = await testServer.stopTestServer();
+        assert.equal(stopTestServer, true);
+        assert.equal(testServer.getTestServerState(), false);
     });
 });
 
