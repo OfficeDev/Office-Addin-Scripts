@@ -439,6 +439,10 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
                 type: resultType,
             };
 
+            if (paramResultItem.dimensionality === "scalar") {
+                delete paramResultItem.dimensionality;
+            }
+
             return paramResultItem;
         }
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {

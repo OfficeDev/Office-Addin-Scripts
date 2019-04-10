@@ -1,0 +1,20 @@
+{
+    "functions": [
+        {
+            "description": "Test support for the CustomFunctions.CancelableHandler",
+            "id": "TESTCANCELABLEFUNCTION",
+            "name": "TESTCANCELABLEFUNCTION",
+            "options": {
+                "cancelable": true
+            },
+            "parameters": [
+                {
+                    "description": "string parameter",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}
