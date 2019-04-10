@@ -12,32 +12,36 @@ const testValues: any = [];
 
 describe("End-to-end validation of test server", function() {
     before("Test Server should have started and responded to ping", async function() {
-            const startTestServer = await promiseStartTestServer;
-            assert.equal(startTestServer, true);
-            const serverResponse = await testHelper.pingTestServer(port);
-            assert.equal(serverResponse["status"], 200);
-            assert.equal(serverResponse["platform"], platformName);
+        this.timeout(0);
+        const startTestServer = await promiseStartTestServer;
+        assert.equal(startTestServer, true);
+        const serverResponse = await testHelper.pingTestServer(port);
+        assert.equal(serverResponse["status"], 200);
+        assert.equal(serverResponse["platform"], platformName);
     });
     describe("Get test server properties", function() {
-        it(`Test server port should be ${port}`, async function () {
+        it(`Test server port should be ${port}`, function () {
             assert.equal(testServer.getTestServerPort(), port);
         });
-        it(`Test server state should be set to true (i.e. started)`, async function () {
+        it(`Test server state should be set to true (i.e. started)`, function () {
             assert.equal(testServer.getTestServerState(), true);
         });
     });
     describe("Send data to server and get results", function () {
-        it("Send data should have succeeded", async function () {
+        it("Send data should have succeeded", async function() {
+            this.timeout(0);
             const sendData: boolean = await _sendTestData();
             assert.equal(sendData, true);
         });
-        it("Getting sent data back from test server should succeed", async function () {
+        it("Getting sent data back from test server should succeed", async function() {
+            this.timeout(0)
             const getResults: any = await testServer.getTestResults();
             assert.equal(getResults[0].Name, testKey);
             assert.equal(getResults[0].Value, testValue);
         });
     });
-    after("Test server should have stopped and server state should be set to false", async function () {
+    after("Test server should have stopped and server state should be set to false", async function() {
+        this.timeout(0);
         const stopTestServer: boolean = await testServer.stopTestServer();
         assert.equal(stopTestServer, true);
         assert.equal(testServer.getTestServerState(), false);

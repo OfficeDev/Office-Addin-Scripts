@@ -10,19 +10,22 @@ const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
 
 describe("Start test server, ping test server send test results and stop test server", function () {
-    before("Test Server should have started and responded to ping", async function () {
+    before("Test Server should have started and responded to ping", async function() {
+        this.timeout(0)
         const startTestServer = await promiseStartTestServer;
         assert.equal(startTestServer, true);
         const serverResponse = await testHelper.pingTestServer(port);
         assert.equal(serverResponse["status"], 200);
     });
     describe("Send data to test server", function () {
-        it("Send data should have succeeded", async function () {
+        it("Send data should have succeeded", async function() {
+            this.timeout(0);
             const sendData: boolean = await _sendTestData();
             assert.equal(sendData, true);
         });
     });
-    after("Test server should have stopped server state should be set to false", async function () {
+    after("Test server should have stopped server state should be set to false", async function() {
+        this.timeout(0);
         const stopTestServer: boolean = await testServer.stopTestServer();
         assert.equal(stopTestServer, true);
         assert.equal(testServer.getTestServerState(), false);
