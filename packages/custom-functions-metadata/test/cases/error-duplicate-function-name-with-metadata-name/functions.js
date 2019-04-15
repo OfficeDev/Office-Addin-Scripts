@@ -1,15 +1,15 @@
 /**
  * First custom function with name in CustomFunction tag
- * @customfunction myName1
+ * @customfunction
  */
-function customNameTest() {
+function duplicate() {
     // empty
 }
 
 /**
  * Custom function with duplicate name in CustomFunction tag
- * @customfunction myId myName1
+ * @customfunction myId DUPLICATE
  */
-function customNameTest2() {
+function second() {
     // empty
 }
