@@ -113,6 +113,20 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
+const repeatingFlag = process.env.REPEATING;
+const repeatingParameterAllowed = isRepeatingParameterEnabled();
+
+/**
+ * Checks for REPEATING process variable and enables repeating parameter feature if found and set to dogfood
+ */
+function isRepeatingParameterEnabled(): boolean {
+    if (repeatingFlag && repeatingFlag === "dogfood") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /**
  * Generate the metadata of the custom functions
  * @param inputFile - File that contains the custom functions
@@ -554,6 +568,10 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             type: ptype,
         };
 
+        if (!repeatingParameterAllowed) {
+            delete pMetadataItem.repeating;
+        }
+
         // Only return dimensionality = matrix.  Default assumed scalar
         if (pMetadataItem.dimensionality === "scalar") {
             delete pMetadataItem.dimensionality;
@@ -950,6 +968,9 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
         } else if (ts.isArrayTypeNode(t)) {
             const inner = (t as ts.ArrayTypeNode).elementType;
             if (!ts.isArrayTypeNode(inner)) {
+                if (!repeatingParameterAllowed) {
+                    extra.errors.push(logError("Invalid array type node: " + inner.getText(), typePosition));
+                }
                 // 1D Array
                 type = inner.getText();
                 return type;
