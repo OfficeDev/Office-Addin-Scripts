@@ -113,19 +113,8 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
-const repeatingFlag = process.env.REPEATING;
-const repeatingParameterAllowed = isRepeatingParameterEnabled();
-
-/**
- * Checks for REPEATING process variable and enables repeating parameter feature if found and set to dogfood
- */
-function isRepeatingParameterEnabled(): boolean {
-    if (repeatingFlag && repeatingFlag === "dogfood") {
-        return true;
-    } else {
-        return false;
-    }
-}
+// Dark deploy repeating parameter by checking for process variable REPEATING
+const repeatingParameterAllowed = process.env.REPEATING ? true : false;
 
 /**
  * Generate the metadata of the custom functions

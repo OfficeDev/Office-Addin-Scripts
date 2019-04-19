@@ -36,7 +36,7 @@ describe("test cases", function() {
                     if (fs.existsSync(path.resolve(testCaseDirPath, "skip"))) {
                         this.skip();
                     // only run repeating parameter tests if the process variable REPEATING found
-                    } else if (testCaseDirName.startsWith("repeating") && repeatingFlag !== "dogfood") {
+                    } else if (testCaseDirName.startsWith("repeating") && !repeatingFlag) {
                         this.skip();
                     } else {
                         const actualErrorsFile = path.join(testCaseDirPath, `actual.${scriptType}.errors.txt`);
