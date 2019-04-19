@@ -1,8 +1,8 @@
 /**
- * Lowercased function name test
+ * Lowercase function name test
  * @customfunction
  */
-function lowercased() {
+function lowercase() {
     // empty
 }
 
