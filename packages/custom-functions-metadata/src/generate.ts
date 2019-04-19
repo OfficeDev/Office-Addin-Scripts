@@ -331,6 +331,7 @@ function areStringsEqual(first: string, second: string, ignoreCase = true): bool
         : first === second;
 }
 
+/**
  * Get the position of the object
  * @param node function, parameter, or node
  */
