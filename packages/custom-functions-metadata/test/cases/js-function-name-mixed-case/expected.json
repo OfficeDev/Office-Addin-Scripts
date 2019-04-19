@@ -1,0 +1,11 @@
+{
+    "functions": [
+        {
+            "description": "Mixedcase function name test",
+            "id": "MIXEDCASE",
+            "name": "MIXEDCASE",
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}

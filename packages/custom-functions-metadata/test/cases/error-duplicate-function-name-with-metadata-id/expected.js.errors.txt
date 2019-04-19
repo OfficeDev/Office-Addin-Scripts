@@ -1,0 +1,2 @@
+@customfunction tag specifies a duplicate name: DUPLICATE (7,2)
+@customfunction tag specifies a duplicate id: DUPLICATE (7,2)

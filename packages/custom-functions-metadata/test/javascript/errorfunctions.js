@@ -48,7 +48,7 @@ function testadd(){
 
 /**
  * Duplicate function name test set in CustomFunction tag
- * @customfunction id testadd
+ * @customfunction id TESTADD
  */
 function customNameTest(){
 }

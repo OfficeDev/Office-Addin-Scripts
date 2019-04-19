@@ -13,3 +13,11 @@ function duplicate() {
 function duplicate() {
     // empty
 }
+
+/**
+ * the third function
+ * @customfunction id DUPLICATE
+ */
+function duplicateInTag() {
+    // empty
+}

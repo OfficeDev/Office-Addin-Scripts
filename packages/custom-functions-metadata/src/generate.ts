@@ -150,6 +150,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     const extras: IFunctionExtras[] = [];
     const enumList: string[] = [];
     const functionNames: string[] = [];
+    const metadataFunctionNames: string[] = [];
     const ids: string[] = [];
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -176,7 +177,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                 const functionErrors: string[] = [];
                 const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
 
-                if (functionNames.indexOf(functionName) > -1) {
+                if (checkForDuplicate(functionNames, functionName)) {
                     const errorString = `Duplicate function name: ${functionName}`;
                     functionErrors.push(logError(errorString, position));
                 }
@@ -219,14 +220,14 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     validateId(id, position, extra);
                     validateName(name, position, extra);
 
-                    if (functionNames.indexOf(name) > -1) {
+                    if (checkForDuplicate(metadataFunctionNames, name)) {
                         const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
                         functionErrors.push(logError(errorString, position));
                     }
 
-                    functionNames.push(name);
+                    metadataFunctionNames.push(name);
 
-                    if (ids.indexOf(id) > -1) {
+                    if (checkForDuplicate(ids, id)) {
                         const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
                         functionErrors.push(logError(errorString, position));
                     }
@@ -283,6 +284,34 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
         ts.forEachChild(node, visit);
     }
+}
+
+/**
+ * Case insensitive check of item in list
+ * @param list Array of strings
+ * @param item String to check against the list
+ */
+function checkForDuplicate(list: string[], item: string): boolean {
+    let duplicate: boolean = false;
+    list.forEach((value: string) => {
+         if (areStringsEqual(value, item)) {
+            duplicate = true;
+        }
+    });
+
+    return duplicate;
+}
+
+/**
+ * Function to compare strings
+ * @param first First string
+ * @param second Second string
+ * @param ignoreCase Ignore the case of the string
+ */
+function areStringsEqual(first: string, second: string, ignoreCase = true): boolean {
+    return (typeof first === "string" && typeof second === "string")
+        ? first.localeCompare(second, undefined, ignoreCase ? { sensitivity: "accent" } : undefined) === 0
+        : first === second;
 }
 
 /**
