@@ -23,7 +23,7 @@ export function addLoopbackExemptionForAppcontainer(name: string): Promise<void>
 
     childProcess.exec(command, (error, stdout) => {
       if (error) {
-        reject(error);
+        reject(stdout);
       } else {
         resolve();
       }
@@ -54,7 +54,7 @@ export function isLoopbackExemptionForAppcontainer(name: string): Promise<boolea
 
     childProcess.exec(command, (error, stdout) => {
       if (error) {
-        reject(error);
+        reject(stdout);
       } else {
         const expr = new RegExp(`Name: ${name}`, "i");
         const found: boolean = expr.test(stdout);
@@ -160,7 +160,7 @@ export function removeLoopbackExemptionForAppcontainer(name: string): Promise<vo
 
     childProcess.exec(command, (error, stdout) => {
       if (error) {
-        reject(error);
+        reject(stdout);
       } else {
         resolve();
       }

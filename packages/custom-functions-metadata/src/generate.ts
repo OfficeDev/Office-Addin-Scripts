@@ -311,7 +311,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 function checkForDuplicate(list: string[], item: string): boolean {
     let duplicate: boolean = false;
     list.forEach((value: string) => {
-        if (value.toLocaleLowerCase() === item.toLocaleLowerCase()) {
+        if (areStringsEqual(value, item)) {
             duplicate = true;
         }
     });
@@ -320,6 +320,17 @@ function checkForDuplicate(list: string[], item: string): boolean {
 }
 
 /**
+ * Function to compare strings
+ * @param first First string
+ * @param second Second string
+ * @param ignoreCase Ignore the case of the string
+ */
+function areStringsEqual(first: string, second: string, ignoreCase = true): boolean {
+    return (typeof first === "string" && typeof second === "string")
+        ? first.localeCompare(second, undefined, ignoreCase ? { sensitivity: "accent" } : undefined) === 0
+        : first === second;
+}
+
  * Get the position of the object
  * @param node function, parameter, or node
  */
