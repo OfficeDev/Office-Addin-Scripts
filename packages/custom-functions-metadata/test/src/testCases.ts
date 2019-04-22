@@ -21,7 +21,7 @@ function readFileIfExists(filePath: string): string | undefined {
 describe("test cases", function() {
     const testCasesDirPath = path.resolve("./test/cases");
     const testCases = fs.readdirSync(testCasesDirPath);
-    const repeatingFlag = process.env.REPEATING;
+    const repeatingFlag = process.env.CUSTOM_FUNCTION_METADATA_REPEATING;
 
     testCases.forEach((testCaseDirName: string) => {
         ["ts", "js"].forEach((scriptType: string) => {
