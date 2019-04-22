@@ -119,7 +119,7 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 // Dark deploy repeating parameter by checking for process variable REPEATING
-const repeatingParameterAllowed = process.env.CUSTOM_FUNCTION_METADATA_REPEATING ? true : false;
+const repeatingParameterAllowed: boolean = (process.env.CUSTOM_FUNCTION_METADATA_REPEATING !== undefined);
 
 /**
  * Generate the metadata of the custom functions
