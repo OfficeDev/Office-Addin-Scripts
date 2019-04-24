@@ -345,7 +345,6 @@ function getPosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts
     if (node) {
         const pos = position ? position : node.pos;
         positionLocation = node.getSourceFile().getLineAndCharacterOfPosition(pos);
-        // return node ? node.getSourceFile().getLineAndCharacterOfPosition(pos) : null;
     }
     return positionLocation;
 }
