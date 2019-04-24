@@ -340,8 +340,14 @@ function areStringsEqual(first: string, second: string, ignoreCase = true): bool
  * Get the position of the object
  * @param node function, parameter, or node
  */
-function getPosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode): ts.LineAndCharacter | null {
-    return node ? node.getSourceFile().getLineAndCharacterOfPosition(node.pos) : null;
+function getPosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode, position?: number): ts.LineAndCharacter | null {
+    let positionLocation = null;
+    if (node) {
+        const pos = position ? position : node.pos;
+        positionLocation = node.getSourceFile().getLineAndCharacterOfPosition(pos);
+        // return node ? node.getSourceFile().getLineAndCharacterOfPosition(pos) : null;
+    }
+    return positionLocation;
 }
 
 /**
@@ -414,7 +420,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
 
     if (optionsItem.requiresAddress) {
         if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
-            const functionPosition =  getPosition(func);
+            const functionPosition =  getPosition(func, func.parameters.end);
             const errorString = "Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :";
             extra.errors.push(logError(errorString, functionPosition));
         }

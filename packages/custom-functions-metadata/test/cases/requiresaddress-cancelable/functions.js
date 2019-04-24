@@ -1,10 +1,10 @@
 /**
  * Test the requiresAddress tag with cancelable type
  * @param x {string} string
- * @param handler {CustomFunctions.CancelableInvocation} my handler
+ * @param invocation {CustomFunctions.CancelableInvocation} my invocation handler
  * @customfunction
  * @requiresAddress
  */
-function requiresAddressTest(x, handler) {
+function requiresAddressTest(x, invocation) {
     // Empty
 }
