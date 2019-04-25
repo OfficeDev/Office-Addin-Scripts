@@ -54,6 +54,11 @@ export interface IParseTreeResult {
     functions: IFunction[];
 }
 
+export interface IAssociate {
+    functionName: string;
+    id: string;
+}
+
 interface IArrayType {
     dimensionality: number;
     type: ts.SyntaxKind;
@@ -168,6 +173,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
  * @param sourceFileName source code file name or path
  */
 export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
+    const assoicateArray: IAssociate[] = [];
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
     const enumList: string[] = [];
@@ -182,6 +188,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
         extras,
         functions,
     };
+    console.log(assoicateArray);
     return parseTreeResult;
 
     function buildEnums(node: ts.Node) {
@@ -255,6 +262,11 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     }
 
                     ids.push(id);
+                    const associateItem: IAssociate = {
+                        functionName,
+                        id,
+                    };
+                    assoicateArray.push(associateItem);
 
                     const functionMetadata: IFunction = {
                         description,
@@ -345,7 +357,6 @@ function getPosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts
     if (node) {
         const pos = position ? position : node.pos;
         positionLocation = node.getSourceFile().getLineAndCharacterOfPosition(pos);
-        // return node ? node.getSourceFile().getLineAndCharacterOfPosition(pos) : null;
     }
     return positionLocation;
 }

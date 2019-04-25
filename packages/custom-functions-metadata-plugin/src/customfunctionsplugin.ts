@@ -45,6 +45,21 @@ class CustomFunctionsMetadataPlugin {
             }
         });
 
+        compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
+            compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, () => {
+                // do something here to emit the calls
+                // compilation.moduleTemplates.javascript.hooks.content.call()
+                let check: string;
+                compilation.modules.forEach((m) => {
+                    check = m._source._name;
+                    if (check && check.endsWith("functions.ts") ) {
+                        console.log(m._source._value);
+                        m._source._value += 'CustomFunctions.associate("LOG2", logMessage);';
+                    }
+                });
+            });
+        });
+
     }
 
 }
