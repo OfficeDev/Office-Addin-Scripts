@@ -9,7 +9,7 @@ import * as defaults from "./defaults";
 
 commander
     .command("install")
-    .option("--machine", "Specifies to install the CA certificate to the machine root instead of the user root. Need to be administrator to use this option.")
+    .option("--machine", "Install the CA certificate for all users. You must be an Administrator.")
     .option("--days <days>", `Specifies the validity of CA certificate in days. Default: ${defaults.daysUntilCertificateExpires}`)
     .description(`Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`)
     .action(commands.install);
@@ -21,7 +21,7 @@ commander
 
 commander
     .command("uninstall")
-    .option("--machine", "Specifies to uninstall the CA certificate from the machine root instead of the user root. Need to be administrator to use this option.")
+    .option("--machine", "Uninstall the CA certificate for all users. You must be an Administrator.")
     .description(`Uninstall the certificate.`)
     .action(commands.uninstall);
 
