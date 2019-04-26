@@ -49,17 +49,13 @@ class CustomFunctionsMetadataPlugin {
 
         let functionsUpdated: boolean = false;
         compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
-             compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, () => {
-               let check: string;
-               compilation.modules.forEach((m) => {
-                   check = m._source._name;
-                   if (check && check.endsWith("functions.ts") && !functionsUpdated) {
-                       associate.forEach((item) => {
-                             m._source._value += 'CustomFunctions.associate("' + item.id + '",' + item.functionName + ");";
-                        });
-                       functionsUpdated = true;
-                   }
-               });
+            compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (s, mod) => {
+                if (mod._source._name.endsWith("functions.ts") && !functionsUpdated) {
+                    associate.forEach((item) => {
+                        mod._source._value += '\nCustomFunctions.associate("' + item.id + '",' + item.functionName + ");";
+                      });
+                    functionsUpdated = true;
+                }
             });
         });
 
