@@ -1,0 +1,85 @@
+{
+    "functions": [
+        {
+            "description": "Test default string parameter",
+            "id": "TESTDEFAULTSTRINGPARAM",
+            "name": "TESTDEFAULTSTRINGPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test default number parameter",
+            "id": "TESTDEFAULTNUMBERPARAM",
+            "name": "TESTDEFAULTNUMBERPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test default boolean parameter",
+            "id": "TESTDEFAULTBOOLEANPARAM",
+            "name": "TESTDEFAULTBOOLEANPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test default string array parameter",
+            "id": "TESTDEFAULTSTRINGARRAYPARAM",
+            "name": "TESTDEFAULTSTRINGARRAYPARAM",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test default number array parameter",
+            "id": "TESTDEFAULTNUMBERARRAYPARAM",
+            "name": "TESTDEFAULTNUMBERARRAYPARAM",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test default boolean array parameter",
+            "id": "TESTDEFAULTBOOLEANARRAYPARAM",
+            "name": "TESTDEFAULTBOOLEANARRAYPARAM",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}
