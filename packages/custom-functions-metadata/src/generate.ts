@@ -565,7 +565,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             dimensionality: getParamDim(typeNode),
             name,
             optional: getParamOptional(p, jsDocParamOptionalInfo),
-            repeating: getRepeatingParameter(typeNode),
+            repeating: isRepeatingParameter(typeNode),
             type: ptype,
         };
 
@@ -584,7 +584,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             delete pMetadataItem.description;
         }
 
-        // only return repeating if true
+        // only return repeating if true and allowed
         if (!pMetadataItem.repeating || !repeatingParameterAllowed) {
             delete pMetadataItem.repeating;
         }
@@ -602,7 +602,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
  * @param type Node to check
  * @param jsDocParamType Type from jsDoc
  */
-function getRepeatingParameter(type: ts.TypeNode): boolean {
+function isRepeatingParameter(type: ts.TypeNode): boolean {
     let repeating: boolean = false;
     // Set repeating true for 1D and 3D array types
     if (type) {

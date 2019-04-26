@@ -4,6 +4,6 @@
  * @param invocation
  * @customfunction
  */
-function streamingTest(x: string, invocation: CustomFunctions.StreamingHandler<number>) {
+function streamingTest(x: string, invocation: CustomFunctions.StreamingInvocation<number>) {
     // Empty
 }

@@ -1,6 +1,6 @@
     /**
      * @customfunction
-     * @return {boolean}
+     * @returns {boolean}
      */
     function returnsBoolean() {
         return true;
@@ -8,7 +8,7 @@
 
      /**
      * @customfunction
-     * @return {number}
+     * @returns {number}
      */
     function returnsNumber() {
        return 5;
@@ -16,7 +16,7 @@
 
      /**
      * @customfunction
-     * @return {string}
+     * @returns {string}
      */
     function returnsString() {
         return "abc";
@@ -24,7 +24,7 @@
 
      /**
      * @customfunction
-     * @return {object}
+     * @returns {object}
      */
     function returnsObject() {
        return {};
@@ -32,7 +32,7 @@
 
      /**
      * @customfunction
-     * @return {boolean[][]}
+     * @returns {boolean[][]}
      */
     function returnsMatrixBoolean() {
         return [[true]];
@@ -40,7 +40,7 @@
 
      /**
      * @customfunction
-     * @return {number[][]}
+     * @returns {number[][]}
      */
     function returnsMatrixNumber() {
         return [[5]];
@@ -48,7 +48,7 @@
 
      /**
      * @customfunction
-     * @return {string[][]}
+     * @returns {string[][]}
      */
     function returnsMatrixString() {
         return [["abc"]];
