@@ -1,0 +1,19 @@
+{
+    "functions": [
+        {
+            "description": "Test support for the cancelable tag",
+            "id": "TESTCANCELABLEFUNCTION",
+            "name": "TESTCANCELABLEFUNCTION",
+            "options": {
+                "cancelable": true
+            },
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

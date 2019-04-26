@@ -1,0 +1,85 @@
+{
+    "functions": [
+        {
+            "description": "Test function for optional string parameter",
+            "id": "TESTOPTIONALSTRING",
+            "name": "TESTOPTIONALSTRING",
+            "parameters": [
+                {
+                    "name": "x",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test function for optional number parameter",
+            "id": "TESTOPTIONALNUMBER",
+            "name": "TESTOPTIONALNUMBER",
+            "parameters": [
+                {
+                    "name": "x",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test function for optional boolean parameter",
+            "id": "TESTOPTIONALBOOLEAN",
+            "name": "TESTOPTIONALBOOLEAN",
+            "parameters": [
+                {
+                    "name": "x",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test function for optional string array",
+            "id": "TESTOPTIONALSTRINGARRAY",
+            "name": "TESTOPTIONALSTRINGARRAY",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test function for optional number array",
+            "id": "TESTOPTIONALNUMBERARRAY",
+            "name": "TESTOPTIONALNUMBERARRAY",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test function for optional boolean array",
+            "id": "TESTOPTIONALBOOLEANARRAY",
+            "name": "TESTOPTIONALBOOLEANARRAY",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

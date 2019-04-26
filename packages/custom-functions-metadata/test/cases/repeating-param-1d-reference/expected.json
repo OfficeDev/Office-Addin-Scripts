@@ -1,0 +1,34 @@
+{
+    "functions": [
+        {
+            "description": "custom function with 1d repeating parameter",
+            "id": "REPEAT1D",
+            "name": "REPEAT1D",
+            "parameters": [
+                {
+                    "name": "first",
+                    "type": "number"
+                },
+                {
+                    "name": "add",
+                    "repeating": true,
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "custom function with only repeating parameter",
+            "id": "REPEATIDONLY",
+            "name": "REPEATIDONLY",
+            "parameters": [
+                {
+                    "name": "add",
+                    "repeating": true,
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

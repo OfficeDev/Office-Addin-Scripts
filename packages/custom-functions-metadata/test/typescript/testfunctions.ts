@@ -8,15 +8,15 @@
  * @volatile
  * @streaming
  * @cancelable
- * @return {returntypetest}
+ * @return {number}
  */
 function add(first: number, second: number): number {
     return first + second;
 }
 
 /**
- * @param {string} one - onetest
- * @param {number} x - x arraynumber
+ * @param {string[][]} one - onetest
+ * @param {Array<Array<number>>} x - x arraynumber
  * @customfunction
  */
 function complexFunction(one: string[][], x: Array<Array<number>>): string[][] {

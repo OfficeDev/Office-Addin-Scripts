@@ -1,9 +1,9 @@
 {
     "functions": [
         {
-            "description": "Uppercased function name test",
-            "id": "UPPERCASED",
-            "name": "UPPERCASED",
+            "description": "Uppercase function name test",
+            "id": "UPPERCASE",
+            "name": "UPPERCASE",
             "parameters": [],
             "result": {}
         }
