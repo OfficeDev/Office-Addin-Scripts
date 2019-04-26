@@ -60,6 +60,7 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[17].options.requiresAddress, true, "CustomFunctions.CancelableInvocation requiresAdress type not created properly");
             assert.strictEqual(j.functions[18].options.stream, true, "CustomFunctions.StreamingInvocation - options stream not created properly");
             assert.strictEqual(j.functions[18].options.requiresAddress, undefined, "CustomFunctions.StreamingInvocation requiresAddress - should not be present");
+            assert.strictEqual(j.functions[19].name, "UPPERCASE", "uppercased function name not created properly");
         });
     });
 });

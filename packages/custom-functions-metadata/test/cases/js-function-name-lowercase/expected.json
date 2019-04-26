@@ -1,0 +1,11 @@
+{
+    "functions": [
+        {
+            "description": "Lowercased function name test",
+            "id": "LOWERCASED",
+            "name": "LOWERCASED",
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}
