@@ -108,7 +108,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
-                await install.installCaCertificate(false, testCaCertificatePath);
+                await install.installCaCertificate(testCaCertificatePath);
             } catch (err) {
                 assert.strictEqual(err.message, "Unable to install the CA certificate. test error");
             }
@@ -118,7 +118,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
-                await install.installCaCertificate(false, testCaCertificatePath);
+                await install.installCaCertificate(testCaCertificatePath);
                 assert.strictEqual(execSync.callCount, 1);
             } catch (err) {
                 // not expecting any exception

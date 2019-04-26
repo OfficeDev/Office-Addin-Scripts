@@ -20,7 +20,7 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
    return command;
 }
 
-export async function ensureCertificatesAreInstalled(machine: boolean = false, daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires) {
+export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, machine: boolean = false) {
    const areCertificatesValid = verifyCertificates();
 
    if (areCertificatesValid) {
@@ -28,11 +28,11 @@ export async function ensureCertificatesAreInstalled(machine: boolean = false, d
    } else {
       await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
       await uninstallCaCertificate(false);
-      await installCaCertificate(machine);
+      await installCaCertificate(defaults.caCertificatePath, machine);
    }
 }
 
-export async function installCaCertificate(machine: boolean = false, caCertificatePath: string = defaults.caCertificatePath) {
+export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath, machine: boolean = false) {
     const command = getInstallCommand(caCertificatePath, machine);
 
     try {
