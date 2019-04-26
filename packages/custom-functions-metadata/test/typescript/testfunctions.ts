@@ -171,5 +171,10 @@ function customFunctionCancelableInvocationTest(x: string, cancel: CustomFunctio
  */
 function customFunctionStreamingInvocationTest(x: string, stream: CustomFunctions.StreamingInvocation<string>){}
 
+/**
+ * @customfunction
+ */
+function UPPERCASE(){}
+
 CustomFunctionMappings.ADD=add;
 
