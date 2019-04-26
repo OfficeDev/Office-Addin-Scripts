@@ -4,11 +4,19 @@ import { generateCertificates } from "./generate";
 import { uninstallCaCertificate } from "./uninstall";
 import { verifyCertificates } from "./verify";
 
-function getInstallCommand(caCertificatePath: string): string {
+function getInstallCommand(installToLocalMachine: boolean = false, caCertificatePath: string): string {
+   let installLocation: string;
    let command: string;
+
+   if (installToLocalMachine) {
+      installLocation = "cert:\\LocalMachine\\Root";
+   } else {
+      installLocation = "cert:\\CurrentUser\\Root";
+   }
+
    switch (process.platform) {
       case "win32":
-         command = `powershell Import-Certificate -CertStoreLocation cert:\\CurrentUser\\Root ${caCertificatePath}`;
+         command = `powershell Import-Certificate -CertStoreLocation ${installLocation} ${caCertificatePath}`;
          break;
       case "darwin": // macOS
          command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${caCertificatePath}`;
@@ -19,7 +27,7 @@ function getInstallCommand(caCertificatePath: string): string {
    return command;
 }
 
-export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires) {
+export async function ensureCertificatesAreInstalled(installToLocalMachine: boolean = false, daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires) {
    const areCertificatesValid = verifyCertificates();
 
    if (areCertificatesValid) {
@@ -27,12 +35,12 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
    } else {
       await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
       await uninstallCaCertificate(false);
-      await installCaCertificate();
+      await installCaCertificate(installToLocalMachine);
    }
 }
 
-export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath) {
-    const command = getInstallCommand(caCertificatePath);
+export async function installCaCertificate(installToLocalMachine: boolean = false, caCertificatePath: string = defaults.caCertificatePath) {
+    const command = getInstallCommand(installToLocalMachine, caCertificatePath);
 
     try {
         console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
