@@ -21,7 +21,7 @@ commander
 
 commander
     .command("uninstall")
-    .option("--machine", "Specifies to uninstall the CA certificate to the machine root instead of the user root. Need to be administrator to use this option.")
+    .option("--machine", "Specifies to uninstall the CA certificate from the machine root instead of the user root. Need to be administrator to use this option.")
     .description(`Uninstall the certificate.`)
     .action(commands.uninstall);
 
