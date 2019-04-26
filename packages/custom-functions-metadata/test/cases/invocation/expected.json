@@ -6,7 +6,6 @@
             "name": "TESTINVOCATIONFUNCTION",
             "parameters": [
                 {
-                    "description": "string parameter",
                     "name": "x",
                     "type": "string"
                 }

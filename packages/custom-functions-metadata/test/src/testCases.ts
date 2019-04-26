@@ -21,7 +21,6 @@ function readFileIfExists(filePath: string): string | undefined {
 describe("test cases", function() {
     const testCasesDirPath = path.resolve("./test/cases");
     const testCases = fs.readdirSync(testCasesDirPath);
-    const repeatingFlag = process.env.CUSTOM_FUNCTION_METADATA_REPEATING;
 
     testCases.forEach((testCaseDirName: string) => {
         ["ts", "js"].forEach((scriptType: string) => {
@@ -34,10 +33,10 @@ describe("test cases", function() {
                 it(`${testCaseDirName}\\${sourceFileName}`, async function() {
                     // add a file named "skip" to skip the test case
                     if (fs.existsSync(path.resolve(testCaseDirPath, "skip"))) {
-                        this.skip();
-                    // only run repeating parameter tests if the process variable REPEATING found
-                    } else if (testCaseDirName.startsWith("repeating") && !repeatingFlag) {
-                        this.skip();
+                        const skipExpression: Buffer = fs.readFileSync(path.resolve(testCaseDirPath, "skip"));
+                        if (skipExpression.length > 0) {
+                            this.skip();
+                        }
                     } else {
                         const actualErrorsFile = path.join(testCaseDirPath, `actual.${scriptType}.errors.txt`);
                         const expectedErrorsFile = path.join(testCaseDirPath, `expected.${scriptType}.errors.txt`);

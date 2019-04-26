@@ -115,8 +115,8 @@ describe("test errors", function() {
              const errtest: string[] = generateResult.errors;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
-             const errorstring = "Unsupported type in code comment:badtype";
-             const errorPosition = "(7,18)";
+             const errorstring = "Invalid type: badtype (4,12)";
+             const errorPosition = "(4,12)";
              const errorRequiresAddress = "@requiresAddress";
              assert.equal(errtest[0].includes(errorstring), true, "Unsupported type found");
              assert.equal(errtest[0].includes(errorPosition), true, "Line and column number found");

@@ -9,7 +9,6 @@
             },
             "parameters": [
                 {
-                    "description": "Test string",
                     "name": "x",
                     "type": "string"
                 }
