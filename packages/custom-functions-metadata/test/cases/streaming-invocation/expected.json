@@ -1,7 +1,7 @@
 {
     "functions": [
         {
-            "description": "Test function for streaming tag",
+            "description": "Test function for streaming type",
             "id": "STREAMINGTEST",
             "name": "STREAMINGTEST",
             "options": {
@@ -13,7 +13,9 @@
                     "type": "string"
                 }
             ],
-            "result": {}
+            "result": {
+                "type": "number"
+            }
         }
     ]
 }

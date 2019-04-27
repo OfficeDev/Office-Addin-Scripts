@@ -16,6 +16,19 @@
                 }
             ],
             "result": {}
+        },
+        {
+            "description": "custom function with only repeating parameter",
+            "id": "REPEAT1DONLY",
+            "name": "REPEAT1DONLY",
+            "parameters": [
+                {
+                    "name": "add",
+                    "repeating": true,
+                    "type": "number"
+                }
+            ],
+            "result": {}
         }
     ]
 }

@@ -1,9 +1,9 @@
 /**
- * Test support for the CustomFunctions.CancelableHandler
- * @param x {string} string parameter
- * @param cf {CustomFunctions.CancelableHandler} Cancelable Handler parameter
+ * Test support for the cancelable tag
+ * @param x {string}
  * @customfunction
+ * @cancelable
  */
-async function testCancelableFunction(x, cf) {
+async function testCancelableFunction(x) {
     // Empty
 }

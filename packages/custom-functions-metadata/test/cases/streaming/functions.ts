@@ -1,9 +1,8 @@
 /**
- * Test function for streaming type
- * @param x - Test string
- * @param sf - Streaming function type return type should be number
+ * Test function for streaming tag
  * @customfunction
+ * @streaming
  */
-function streamingTest(x: string, sf: CustomFunctions.StreamingHandler<number>) {
+function streamingTest(x: string) {
     // Empty
 }

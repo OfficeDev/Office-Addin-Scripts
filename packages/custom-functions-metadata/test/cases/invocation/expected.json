@@ -1,12 +1,9 @@
 {
     "functions": [
         {
-            "description": "Test function for streaming tag",
-            "id": "STREAMINGTEST",
-            "name": "STREAMINGTEST",
-            "options": {
-                "stream": true
-            },
+            "description": "Test support for the CustomFunctions.Invocation",
+            "id": "TESTINVOCATIONFUNCTION",
+            "name": "TESTINVOCATIONFUNCTION",
             "parameters": [
                 {
                     "name": "x",

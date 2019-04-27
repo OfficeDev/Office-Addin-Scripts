@@ -104,6 +104,9 @@ const TYPE_MAPPINGS_COMMENT = {
     ["string[]"]: "string",
     ["string[][]"]: "string",
     ["string[][][]"]: "string",
+    ["boolean[]"]: "boolean",
+    ["boolean[][]"]: "boolean",
+    ["boolean[][][]"]: "boolean",
 };
 
 const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
@@ -125,7 +128,7 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
-// Dark deploy repeating parameter by checking for process variable REPEATING
+// use env var to turn on repeating parameter support
 const repeatingParameterAllowed: boolean = (process.env.CUSTOM_FUNCTION_METADATA_REPEATING !== undefined);
 
 /**
@@ -518,16 +521,16 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
     }
 
     // Check the code comments for @return parameter
-    if (resultType === "any") {
-        const resultFromComment = getReturnType(func);
-        // @ts-ignore
-        const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
-        if (!checkType) {
-            const errorString = `Unsupported type in code comment:${resultFromComment}`;
-            extra.errors.push(logError(errorString, lastParameterPosition));
-        } else {
-            resultType = resultFromComment;
+    const returnTypeFromJSDoc = ts.getJSDocReturnType(func);
+    if (returnTypeFromJSDoc) {
+        if (func.type && func.type.kind !== returnTypeFromJSDoc.kind ) {
+            const name = (func.name as ts.Identifier).text;
+            const returnPosition = getPosition(returnTypeFromJSDoc);
+            const errorString = `Type {${ts.SyntaxKind[func.type.kind]}:${ts.SyntaxKind[returnTypeFromJSDoc.kind]}} doesn't match for return type : ${name}`;
+            extra.errors.push(logError(errorString, returnPosition));
         }
+        resultType = getParamType(returnTypeFromJSDoc, extra, enumList);
+        resultDim = getParamDim(returnTypeFromJSDoc);
     }
 
     const resultItem: IFunctionResult = {
@@ -557,42 +560,29 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     const parameterMetadata: IFunctionParameter[] = [];
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
-        const name = (p.name as ts.Identifier).text;
-        let ptype = getParamType(p.type as ts.TypeNode, extra, enumList);
         const parameterPosition = getPosition(p);
-        // Try setting type from parameter in code comment
-        if (ptype === "any") {
-            ptype = jsDocParamTypeInfo[name];
-            if (ptype) {
-                // @ts-ignore
-                const checkType = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
-                if (!checkType) {
-                    const errorString = `Unsupported type in code comment:${ptype}`;
-                    extra.errors.push(logError(errorString, parameterPosition));
-                } else {
-                    ptype = checkType;
-                }
-            } else {
-                // If type not found in comment section set to any type
-                ptype = "any";
-            }
-        }
-
-        // Verify parameter types match between typescript and @param {type}
-        const jsDocType = jsDocParamTypeInfo[name];
-        if (jsDocType && jsDocType !== "any" && !jsDocType.includes("[]")) {
-            if (jsDocType.toLocaleLowerCase() !== ptype.toLocaleLowerCase()) {
-                const errorString = `Type {${jsDocType}:${ptype}} doesn't match for parameter : ${name}`;
+        // Get type node of parameter from typescript
+        let typeNode = p.type as ts.TypeNode;
+        const name = (p.name as ts.Identifier).text;
+        // Get type node of parameter from jsDocs
+        const parameterJSDocTypeNode = ts.getJSDocType(p);
+        if (parameterJSDocTypeNode && typeNode) {
+            if (parameterJSDocTypeNode.kind !== typeNode.kind) {
+                const errorString = `Type {${ts.SyntaxKind[parameterJSDocTypeNode.kind]}:${ts.SyntaxKind[typeNode.kind]}} doesn't match for parameter : ${name}`;
                 extra.errors.push(logError(errorString, parameterPosition));
             }
         }
+        if (!typeNode && parameterJSDocTypeNode) {
+            typeNode = parameterJSDocTypeNode;
+        }
+        const ptype = getParamType(typeNode, extra, enumList);
 
         const pMetadataItem: IFunctionParameter = {
             description: jsDocParamInfo[name],
-            dimensionality: getParamDim(p.type as ts.TypeNode, jsDocParamTypeInfo[name]),
+            dimensionality: getParamDim(typeNode),
             name,
             optional: getParamOptional(p, jsDocParamOptionalInfo),
-            repeating: getRepeatingParameter(p.type as ts.TypeNode, jsDocParamTypeInfo[name]),
+            repeating: isRepeatingParameter(typeNode),
             type: ptype,
         };
 
@@ -615,8 +605,8 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             delete pMetadataItem.description;
         }
 
-        // only return repeating if true
-        if (!pMetadataItem.repeating) {
+        // only return repeating if true and allowed
+        if (!pMetadataItem.repeating || !repeatingParameterAllowed) {
             delete pMetadataItem.repeating;
         }
 
@@ -633,7 +623,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
  * @param type Node to check
  * @param jsDocParamType Type from jsDoc
  */
-function getRepeatingParameter(type: ts.TypeNode, jsDocParamType: string): boolean {
+function isRepeatingParameter(type: ts.TypeNode): boolean {
     let repeating: boolean = false;
     // Set repeating true for 1D and 3D array types
     if (type) {
@@ -643,15 +633,6 @@ function getRepeatingParameter(type: ts.TypeNode, jsDocParamType: string): boole
                 repeating = true;
             }
          }
-    }
-    if (jsDocParamType) {
-        if (jsDocParamType.endsWith("[][][]")) {
-            repeating = true;
-        } else if (jsDocParamType.endsWith("[][]")) {
-            repeating = false;
-        } else if (jsDocParamType.endsWith("[]")) {
-            repeating = true;
-        }
     }
     return repeating;
 }
@@ -1067,13 +1048,7 @@ function getParamDim(t: ts.TypeNode, jsDocType?: string): string {
             }
           }
     }
-    if (jsDocType) {
-        if (jsDocType.endsWith("[][][]")) {
-            dimensionality = "matrix";
-        } else if (jsDocType.endsWith("[][]")) {
-            dimensionality = "matrix";
-        }
-    }
+
     return dimensionality;
 }
 
