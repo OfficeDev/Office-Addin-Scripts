@@ -49,10 +49,10 @@ class CustomFunctionsMetadataPlugin {
 
         let functionsUpdated: boolean = false;
         compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
-            compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (s, mod) => {
-                if (mod._source._name.endsWith("functions.ts") && !functionsUpdated) {
+            compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (s, m) => {
+                if (m._source._name.endsWith("functions.ts") && !functionsUpdated) {
                     associate.forEach((item) => {
-                        mod._source._value += '\nCustomFunctions.associate("' + item.id + '",' + item.functionName + ");";
+                        m._source._value += `\nCustomFunctions.associate("${item.id}",${item.functionName});`;
                       });
                     functionsUpdated = true;
                 }
