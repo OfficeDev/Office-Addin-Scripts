@@ -586,10 +586,6 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             type: ptype,
         };
 
-        if (!repeatingParameterAllowed) {
-            delete pMetadataItem.repeating;
-        }
-
         // Only return dimensionality = matrix.  Default assumed scalar
         if (pMetadataItem.dimensionality === "scalar") {
             delete pMetadataItem.dimensionality;
@@ -1038,7 +1034,7 @@ function getArrayDimensionalityAndTypeForReferenceNode(node: ts.TypeReferenceNod
  * Get the parameter dimensionality of the node
  * @param t TypeNode
  */
-function getParamDim(t: ts.TypeNode, jsDocType?: string): string {
+function getParamDim(t: ts.TypeNode): string {
     let dimensionality: CustomFunctionsSchemaDimensionality = "scalar";
     if (t) {
         if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
