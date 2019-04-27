@@ -50,7 +50,7 @@ class CustomFunctionsMetadataPlugin {
         let functionsUpdated: boolean = false;
         compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
             compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (s, m) => {
-                if (m._source._name.endsWith("functions.ts") && !functionsUpdated) {
+                if (m._source && m._source._name.endsWith("functions.ts") && !functionsUpdated) {
                     associate.forEach((item) => {
                         m._source._value += `\nCustomFunctions.associate("${item.id}",${item.functionName});`;
                       });
