@@ -9,8 +9,11 @@ describe("test json file created", function() {
         it("test it", async function() {
             const inputFile = "./test/typescript/testfunctions.ts";
             const output = "test.json";
-            await generate.generate(inputFile, output);
+            const generateResult = await generate.generate(inputFile, output);
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
+            assert.strictEqual(generateResult.associate.length, 20, "assoicate array not complete");
+            assert.strictEqual(generateResult.associate[0].id, "ADD", "assoicate id not created");
+            assert.strictEqual(generateResult.associate[0].functionName, "add", "assoicate function name not created");
         });
     });
 });
