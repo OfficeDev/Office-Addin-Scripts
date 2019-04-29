@@ -11,9 +11,9 @@ describe("test json file created", function() {
             const output = "test.json";
             const generateResult = await generate.generate(inputFile, output);
             assert.strictEqual(fs.existsSync(output), true, "json file not created");
-            assert.strictEqual(generateResult.associate.length, 20, "assoicate array not complete");
-            assert.strictEqual(generateResult.associate[0].id, "ADD", "assoicate id not created");
-            assert.strictEqual(generateResult.associate[0].functionName, "add", "assoicate function name not created");
+            assert.strictEqual(generateResult.associate.length, 20, "associate array not complete");
+            assert.strictEqual(generateResult.associate[0].id, "ADD", "associate id not created");
+            assert.strictEqual(generateResult.associate[0].functionName, "add", "associate function name not created");
         });
     });
 });

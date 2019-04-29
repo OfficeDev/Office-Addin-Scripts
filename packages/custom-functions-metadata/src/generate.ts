@@ -148,7 +148,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
         const sourceCode = fs.readFileSync(inputFile, "utf-8");
         const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
         parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => errors.push(err)));
-        parseTreeResult.associate.forEach((item) => associate.push(item));
+        generateResults.associate = [...parseTreeResult.associate];
 
         if (errors.length === 0) {
             const json = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
@@ -270,11 +270,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     }
 
                     ids.push(id);
-                    const associateItem: IAssociate = {
-                        functionName,
-                        id,
-                    };
-                    associate.push(associateItem);
+                    associate.push({functionName, id});
 
                     const functionMetadata: IFunction = {
                         description,
