@@ -23,7 +23,7 @@
     "commander": "^2.19.0",
     "fs-extra": "^7.0.1",
     "mkcert": "^1.2.0",
-    "office-addin-cli": "^0.0.1",
+    "office-addin-cli": "^0.1.0",
     "sinon": "^7.2.7"
   },
   "devDependencies": {
