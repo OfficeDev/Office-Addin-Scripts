@@ -96,7 +96,6 @@ describe("office-addin-dev-certs", function() {
         });
     });
     describe("install-tests", function() {
-        const uninstallCaCertificate = sandbox.fake();
         beforeEach(function() {
             sandbox = sinon.createSandbox();
         });
@@ -105,7 +104,6 @@ describe("office-addin-dev-certs", function() {
         });
         it("execSync fail case", async function() {
             const error = {stderr : "test error"};
-            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
                 await install.installCaCertificate(testCaCertificatePath);
@@ -115,7 +113,6 @@ describe("office-addin-dev-certs", function() {
         });
         it("install success case", async function() {
             const execSync = sandbox.fake();
-            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
                 await install.installCaCertificate(testCaCertificatePath);
@@ -125,6 +122,24 @@ describe("office-addin-dev-certs", function() {
                 assert.strictEqual(0, 1);
             }
         });
+        if (process.platform === "win32") {
+            it("with --machine option", async function() {
+                const execSync = sandbox.fake();
+                const machine = true;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                await install.installCaCertificate(testCaCertificatePath, machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\LocalMachine\\Root ${testCaCertificatePath}`), true);
+            });
+            it("without --machine option", async function() {
+                const execSync = sandbox.fake();
+                const machine = false;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                await install.installCaCertificate(testCaCertificatePath, machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\CurrentUser\\Root ${testCaCertificatePath}`), true);
+            });
+        }
     });
     describe("uninstall-tests", function() {
         beforeEach(function() {
@@ -153,6 +168,28 @@ describe("office-addin-dev-certs", function() {
                 assert.strictEqual(0, 1);
             }
         });
+        if (process.platform === "win32") {
+            it("with --machine option", async function() {
+                const isCaCertificateInstalled = sandbox.fake.returns(true);
+                const execSync = sandbox.fake();
+                const machine = true;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
+                await uninstall.uninstallCaCertificate(machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\LocalMachine | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
+            });
+            it("without --machine option", async function() {
+                const isCaCertificateInstalled = sandbox.fake.returns(true);
+                const execSync = sandbox.fake();
+                const machine = false;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
+                await uninstall.uninstallCaCertificate(machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\CurrentUser | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
+            });
+        }
     });
     describe("verify-tests", function() {
         beforeEach(function() {

@@ -41,9 +41,7 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[6].parameters[0].type, "any", "object type - type any not created properly");
             assert.strictEqual(j.functions[6].result.type, undefined, "object type - result type any not created properly");
             assert.strictEqual(j.functions[8].parameters[0].type, "any", "enum type - type any not created properly");
-            assert.strictEqual(j.functions[8].parameters[0].dimensionality, "matrix", "enum type - parameter dimensionality matrix any not created properly");
             assert.strictEqual(j.functions[8].result.type, undefined, "enum type - result type any not created properly");
-            assert.strictEqual(j.functions[8].result.dimensionality, "matrix", "enum type - result dimensionality matrix any not created properly");
             assert.strictEqual(j.functions[9].parameters[0].type, "any", "tuple type - type any not created properly");
             assert.strictEqual(j.functions[9].result.type, undefined, "tuple type - result type any not created properly");
             assert.strictEqual(j.functions[10].options.stream, true, "CustomFunctions.StreamingHandler - options stream not created properly");
@@ -117,8 +115,8 @@ describe("test errors", function() {
              const errtest: string[] = generateResult.errors;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
-             const errorstring = "Unsupported type in code comment:badtype";
-             const errorPosition = "(7,18)";
+             const errorstring = "Invalid type: badtype (4,12)";
+             const errorPosition = "(4,12)";
              const errorRequiresAddress = "@requiresAddress";
              assert.equal(errtest[0].includes(errorstring), true, "Unsupported type found");
              assert.equal(errtest[0].includes(errorPosition), true, "Line and column number found");

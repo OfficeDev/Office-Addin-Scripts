@@ -15,7 +15,7 @@ function normalizeLineEndings(text: string | undefined): string | undefined {
 }
 
 function readFileIfExists(filePath: string): string | undefined {
-    return normalizeLineEndings(fs.existsSync(filePath) ? fs.readFileSync(filePath).toString() : undefined);
+    return fs.existsSync(filePath) ? normalizeLineEndings(fs.readFileSync(filePath).toString()) : undefined;
 }
 
 describe("test cases", function() {
@@ -32,8 +32,14 @@ describe("test cases", function() {
             if (source) {
                 it(`${testCaseDirName}\\${sourceFileName}`, async function() {
                     // add a file named "skip" to skip the test case
-                    if (fs.existsSync(path.resolve(testCaseDirPath, "skip"))) {
-                        this.skip();
+                    // add an expression in the file and it will be skipped if not true
+                    const skip: string | undefined = readFileIfExists(path.resolve(testCaseDirPath, "skip"));
+                    if (skip !== undefined) {
+                        // tslint:disable-next-line: no-eval
+                        const skipResult = eval(skip);
+                        if (!skipResult) {
+                            this.skip();
+                        }
                     } else {
                         const actualErrorsFile = path.join(testCaseDirPath, `actual.${scriptType}.errors.txt`);
                         const expectedErrorsFile = path.join(testCaseDirPath, `expected.${scriptType}.errors.txt`);
