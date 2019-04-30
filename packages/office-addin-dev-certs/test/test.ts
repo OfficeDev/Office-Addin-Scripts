@@ -177,7 +177,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
                 await uninstall.uninstallCaCertificate(machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\LocalMachine | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\LocalMachine\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
             });
             it("without --machine option", async function() {
                 const isCaCertificateInstalled = sandbox.fake.returns(true);
@@ -187,7 +187,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
                 await uninstall.uninstallCaCertificate(machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\CurrentUser | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\CurrentUser\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
             });
         }
     });
