@@ -7,7 +7,7 @@ import { isCaCertificateInstalled } from "./verify";
 function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
-         return `powershell -command "Get-ChildItem  cert:\\${machine ? "LocalMachine" : "CurrentUser"} | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`;
+         return `powershell -command "Get-ChildItem  cert:\\${machine ? "LocalMachine" : "CurrentUser"}\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`;
       case "darwin": // macOS
          return `sudo security delete-certificate -c "${defaults.certificateName}"`;
       default:
@@ -36,6 +36,7 @@ export function uninstallCaCertificate(machine: boolean = false, verbose: boolea
       return;
    }
    const command = getUninstallCommand(machine);
+   console.log(command)
    try {
       console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       execSync(command, {stdio : "pipe" });
