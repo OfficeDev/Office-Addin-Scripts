@@ -7,6 +7,7 @@ import * as defaults from "../src/defaults";
 import * as generate from "../src/generate";
 import { getHttpsServerOptions } from "../src/httpsServerOptions";
 import * as install from "../src/install";
+import * as lockFile from "../src/lockFile";
 import * as uninstall from "../src/uninstall";
 import * as verify from "../src/verify";
 
@@ -95,6 +96,60 @@ describe("office-addin-dev-certs", function() {
             fsExtra.removeSync(testCertificateDir);
         });
     });
+    describe("parallel-install-uninstall-tests", function() {
+        beforeEach(function() {
+            sandbox = sinon.createSandbox();
+        });
+        afterEach(function() {
+            sandbox.restore();
+        });
+        it("three parallel install case", async function() {
+            const generateCertificates = sandbox.fake();
+            const uninstallCaCertificate = sandbox.fake();
+            const execSync = sandbox.fake();
+            let first = true;
+
+            sandbox.stub(generate, "generateCertificates").callsFake(generateCertificates);
+            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
+            sandbox.stub(childProcess, "execSync").callsFake(execSync);
+            sandbox.stub(verify, "verifyCertificates").callsFake(function() {
+                if (first) {
+                    first = false;
+                    return false;
+                }
+                return true;
+            });
+
+            // three parallel install calls
+            await Promise.all([install.ensureCertificatesAreInstalled(1, false, 500),
+                               install.ensureCertificatesAreInstalled(1, false, 500),
+                               install.ensureCertificatesAreInstalled(1, false, 500)]);
+
+            // only first call succeeds and rest of install calls does noting
+            assert.strictEqual(generateCertificates.callCount, 1);
+            assert.strictEqual(uninstallCaCertificate.callCount, 1);
+        });
+        it("install call times out", async function() {
+            await lockFile.lock(defaults.devCertsLockPath, 500);
+            try {
+                await install.ensureCertificatesAreInstalled(1, false, 500);
+                assert.strictEqual(0, 1);
+            } catch (err) {
+                assert.strictEqual(err.toString().includes("Another process is using office-addin-dev-certs, please wait for it complete."), true);
+            }
+            lockFile.unlockSync(defaults.devCertsLockPath);
+        });
+        it("uninstall call times out", async function() {
+            await lockFile.lock(defaults.devCertsLockPath, 500);
+            try {
+                await uninstall.uninstallCaCertificate(true, false, false, 500);
+                assert.strictEqual(0, 1);
+            } catch (err) {
+                assert.strictEqual(err.toString().includes("Another process is using office-addin-dev-certs, please wait for it complete."), true);
+            }
+            lockFile.unlockSync(defaults.devCertsLockPath);
+        });
+    });
     describe("install-tests", function() {
         const uninstallCaCertificate = sandbox.fake();
         beforeEach(function() {
@@ -137,7 +192,7 @@ describe("office-addin-dev-certs", function() {
             const error = {stderr : "test error"};
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
-                await uninstall.uninstallCaCertificate();
+                await uninstall.uninstallCaCertificate(false);
             } catch (err) {
                 assert.strictEqual(err.message, "Unable to uninstall the CA certificate.\ntest error");
             }
@@ -146,13 +201,35 @@ describe("office-addin-dev-certs", function() {
             const execSync = sandbox.fake();
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
-                await uninstall.uninstallCaCertificate();
+                await uninstall.uninstallCaCertificate(false);
                 assert.strictEqual(execSync.callCount, 1);
             } catch (err) {
                 // not expecting any exception
                 assert.strictEqual(0, 1);
             }
         });
+        if (process.platform === "win32") {
+            it("with --machine option", async function() {
+                const isCaCertificateInstalled = sandbox.fake.returns(true);
+                const execSync = sandbox.fake();
+                const machine = true;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
+                await uninstall.uninstallCaCertificate(false, machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\LocalMachine\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
+            });
+            it("without --machine option", async function() {
+                const isCaCertificateInstalled = sandbox.fake.returns(true);
+                const execSync = sandbox.fake();
+                const machine = false;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
+                await uninstall.uninstallCaCertificate(false, machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\CurrentUser\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
+            });
+        }
     });
     describe("verify-tests", function() {
         beforeEach(function() {
@@ -224,12 +301,13 @@ describe("office-addin-dev-certs", function() {
                 // expecting exception
                 assert.strictEqual(0, 1);
             } catch (err) {
+
                 assert.strictEqual(err.toString().includes("Unable to read the certificate file."), true);
             }
         });
     });
     describe("deleteCertificateFiles-tests", function() {
-        const certificateDirectory: string =path.resolve("./certs");
+        const certificateDirectory: string = path.resolve("./certs");
         const testFile = "test.txt";
         const testFilePath = path.join(certificateDirectory, testFile);
         const localhostCertificatePath = path.join(certificateDirectory, defaults.localhostCertificateFileName);

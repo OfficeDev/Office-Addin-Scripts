@@ -2,8 +2,19 @@ import * as commander from "commander";
 import {logErrorMessage, parseNumber} from "office-addin-cli";
 import * as defaults from "./defaults";
 import {ensureCertificatesAreInstalled} from "./install";
+import * as lockFile from "./lockfile";
 import {deleteCertificateFiles, uninstallCaCertificate} from "./uninstall";
 import {verifyCertificates} from "./verify";
+
+// To handle crtl-c
+process.on("SIGINT", function() {
+    process.exit();
+});
+
+// The process on exit, make sure to clean the lock file.
+process.on("exit", function() {
+    lockFile.unlockSync(defaults.devCertsLockPath);
+});
 
 function parseDays(optionValue: any): number | undefined {
     const days = parseNumber(optionValue, "--days should specify a number.");

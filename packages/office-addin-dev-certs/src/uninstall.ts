@@ -2,12 +2,13 @@ import { execSync } from "child_process";
 import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as defaults from "./defaults";
+import * as lockFile from "./lockfile";
 import { isCaCertificateInstalled } from "./verify";
 
-function getUninstallCommand(): string {
+function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
-         return `powershell -command "Get-ChildItem cert:\\CurrentUser\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`;
+         return `powershell -command "Get-ChildItem  cert:\\${machine ? "LocalMachine" : "CurrentUser"}\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`;
       case "darwin": // macOS
          return `sudo security delete-certificate -c "${defaults.certificateName}"`;
       default:
@@ -28,10 +29,17 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
    }
 }
 
-export function uninstallCaCertificate(verbose: boolean = true): void {
+export async function uninstallCaCertificate(enableLocking: boolean = true, machine: boolean = false, verbose: boolean = true, maxWaitTimeToAcquireLock: number = defaults.maxWaitTimeToAcquireLock) {
+   if (enableLocking) {
+      try {
+         await lockFile.lock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
+      } catch (err) {
+         throw new Error(`Another process is using office-addin-dev-certs, please wait for it complete.\n${err}`);
+      }
+   }
    if (!isCaCertificateInstalled()) {
       if (verbose) {
-          console.log(`The CA certificate is not installed.`);
+         console.log(`The CA certificate is not installed.`);
       }
       return;
    }
@@ -42,5 +50,8 @@ export function uninstallCaCertificate(verbose: boolean = true): void {
       console.log(`You no longer have trusted access to https://localhost.`);
    } catch (error) {
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
+   }
+   if (enableLocking) {
+      lockFile.unlockSync(defaults.devCertsLockPath);
    }
 }

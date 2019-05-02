@@ -19,11 +19,19 @@
     "Office"
   ],
   "dependencies": {
+    "@types/lockfile": "^1.0.1",
+    "@types/proper-lockfile": "^3.0.1",
     "child_process": "^1.0.2",
     "commander": "^2.19.0",
     "fs-extra": "^7.0.1",
+    "lockfile": "^1.0.4",
     "mkcert": "^1.2.0",
+<<<<<<< Updated upstream
     "office-addin-cli": "^0.0.1",
+=======
+    "office-addin-cli": "^0.1.1",
+    "proper-lockfile": "^4.1.1",
+>>>>>>> Stashed changes
     "sinon": "^7.2.7"
   },
   "devDependencies": {
