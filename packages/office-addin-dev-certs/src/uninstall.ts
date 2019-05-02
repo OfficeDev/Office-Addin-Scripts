@@ -43,7 +43,7 @@ export async function uninstallCaCertificate(enableLocking: boolean = true, mach
       }
       return;
    }
-   const command = getUninstallCommand();
+   const command = getUninstallCommand(machine);
    try {
       console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       execSync(command, {stdio : "pipe" });

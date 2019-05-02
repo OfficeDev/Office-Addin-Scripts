@@ -180,6 +180,24 @@ describe("office-addin-dev-certs", function() {
                 assert.strictEqual(0, 1);
             }
         });
+        if (process.platform === "win32") {
+            it("with --machine option", async function() {
+                const execSync = sandbox.fake();
+                const machine = true;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                await install.installCaCertificate(testCaCertificatePath, machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\LocalMachine\\Root ${testCaCertificatePath}`), true);
+            });
+            it("without --machine option", async function() {
+                const execSync = sandbox.fake();
+                const machine = false;
+                sandbox.stub(childProcess, "execSync").callsFake(execSync);
+                await install.installCaCertificate(testCaCertificatePath, machine);
+                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\CurrentUser\\Root ${testCaCertificatePath}`), true);
+            });
+        }
     });
     describe("uninstall-tests", function() {
         beforeEach(function() {
