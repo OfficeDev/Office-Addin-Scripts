@@ -1,0 +1,16 @@
+{
+    "functions": [
+        {
+            "description": "Test support for the CustomFunctions.Invocation",
+            "id": "TESTINVOCATIONFUNCTION",
+            "name": "TESTINVOCATIONFUNCTION",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

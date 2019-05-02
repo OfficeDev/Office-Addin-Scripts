@@ -27,6 +27,7 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
    } catch (err) {
       throw new Error(`Another process is using office-addin-dev-certs, please wait for it complete.\n${err}`);
    }
+  
    const areCertificatesValid = verifyCertificates();
 
    if (areCertificatesValid) {

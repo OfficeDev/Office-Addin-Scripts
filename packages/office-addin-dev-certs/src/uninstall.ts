@@ -37,6 +37,7 @@ export async function uninstallCaCertificate(enableLocking: boolean = true, mach
          throw new Error(`Another process is using office-addin-dev-certs, please wait for it complete.\n${err}`);
       }
    }
+
    if (!isCaCertificateInstalled()) {
       if (verbose) {
          console.log(`The CA certificate is not installed.`);

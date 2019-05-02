@@ -101,7 +101,8 @@
               "ts-node/register",
               "${workspaceFolder}/test/src/**/*.ts"
             ],
-            "internalConsoleOptions": "openOnSessionStart"
+            "internalConsoleOptions": "openOnSessionStart",
+            //"env": {"CUSTOM_FUNCTION_METADATA_REPEATING": "true"}
           },      
     ]
 }

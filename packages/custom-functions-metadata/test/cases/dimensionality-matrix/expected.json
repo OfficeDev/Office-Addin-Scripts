@@ -1,0 +1,21 @@
+{
+    "functions": [
+        {
+            "description": "custom function with dimensionality matrix",
+            "id": "DIMMATRIX",
+            "name": "DIMMATRIX",
+            "parameters": [
+                {
+                    "name": "first",
+                    "type": "number"
+                },
+                {
+                    "dimensionality": "matrix",
+                    "name": "add",
+                    "type": "number"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

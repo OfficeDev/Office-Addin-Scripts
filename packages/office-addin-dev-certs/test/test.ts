@@ -151,7 +151,6 @@ describe("office-addin-dev-certs", function() {
         });
     });
     describe("install-tests", function() {
-        const uninstallCaCertificate = sandbox.fake();
         beforeEach(function() {
             sandbox = sinon.createSandbox();
         });
@@ -160,7 +159,6 @@ describe("office-addin-dev-certs", function() {
         });
         it("execSync fail case", async function() {
             const error = {stderr : "test error"};
-            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
                 await install.installCaCertificate(testCaCertificatePath);
@@ -170,7 +168,6 @@ describe("office-addin-dev-certs", function() {
         });
         it("install success case", async function() {
             const execSync = sandbox.fake();
-            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
                 await install.installCaCertificate(testCaCertificatePath);

@@ -32,6 +32,7 @@ export interface IFunctionParameter {
     type: string;
     dimensionality: string;
     optional: boolean;
+    repeating: boolean;
 }
 
 export interface IFunctionResult {
@@ -53,6 +54,11 @@ export interface IParseTreeResult {
     functions: IFunction[];
 }
 
+interface IArrayType {
+    dimensionality: number;
+    type: ts.SyntaxKind;
+}
+
 const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
 const HELPURL_PARAM = "helpurl";
 const VOLATILE = "volatile";
@@ -60,6 +66,13 @@ const STREAMING = "streaming";
 const RETURN = "return";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
+
+const TYPE_MAPPINGS_SIMPLE = {
+    [ts.SyntaxKind.NumberKeyword]: "number",
+    [ts.SyntaxKind.StringKeyword]: "string",
+    [ts.SyntaxKind.BooleanKeyword]: "boolean",
+    [ts.SyntaxKind.AnyKeyword]: "any",
+};
 
 const TYPE_MAPPINGS = {
     [ts.SyntaxKind.NumberKeyword]: "number",
@@ -74,10 +87,19 @@ const TYPE_MAPPINGS = {
 };
 
 const TYPE_MAPPINGS_COMMENT = {
-    ["number"]: 1,
-    ["string"]: 2,
-    ["boolean"]: 3,
-    ["any"]: 4,
+    ["number"]: "number",
+    ["string"]: "string",
+    ["boolean"]: "boolean",
+    ["any"]: "any",
+    ["number[]"]: "number",
+    ["number[][]"]: "number",
+    ["number[][][]"]: "number",
+    ["string[]"]: "string",
+    ["string[][]"]: "string",
+    ["string[][][]"]: "string",
+    ["boolean[]"]: "boolean",
+    ["boolean[][]"]: "boolean",
+    ["boolean[][][]"]: "boolean",
 };
 
 const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
@@ -98,6 +120,9 @@ const TYPE_CUSTOM_FUNCTION_CANCELABLE = {
 const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
+
+// use env var to turn on repeating parameter support
+const repeatingParameterAllowed: boolean = (process.env.CUSTOM_FUNCTION_METADATA_REPEATING !== undefined);
 
 /**
  * Generate the metadata of the custom functions
@@ -294,7 +319,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 function checkForDuplicate(list: string[], item: string): boolean {
     let duplicate: boolean = false;
     list.forEach((value: string) => {
-         if (areStringsEqual(value, item)) {
+        if (areStringsEqual(value, item)) {
             duplicate = true;
         }
     });
@@ -318,8 +343,13 @@ function areStringsEqual(first: string, second: string, ignoreCase = true): bool
  * Get the position of the object
  * @param node function, parameter, or node
  */
-function getPosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode): ts.LineAndCharacter | null {
-    return node ? node.getSourceFile().getLineAndCharacterOfPosition(node.pos) : null;
+function getPosition(node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode, position?: number): ts.LineAndCharacter | null {
+    let positionLocation = null;
+    if (node) {
+        const pos = position ? position : node.pos;
+        positionLocation = node.getSourceFile().getLineAndCharacterOfPosition(pos);
+    }
+    return positionLocation;
 }
 
 /**
@@ -392,7 +422,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
 
     if (optionsItem.requiresAddress) {
         if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
-            const functionPosition =  getPosition(func);
+            const functionPosition =  getPosition(func, func.parameters.end);
             const errorString = "Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :";
             extra.errors.push(logError(errorString, functionPosition));
         }
@@ -437,6 +467,10 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
                 type: resultType,
             };
 
+            if (paramResultItem.dimensionality === "scalar") {
+                delete paramResultItem.dimensionality;
+            }
+
             return paramResultItem;
         }
         if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
@@ -470,16 +504,16 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
     }
 
     // Check the code comments for @return parameter
-    if (resultType === "any") {
-        const resultFromComment = getReturnType(func);
-        // @ts-ignore
-        const checkType = TYPE_MAPPINGS_COMMENT[resultFromComment];
-        if (!checkType) {
-            const errorString = `Unsupported type in code comment:${resultFromComment}`;
-            extra.errors.push(logError(errorString, lastParameterPosition));
-        } else {
-            resultType = resultFromComment;
+    const returnTypeFromJSDoc = ts.getJSDocReturnType(func);
+    if (returnTypeFromJSDoc) {
+        if (func.type && func.type.kind !== returnTypeFromJSDoc.kind ) {
+            const name = (func.name as ts.Identifier).text;
+            const returnPosition = getPosition(returnTypeFromJSDoc);
+            const errorString = `Type {${ts.SyntaxKind[func.type.kind]}:${ts.SyntaxKind[returnTypeFromJSDoc.kind]}} doesn't match for return type : ${name}`;
+            extra.errors.push(logError(errorString, returnPosition));
         }
+        resultType = getParamType(returnTypeFromJSDoc, extra, enumList);
+        resultDim = getParamDim(returnTypeFromJSDoc);
     }
 
     const resultItem: IFunctionResult = {
@@ -509,39 +543,29 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
     const parameterMetadata: IFunctionParameter[] = [];
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
-        const name = (p.name as ts.Identifier).text;
-        let ptype = getParamType(p.type as ts.TypeNode, extra, enumList);
         const parameterPosition = getPosition(p);
-        // Try setting type from parameter in code comment
-        if (ptype === "any") {
-            ptype = jsDocParamTypeInfo[name];
-            if (ptype) {
-                // @ts-ignore
-                const checkType = TYPE_MAPPINGS_COMMENT[ptype.toLocaleLowerCase()];
-                if (!checkType) {
-                    const errorString = `Unsupported type in code comment:${ptype}`;
-                    extra.errors.push(logError(errorString, parameterPosition));
-                }
-            } else {
-                // If type not found in comment section set to any type
-                ptype = "any";
-            }
-        }
-
-        // Verify parameter types match between typescript and @param {type}
-        const jsDocType = jsDocParamTypeInfo[name];
-        if (jsDocType && jsDocType !== "any") {
-            if (jsDocType.toLocaleLowerCase() !== ptype.toLocaleLowerCase()) {
-                const errorString = `Type {${jsDocType}:${ptype}} doesn't match for parameter : ${name}`;
+        // Get type node of parameter from typescript
+        let typeNode = p.type as ts.TypeNode;
+        const name = (p.name as ts.Identifier).text;
+        // Get type node of parameter from jsDocs
+        const parameterJSDocTypeNode = ts.getJSDocType(p);
+        if (parameterJSDocTypeNode && typeNode) {
+            if (parameterJSDocTypeNode.kind !== typeNode.kind) {
+                const errorString = `Type {${ts.SyntaxKind[parameterJSDocTypeNode.kind]}:${ts.SyntaxKind[typeNode.kind]}} doesn't match for parameter : ${name}`;
                 extra.errors.push(logError(errorString, parameterPosition));
             }
         }
+        if (!typeNode && parameterJSDocTypeNode) {
+            typeNode = parameterJSDocTypeNode;
+        }
+        const ptype = getParamType(typeNode, extra, enumList);
 
         const pMetadataItem: IFunctionParameter = {
             description: jsDocParamInfo[name],
-            dimensionality: getParamDim(p.type as ts.TypeNode),
+            dimensionality: getParamDim(typeNode),
             name,
             optional: getParamOptional(p, jsDocParamOptionalInfo),
+            repeating: isRepeatingParameter(typeNode),
             type: ptype,
         };
 
@@ -560,12 +584,37 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
             delete pMetadataItem.description;
         }
 
+        // only return repeating if true and allowed
+        if (!pMetadataItem.repeating || !repeatingParameterAllowed) {
+            delete pMetadataItem.repeating;
+        }
+
         parameterMetadata.push(pMetadataItem);
 
     })
     .filter((meta) => meta);
 
     return parameterMetadata;
+}
+
+/**
+ * Used to set repeating parameter true for 1d and 3d arrays
+ * @param type Node to check
+ * @param jsDocParamType Type from jsDoc
+ */
+function isRepeatingParameter(type: ts.TypeNode): boolean {
+    let repeating: boolean = false;
+    // Set repeating true for 1D and 3D array types
+    if (type) {
+        if (ts.isTypeReferenceNode(type) || ts.isArrayTypeNode(type)) {
+            const array = getArrayDimensionalityAndType(type);
+            if (array.dimensionality === 1 || array.dimensionality === 3) {
+                repeating = true;
+            }
+         }
+    }
+
+    return repeating;
 }
 
 function normalizeLineEndings(text: string): string {
@@ -863,38 +912,33 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
     if (t) {
         let kind = t.kind;
         const typePosition = getPosition(t);
-        if (ts.isTypeReferenceNode(t)) {
-            const arrTr = t as ts.TypeReferenceNode;
-            if (enumList.indexOf(arrTr.typeName.getText()) >= 0) {
-                // Type found in the enumList
-                return type;
-            }
-            if (arrTr.typeName.getText() !== "Array") {
-                extra.errors.push(logError("Invalid type: " + arrTr.typeName.getText(), typePosition));
-                return type;
-            }
-            if (arrTr.typeArguments) {
-            const isArrayWithTypeRefWithin = validateArray(t) && ts.isTypeReferenceNode(arrTr.typeArguments[0]);
-            if (isArrayWithTypeRefWithin) {
-                    const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
-                    if (!validateArray(inner)) {
-                        extra.errors.push(logError("Invalid type array: " + inner.getText(), typePosition));
-                        return type;
-                    }
-                    if (inner.typeArguments) {
-                        kind = inner.typeArguments[0].kind;
-                    }
+        if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
+            let arrayType: IArrayType = {
+                dimensionality: 0,
+                type: ts.SyntaxKind.AnyKeyword,
+            };
+            if (ts.isTypeReferenceNode(t)) {
+                const array = t as ts.TypeReferenceNode;
+                if (enumList.indexOf(array.typeName.getText()) >= 0) {
+                    // Type found in the enumList
+                    return type;
+                }
+                if (array.typeName.getText() !== "Array") {
+                    extra.errors.push(logError("Invalid type: " + array.typeName.getText(), typePosition));
+                    return type;
                 }
             }
-        } else if (ts.isArrayTypeNode(t)) {
-            const inner = (t as ts.ArrayTypeNode).elementType;
-            if (!ts.isArrayTypeNode(inner)) {
-                extra.errors.push(logError("Invalid array type node: " + inner.getText(), typePosition));
-                return type;
+            arrayType = getArrayDimensionalityAndType(t);
+            if (repeatingParameterAllowed) {
+                kind = arrayType.type;
+            } else {
+                if (arrayType.dimensionality !== 2) {
+                    // @ts-ignore
+                    extra.errors.push(logError("Invalid type array: " + TYPE_MAPPINGS_SIMPLE[arrayType.type], typePosition));
+                } else {
+                    kind = arrayType.type;
+                }
             }
-            // Expectation is that at this point, "kind" is a primitive type (not 3D array).
-            // However, if not, the TYPE_MAPPINGS check below will fail.
-            kind = inner.elementType.kind;
         }
         // @ts-ignore
         type = TYPE_MAPPINGS[kind];
@@ -906,6 +950,71 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
 }
 
 /**
+ * Wrapper function which will return the dimensionality and type of the array
+ * @param node TypeNode
+ */
+function getArrayDimensionalityAndType(node: ts.TypeNode): IArrayType {
+    let array: IArrayType = {
+        dimensionality: 0,
+        type: ts.SyntaxKind.AnyKeyword,
+    };
+    if (ts.isArrayTypeNode(node)) {
+        array = getArrayDimensionalityAndTypeForArrayTypeNode(node);
+    } else if (ts.isTypeReferenceNode(node)) {
+        array = getArrayDimensionalityAndTypeForReferenceNode(node as ts.TypeReferenceNode);
+    }
+    return array;
+}
+
+/**
+ * Returns the dimensionality and type of array for TypeNode
+ * @param node TypeNode
+ */
+function getArrayDimensionalityAndTypeForArrayTypeNode(node: ts.TypeNode): IArrayType {
+    const array: IArrayType = {
+        dimensionality: 1,
+        type: ts.SyntaxKind.AnyKeyword,
+    };
+
+    let nodeCheck = (node as ts.ArrayTypeNode).elementType;
+    array.type = nodeCheck.kind;
+    while (ts.isArrayTypeNode(nodeCheck)) {
+        array.dimensionality++;
+        nodeCheck = (nodeCheck as ts.ArrayTypeNode).elementType;
+        array.type = nodeCheck.kind;
+    }
+
+    return array;
+}
+
+/**
+ * Returns the dimensionality and type of array for ReferenceNode
+ * @param node TypeReferenceNode
+ */
+function getArrayDimensionalityAndTypeForReferenceNode(node: ts.TypeReferenceNode): IArrayType {
+    const array: IArrayType = {
+        dimensionality: 0,
+        type: ts.SyntaxKind.AnyKeyword,
+    };
+
+    if (node.typeArguments && node.typeArguments.length === 1) {
+        let nodeCheck = node;
+        let dimensionalityCount = 1;
+        while (nodeCheck.typeArguments) {
+            // @ts-ignore
+            if (TYPE_MAPPINGS_SIMPLE[nodeCheck.typeArguments[0].kind]) {
+                array.dimensionality = dimensionalityCount;
+                array.type = nodeCheck.typeArguments[0].kind;
+            }
+            nodeCheck = nodeCheck.typeArguments[0] as ts.TypeReferenceNode;
+            dimensionalityCount++;
+        }
+     }
+
+    return array;
+}
+
+/**
  * Get the parameter dimensionality of the node
  * @param t TypeNode
  */
@@ -913,9 +1022,13 @@ function getParamDim(t: ts.TypeNode): string {
     let dimensionality: CustomFunctionsSchemaDimensionality = "scalar";
     if (t) {
         if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
-            dimensionality = "matrix";
-        }
+            const array = getArrayDimensionalityAndType(t);
+            if (array.dimensionality > 1) {
+                dimensionality = "matrix";
+            }
+          }
     }
+
     return dimensionality;
 }
 

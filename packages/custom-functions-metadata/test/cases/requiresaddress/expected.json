@@ -1,0 +1,20 @@
+{
+    "functions": [
+        {
+            "description": "Test the requiresAddress tag",
+            "id": "REQUIRESADDRESSTEST",
+            "name": "REQUIRESADDRESSTEST",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

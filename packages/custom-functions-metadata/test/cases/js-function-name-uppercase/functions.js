@@ -1,8 +1,8 @@
 /**
- * Uppercased function name test
+ * Uppercase function name test
  * @customfunction
  */
-function UPPERCASED() {
+function UPPERCASE() {
     // empty
 }
 
