@@ -13,7 +13,7 @@ process.on("SIGINT", function() {
 
 // The process on exit, make sure to clean the lock file.
 process.on("exit", function() {
-    lockFile.unlockSync(defaults.devCertsLockPath);
+    lockFile.acquireLock(defaults.devCertsLockPath);
 });
 
 function parseDays(optionValue: any): number | undefined {
