@@ -29,13 +29,9 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
    }
 }
 
-export async function uninstallCaCertificate(enableLocking: boolean = true, machine: boolean = false, verbose: boolean = true, maxWaitTimeToAcquireLock: number = defaults.maxWaitTimeToAcquireLock) {
+export async function uninstallCaCertificate(enableLocking: boolean = true, machine: boolean = false, verbose: boolean = true, maxWaitTimeToAcquireLock: number = defaults.maxWaitTime) {
    if (enableLocking) {
-      try {
-         await lockFile.lock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
-      } catch (err) {
-         throw new Error(`Another process is using office-addin-dev-certs, please wait for it complete.\n${err}`);
-      }
+      await lockFile.acquireLock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
    }
 
    if (!isCaCertificateInstalled()) {
@@ -53,6 +49,6 @@ export async function uninstallCaCertificate(enableLocking: boolean = true, mach
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
    }
    if (enableLocking) {
-      lockFile.unlockSync(defaults.devCertsLockPath);
+      lockFile.releaseLock(defaults.devCertsLockPath);
    }
 }

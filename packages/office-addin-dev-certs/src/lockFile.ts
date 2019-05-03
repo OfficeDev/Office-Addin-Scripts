@@ -1,18 +1,16 @@
-import * as lf from "lockfile";
+import * as lockfile from "lockfile";
 import * as defaults from "./defaults";
 
-
-export function lock(file: string, wait: number = defaults.maxWaitTimeToAcquireLock): Promise<void> {
-    return new Promise(function(resolve, reject) {
-        lf.lock(file, {wait: wait}, function(err) {
-            if (err) {
-                reject(err);
-            }
-            resolve();
+export async function acquireLock(file: string, wait: number = defaults.maxWaitTime): Promise<void> {
+    try {
+        await new Promise(function(resolve, reject) {
+            lockfile.lock(file, {wait}, (err) => { err ? reject(err) : resolve(); });
         });
-    });
+    } catch (err) {
+        throw new Error(`Another process using office-addin-dev-certs took too long to finish.\n${err}`);
+    }
 }
 
-export function unlockSync(file: string) {
-    lf.unlockSync(file);
+export function releaseLock(file: string) {
+    lockfile.unlockSync(file);
 }

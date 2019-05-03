@@ -21,13 +21,8 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
    return command;
 }
 
-export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, machine: boolean = false, maxWaitTimeToAcquireLock: number = defaults.maxWaitTimeToAcquireLock) {
-   try {
-      await lockFile.lock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
-   } catch (err) {
-      throw new Error(`Another process is using office-addin-dev-certs, please wait for it complete.\n${err}`);
-   }
-  
+export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, machine: boolean = false, maxWaitTimeToAcquireLock: number = defaults.maxWaitTime) {
+   await lockFile.acquireLock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
    const areCertificatesValid = verifyCertificates();
 
    if (areCertificatesValid) {
@@ -37,7 +32,7 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
       await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
       await installCaCertificate(defaults.caCertificatePath, machine);
    }
-   lockFile.unlockSync(defaults.devCertsLockPath);
+   lockFile.releaseLock(defaults.devCertsLockPath);
 }
 
 export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath, machine: boolean = false) {

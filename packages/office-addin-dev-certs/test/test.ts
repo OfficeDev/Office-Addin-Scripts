@@ -97,6 +97,7 @@ describe("office-addin-dev-certs", function() {
         });
     });
     describe("parallel-install-uninstall-tests", function() {
+        const errStr = "Another process using office-addin-dev-certs took too long to finish";
         beforeEach(function() {
             sandbox = sinon.createSandbox();
         });
@@ -130,24 +131,24 @@ describe("office-addin-dev-certs", function() {
             assert.strictEqual(uninstallCaCertificate.callCount, 1);
         });
         it("install call times out", async function() {
-            await lockFile.lock(defaults.devCertsLockPath, 500);
+            await lockFile.acquireLock(defaults.devCertsLockPath, 500);
             try {
                 await install.ensureCertificatesAreInstalled(1, false, 500);
                 assert.strictEqual(0, 1);
             } catch (err) {
-                assert.strictEqual(err.toString().includes("Another process is using office-addin-dev-certs, please wait for it complete."), true);
+                assert.strictEqual(err.toString().includes(errStr), true);
             }
-            lockFile.unlockSync(defaults.devCertsLockPath);
+            lockFile.releaseLock(defaults.devCertsLockPath);
         });
         it("uninstall call times out", async function() {
-            await lockFile.lock(defaults.devCertsLockPath, 500);
+            await lockFile.acquireLock(defaults.devCertsLockPath, 500);
             try {
                 await uninstall.uninstallCaCertificate(true, false, false, 500);
                 assert.strictEqual(0, 1);
             } catch (err) {
-                assert.strictEqual(err.toString().includes("Another process is using office-addin-dev-certs, please wait for it complete."), true);
+                assert.strictEqual(err.toString().includes(errStr), true);
             }
-            lockFile.unlockSync(defaults.devCertsLockPath);
+            lockFile.releaseLock(defaults.devCertsLockPath);
         });
     });
     describe("install-tests", function() {
@@ -206,17 +207,21 @@ describe("office-addin-dev-certs", function() {
         it("execSync fail case", async function() {
             const error = {stderr : "test error"};
             sandbox.stub(childProcess, "execSync").throws(error);
+            sandbox.stub(verify, "isCaCertificateInstalled").returns(true);
             try {
-                await uninstall.uninstallCaCertificate(false);
+                await uninstall.uninstallCaCertificate();
+                assert.strictEqual(0, 1);
             } catch (err) {
+                lockFile.releaseLock(defaults.devCertsLockPath);
                 assert.strictEqual(err.message, "Unable to uninstall the CA certificate.\ntest error");
             }
         });
-        it("install success case", async function() {
+        it("uninstall success case", async function() {
             const execSync = sandbox.fake();
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
+            sandbox.stub(verify, "isCaCertificateInstalled").returns(true);
             try {
-                await uninstall.uninstallCaCertificate(false);
+                await uninstall.uninstallCaCertificate();
                 assert.strictEqual(execSync.callCount, 1);
             } catch (err) {
                 // not expecting any exception
