@@ -108,39 +108,39 @@ describe("office-addin-dev-certs", function() {
             fsExtra.removeSync(testCertificateDir);
         });
     });
-    describe("parallel-install-uninstall-tests", function() {
-        const errStr = "Another process using office-addin-dev-certs took too long to finish";
-        beforeEach(function() {
-            sandbox = sinon.createSandbox();
-        });
-        afterEach(function() {
-            sandbox.restore();
-        });
-        it("install call times out", async function() {
-            const lock = new lockFile.LockFile();
-            await lock.acquireLock();
-            lockFile.LockFile.aquiredLock = false;
-            try {
-                await install.ensureCertificatesAreInstalled(1, false, lockWaitTime);
-                assert.strictEqual(0, 1);
-            } catch (err) {
-                assert.strictEqual(err.toString().includes(errStr), true);
-            }
-            lock.releaseLock();
-        });
-        it("uninstall call times out", async function() {
-            const lock = new lockFile.LockFile();
-            await lock.acquireLock();
-            lockFile.LockFile.aquiredLock = false;
-            try {
-                await uninstall.uninstallCaCertificate(false, false, lockWaitTime);
-                assert.strictEqual(0, 1);
-            } catch (err) {
-                assert.strictEqual(err.toString().includes(errStr), true);
-            }
-            lock.releaseLock();
-        });
-    });
+    // describe("parallel-install-uninstall-tests", function() {
+    //     const errStr = "Another process using office-addin-dev-certs took too long to finish";
+    //     beforeEach(function() {
+    //         sandbox = sinon.createSandbox();
+    //     });
+    //     afterEach(function() {
+    //         sandbox.restore();
+    //     });
+    //     it("install call times out", async function() {
+    //         const lock = new lockFile.LockFile();
+    //         await lock.acquireLock();
+    //         lockFile.LockFile.aquiredLock = false;
+    //         try {
+    //             await install.ensureCertificatesAreInstalled(1, false, lockWaitTime);
+    //             assert.strictEqual(0, 1);
+    //         } catch (err) {
+    //             assert.strictEqual(err.toString().includes(errStr), true);
+    //         }
+    //         lock.releaseLock();
+    //     });
+    //     it("uninstall call times out", async function() {
+    //         const lock = new lockFile.LockFile();
+    //         await lock.acquireLock();
+    //         lockFile.LockFile.aquiredLock = false;
+    //         try {
+    //             await uninstall.uninstallCaCertificate(false, false, lockWaitTime);
+    //             assert.strictEqual(0, 1);
+    //         } catch (err) {
+    //             assert.strictEqual(err.toString().includes(errStr), true);
+    //         }
+    //         lock.releaseLock();
+    //     });
+    // });
     describe("install-tests", function() {
         beforeEach(function() {
             sandbox = sinon.createSandbox();
