@@ -31,7 +31,7 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
 
 export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true, maxWaitTimeToAcquireLock: number = defaults.maxWaitTime) {
    const lock = new lockFile.LockFile();
-   await lock.acquireLock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
+   await lock.acquireLock(maxWaitTimeToAcquireLock);
 
    if (!isCaCertificateInstalled()) {
       if (verbose) {
@@ -47,5 +47,5 @@ export async function uninstallCaCertificate(machine: boolean = false, verbose: 
    } catch (error) {
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
    }
-   lock.releaseLock(defaults.devCertsLockPath);
+   lock.releaseLock();
 }

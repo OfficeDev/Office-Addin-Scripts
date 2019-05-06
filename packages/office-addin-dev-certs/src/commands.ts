@@ -14,7 +14,7 @@ process.on("SIGINT", function() {
 // The process on exit, make sure to clean the lock file.
 process.on("exit", function() {
     const lock = new lockFile.LockFile();
-    lock.releaseLock(defaults.devCertsLockPath);
+    lock.releaseLock();
 });
 
 function parseDays(optionValue: any): number | undefined {

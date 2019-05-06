@@ -19,7 +19,7 @@ process.on("SIGINT", function() {
 // The process on exit, make sure to clean the lock file.
 process.on("exit", function() {
     const lock = new lockFile.LockFile();
-    lock.releaseLock(defaults.devCertsLockPath);
+    lock.releaseLock();
 });
 
 describe("office-addin-dev-certs", function() {
@@ -32,6 +32,7 @@ describe("office-addin-dev-certs", function() {
     const testCertificatePath = path.join(testCertificateDir, "localhost.crt");
     const testKeyPath = path.join(testCertificateDir, "localhost.key");
     const cert = {cert: "cert", key: "key"};
+    const lockWaitTime = 100;
 
     describe("generate-tests", function() {
         beforeEach(function() {
@@ -115,53 +116,29 @@ describe("office-addin-dev-certs", function() {
         afterEach(function() {
             sandbox.restore();
         });
-        it("three parallel install case", async function() {
-            const generateCertificates = sandbox.fake();
-            const uninstallCaCertificate = sandbox.fake();
-            const execSync = sandbox.fake();
-            let first = true;
-
-            sandbox.stub(generate, "generateCertificates").callsFake(generateCertificates);
-            sandbox.stub(uninstall, "uninstallCaCertificate").callsFake(uninstallCaCertificate);
-            sandbox.stub(childProcess, "execSync").callsFake(execSync);
-            sandbox.stub(verify, "verifyCertificates").callsFake(function() {
-                if (first) {
-                    first = false;
-                    return false;
-                }
-                return true;
-            });
-
-            // three parallel install calls
-            await Promise.all([install.ensureCertificatesAreInstalled(1, false, 500),
-                               install.ensureCertificatesAreInstalled(1, false, 500),
-                               install.ensureCertificatesAreInstalled(1, false, 500)]);
-
-            // only first call succeeds and rest of install calls does noting
-            assert.strictEqual(generateCertificates.callCount, 1);
-            assert.strictEqual(uninstallCaCertificate.callCount, 1);
-        });
         it("install call times out", async function() {
             const lock = new lockFile.LockFile();
-            await lock.acquireLock(defaults.devCertsLockPath, 500);
+            await lock.acquireLock();
+            lockFile.LockFile.aquiredLock = false;
             try {
-                await install.ensureCertificatesAreInstalled(1, false, 500);
+                await install.ensureCertificatesAreInstalled(1, false, lockWaitTime);
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes(errStr), true);
             }
-            lock.releaseLock(defaults.devCertsLockPath);
+            lock.releaseLock();
         });
         it("uninstall call times out", async function() {
             const lock = new lockFile.LockFile();
-            await lock.acquireLock(defaults.devCertsLockPath, 500);
+            await lock.acquireLock();
+            lockFile.LockFile.aquiredLock = false;
             try {
-                await uninstall.uninstallCaCertificate(false, false, 500);
+                await uninstall.uninstallCaCertificate(false, false, lockWaitTime);
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes(errStr), true);
             }
-            lock.releaseLock(defaults.devCertsLockPath);
+            lock.releaseLock();
         });
     });
     describe("install-tests", function() {
@@ -226,7 +203,7 @@ describe("office-addin-dev-certs", function() {
                 assert.strictEqual(0, 1);
             } catch (err) {
                 const lock = new lockFile.LockFile();
-                lock.releaseLock(defaults.devCertsLockPath);
+                lock.releaseLock();
                 assert.strictEqual(err.message, "Unable to uninstall the CA certificate.\ntest error");
             }
         });

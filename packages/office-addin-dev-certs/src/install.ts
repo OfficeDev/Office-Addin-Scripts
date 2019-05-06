@@ -23,7 +23,7 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
 
 export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, machine: boolean = false, maxWaitTimeToAcquireLock: number = defaults.maxWaitTime) {
    const lock = new lockFile.LockFile();
-   await lock.acquireLock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
+   await lock.acquireLock(maxWaitTimeToAcquireLock);
    const areCertificatesValid = verifyCertificates();
 
    if (areCertificatesValid) {
@@ -33,7 +33,7 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
       await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
       await installCaCertificate(defaults.caCertificatePath, machine);
    }
-   lock.releaseLock(defaults.devCertsLockPath);
+   lock.releaseLock();
 }
 
 export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath, machine: boolean = false) {
