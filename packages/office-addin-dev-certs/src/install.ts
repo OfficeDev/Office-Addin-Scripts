@@ -22,17 +22,18 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
 }
 
 export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, machine: boolean = false, maxWaitTimeToAcquireLock: number = defaults.maxWaitTime) {
-   await lockFile.acquireLock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
+   const lock = new lockFile.LockFile();
+   await lock.acquireLock(defaults.devCertsLockPath, maxWaitTimeToAcquireLock);
    const areCertificatesValid = verifyCertificates();
 
    if (areCertificatesValid) {
       console.log(`You already have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
    } else {
-      await uninstallCaCertificate(false, false, false);
+      await uninstallCaCertificate(false, false);
       await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
       await installCaCertificate(defaults.caCertificatePath, machine);
    }
-   lockFile.releaseLock(defaults.devCertsLockPath);
+   lock.releaseLock(defaults.devCertsLockPath);
 }
 
 export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath, machine: boolean = false) {

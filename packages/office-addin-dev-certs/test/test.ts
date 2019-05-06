@@ -131,24 +131,26 @@ describe("office-addin-dev-certs", function() {
             assert.strictEqual(uninstallCaCertificate.callCount, 1);
         });
         it("install call times out", async function() {
-            await lockFile.acquireLock(defaults.devCertsLockPath, 500);
+            const lock = new lockFile.LockFile();
+            await lock.acquireLock(defaults.devCertsLockPath, 500);
             try {
                 await install.ensureCertificatesAreInstalled(1, false, 500);
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes(errStr), true);
             }
-            lockFile.releaseLock(defaults.devCertsLockPath);
+            lock.releaseLock(defaults.devCertsLockPath);
         });
         it("uninstall call times out", async function() {
-            await lockFile.acquireLock(defaults.devCertsLockPath, 500);
+            const lock = new lockFile.LockFile();
+            await lock.acquireLock(defaults.devCertsLockPath, 500);
             try {
-                await uninstall.uninstallCaCertificate(true, false, false, 500);
+                await uninstall.uninstallCaCertificate(false, false, 500);
                 assert.strictEqual(0, 1);
             } catch (err) {
                 assert.strictEqual(err.toString().includes(errStr), true);
             }
-            lockFile.releaseLock(defaults.devCertsLockPath);
+            lock.releaseLock(defaults.devCertsLockPath);
         });
     });
     describe("install-tests", function() {
@@ -212,7 +214,8 @@ describe("office-addin-dev-certs", function() {
                 await uninstall.uninstallCaCertificate();
                 assert.strictEqual(0, 1);
             } catch (err) {
-                lockFile.releaseLock(defaults.devCertsLockPath);
+                const lock = new lockFile.LockFile();
+                lock.releaseLock(defaults.devCertsLockPath);
                 assert.strictEqual(err.message, "Unable to uninstall the CA certificate.\ntest error");
             }
         });
@@ -235,7 +238,7 @@ describe("office-addin-dev-certs", function() {
                 const machine = true;
                 sandbox.stub(childProcess, "execSync").callsFake(execSync);
                 sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
-                await uninstall.uninstallCaCertificate(false, machine);
+                await uninstall.uninstallCaCertificate(machine);
                 assert.strictEqual(execSync.callCount, 1);
                 assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\LocalMachine\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
             });
@@ -245,7 +248,7 @@ describe("office-addin-dev-certs", function() {
                 const machine = false;
                 sandbox.stub(childProcess, "execSync").callsFake(execSync);
                 sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
-                await uninstall.uninstallCaCertificate(false, machine);
+                await uninstall.uninstallCaCertificate(machine);
                 assert.strictEqual(execSync.callCount, 1);
                 assert.strictEqual(execSync.calledWith(`powershell -command "Get-ChildItem  cert:\\CurrentUser\\Root | where { $_.IssuerName.Name -like '*CN=${defaults.certificateName}*' } |  Remove-Item"`), true);
             });
