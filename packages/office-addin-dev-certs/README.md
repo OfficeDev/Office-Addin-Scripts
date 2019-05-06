@@ -18,17 +18,9 @@ Syntax:
 
 Options:
 
-`--ca-cert <ca-cert-path>`
+`--machine`
 
-Path where the CA certificate file is written. Default ./ca.crt.
-
-`--cert <cert-path>`
-
-Path where the SSL certificate is written. Default ./localhost.crt.
-
-`--key <key-path>`
-
-Path where the private key for the SSL certificate is written. Default ./localhost.key.
+Install the CA certificate for all users. You must be an Administrator.
 
 `--days <days>`
 
@@ -50,6 +42,12 @@ Uninstall the certificate.
 
 Syntax:
 
-`office addin-dev-certs uninstall`
+`office addin-dev-certs uninstall [options]`
+
+Options:
+
+`--machine`
+
+Uninstall the CA certificate for all users. You must be an Administrator.
 
 #
