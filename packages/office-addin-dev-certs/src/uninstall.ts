@@ -2,7 +2,6 @@ import { execSync } from "child_process";
 import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as defaults from "./defaults";
-import * as lockFile from "./lockfile";
 import { isCaCertificateInstalled } from "./verify";
 
 function getUninstallCommand(machine: boolean = false): string {
@@ -29,10 +28,7 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
    }
 }
 
-export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true, maxWaitTimeToAcquireLock: number = defaults.maxWaitTime) {
-   const lock = new lockFile.LockFile();
-   await lock.acquireLock(maxWaitTimeToAcquireLock);
-
+export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
    if (!isCaCertificateInstalled()) {
       if (verbose) {
          console.log(`The CA certificate is not installed.`);
@@ -47,5 +43,4 @@ export async function uninstallCaCertificate(machine: boolean = false, verbose: 
    } catch (error) {
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
    }
-   lock.releaseLock();
 }
