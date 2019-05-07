@@ -10,17 +10,6 @@ import * as install from "../src/install";
 import * as uninstall from "../src/uninstall";
 import * as verify from "../src/verify";
 
-// // To handle crtl-c
-// process.on("SIGINT", function() {
-//     process.exit();
-// });
-
-// // The process on exit, make sure to clean the lock file.
-// process.on("exit", function() {
-//     const lock = new lockFile.LockFile();
-//     lock.releaseLock();
-// });
-
 describe("office-addin-dev-certs", function() {
     const sinon = require("sinon");
     const mkcert = require("mkcert");
