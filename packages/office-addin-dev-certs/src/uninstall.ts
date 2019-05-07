@@ -28,10 +28,10 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
    }
 }
 
-export function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true): void {
+export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
    if (!isCaCertificateInstalled()) {
       if (verbose) {
-          console.log(`The CA certificate is not installed.`);
+         console.log(`The CA certificate is not installed.`);
       }
       return;
    }

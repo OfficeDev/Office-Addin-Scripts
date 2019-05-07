@@ -10,6 +10,10 @@ export const localhostCertificateFileName = "localhost.crt";
 export const localhostCertificatePath = path.join(certificateDirectory, localhostCertificateFileName);
 export const localhostKeyFileName = "localhost.key";
 export const localhostKeyPath = path.join(certificateDirectory, localhostKeyFileName);
+export const devCertsLockFileName = "office-addin-dev-certs.lock";
+export const devCertsLockPath = path.join(os.homedir(), devCertsLockFileName);
+export const maxWaitTime = 6000;
+export const staleTime = 6000;
 
 // Default certificate details
 export const certificateName = "Developer CA for Microsoft Office Add-ins";

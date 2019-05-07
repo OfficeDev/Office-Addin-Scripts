@@ -49,9 +49,11 @@ export async function generateCertificates(caCertificatePath: string = defaults.
     }
 
     try {
-        fs.writeFileSync(`${caCertificatePath}`, caCertificate.cert);
-        fs.writeFileSync(`${localhostCertificatePath}`, localhostCertificate.cert);
-        fs.writeFileSync(`${localhostKeyPath}`, localhostCertificate.key);
+        if (!fs.existsSync(caCertificatePath)) {
+            fs.writeFileSync(`${caCertificatePath}`, caCertificate.cert);
+            fs.writeFileSync(`${localhostCertificatePath}`, localhostCertificate.cert);
+            fs.writeFileSync(`${localhostKeyPath}`, localhostCertificate.key);
+        }
     } catch (err) {
         throw new Error(`Unable to write generated certificates.\n${err}`);
     }
