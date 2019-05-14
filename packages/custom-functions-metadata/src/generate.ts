@@ -61,6 +61,14 @@ export interface IAssociate {
     id: string;
 }
 
+export interface IOption {
+    supportRepeatingParams: boolean;
+}
+
+export interface IOptions {
+    experimental: IOption;
+}
+
 interface IArrayType {
     dimensionality: number;
     type: ts.SyntaxKind;
@@ -129,7 +137,7 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
 // use env var to turn on repeating parameter support
-const repeatingParameterAllowed: boolean = (process.env.CUSTOM_FUNCTION_METADATA_REPEATING !== undefined);
+let repeatingParameterAllowed: boolean = (process.env.CUSTOM_FUNCTION_METADATA_REPEATING !== undefined);
 
 /**
  * Generate the metadata of the custom functions
@@ -179,8 +187,9 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
  * Takes the sourceCode and attempts to parse the functions information
  * @param sourceCode source containing the custom functions
  * @param sourceFileName source code file name or path
+ * @param experimentalOptions options to enable or disable
  */
-export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
+export function parseTree(sourceCode: string, sourceFileName: string, experimentalOptions?: IOptions): IParseTreeResult {
     const associate: IAssociate[] = [];
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
@@ -188,6 +197,9 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     const functionNames: string[] = [];
     const metadataFunctionNames: string[] = [];
     const ids: string[] = [];
+    if (experimentalOptions) {
+        repeatingParameterAllowed = experimentalOptions.experimental.supportRepeatingParams;
+    }
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
     buildEnums(sourceFile);
