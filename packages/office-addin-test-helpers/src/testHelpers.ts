@@ -132,7 +132,7 @@ async function closeDesktopApplication(application: string): Promise<boolean> {
                 processName = "Excel";
                 break;
             case "powerpoint":
-                processName = (process.platform == "win32") ? "Powerpnt" : "Powerpoint";
+                processName = (process.platform === "win32") ? "Powerpnt" : "Powerpoint";
                 break;
             case "onenote":
                 processName = "Onenote";
@@ -144,7 +144,7 @@ async function closeDesktopApplication(application: string): Promise<boolean> {
                 processName = "Project";
                 break;
             case "word":
-                processName = (process.platform == "win32") ? "Winword" : "Word";
+                processName = (process.platform === "win32") ? "Winword" : "Word";
                 break;
             default:
                 reject(`${application} is not a valid Office desktop application.`);
