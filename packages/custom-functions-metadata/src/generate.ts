@@ -61,12 +61,12 @@ export interface IAssociate {
     id: string;
 }
 
-export interface IparseTreeOptions {
+export interface IExperimentalOptions {
     allowRepeatingParameters?: boolean;
 }
 
 export interface IOptions {
-    experimental?: IparseTreeOptions;
+    experimental?: IExperimentalOptions;
 }
 
 interface IArrayType {
