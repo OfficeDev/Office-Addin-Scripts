@@ -61,12 +61,12 @@ export interface IAssociate {
     id: string;
 }
 
-export interface IExperimentalOptions {
+export interface IparseTreeOptions {
     allowRepeatingParameters?: boolean;
 }
 
 export interface IOptions {
-    experimental?: IExperimentalOptions;
+    experimental?: IparseTreeOptions;
 }
 
 interface IArrayType {
@@ -184,9 +184,9 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
  * Takes the sourceCode and attempts to parse the functions information
  * @param sourceCode source containing the custom functions
  * @param sourceFileName source code file name or path
- * @param experimentalOptions options to enable or disable
+ * @param parseTreeOptions options to enable or disable
  */
-export function parseTree(sourceCode: string, sourceFileName: string, experimentalOptions?: IOptions): IParseTreeResult {
+export function parseTree(sourceCode: string, sourceFileName: string, parseTreeOptions?: IOptions): IParseTreeResult {
     const associate: IAssociate[] = [];
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
@@ -194,7 +194,7 @@ export function parseTree(sourceCode: string, sourceFileName: string, experiment
     const functionNames: string[] = [];
     const metadataFunctionNames: string[] = [];
     const ids: string[] = [];
-    const allowRepeatingParameters = (experimentalOptions && experimentalOptions.experimental && experimentalOptions.experimental.allowRepeatingParameters) || (process.env.ALLOW_REPEATING_PARAMETERS !== undefined);
+    const allowRepeatingParameters = (parseTreeOptions && parseTreeOptions.experimental && parseTreeOptions.experimental.allowRepeatingParameters) || (process.env.ALLOW_REPEATING_PARAMETERS !== undefined);
 
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
