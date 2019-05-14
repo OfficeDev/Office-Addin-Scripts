@@ -41,6 +41,7 @@ export interface IFunctionResult {
 }
 
 export interface IGenerateResult {
+    associate: IAssociate[];
     errors: string[];
 }
 
@@ -50,8 +51,14 @@ export interface IFunctionExtras {
 }
 
 export interface IParseTreeResult {
+    associate: IAssociate[];
     extras: IFunctionExtras[];
     functions: IFunction[];
+}
+
+export interface IAssociate {
+    functionName: string;
+    id: string;
 }
 
 interface IArrayType {
@@ -131,7 +138,9 @@ const repeatingParameterAllowed: boolean = (process.env.CUSTOM_FUNCTION_METADATA
  */
 export async function generate(inputFile: string, outputFileName: string, wantConsoleOutput: boolean = false): Promise<IGenerateResult> {
     const errors: string[] = [];
+    const associate: IAssociate[] = [];
     const generateResults: IGenerateResult = {
+        associate,
         errors,
     };
 
@@ -139,6 +148,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
         const sourceCode = fs.readFileSync(inputFile, "utf-8");
         const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
         parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => errors.push(err)));
+        generateResults.associate = [...parseTreeResult.associate];
 
         if (errors.length === 0) {
             const json = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
@@ -171,6 +181,7 @@ export async function generate(inputFile: string, outputFileName: string, wantCo
  * @param sourceFileName source code file name or path
  */
 export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
+    const associate: IAssociate[] = [];
     const functions: IFunction[] = [];
     const extras: IFunctionExtras[] = [];
     const enumList: string[] = [];
@@ -182,6 +193,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     buildEnums(sourceFile);
     visit(sourceFile);
     const parseTreeResult: IParseTreeResult = {
+        associate,
         extras,
         functions,
     };
@@ -258,6 +270,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
                     }
 
                     ids.push(id);
+                    associate.push({functionName, id});
 
                     const functionMetadata: IFunction = {
                         description,
@@ -613,7 +626,6 @@ function isRepeatingParameter(type: ts.TypeNode): boolean {
             }
          }
     }
-
     return repeating;
 }
 
