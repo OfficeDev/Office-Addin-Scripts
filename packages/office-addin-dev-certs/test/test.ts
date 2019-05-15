@@ -113,6 +113,13 @@ describe("office-addin-dev-certs", function() {
                 assert.strictEqual(err.message, "Unable to install the CA certificate. test error");
             }
         });
+        it("certificate already installed case", async function() {
+            const execSync = sandbox.fake();
+            sandbox.stub(childProcess, "execSync").callsFake(execSync);
+            sandbox.stub(verify, "isCaCertificateInstalled").returns(true);
+            await install.installCaCertificate(testCaCertificatePath);
+            assert.strictEqual(execSync.callCount, 0);
+        });
         it("install success case", async function() {
             const execSync = sandbox.fake();
             sandbox.stub(childProcess, "execSync").callsFake(execSync);

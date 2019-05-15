@@ -38,6 +38,7 @@ export async function installCaCertificate(caCertificatePath: string = defaults.
 
    try {
       console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
+      // If the certificate is already installed by another instance skip it.
       if (!isCaCertificateInstalled()) {
          execSync(command, {stdio : "pipe" });
       }
