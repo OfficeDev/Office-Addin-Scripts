@@ -194,7 +194,8 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
     const functionNames: string[] = [];
     const metadataFunctionNames: string[] = [];
     const ids: string[] = [];
-    const allowRepeatingParameters = (parseTreeOptions && parseTreeOptions.experimental && parseTreeOptions.experimental.allowRepeatingParameters) || (process.env.ALLOW_REPEATING_PARAMETERS !== undefined);
+    const allowRepeatingParameters = (parseTreeOptions && parseTreeOptions.experimental && parseTreeOptions.experimental.allowRepeatingParameters)
+        || (process.env.ALLOW_REPEATING_PARAMETERS !== undefined);
 
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
