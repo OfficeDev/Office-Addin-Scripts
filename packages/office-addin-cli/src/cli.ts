@@ -5,4 +5,11 @@
 
 import * as commander from "commander";
 
-commander.parse(process.argv);
+commander.name("office-addin-cli");
+commander.version(process.env.npm_package_version || "(version not available)");
+
+if (process.argv.length > 2) {
+    commander.parse(process.argv);
+} else {
+    commander.help();
+}

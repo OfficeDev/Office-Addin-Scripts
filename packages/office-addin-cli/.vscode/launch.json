@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Command Line",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [],
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Debug Tests",
@@ -21,15 +28,6 @@
         "${workspaceFolder}/test/**/*.ts"
       ],
       "internalConsoleOptions": "openOnSessionStart"
-    },
-    {
-      "name": "Command Line",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/lib/debugging.js",
-      "args": ["start", "manifest.xml"],
-      "cwd": "C:\\dev\\git\\Excel-Custom-Functions",
-      "autoAttachChildProcesses": true
     }
   ]
 }
