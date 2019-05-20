@@ -8,7 +8,7 @@
       "name": "Command Line: Info",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/manifest.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "info",
         "${workspaceFolder}\\test\\manifests\\ExcelCustomFunctions.manifest.xml"
@@ -18,7 +18,7 @@
       "name": "Command Line: Modify",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/manifest.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "modify",
         "${workspaceFolder}\\test\\manifests\\manifest.xml",
