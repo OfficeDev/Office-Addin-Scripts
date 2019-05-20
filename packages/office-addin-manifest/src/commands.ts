@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 
 import * as commnder from "commander";
-import * as manifestInfo from "./manifestInfo";
 import { logErrorMessage } from "office-addin-cli";
+import * as manifestInfo from "./manifestInfo";
 
 function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
