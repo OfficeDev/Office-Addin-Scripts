@@ -5,8 +5,9 @@
   "main": "./lib/main.js",
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
-    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\"",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "cli": "node lib/cli.js",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
   },
   "author": "Office Dev",
   "license": "MIT",
