@@ -6,6 +6,9 @@
 import * as commander from "commander";
 import * as commands from "./commands";
 
+commander.name("office-addin-debugging");
+commander.version(process.env.npm_package_version || "(version not available)");
+
 commander
     .command("start <manifest-path> [app-type]")
     .option("--app <app>", "Specify which Office app to use.")
@@ -29,4 +32,8 @@ commander
     .option("--unload <command>")
     .action(commands.stop);
 
-commander.parse(process.argv);
+if (process.argv.length > 2) {
+    commander.parse(process.argv);
+} else {
+    commander.help();
+}
