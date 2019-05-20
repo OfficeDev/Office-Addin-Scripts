@@ -23,39 +23,6 @@
           "internalConsoleOptions": "openOnSessionStart"
       },
       {
-        "name": "Command Line: generate",
-        "type": "node",
-        "request": "launch",
-        "program": "${workspaceFolder}/lib/cli.js",
-        "args": ["generate"]
-      },
-      {
-        "name": "Command Line: generate --install",
-        "type": "node",
-        "request": "launch",
-        "program": "${workspaceFolder}/lib/cli.js",
-        "args": ["generate", "--install"]
-      },
-      {
-        "name": "Command Line: generate (with certificate paths)",
-        "type": "node",
-        "request": "launch",
-        "program": "${workspaceFolder}/lib/cli.js",
-        "args": ["generate", 
-          "--ca-cert", "certs/ca.crt",
-          "--cert", "certs/localhost.crt",
-          "--key", "certs/localhost.key",
-        ]
-      },
-      {
-        "name": "Command Line: generate --days",
-        "type": "node",
-        "request": "launch",
-        "program": "${workspaceFolder}/lib/cli.js",
-        "args": ["generate", 
-          "--days", "30"]
-      },
-      {
         "name": "Command Line: install",
         "type": "node",
         "request": "launch",

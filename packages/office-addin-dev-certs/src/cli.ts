@@ -7,6 +7,10 @@ import * as commander from "commander";
 import * as commands from "./commands";
 import * as defaults from "./defaults";
 
+commander.name("office-addin-dev-certs");
+commander.version(process.env.npm_package_version || "(version not available)");
+
+
 commander
     .command("install")
     .option("--machine", "Install the CA certificate for all users. You must be an Administrator.")
@@ -25,4 +29,8 @@ commander
     .description(`Uninstall the certificate.`)
     .action(commands.uninstall);
 
-commander.parse(process.argv);
+if (process.argv.length > 2) {
+    commander.parse(process.argv);
+} else {
+    commander.help();
+}
