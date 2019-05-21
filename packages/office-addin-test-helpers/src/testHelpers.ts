@@ -64,7 +64,7 @@ export async function sideloadDesktopApp(application: string, manifestPath: stri
 export async function startDevServer(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         devServerStarted = false;
-        const cmdLine = "npm run dev-server";
+        const cmdLine = "npm run dev-server-test";
         devServerProcess = childProcess.spawn(cmdLine, [], {
             detached: true,
             shell: true,
@@ -92,16 +92,16 @@ async function executeCommandLine(cmdLine: string): Promise<boolean> {
 }
 
 // Office-JS close workbook API is coming soon.  Once it's available we can stript out this code to kill the Excel process
-export async function teardownTestEnvironment(application: string): Promise<boolean> {
+export async function teardownTestEnvironment(application: string, killProcess: boolean = false): Promise<boolean> {
     return new Promise<boolean>(async function (resolve, reject) {
         let applicationKilled: boolean = false;
         let devServerKilled: boolean = false;
 
-        if (applicationSideloaded) {
+        if (applicationSideloaded && killProcess) {
             try {
                 applicationKilled = await closeDesktopApplication(application);
             } catch (err) {
-                reject(`Test teardown failed: ${err}`);
+                reject(`Killing ${application} process failed: ${err}`);
             }            
         }
 
@@ -115,10 +115,11 @@ export async function teardownTestEnvironment(application: string): Promise<bool
                 }                
                 devServerKilled = true;
             } catch (err) {
-                reject(`Test teardown failed: ${err}`);
+                reject(`Stopping dev-server failed: ${err}`);
             }
         }
-        resolve(applicationKilled && devServerKilled);
+
+        (killProcess) ? resolve(applicationKilled && devServerKilled) : resolve(devServerKilled);
     });
 }
 
@@ -131,7 +132,7 @@ async function closeDesktopApplication(application: string): Promise<boolean> {
                 processName = "Excel";
                 break;
             case "powerpoint":
-                processName = "Powerpnt";
+                processName = (process.platform === "win32") ? "Powerpnt" : "Powerpoint";
                 break;
             case "onenote":
                 processName = "Onenote";
@@ -143,7 +144,7 @@ async function closeDesktopApplication(application: string): Promise<boolean> {
                 processName = "Project";
                 break;
             case "word":
-                processName = "Winword";
+                processName = (process.platform === "win32") ? "Winword" : "Word";
                 break;
             default:
                 reject(`${application} is not a valid Office desktop application.`);

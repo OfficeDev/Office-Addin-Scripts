@@ -28,19 +28,19 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
    }
 }
 
-export function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true): void {
-   if (!isCaCertificateInstalled()) {
-      if (verbose) {
-          console.log(`The CA certificate is not installed.`);
+export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
+   if (isCaCertificateInstalled()) {
+      const command = getUninstallCommand(machine);
+      try {
+         console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
+         execSync(command, {stdio : "pipe" });
+         console.log(`You no longer have trusted access to https://localhost.`);
+      } catch (error) {
+         throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
       }
-      return;
-   }
-   const command = getUninstallCommand(machine);
-   try {
-      console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
-      execSync(command, {stdio : "pipe" });
-      console.log(`You no longer have trusted access to https://localhost.`);
-   } catch (error) {
-      throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
+   } else {
+      if (verbose) {
+         console.log(`The CA certificate is not installed.`);
+      }
    }
 }
