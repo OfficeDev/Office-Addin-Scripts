@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as metadata from "custom-functions-metadata";
 import * as fs from "fs";
 import * as path from "path";

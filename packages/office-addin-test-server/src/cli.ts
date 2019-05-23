@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as commander from "commander";
 import * as commands from "./commands";
 import { defaultPort } from "./testServer";

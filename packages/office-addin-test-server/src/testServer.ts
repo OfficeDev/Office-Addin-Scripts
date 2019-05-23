@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as cors from "cors";
 import * as devCerts from "office-addin-dev-certs";
 import * as express from "express";
