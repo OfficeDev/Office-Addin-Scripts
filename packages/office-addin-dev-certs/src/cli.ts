@@ -4,12 +4,12 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import { logErrorMessage } from "office-addin-cli";
 import * as commands from "./commands";
 import * as defaults from "./defaults";
 
 commander.name("office-addin-dev-certs");
 commander.version(process.env.npm_package_version || "(version not available)");
-
 
 commander
     .command("install")
@@ -28,6 +28,13 @@ commander
     .option("--machine", "Uninstall the CA certificate for all users. You must be an Administrator.")
     .description(`Uninstall the certificate.`)
     .action(commands.uninstall);
+
+// if the command is not known, display an error
+commander.on("command:*", function() {
+    logErrorMessage(`The command syntax is not valid.\n`);
+    process.exitCode = 1;
+    commander.help();
+});
 
 if (process.argv.length > 2) {
     commander.parse(process.argv);

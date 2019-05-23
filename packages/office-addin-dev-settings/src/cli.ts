@@ -4,6 +4,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import { logErrorMessage } from "office-addin-cli";
 import * as commands from "./commands";
 
 commander.name("office-addin-dev-settings");
@@ -52,6 +53,13 @@ commander
     .option("--path <path>", `The path to use, or "" to use the default.`)
     .option("-e,--extension <extension>", `The extension to use, or "" to use the default (".bundle").`)
     .action(commands.sourceBundleUrl);
+
+// if the command is not known, display an error
+commander.on("command:*", function() {
+    logErrorMessage(`The command syntax is not valid.\n`);
+    process.exitCode = 1;
+    commander.help();
+});
 
 if (process.argv.length > 2) {
     commander.parse(process.argv);
