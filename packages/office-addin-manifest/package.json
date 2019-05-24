@@ -11,7 +11,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-manifest": "./lib/cli.js"
+    "office-addin-manifest": "./cli.js"
   },
   "keywords": [
     "Office",
