@@ -74,7 +74,7 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
         } else {
             // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
-            startDetachedProcess(commandLine);
+            process.env.OfficeAddinDevServerProcessId = startDetachedProcess(commandLine);
 
             if (port !== undefined) {
                 // wait until the dev server is running
