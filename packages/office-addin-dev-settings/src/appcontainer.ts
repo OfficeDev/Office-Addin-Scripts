@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as childProcess from "child_process";
 import inquirer = require("inquirer");
 import { readManifestFile } from "office-addin-manifest";

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import { execSync } from "child_process";
 import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";

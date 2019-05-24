@@ -14,7 +14,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "custom-functions-metadata": "./lib/cli.js"
+    "custom-functions-metadata": "./cli.js"
   },
   "keywords": [
     "Office",
