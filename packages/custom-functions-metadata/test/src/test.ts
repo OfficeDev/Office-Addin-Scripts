@@ -121,14 +121,14 @@ describe("test errors", function() {
              const errtest: string[] = generateResult.errors;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
-             const errorstring = "Invalid type: badtype (4,12)";
-             const errorPosition = "(4,12)";
+             const errorstring = "Invalid type: badtype (7,12)";
+             const errorPosition = "(7,12)";
              const errorRequiresAddress = "@requiresAddress";
              assert.equal(errtest[0].includes(errorstring), true, "Unsupported type found");
              assert.equal(errtest[0].includes(errorPosition), true, "Line and column number found");
              assert.equal(errtest[2].includes(errorIdBad), true, "Invalid id found");
-             assert.equal(errtest[4], `The custom function name "1invalidname" should start with an alphabetic character. (22,19)`);
-             assert.equal(errtest[5], `The custom function name "1invalidname" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_). (22,19)`);
+             assert.equal(errtest[4], `The custom function name "1invalidname" should start with an alphabetic character. (25,19)`);
+             assert.equal(errtest[5], `The custom function name "1invalidname" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_). (25,19)`);
              assert.strictEqual(fs.existsSync(output), false, "json file created");
         });
     });
