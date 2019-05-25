@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
 
 import * as childProcess from "child_process";
 import * as cps from "current-processes";

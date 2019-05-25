@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as fs from "fs";
 import * as defaults from "./defaults";
 import { ensureCertificatesAreInstalled } from "./install";

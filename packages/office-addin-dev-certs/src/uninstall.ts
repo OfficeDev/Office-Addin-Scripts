@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import { execSync } from "child_process";
 import * as fsExtra from "fs-extra";
 import * as path from "path";
