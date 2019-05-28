@@ -1,6 +1,5 @@
 import * as childProcess from "child_process";
 import { ExecException } from "child_process";
-let subprocess: childProcess.ChildProcess;
 
 export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -23,7 +22,7 @@ export function startDetachedProcess(commandLine: string, verbose: boolean = fal
         console.log(`Starting: ${commandLine}`);
     }
 
-    subprocess = childProcess.spawn(commandLine, [], {
+    const subprocess = childProcess.spawn(commandLine, [], {
         detached: true,
         shell: true,
         stdio: "ignore",
@@ -39,15 +38,15 @@ export function startDetachedProcess(commandLine: string, verbose: boolean = fal
 }
 
 export function stopProcess(): void {
-    if (subprocess) {
+    if (process.env.OfficeAddinDevServerProcessId) {
         try {
             if (process.platform === "win32") {
-                childProcess.spawn("taskkill", ["/pid", subprocess.pid.toString(), "/f", "/t"]);
+                childProcess.spawn("taskkill", ["/pid", process.env.OfficeAddinDevServerProcessId, "/f", "/t"]);
             } else {
-                subprocess.kill();
+                process.kill(Number(process.env.OfficeAddinDevServerProcessId));
             }
         } catch (err) {
-            console.log(`Unable to kill process id ${subprocess.pid}: ${err}`);
+            console.log(`Unable to kill process id ${process.env.OfficeAddinDevServerProcessId}: ${err}`);
         }
     }
 }
