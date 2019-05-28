@@ -26,10 +26,8 @@
       "name": "Command Line",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/debugging.js",
-      "args": ["start", "manifest.xml"],
-      "cwd": "C:\\dev\\git\\Excel-Custom-Functions",
-      "autoAttachChildProcesses": true
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [],
     }
   ]
 }

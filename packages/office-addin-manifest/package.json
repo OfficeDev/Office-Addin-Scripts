@@ -1,12 +1,13 @@
 {
   "name": "office-addin-manifest",
-  "version": "1.2.11",
+  "version": "1.3.0",
   "description": "Read and modify Office Add-in manifest files.",
   "main": "./lib/main.js",
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
-    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\"",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "cli": "node lib/cli.js",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
   },
   "author": "Office Dev",
   "license": "MIT",
@@ -21,7 +22,7 @@
     "commander": "^2.19.0",
     "fs": "0.0.1-security",
     "node-fetch": "^2.2.0",
-    "office-addin-cli": "^0.1.1",
+    "office-addin-cli": "^0.2.0",
     "path": "^0.12.7",
     "uuid": "^3.3.2",
     "xml2js": "^0.4.19"

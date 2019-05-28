@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run build",
+    "npm-dist-tags": "lerna exec npm dist-tag ls --stream",
     "postinstall": "lerna bootstrap",
     "test": "lerna run test"
   },
