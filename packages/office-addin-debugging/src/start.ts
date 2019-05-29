@@ -9,7 +9,6 @@ import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
-import { platform } from "os";
 
 export enum AppType {
     Desktop = "desktop",
