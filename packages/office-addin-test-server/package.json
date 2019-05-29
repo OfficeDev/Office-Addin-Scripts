@@ -12,7 +12,7 @@
     "author": "Office Dev",
     "license": "MIT",
     "bin": {
-        "office-addin-test-server": "./lib/cli.js"
+        "office-addin-test-server": "./cli.js"
     },
     "keywords": [
         "Office",
