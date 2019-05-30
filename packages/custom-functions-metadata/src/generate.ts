@@ -62,6 +62,7 @@ export interface IAssociate {
 }
 
 export interface IExperimentalOptions {
+    /** @deprecated */
     allowRepeatingParameters?: boolean;
 }
 
@@ -194,8 +195,6 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
     const functionNames: string[] = [];
     const metadataFunctionNames: string[] = [];
     const ids: string[] = [];
-    const allowRepeatingParameters = (parseTreeOptions && parseTreeOptions.experimental && parseTreeOptions.experimental.allowRepeatingParameters)
-        || ((typeof process !== "undefined") && (process.env.ALLOW_REPEATING_PARAMETERS !== undefined));
 
     const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -250,12 +249,12 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
-                    const parameters = getParameters(paramsToParse, jsDocParamTypeInfo, jsDocParamInfo, jsDocsParamOptionalInfo, extra, enumList, allowRepeatingParameters);
+                    const parameters = getParameters(paramsToParse, jsDocParamTypeInfo, jsDocParamInfo, jsDocsParamOptionalInfo, extra, enumList);
 
                     const description = getDescription(functionDeclaration);
                     const helpUrl = normalizeLineEndings(getTagComment(functionDeclaration, HELPURL_PARAM));
 
-                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo, extra, enumList, allowRepeatingParameters);
+                    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo, extra, enumList);
 
                     const options = getOptions(functionDeclaration, isStreamingFunction, isCancelableFunction, isInvocationFunction, extra);
 
@@ -465,7 +464,7 @@ function getOptions(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
  * @param isStreaming - Is a streaming function
  * @param lastParameter - Last parameter of the function signature
  */
-function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }, extra: IFunctionExtras, enumList: string[], allowRepeatingParameters: boolean): IFunctionResult {
+function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, lastParameter: ts.ParameterDeclaration, jsDocParamTypeInfo: { [key: string]: string }, extra: IFunctionExtras, enumList: string[]): IFunctionResult {
     let resultType = "any";
     let resultDim = "scalar";
     const defaultResultItem: IFunctionResult = {
@@ -506,7 +505,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             extra.errors.push(logError(errorString, lastParameterPosition));
             return defaultResultItem;
         }
-        resultType = getParamType(lastParameterType.typeArguments[0], extra, enumList, allowRepeatingParameters);
+        resultType = getParamType(lastParameterType.typeArguments[0], extra, enumList);
         resultDim = getParamDim(lastParameterType.typeArguments[0]);
     } else if (func.type) {
         if (func.type.kind === ts.SyntaxKind.TypeReference &&
@@ -520,7 +519,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             // @ts-ignore
             resultDim = getParamDim((func.type as ts.TypeReferenceNode).typeArguments[0]);
         } else {
-            resultType = getParamType(func.type, extra, enumList, allowRepeatingParameters);
+            resultType = getParamType(func.type, extra, enumList);
             resultDim = getParamDim(func.type);
         }
     }
@@ -534,7 +533,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             const errorString = `Type {${ts.SyntaxKind[func.type.kind]}:${ts.SyntaxKind[returnTypeFromJSDoc.kind]}} doesn't match for return type : ${name}`;
             extra.errors.push(logError(errorString, returnPosition));
         }
-        resultType = getParamType(returnTypeFromJSDoc, extra, enumList, allowRepeatingParameters);
+        resultType = getParamType(returnTypeFromJSDoc, extra, enumList);
         resultDim = getParamDim(returnTypeFromJSDoc);
     }
 
@@ -561,7 +560,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }, extra: IFunctionExtras, enumList: string[], allowRepeatingParameters: boolean ): IFunctionParameter[] {
+function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }, extra: IFunctionExtras, enumList: string[]): IFunctionParameter[] {
     const parameterMetadata: IFunctionParameter[] = [];
     const parameters = params
     .map((p: ts.ParameterDeclaration) => {
@@ -580,7 +579,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         if (!typeNode && parameterJSDocTypeNode) {
             typeNode = parameterJSDocTypeNode;
         }
-        const ptype = getParamType(typeNode, extra, enumList, allowRepeatingParameters);
+        const ptype = getParamType(typeNode, extra, enumList);
 
         const pMetadataItem: IFunctionParameter = {
             description: jsDocParamInfo[name],
@@ -607,7 +606,7 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         }
 
         // only return repeating if true and allowed
-        if (!pMetadataItem.repeating || !allowRepeatingParameters) {
+        if (!pMetadataItem.repeating) {
             delete pMetadataItem.repeating;
         }
 
@@ -927,7 +926,7 @@ function hasInvocationParameter(param: ts.ParameterDeclaration, jsDocParamTypeIn
  * Gets the parameter type of the node
  * @param t TypeNode
  */
-function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[], allowRepeatingParameters: boolean): string {
+function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]): string {
     let type = "any";
     // Only get type for typescript files.  js files will return any for all types
     if (t) {
@@ -950,16 +949,7 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
                 }
             }
             arrayType = getArrayDimensionalityAndType(t);
-            if (allowRepeatingParameters) {
-                kind = arrayType.type;
-            } else {
-                if (arrayType.dimensionality !== 2) {
-                    // @ts-ignore
-                    extra.errors.push(logError("Invalid type array: " + TYPE_MAPPINGS_SIMPLE[arrayType.type], typePosition));
-                } else {
-                    kind = arrayType.type;
-                }
-            }
+            kind = arrayType.type;
         }
         // @ts-ignore
         type = TYPE_MAPPINGS[kind];
