@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
 import * as fetch from "isomorphic-fetch";
 export const defaultPort: number = 4201;
 

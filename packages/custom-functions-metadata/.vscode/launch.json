@@ -5,85 +5,11 @@
     "version": "0.2.0",
     "configurations": [        
         {
-            "name": "Command Line: clear",
+            "name": "Command Line",
             "type": "node",
             "request": "launch",            
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "clear", "${workspaceFolder}\\test\\manifest.xml"
-            ]
-        },
-        {
-            "name": "Command Line: disable-debugging",
-            "type": "node",
-            "request": "launch",            
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "disable-debugging", "${workspaceFolder}\\test\\manifest.xml"
-            ]
-        },
-        {
-            "name": "Command Line: disable-live-reload",
-            "type": "node",
-            "request": "launch",            
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "disable-live-reload", "${workspaceFolder}\\test\\manifest.xml"
-            ]
-        },
-        {
-            "name": "Command Line: enable-debugging",
-            "type": "node",
-            "request": "launch",            
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "enable-debugging", "${workspaceFolder}\\test\\manifest.xml"
-            ]
-        },
-        {
-            "name": "Command Line: enable-live-reload",
-            "type": "node",
-            "request": "launch",            
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "enable-live-reload", "${workspaceFolder}\\test\\manifest.xml"
-            ]
-        },
-        {
-            "name": "Command Line: get-source-bundle-url",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "get-source-bundle-url", "${workspaceFolder}\\test\\manifest.xml", 
-            ]
-        },
-        {
-            "name": "Command Line: is-debugging-enabled",
-            "type": "node",
-            "request": "launch",            
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "is-debugging-enabled", "${workspaceFolder}\\test\\manifest.xml"
-            ]
-        },
-        {
-            "name": "Command Line: is-live-reload-enabled",
-            "type": "node",
-            "request": "launch",            
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "is-live-reload-enabled", "${workspaceFolder}\\test\\manifest.xml"
-            ]
-        },
-        {
-            "name": "Command Line: set-source-bundle-url",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/lib/dev-settings.js",
-            "args": [
-                "set-source-bundle-url", "${workspaceFolder}\\test\\manifest.xml", "--host", "HOST", "--port", "PORT", "--path", "PATH", "--extension", ".EXT"
-            ]
+            "program": "${workspaceFolder}/lib/cli.js",
+            "args": []
         },
         {
             "type": "node",

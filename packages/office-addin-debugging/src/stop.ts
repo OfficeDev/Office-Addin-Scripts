@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as devSettings from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import { startProcess, stopProcess } from "./process";
