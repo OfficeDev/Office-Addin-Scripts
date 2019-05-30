@@ -61,7 +61,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
           reject(error);
         }
       } else {
-        const processIds = new Set();
+        const processIds = new Set<number>();
         const lines = stdout.trim().split("\n");
         if (isWin32) {
           lines.forEach((line) => {

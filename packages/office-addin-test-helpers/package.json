@@ -15,9 +15,7 @@
         "Office Add-in"
     ],
     "dependencies": {
-        "current-processes": "^0.2.1",
         "es6-promise": "^4.2.6",
-        "fs": "0.0.1-security",
         "isomorphic-fetch": "^2.2.1"
     },
     "devDependencies": {
