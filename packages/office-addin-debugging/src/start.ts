@@ -87,14 +87,15 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
 
             // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
-            process.env.OfficeAddinDevServerProcessId = startDetachedProcess(commandLine);
+            const devServerProcess =  startDetachedProcess(commandLine);
+            process.env.OfficeAddinDevServerProcessId = devServerProcess.pid.toString();
 
             if (port !== undefined) {
                 // wait until the dev server is running
                 const isRunning: boolean = await waitUntilDevServerIsRunning(port);
 
                 if (isRunning) {
-                    console.log(`The dev server is running on port ${port}.`);
+                    console.log(`The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`);
                 } else {
                     throw new Error(`The dev server is not running on port ${port}.`);
                 }
