@@ -5,6 +5,7 @@
     "build": "lerna run build",
     "npm-dist-tags": "lerna exec npm dist-tag ls --stream",
     "postinstall": "lerna bootstrap",
+    "publish:next": "lerna publish --dist-tag next",
     "test": "lerna run test"
   },
   "devDependencies": {
