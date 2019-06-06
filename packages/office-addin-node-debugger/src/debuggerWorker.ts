@@ -52,9 +52,9 @@ process.on('message', message => {
       }
 
       // load platform bundles
-      if (__platformBundles != undefined) {
-        const platformBundles = __platformBundles.concat();
-        __platformBundles = null;
+      if ((global as any).__platformBundles != undefined) {
+        const platformBundles = (global as any).__platformBundles.concat();
+        delete (global as any).__platformBundles;   
         for (const [index, pb] of platformBundles.entries()) {
           //console.log(`PB start ${index + 1}/${platformBundles.length}`);
           eval(pb);
