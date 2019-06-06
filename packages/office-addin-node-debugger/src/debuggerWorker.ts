@@ -51,21 +51,26 @@ process.on('message', message => {
         }
       }
 
-      // load platform bundles
-      if ((global as any).__platformBundles != undefined) {
-        const platformBundles = (global as any).__platformBundles.concat();
-        delete (global as any).__platformBundles;   
-        for (const [index, pb] of platformBundles.entries()) {
-          //console.log(`PB start ${index + 1}/${platformBundles.length}`);
-          eval(pb);
-          //console.log(`PB done  ${index + 1}/${platformBundles.length}`);
+      function loadPlatformBundles(): void {
+        // load platform bundles
+        if ((global as any).__platformBundles != undefined) {
+          const platformBundles = (global as any).__platformBundles.concat();
+          delete (global as any).__platformBundles;   
+          for (const [index, pb] of platformBundles.entries()) {
+            //console.log(`PB start ${index + 1}/${platformBundles.length}`);
+            eval(pb);
+            //console.log(`PB done  ${index + 1}/${platformBundles.length}`);
+          }
         }
       }
       
       fetch
         .default(message.url)
         .then(resp => resp.text())
-        .then(evalJS);
+        .then((js) => {
+          loadPlatformBundles();
+          evalJS(js);
+        })
     }
   };
 
