@@ -5,7 +5,7 @@ import * as os from "os";
 import * as path from "path";
 
 // Default certificate names
-export const certificateDirectoryName = ".office-addin-dev certs";
+export const certificateDirectoryName = ".office-addin-dev-certs";
 export const certificateDirectory =  path.join(os.homedir(), certificateDirectoryName);
 export const caCertificateFileName = "ca.crt";
 export const caCertificatePath = path.join(certificateDirectory, caCertificateFileName);

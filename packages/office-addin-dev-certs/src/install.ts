@@ -38,7 +38,7 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
 
 export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath, machine: boolean = false) {
    const command = getInstallCommand(caCertificatePath, machine);
-   console.log(command)
+
    try {
       console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       // If the certificate is already installed by another instance skip it.
