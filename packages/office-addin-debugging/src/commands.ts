@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as commander from "commander";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";

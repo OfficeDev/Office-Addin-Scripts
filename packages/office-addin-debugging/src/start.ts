@@ -1,4 +1,8 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as fetch from "node-fetch";
+import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
 import { DebuggingMethod } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
@@ -72,16 +76,26 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
         if ((port !== undefined) && await isDevServerRunning(port)) {
             console.log(`The dev server is already running on port ${port}.`);
         } else {
+            // On non-Windows platforms, prompt for installing the dev certs before starting the dev server.
+            // This is a workaround for the fact that the detached process does not show a window on Mac,
+            // therefore the user cannot enter the password when prompted.
+            if (process.platform !== "win32") {
+                if (!devCerts.verifyCertificates()) {
+                    devCerts.ensureCertificatesAreInstalled();
+                }
+            }
+
             // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
-            startDetachedProcess(commandLine);
+            const devServerProcess =  startDetachedProcess(commandLine);
+            process.env.OfficeAddinDevServerProcessId = devServerProcess.pid.toString();
 
             if (port !== undefined) {
                 // wait until the dev server is running
                 const isRunning: boolean = await waitUntilDevServerIsRunning(port);
 
                 if (isRunning) {
-                    console.log(`The dev server is running on port ${port}.`);
+                    console.log(`The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`);
                 } else {
                     throw new Error(`The dev server is not running on port ${port}.`);
                 }

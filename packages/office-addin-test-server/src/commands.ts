@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as commnder from "commander";
 import { defaultPort, TestServer } from "./testServer"
 import { parseNumber } from "office-addin-cli";

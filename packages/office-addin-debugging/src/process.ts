@@ -1,5 +1,8 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as childProcess from "child_process";
-import { ExecException } from "child_process";
+import { ChildProcess, ExecException } from "child_process";
 
 export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -17,7 +20,7 @@ export async function startProcess(commandLine: string, verbose: boolean = false
     });
 }
 
-export function startDetachedProcess(commandLine: string, verbose: boolean = false): void {
+export function startDetachedProcess(commandLine: string, verbose: boolean = false): ChildProcess {
     if (verbose) {
         console.log(`Starting: ${commandLine}`);
     }
@@ -34,4 +37,19 @@ export function startDetachedProcess(commandLine: string, verbose: boolean = fal
     });
 
     subprocess.unref();
+    return subprocess;
+}
+
+export function stopProcess(processId: number): void {
+    if (processId) {
+        try {
+            if (process.platform === "win32") {
+                childProcess.spawn("taskkill", ["/pid", `${processId}`, "/f", "/t"]);
+            } else {
+                process.kill(processId);
+            }
+        } catch (err) {
+            console.log(`Unable to kill process id ${processId}: ${err}`);
+        }
+    }
 }

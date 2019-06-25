@@ -1,17 +1,18 @@
 {
     "name": "office-addin-test-server",
-    "version": "0.1.5",
+    "version": "0.3.0",
     "description": "Creates a local web server for testing Office Add-ins and receiving test results.",
     "main": "./lib/main.js",
     "scripts": {
         "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
-        "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\"",
-        "test": "mocha -r ts-node/register test/**/*.ts"
+        "cli": "node lib/cli.js",
+        "test": "mocha -r ts-node/register test/**/*.ts",
+        "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
     },
     "author": "Office Dev",
     "license": "MIT",
     "bin": {
-        "office-addin-test-server": "./lib/cli.js"
+        "office-addin-test-server": "./cli.js"
     },
     "keywords": [
         "Office",
@@ -22,8 +23,8 @@
         "cors": "^2.8.5",
         "es6-promise": "^4.2.6",
         "express": "^4.16.4",
-        "office-addin-cli": "^0.1.1",
-        "office-addin-dev-certs": "^1.1.0"
+        "office-addin-cli": "^0.2.4",
+        "office-addin-dev-certs": "^1.2.4"
     },
     "devDependencies": {
         "@types/cors": "^2.8.4",

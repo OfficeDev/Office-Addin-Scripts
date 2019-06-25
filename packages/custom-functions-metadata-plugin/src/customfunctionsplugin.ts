@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as metadata from "custom-functions-metadata";
 import * as fs from "fs";
 import * as path from "path";
@@ -48,20 +51,16 @@ class CustomFunctionsMetadataPlugin {
             }
         });
 
-        let functionsUpdated: boolean = false;
         compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
             compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (source, module) => {
-                if (!functionsUpdated && module._source && module._source._name.endsWith(inputFilePath)) {
+                if (module._source && module._source._name.endsWith(inputFilePath)) {
                     associate.forEach((item) => {
                         module._source._value += `\nCustomFunctions.associate("${item.id}", ${item.functionName});`;
-                      });
-                    functionsUpdated = true;
+                    });
                 }
             });
         });
-
     }
-
 }
 
 module.exports = CustomFunctionsMetadataPlugin;

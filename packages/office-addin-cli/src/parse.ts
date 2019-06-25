@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 export function parseNumber(optionValue: any, errorMessage: string = "The value should be a number."): number | undefined {
     switch (typeof(optionValue)) {
         case "number": {

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as childProcess from "child_process";
 import * as crypto from "crypto";
 import * as net from "net";
@@ -58,7 +61,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
           reject(error);
         }
       } else {
-        const processIds = new Set();
+        const processIds = new Set<number>();
         const lines = stdout.trim().split("\n");
         if (isWin32) {
           lines.forEach((line) => {

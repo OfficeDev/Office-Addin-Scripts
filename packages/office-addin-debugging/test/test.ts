@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as assert from "assert";
 import * as express from "express";
 import * as http from "http";

@@ -1,9 +1,10 @@
 {
   "name": "custom-functions-metadata",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Generate metadata for Excel Custom Functions.",
   "main": "./lib/main.js",
   "scripts": {
+    "cli": "node lib/cli.js",
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
@@ -14,7 +15,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "custom-functions-metadata": "./lib/cli.js"
+    "custom-functions-metadata": "./cli.js"
   },
   "keywords": [
     "Office",
@@ -26,7 +27,7 @@
     "commander": "^2.19.0",
     "fs": "0.0.1-security",
     "nconf": "^0.10.0",
-    "office-addin-cli": "^0.1.1",
+    "office-addin-cli": "^0.2.4",
     "optimist": "^0.6.1",
     "xregexp": "^4.2.4"
   },

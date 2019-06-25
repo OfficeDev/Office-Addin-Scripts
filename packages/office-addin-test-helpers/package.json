@@ -1,6 +1,6 @@
 {
     "name": "office-addin-test-helpers",
-    "version": "0.1.2",
+    "version": "0.3.0",
     "description": "Provides test helpers for automating validation of Office Add-ins.",
     "main": "./lib/main.js",
     "scripts": {
@@ -15,9 +15,7 @@
         "Office Add-in"
     ],
     "dependencies": {
-        "current-processes": "^0.2.1",
         "es6-promise": "^4.2.6",
-        "fs": "0.0.1-security",
         "isomorphic-fetch": "^2.2.1"
     },
     "devDependencies": {
