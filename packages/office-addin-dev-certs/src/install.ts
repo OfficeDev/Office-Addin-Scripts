@@ -12,10 +12,10 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
 
    switch (process.platform) {
       case "win32":
-         command = `powershell Import-Certificate -CertStoreLocation cert:\\${machine ? "LocalMachine" : "CurrentUser"}\\Root ${caCertificatePath}`;
+         command = `powershell Import-Certificate -CertStoreLocation cert:\\${machine ? "LocalMachine" : "CurrentUser"}\\Root '${caCertificatePath}'`;
          break;
       case "darwin": // macOS
-         command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${caCertificatePath}`;
+         command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
          break;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
@@ -38,7 +38,7 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
 
 export async function installCaCertificate(caCertificatePath: string = defaults.caCertificatePath, machine: boolean = false) {
    const command = getInstallCommand(caCertificatePath, machine);
-
+   console.log(command)
    try {
       console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       // If the certificate is already installed by another instance skip it.

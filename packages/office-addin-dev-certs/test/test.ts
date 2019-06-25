@@ -143,7 +143,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").returns(false);
                 await install.installCaCertificate(testCaCertificatePath, machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\LocalMachine\\Root ${testCaCertificatePath}`), true);
+                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\LocalMachine\\Root '${testCaCertificatePath}'`), true);
             });
             it("without --machine option", async function() {
                 const execSync = sandbox.fake();
@@ -152,7 +152,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").returns(false);
                 await install.installCaCertificate(testCaCertificatePath, machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\CurrentUser\\Root ${testCaCertificatePath}`), true);
+                assert.strictEqual(execSync.calledWith(`powershell Import-Certificate -CertStoreLocation cert:\\CurrentUser\\Root '${testCaCertificatePath}'`), true);
             });
         }
     });
