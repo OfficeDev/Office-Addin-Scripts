@@ -12,10 +12,10 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
 
    switch (process.platform) {
       case "win32":
-         command = `powershell Import-Certificate -CertStoreLocation cert:\\${machine ? "LocalMachine" : "CurrentUser"}\\Root ${caCertificatePath}`;
+         command = `powershell Import-Certificate -CertStoreLocation cert:\\${machine ? "LocalMachine" : "CurrentUser"}\\Root '${caCertificatePath}'`;
          break;
       case "darwin": // macOS
-         command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${caCertificatePath}`;
+         command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
          break;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
