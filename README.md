@@ -46,8 +46,7 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
 * [office-addin-test-server](packages/office-addin-test-server/README.md)
 
-  This package provides a framework for testing Office Taskpane Add-ins by allowing Add-ins to send results to a test server.  The results can then be consumed and used
-  by tests to validate that the Add-in is working as expected.
+  This package provides a framework for testing Office Taskpane Add-ins by allowing Add-ins to send results to a test server. The results can then be consumed and used by tests to validate that the Add-in is working as expected.
 
 ## Requirements
 
