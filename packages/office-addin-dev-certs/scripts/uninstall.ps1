@@ -5,7 +5,7 @@ if($args.Count -ne 3){
 $machine = $args[0]
 $caCertificatePath=$args[1]
 $caCertificateName=$args[2]
-if(Get-Command -name Import-Certificate --ErrorAction SilentltyContinue){
+if(Get-Command -name Import-Certificate -ErrorAction SilentlyContinue){
     Get-ChildItem  cert:\\$machine\\Root | Where-Object { $_.IssuerName.Name -like "*CN=$caCertificateName*" } |  Remove-Item
 }
 else{

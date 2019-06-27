@@ -12,7 +12,7 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
 
    switch (process.platform) {
       case "win32":
-         command = `powershell scripts\\install.ps1 ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
+         command = `powershell -ExecutionPolicy Bypass scripts\\install.ps1 ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
          break;
       case "darwin": // macOS
          command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;

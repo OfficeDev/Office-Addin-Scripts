@@ -3,7 +3,7 @@ if($args.Count -ne 1){
 }
 
 $caCertificateName=$args[0]
-if(Get-Command -name Import-Certificate --ErrorAction SilentltyContinue){
+if(Get-Command -name Import-Certificate -ErrorAction SilentlyContinue){
     Get-ChildItem cert:\\CurrentUser\\Root | Where-Object Issuer -like "*CN=$caCertificateName*" | Where-Object { $_.NotAfter -gt [datetime]::today } | Format-List
 }
 else{

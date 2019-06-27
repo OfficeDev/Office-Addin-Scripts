@@ -4,7 +4,7 @@ if($args.Count -ne 2){
 
 $machine = $args[0]
 $caCertificatePath=$args[1]
-if(Get-Command -name Import-Certificate --ErrorAction SilentltyContinue){
+if(Get-Command -name Import-Certificate -ErrorAction SilentlyContinue){
     Import-Certificate -CertStoreLocation cert:\\$machine\\Root ${caCertificatePath}
 }
 else{
