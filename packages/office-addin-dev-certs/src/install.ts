@@ -11,10 +11,8 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
    switch (process.platform) {
       case "win32":
          return `powershell -ExecutionPolicy Bypass scripts\\install.ps1 ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
-         break;
       case "darwin": // macOS
          return `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
-         break;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
    }
