@@ -30,7 +30,7 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
 * [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
 
-  This package can be used to configure developer settings for an Office Add-in. 
+  This package can be used to configure developer settings for an Office Add-in.
 
 * [office-addin-manifest](packages/office-addin-manifest/README.md)
 
@@ -39,6 +39,15 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application. 
+  
+* [office-addin-test-helpers](packages/office-addin-test-helpers/README.md)
+
+  This package provides test helpers for automating validation of Office Addins. Use in conjunction with the office-addin-test-server package and Mocha tests.
+
+* [office-addin-test-server](packages/office-addin-test-server/README.md)
+
+  This package provides a framework for testing Office Taskpane Add-ins by allowing Add-ins to send results to a test server.  The results can then be consumed and used
+  by tests to validate that the Add-in is working as expected.
 
 ## Requirements
 
