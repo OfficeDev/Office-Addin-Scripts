@@ -1,20 +1,19 @@
-if($args.Count -ne 3){
-    throw "Usage uninstall.ps1 <LocalMachine/CurrentUser> <CA certificate path> <CA certficate Name>"
+if($args.Count -ne 2){
+    throw "Usage uninstall.ps1 <LocalMachine/CurrentUser> <CA certficate Name>"
 }
 
 $machine = $args[0]
-$caCertificatePath=$args[1]
-$caCertificateName=$args[2]
+$caCertificateName=$args[1]
 if(Get-Command -name Import-Certificate -ErrorAction SilentlyContinue){
     Get-ChildItem  cert:\\$machine\\Root | Where-Object { $_.IssuerName.Name -like "*CN=$caCertificateName*" } |  Remove-Item
 }
 else{
     # Legacy system support
-    $pfx = new-object System.Security.Cryptography.X509Certificates.X509Certificate2
-    $pfx.import($caCertificatePath)
-
-    $store = new-object System.Security.Cryptography.X509Certificates.X509Store("Root", $machine)
-    $store.open("MaxAllowed")
-    $store.remove($pfx)
+    $store = New-Object System.Security.Cryptography.X509Certificates.X509Store("root", $machine)
+    $store.Open("MaxAllowed")
+    $certs = $store.Certificates.Find("FindBySubjectName", $caCertificateName, $false)
+    foreach ($cert in $certs){
+        $store.Remove($cert)
+    }
     $store.close()
 }

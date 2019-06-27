@@ -9,9 +9,9 @@ import * as defaults from "./defaults";
 function getVerifyCommand(): string {
     switch (process.platform) {
        case "win32":
-          return `powershell -ExecutionPolicy Bypass scripts\\verify.ps1 ${defaults.certificateName}`;
+          return `powershell -ExecutionPolicy Bypass scripts\\verify.ps1 '${defaults.certificateName}'`;
        case "darwin": // macOS
-          return `security find-certificate -c "${defaults.certificateName}" -p | openssl x509 -checkend 86400 -noout`;
+          return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
@@ -19,7 +19,7 @@ function getVerifyCommand(): string {
 
 export function isCaCertificateInstalled(): boolean {
     const command = getVerifyCommand();
-    console.log(command)
+
     try {
         const output = execSync(command, {stdio : "pipe" }).toString();
         if (process.platform === "darwin") {

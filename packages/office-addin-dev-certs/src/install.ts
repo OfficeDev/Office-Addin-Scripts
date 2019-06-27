@@ -8,19 +8,16 @@ import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
 import { isCaCertificateInstalled, verifyCertificates } from "./verify";
 
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
-   let command: string;
-
    switch (process.platform) {
       case "win32":
-         command = `powershell -ExecutionPolicy Bypass scripts\\install.ps1 ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
+         return `powershell -ExecutionPolicy Bypass scripts\\install.ps1 ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
          break;
       case "darwin": // macOS
-         command = `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
+         return `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
          break;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
    }
-   return command;
 }
 
 export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, machine: boolean = false) {
