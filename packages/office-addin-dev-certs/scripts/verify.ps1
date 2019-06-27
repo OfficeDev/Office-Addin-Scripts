@@ -1,5 +1,5 @@
 if($args.Count -ne 1){
-    throw "Usage verify.ps1 <CA certficate Name>"
+    throw "Usage: verify.ps1 <CA-certficate-name>"
 }
 
 $caCertificateName=$args[0]

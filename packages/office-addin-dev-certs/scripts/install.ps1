@@ -1,5 +1,5 @@
 if($args.Count -ne 2){
-    throw "Usage install.ps1 <LocalMachine/CurrentUser> <CA certificate path>"
+    throw "Usage: install.ps1 <LocalMachine | CurrentUser> <CA-certificate-path>"
 }
 
 $machine = $args[0]

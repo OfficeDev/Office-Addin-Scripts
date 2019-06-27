@@ -1,5 +1,5 @@
 if($args.Count -ne 2){
-    throw "Usage uninstall.ps1 <LocalMachine/CurrentUser> <CA certficate Name>"
+    throw "Usage: uninstall.ps1 <LocalMachine | CurrentUser> <CA-certficate-name>"
 }
 
 $machine = $args[0]
