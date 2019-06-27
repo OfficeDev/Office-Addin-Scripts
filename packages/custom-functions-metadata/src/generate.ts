@@ -75,6 +75,15 @@ interface IArrayType {
     type: ts.SyntaxKind;
 }
 
+interface IParameterType {
+    enumList: string[];
+    extra: IFunctionExtras;
+    jsDocParamInfo: { [key: string]: string };
+    jsDocParamOptionalInfo: { [key: string]: string };
+    jsDocParamTypeInfo: { [key: string]: string };
+    parametersToParse: ts.ParameterDeclaration[];
+}
+
 const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
 const HELPURL_PARAM = "helpurl";
 const VOLATILE = "volatile";
@@ -238,18 +247,26 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
                     const idNameArray = idName.split(" ");
                     const jsDocParamInfo = getJSDocParams(functionDeclaration);
                     const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
-                    const jsDocsParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
+                    const jsDocParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
                     const [lastParameter] = functionDeclaration.parameters.slice(-1);
                     const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
                     const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
                     const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
 
-                    const paramsToParse = (isStreamingFunction || isCancelableFunction || isInvocationFunction)
+                    const parametersToParse = (isStreamingFunction || isCancelableFunction || isInvocationFunction)
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
-                    const parameters = getParameters(paramsToParse, jsDocParamTypeInfo, jsDocParamInfo, jsDocsParamOptionalInfo, extra, enumList);
+                    const parameterItems: IParameterType = {
+                        enumList,
+                        extra,
+                        jsDocParamInfo,
+                        jsDocParamOptionalInfo,
+                        jsDocParamTypeInfo,
+                        parametersToParse,
+                    };
+                    const parameters = getParameters(parameterItems);
 
                     const description = getDescription(functionDeclaration);
                     const helpUrl = normalizeLineEndings(getTagComment(functionDeclaration, HELPURL_PARAM));
@@ -560,9 +577,9 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { [key: string]: string }, jsDocParamInfo: { [key: string]: string }, jsDocParamOptionalInfo: { [key: string]: string }, extra: IFunctionExtras, enumList: string[]): IFunctionParameter[] {
+function getParameters(parameterItem: IParameterType): IFunctionParameter[] {
     const parameterMetadata: IFunctionParameter[] = [];
-    const parameters = params
+    const parameters = parameterItem.parametersToParse
     .map((p: ts.ParameterDeclaration) => {
         const parameterPosition = getPosition(p);
         // Get type node of parameter from typescript
@@ -573,19 +590,19 @@ function getParameters(params: ts.ParameterDeclaration[], jsDocParamTypeInfo: { 
         if (parameterJSDocTypeNode && typeNode) {
             if (parameterJSDocTypeNode.kind !== typeNode.kind) {
                 const errorString = `Type {${ts.SyntaxKind[parameterJSDocTypeNode.kind]}:${ts.SyntaxKind[typeNode.kind]}} doesn't match for parameter : ${name}`;
-                extra.errors.push(logError(errorString, parameterPosition));
+                parameterItem.extra.errors.push(logError(errorString, parameterPosition));
             }
         }
         if (!typeNode && parameterJSDocTypeNode) {
             typeNode = parameterJSDocTypeNode;
         }
-        const ptype = getParamType(typeNode, extra, enumList);
+        const ptype = getParamType(typeNode, parameterItem.extra, parameterItem.enumList);
 
         const pMetadataItem: IFunctionParameter = {
-            description: jsDocParamInfo[name],
+            description: parameterItem.jsDocParamInfo[name],
             dimensionality: getParamDim(typeNode),
             name,
-            optional: getParamOptional(p, jsDocParamOptionalInfo),
+            optional: getParamOptional(p, parameterItem.jsDocParamOptionalInfo),
             repeating: isRepeatingParameter(typeNode),
             type: ptype,
         };
