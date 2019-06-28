@@ -75,7 +75,7 @@ interface IArrayType {
     type: ts.SyntaxKind;
 }
 
-interface IParameterType {
+interface IGetParametersObjectType {
     enumList: string[];
     extra: IFunctionExtras;
     jsDocParamInfo: { [key: string]: string };
@@ -258,7 +258,7 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
                         ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
                         : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
-                    const parameterItems: IParameterType = {
+                    const parameterItems: IGetParametersObjectType = {
                         enumList,
                         extra,
                         jsDocParamInfo,
@@ -577,7 +577,7 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(parameterItem: IParameterType): IFunctionParameter[] {
+function getParameters(parameterItem: IGetParametersObjectType): IFunctionParameter[] {
     const parameterMetadata: IFunctionParameter[] = [];
     const parameters = parameterItem.parametersToParse
     .map((p: ts.ParameterDeclaration) => {
