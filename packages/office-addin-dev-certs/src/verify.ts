@@ -9,9 +9,9 @@ import * as defaults from "./defaults";
 function getVerifyCommand(): string {
     switch (process.platform) {
        case "win32":
-          return `powershell -command "dir cert:\\CurrentUser\\Root | Where-Object Issuer -like '*CN=${defaults.certificateName}*' | Where-Object { $_.NotAfter -gt [datetime]::today } | Format-List"`;
+          return `powershell -ExecutionPolicy Bypass scripts\\verify.ps1 '${defaults.certificateName}'`;
        case "darwin": // macOS
-          return `security find-certificate -c "${defaults.certificateName}" -p | openssl x509 -checkend 86400 -noout`;
+          return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
