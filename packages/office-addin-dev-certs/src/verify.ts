@@ -16,7 +16,7 @@ function getVerifyCommand(): string {
        case "darwin": // macOS
           return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
         case "linux":
-          return `[ -f /usr/local/share/ca-certificates/${defaults.certificateName} ]`;
+          return `[ -f /usr/local/share/ca-certificates/${defaults.caCertificateFileName} ]`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
