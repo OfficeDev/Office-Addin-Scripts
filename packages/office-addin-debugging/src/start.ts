@@ -81,7 +81,7 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
             // therefore the user cannot enter the password when prompted.
             if (process.platform !== "win32") {
                 if (!devCerts.verifyCertificates()) {
-                    devCerts.ensureCertificatesAreInstalled();
+                    await devCerts.ensureCertificatesAreInstalled();
                 }
             }
 
