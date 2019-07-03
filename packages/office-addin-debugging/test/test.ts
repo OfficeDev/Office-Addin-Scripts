@@ -8,6 +8,7 @@ import * as http from "http";
 import * as mocha from "mocha";
 import * as port from "../src/port";
 import * as start from "../src/start";
+import * as stop from "../src/stop";
 
 function startServer(serverPort: number): http.Server {
   const server = http.createServer(express());
@@ -79,13 +80,20 @@ describe("port functions", function() {
 
 });
 
-describe("start functions", function() {
+describe("start/stop functions", function() {
   describe("writeProcessIdToFile()", async function() {
+    const pid = 1234;
     it("writing process id file", async function() {
-      const pid = 1234;
       await start.writeProcessIdToFile(pid);
       const processId = fs.readFileSync(start.processIdFile);
       assert.strictEqual(processId.toString(), pid.toString());
+    });
+    it("reading process id file", async function() {
+      const id = stop.readProcessIdFromFile();
+      assert.strictEqual(id, pid.toString());
+    });
+    it("deleting process id file", async function() {
+      stop.deleteProcessIdFile();
     });
   });
 });

@@ -53,7 +53,7 @@ export async function stopDebugging(manifestPath: string, unregisterCommandLine?
     console.log("Debugging has been stopped.");
 }
 
-function readProcessIdFromFile(): string | undefined {
+export function readProcessIdFromFile(): string | undefined {
     let id;
     if (fs.existsSync(processIdFile)) {
         id = fs.readFileSync(processIdFile);
@@ -62,7 +62,7 @@ function readProcessIdFromFile(): string | undefined {
     return id ? id.toString() : undefined;
 }
 
-function deleteProcessIdFile() {
+export function deleteProcessIdFile() {
     console.log(`Deleting process id file: ${processIdFile}`);
     fs.unlinkSync(processIdFile);
 }
