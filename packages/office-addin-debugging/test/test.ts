@@ -3,9 +3,11 @@
 
 import * as assert from "assert";
 import * as express from "express";
+import * as fs from "fs";
 import * as http from "http";
 import * as mocha from "mocha";
 import * as port from "../src/port";
+import * as start from "../src/start";
 
 function startServer(serverPort: number): http.Server {
   const server = http.createServer(express());
@@ -75,4 +77,15 @@ describe("port functions", function() {
     });
   });
 
+});
+
+describe("start functions", function() {
+  describe("writeProcessIdToFile()", async function() {
+    it("writing process id file", async function() {
+      const pid = 1234;
+      await start.writeProcessIdToFile(pid);
+      const processId = fs.readFileSync(start.processIdFile);
+      assert.strictEqual(processId.toString(), pid.toString());
+    });
+  });
 });

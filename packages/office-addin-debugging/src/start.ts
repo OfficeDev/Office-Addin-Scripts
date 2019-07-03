@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as fs from "fs";
 import * as fetch from "node-fetch";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
@@ -9,6 +10,8 @@ import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
+
+export const processIdFile = "devServerProcessId.txt";
 
 export enum AppType {
     Desktop = "desktop",
@@ -89,6 +92,7 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
             console.log(`Starting the dev server... (${commandLine})`);
             const devServerProcess =  startDetachedProcess(commandLine);
             process.env.OfficeAddinDevServerProcessId = devServerProcess.pid.toString();
+            await writeProcessIdToFile(devServerProcess.pid);
 
             if (port !== undefined) {
                 // wait until the dev server is running
@@ -102,6 +106,11 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
             }
         }
     }
+}
+
+export async function writeProcessIdToFile(id: number): Promise<void> {
+    console.log(`Writing process id: ${id} to file: ${processIdFile}`);
+    fs.writeFileSync(processIdFile, id);
 }
 
 export async function runNodeDebugger(host?: string, port?: string): Promise<void> {
