@@ -91,8 +91,7 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
             // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
             const devServerProcess =  startDetachedProcess(commandLine);
-            process.env.OfficeAddinDevServerProcessId = devServerProcess.pid.toString();
-            await writeProcessIdToFile(devServerProcess.pid);
+            await saveDevServerProcessId(devServerProcess.pid);
 
             if (port !== undefined) {
                 // wait until the dev server is running
@@ -108,8 +107,9 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
     }
 }
 
-export async function writeProcessIdToFile(id: number): Promise<void> {
+export async function saveDevServerProcessId(id: number): Promise<void> {
     console.log(`Writing process id: ${id} to file: ${processIdFile}`);
+    process.env.OfficeAddinDevServerProcessId = id.toString();
     fs.writeFileSync(processIdFile, id);
 }
 

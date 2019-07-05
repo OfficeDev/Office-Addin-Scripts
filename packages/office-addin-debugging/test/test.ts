@@ -81,19 +81,44 @@ describe("port functions", function() {
 });
 
 describe("start/stop functions", function() {
-  describe("writeProcessIdToFile()", async function() {
-    const pid = 1234;
-    it("writing process id file", async function() {
-      await start.writeProcessIdToFile(pid);
-      const processId = fs.readFileSync(start.processIdFile);
-      assert.strictEqual(processId.toString(), pid.toString());
-    });
-    it("reading process id file", async function() {
-      const id = stop.readProcessIdFromFile();
-      assert.strictEqual(id, pid.toString());
-    });
-    it("deleting process id file", async function() {
-      stop.deleteProcessIdFile();
-    });
+  const pid = 1234;
+  it("writing process id file", async function() {
+    await start.saveDevServerProcessId(pid);
+    const processId = fs.readFileSync(start.processIdFile);
+    assert.strictEqual(processId.toString(), pid.toString());
   });
+  it("reading process id file", async function() {
+    const id = stop.readDevServerProcessId();
+    if (id) {
+      assert.strictEqual(id.toString(), pid.toString());
+    }
+  });
+  it("deleting process id file", async function() {
+    stop.clearDevServerProcessId();
+  });
+  it("read process id file that is missing", async function() {
+    const id = stop.readDevServerProcessId();
+    assert.strictEqual(id, undefined);
+  });
+  it("write process id file that already exists", async function() {
+    const secondPid = 5678;
+    await start.saveDevServerProcessId(pid);
+    await start.saveDevServerProcessId(secondPid);
+    const processId = fs.readFileSync(start.processIdFile);
+    assert.strictEqual(processId.toString(), secondPid.toString());
+    stop.clearDevServerProcessId();
+  });
+  it("read process id file with corrupt data", async function() {
+    let badIdValue;
+    const corruptId = "this is not a valid number";
+    const errorMessageInvalidProcessId = "Invalid process id";
+    fs.writeFileSync(start.processIdFile, corruptId);
+    try {
+      badIdValue = stop.readDevServerProcessId();
+    } catch (error) {
+      assert.ok(error.message.includes(errorMessageInvalidProcessId), "invalid process id error message found");
+    }
+    assert.strictEqual(badIdValue, undefined);
+    stop.clearDevServerProcessId();
+    });
 });
