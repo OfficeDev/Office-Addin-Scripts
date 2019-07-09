@@ -33,11 +33,10 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
           });
 
     describe('checkPrompt', () => {
-
-
-        	it('should check to see if it has writen to a file if not creates file and writes to it returns true', () => {
-            if(fs.existsSync("./check.txt")){
-            fs.unlinkSync('./check.txt')//deletes file
+      const path = require('os').homedir()+ "/AppData/Local/Temp/check.txt";
+          it('should check to see if it has writen to a file if not creates file and writes to it returns true', () => {
+            if(fs.existsSync(path)){
+            fs.unlinkSync(path)//deletes file
           }
           assert(true === addInTelemetry.checkPrompt());
 
@@ -48,19 +47,19 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
 
           assert(false === addInTelemetry.checkPrompt());
 
-          if(fs.existsSync("./check.txt")){
-            fs.unlinkSync('./check.txt')//deletes file
+          if(fs.existsSync(path)){
+            fs.unlinkSync(path)//deletes file
           }
 
           });
 
           it('should check to see if text is in file if already created, if appropriate word is not in, returns true and writes to file', () => {
 
-          fs.writeFileSync("./check.txt", "");
+          fs.writeFileSync(path, "");
 
           assert(true === addInTelemetry.checkPrompt());
-          var text = fs.readFileSync("./check.txt","utf8");
-          if (text === "done"){
+          var text = fs.readFileSync(path,"utf8");
+          if (text.includes('de0d9e7c-1f46-4552-bc21-4e43e489a015')){
             var response = true;
           }else{
             response = false;
@@ -68,17 +67,21 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
 
           assert(true === response);
 
-          if(fs.existsSync("./check.txt")){
-            fs.unlinkSync('./check.txt')//deletes file
+          if(fs.existsSync(path)){
+            fs.unlinkSync(path)//deletes file
           }
 
           });
         });
-    describe('telemetryOptIn', () => {//TO DO
-        	it('should display user asking to opt in, either changes m_telemetryOptIn to true or leaves it false ', () => {
-                assert(true,)
-
-        	});
+    describe('telemetryOptIn', () => {//Almost done
+        	it('should display user asking to opt in, changes to true if user types y ', () => {
+                addInTelemetry.telemetryOptIn(1);
+                assert(true === addInTelemetry.telemetryOptedIn2());
+          });
+          it('should display user asking to opt in, changes to false if user types anything else then y ', () => {
+            addInTelemetry.telemetryOptIn(2);
+            assert(false === addInTelemetry.telemetryOptedIn2());
+      });
           });
 
 
@@ -120,7 +123,8 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
                 addInTelemetry.setTelemetryOff();
                 var test1 = {"Test":true};
                 addInTelemetry.reportEvent("TestData",test1);
-                assert(2 === addInTelemetry.getEventsSent());
+                console.log(addInTelemetry.getEventsSent());
+                assert(1 === addInTelemetry.getEventsSent());
         	});
           });
 
@@ -129,22 +133,25 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
                 addInTelemetry.setTelemetryOff();
                 const exception = new Error("this error contains a file path: C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js");
                 addInTelemetry.reportError("TestData",exception);
-                assert(2 === addInTelemetry.getExceptionsSent());
+                console.log(addInTelemetry.getExceptionsSent());
+                assert(1 === addInTelemetry.getExceptionsSent());
             });
           });
 
-    describe('telemetryOptedIn', () => {//TO DO
+    describe('telemetryOptedIn', () => {//could be connected with telemetryOptIn
         	it('should return true if user opted in', () => {
-            assert("Telemetry will be sent!");
+            addInTelemetry.telemetryOptIn(1);
+            assert(true === addInTelemetry.telemetryOptedIn2());
                 
           });
           it('should return false if user opted out', () => {
-            assert("You will not be sending telemetry");
+            addInTelemetry.telemetryOptIn(2);
+            assert(false === addInTelemetry.telemetryOptedIn2());
         	});
           });
 
    describe('parseErrors', () => {//TO DO
-            it('should return a parsed file path',() => {
+            it('should return a parsed file path error',() => {
                   addInTelemetry.setTelemetryOff();
                   var exceptionObject = {};
                   var err = new Error("this error contains a file path: C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js");
@@ -158,7 +165,7 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
                   console.log(JSON.stringify(exceptionObject));
                   assert(compare ===  addInTelemetry.parseException2(exceptionObject));
               });
-            });
+            });*/
 
 
 

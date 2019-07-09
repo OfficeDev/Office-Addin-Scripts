@@ -14,6 +14,7 @@
             "node",
             "es6-promise"
         ]
+        
     },
     "include": [
         "src/**/*",
@@ -22,4 +23,5 @@
         "node_modules",
         "lib"
     ]
+    
 }

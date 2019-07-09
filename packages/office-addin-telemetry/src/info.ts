@@ -14,11 +14,11 @@ addInTelemetry.addTelemetry(test1, "OperatingSystem", os.platform());
 addInTelemetry.addTelemetry(test2, "Tester2", true);
 //addInTelemetry.addTelemetry(tester,"Typescript", true);
 const exception = new Error("this error contains a file path: C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js");
-
-addInTelemetry.reportEvent("TestData,remove sensitive info",test1);
+addInTelemetry.reportError("TestData,remove sensitive info",exception);
+//addInTelemetry.reportEvent("TestData,remove sensitive info",test1);
 addInTelemetry.setTelemetryOff();
 //console.log(addInTelemetry.isTelemetryOn());
-addInTelemetry.reportEvent("Tester", test1);
+//addInTelemetry.reportEvent("Tester", test1);
 addInTelemetry.setTelemetryOn();
 //console.log(addInTelemetry.isTelemetryOn());
 //addInTelemetry.sendTelemetryEvents("Should make it!", test1);
