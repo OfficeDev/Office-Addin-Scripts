@@ -12,7 +12,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-manifest": "./cli.js"
+    "office-addin-manifest": "./lib/cli.js"
   },
   "keywords": [
     "Office",
@@ -22,16 +22,19 @@
     "applicationinsights": "^1.4.0",
     "commander": "^2.20.0",
     "fs": "0.0.1-security",
+    "inquirer": "^6.4.1",
     "latest": "^0.2.0",
     "node-fetch": "^2.2.0",
     "office-addin-cli": "^0.2.5",
     "path": "^0.12.7",
+    "readline-sync": "^1.4.9",
     "uuid": "^3.3.2",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "@types/applicationinsights": "^0.20.0",
     "@types/es6-promise": "0.0.32",
+    "@types/inquirer": "^6.0.3",
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.12.0",
     "@types/node-fetch": "^2.1.2",
