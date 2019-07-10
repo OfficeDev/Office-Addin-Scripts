@@ -33,7 +33,8 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
           });
 
     describe('checkPrompt', () => {
-      const path = require('os').homedir()+ "/AppData/Local/Temp/check.txt";
+          //const path = require('os').homedir()+ "/AppData/Local/Temp/check.txt";//specific to windows
+          const path = require('os').homedir()+ "officeAddinTelemetry.txt"
           it('should check to see if it has writen to a file if not creates file and writes to it returns true', () => {
             if(fs.existsSync(path)){
             fs.unlinkSync(path)//deletes file
@@ -150,22 +151,31 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
         	});
           });
 
-   describe('parseErrors', () => {//TO DO
+   describe('parseErrors', () => {
             it('should return a parsed file path error',() => {
                   addInTelemetry.setTelemetryOff();
-                  var exceptionObject = {};
                   var err = new Error("this error contains a file path: C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js");
-                  var compare = new Error('this error contains a file path: C:index.js');
-                  compare.stack = "";
-                  compare.message = "this error contains a file path: C:index.js"
-                  this.addTelemetry(exceptionObject, "EventName", "Tester");
-  	              this.addTelemetry(exceptionObject, "Message", err.message);
-  	              this.addTelemetry(exceptionObject, "Stack", err.stack);
-                  addInTelemetry.parseException2(exceptionObject)
-                  console.log(JSON.stringify(exceptionObject));
-                  assert(compare ===  addInTelemetry.parseException2(exceptionObject));
+                  err = addInTelemetry.mochaTestFilePaths(err)
+                  var compare_error =new Error();
+                  compare_error.message = "this error contains a file path: C:index.js";
+                  compare_error.stack = `Error: this error contains a file path: C:index.js
+    at Context.mocha_1.it (coreTests.ts:156:29)
+    at callFn (runnable.js:372:21)
+    at Test.Runnable.run (runnable.js:364:7)
+    at Runner.runTest (runner.js:455:10)
+    at runner.js:573:12
+    at next (runner.js:369:14)
+    at runner.js:379:7
+    at next (runner.js:303:14)
+    at Immediate._onImmediate (runner.js:347:5)
+    at runCallback (timers.js:705:18)
+    at tryOnImmediate (timers.js:676:5)
+    at processImmediate (timers.js:658:5)`;
+                  assert(compare_error.name ===  addInTelemetry.mochaTestFilePaths(err).name);
+                  assert(compare_error.message ===  addInTelemetry.mochaTestFilePaths(err).message);
+                  assert(compare_error.stack ===  addInTelemetry.mochaTestFilePaths(err).stack);
               });
-            });*/
+            });
 
 
 
