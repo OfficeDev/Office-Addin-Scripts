@@ -84,7 +84,7 @@ describe("start/stop functions", function() {
   const pid = 1234;
   it("writing process id file", async function() {
     await start.saveDevServerProcessId(pid);
-    const processId = fs.readFileSync(start.processIdFile);
+    const processId = fs.readFileSync(start.processIdFilePath);
     assert.strictEqual(processId.toString(), pid.toString());
   });
   it("reading process id file", async function() {
@@ -104,7 +104,7 @@ describe("start/stop functions", function() {
     const secondPid = 5678;
     await start.saveDevServerProcessId(pid);
     await start.saveDevServerProcessId(secondPid);
-    const processId = fs.readFileSync(start.processIdFile);
+    const processId = fs.readFileSync(start.processIdFilePath);
     assert.strictEqual(processId.toString(), secondPid.toString());
     stop.clearDevServerProcessId();
   });
@@ -112,7 +112,7 @@ describe("start/stop functions", function() {
     let badIdValue;
     const corruptId = "this is not a valid number";
     const errorMessageInvalidProcessId = "Invalid process id";
-    fs.writeFileSync(start.processIdFile, corruptId);
+    fs.writeFileSync(start.processIdFilePath, corruptId);
     try {
       badIdValue = stop.readDevServerProcessId();
     } catch (error) {

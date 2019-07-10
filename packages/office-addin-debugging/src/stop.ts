@@ -6,7 +6,7 @@ import { parseNumber } from "office-addin-cli";
 import { clearDevSettings} from "office-addin-dev-settings";
 import { readManifestFile } from "office-addin-manifest";
 import { startProcess, stopProcess } from "./process";
-import { processIdFile } from "./start";
+import { processIdFilePath } from "./start";
 import { isNumber } from "util";
 
 export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
@@ -48,9 +48,9 @@ export function readDevServerProcessId(): number | undefined {
     if (process.env.OfficeAddinDevServerProcessId) {
         id = parseNumber(process.env.OfficeAddinDevServerProcessId);
         console.log(`Process id read from env: ${id}`);
-    } else if (fs.existsSync(processIdFile)) {
-        const pid = fs.readFileSync(processIdFile);
-        id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFile}`);
+    } else if (fs.existsSync(processIdFilePath)) {
+        const pid = fs.readFileSync(processIdFilePath);
+        id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFilePath}`);
         console.log(`Process id read from file: ${id}`);
     }
     return id;
@@ -58,8 +58,8 @@ export function readDevServerProcessId(): number | undefined {
 
 export function clearDevServerProcessId() {
     console.log("Clearing dev server process id.");
-    if (fs.existsSync(processIdFile)) {
-        fs.unlinkSync(processIdFile);
+    if (fs.existsSync(processIdFilePath)) {
+        fs.unlinkSync(processIdFilePath);
     }
     delete process.env.OfficeAddinDevServerProcessId;
 }

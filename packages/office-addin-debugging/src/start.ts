@@ -8,10 +8,13 @@ import * as devSettings from "office-addin-dev-settings";
 import { DebuggingMethod } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
+import * as os from "os";
+import * as path from "path";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
 
-export const processIdFile = "devServerProcessId.txt";
+const processIdFile = "devServerProcessId.txt";
+export const processIdFilePath = path.join(os.tmpdir(), processIdFile);
 
 export enum AppType {
     Desktop = "desktop",
@@ -108,9 +111,9 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
 }
 
 export async function saveDevServerProcessId(id: number): Promise<void> {
-    console.log(`Writing process id: ${id} to file: ${processIdFile}`);
+    console.log(`Writing process id: ${id} to file: ${processIdFilePath}`);
     process.env.OfficeAddinDevServerProcessId = id.toString();
-    fs.writeFileSync(processIdFile, id);
+    fs.writeFileSync(processIdFilePath, id);
 }
 
 export async function runNodeDebugger(host?: string, port?: string): Promise<void> {
