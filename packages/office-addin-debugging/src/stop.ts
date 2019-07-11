@@ -5,9 +5,10 @@ import * as fs from "fs";
 import { parseNumber } from "office-addin-cli";
 import { clearDevSettings} from "office-addin-dev-settings";
 import { readManifestFile } from "office-addin-manifest";
+import { isNumber } from "util";
+import * as debugInfo from "./debugInfo";
 import { startProcess, stopProcess } from "./process";
 import { processIdFilePath } from "./start";
-import { isNumber } from "util";
 
 export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
     console.log("Debugging is being stopped...");
@@ -33,33 +34,12 @@ export async function stopDebugging(manifestPath: string, unregisterCommandLine?
         }
     }
 
-    const processId = readDevServerProcessId();
+    const processId = debugInfo.readDevServerProcessId();
     if (processId) {
         stopProcess(processId);
         console.log(`Stopped dev server. Process id: ${processId}`);
-        clearDevServerProcessId();
+        debugInfo.clearDevServerProcessId();
     }
 
     console.log("Debugging has been stopped.");
-}
-
-export function readDevServerProcessId(): number | undefined {
-    let id;
-    if (process.env.OfficeAddinDevServerProcessId) {
-        id = parseNumber(process.env.OfficeAddinDevServerProcessId);
-        console.log(`Process id read from env: ${id}`);
-    } else if (fs.existsSync(processIdFilePath)) {
-        const pid = fs.readFileSync(processIdFilePath);
-        id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFilePath}`);
-        console.log(`Process id read from file: ${id}`);
-    }
-    return id;
-}
-
-export function clearDevServerProcessId() {
-    console.log("Clearing dev server process id.");
-    if (fs.existsSync(processIdFilePath)) {
-        fs.unlinkSync(processIdFilePath);
-    }
-    delete process.env.OfficeAddinDevServerProcessId;
 }
