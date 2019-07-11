@@ -11,7 +11,8 @@ import { isCaCertificateInstalled, verifyCertificates } from "./verify";
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
-         return `powershell -ExecutionPolicy Bypass ${path.resolve(__dirname, "..\\scripts\\install.ps1")} ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
+         const script = path.resolve(__dirname, "..\\scripts\\install.ps1");
+         return `powershell -ExecutionPolicy Bypass ${script} ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
       case "darwin": // macOS
          return `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
       default:
