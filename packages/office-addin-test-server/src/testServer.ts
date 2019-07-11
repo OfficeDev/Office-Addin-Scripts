@@ -40,7 +40,7 @@ export class TestServer {
             return await this.startListening();
 
         } catch (err) {
-            throw new Error(`Test server failed with error.\n${err}`);
+            throw new Error(`Unable to start test server.\n${err}`);
         }
     }
 
@@ -57,7 +57,6 @@ export class TestServer {
                 const platformName = this.getPlatformName();
                 this.m_app.get("/ping", function (req: any, res: any, next: any) {
                     res.send(platformName);
-                    resolve(true);
                 });
 
                 // listen for posting of test results
@@ -70,7 +69,7 @@ export class TestServer {
                 });
 
             } catch (err) {
-                reject(new Error(`Test server failed with error.\n${err}`));
+                reject(new Error(`Unable to start test server.\n${err}`));
             }
         });
     }
