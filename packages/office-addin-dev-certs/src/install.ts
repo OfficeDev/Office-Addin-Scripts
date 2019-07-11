@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import { execSync } from "child_process";
+import * as path from "path";
 import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
@@ -10,7 +11,7 @@ import { isCaCertificateInstalled, verifyCertificates } from "./verify";
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
-         return `powershell -ExecutionPolicy Bypass scripts\\install.ps1 ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
+         return `powershell -ExecutionPolicy Bypass ${path.resolve(__dirname, "..\\scripts\\install.ps1")} ${machine ? "LocalMachine" : "CurrentUser"} '${caCertificatePath}'`;
       case "darwin": // macOS
          return `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
       default:
