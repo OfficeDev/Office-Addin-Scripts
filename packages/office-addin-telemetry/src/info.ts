@@ -1,6 +1,6 @@
-import { OfficeAddinTelemetry } from "./officeAddinTelemetry";
+import { OfficeAddinTelemetry, telemetryType } from "./officeAddinTelemetry";
 import * as os from 'os';
-const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e489a015");
+const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e489a015", telemetryType.applicationinsights, true);
 /*const testData = {
     "Host": "Excel",
     "IsTestData":true,
