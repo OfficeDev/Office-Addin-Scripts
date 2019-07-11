@@ -14,9 +14,6 @@ import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
 
-const processIdFile = "devServerProcessId.txt";
-export const processIdFilePath = path.join(os.tmpdir(), processIdFile);
-
 export enum AppType {
     Desktop = "desktop",
     Web = "web",

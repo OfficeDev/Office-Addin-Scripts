@@ -8,7 +8,6 @@ import { readManifestFile } from "office-addin-manifest";
 import { isNumber } from "util";
 import * as debugInfo from "./debugInfo";
 import { startProcess, stopProcess } from "./process";
-import { processIdFilePath } from "./start";
 
 export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
     console.log("Debugging is being stopped...");
