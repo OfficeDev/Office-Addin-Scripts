@@ -10,7 +10,8 @@ import { isCaCertificateInstalled } from "./verify";
 function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
-         return `powershell -ExecutionPolicy Bypass scripts\\uninstall.ps1 ${machine ? "LocalMachine" : "CurrentUser"} '${defaults.certificateName}'`;
+         const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
+         return `powershell -ExecutionPolicy Bypass ${script} ${machine ? "LocalMachine" : "CurrentUser"} '${defaults.certificateName}'`;
       case "darwin": // macOS
          return `sudo security delete-certificate -c '${defaults.certificateName}'`;
       default:

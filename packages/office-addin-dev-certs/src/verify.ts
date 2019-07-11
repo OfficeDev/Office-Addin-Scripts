@@ -4,12 +4,14 @@
 import { execSync } from "child_process";
 import * as crypto from "crypto";
 import * as fs from "fs";
+import * as path from "path";
 import * as defaults from "./defaults";
 
 function getVerifyCommand(): string {
     switch (process.platform) {
        case "win32":
-          return `powershell -ExecutionPolicy Bypass scripts\\verify.ps1 '${defaults.certificateName}'`;
+          const script = path.resolve(__dirname, "..\\scripts\\verify.ps1");
+          return `powershell -ExecutionPolicy Bypass ${script} '${defaults.certificateName}'`;
        case "darwin": // macOS
           return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
        default:
