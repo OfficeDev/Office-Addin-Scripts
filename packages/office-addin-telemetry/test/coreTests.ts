@@ -42,15 +42,6 @@ const testDataFileLocation = "/mochaTest";
           assert(true === addInTelemetry.checkPrompt(testDataFileLocation));
 
           });
-          it('should check to see if text is in file, if appropriate word is in, returns false', () => {
-          if(fs.existsSync(path) && fs.readFileSync(path).includes(addInTelemetry.getTelemtryKey())){
-          assert(false === addInTelemetry.checkPrompt(testDataFileLocation));
-          }
-          if(fs.existsSync(path)){
-            fs.unlinkSync(path)//deletes file
-          }
-
-          });
 
           it('should check to see if text is in file if already created, if appropriate word is not in, returns true and writes to file', () => {
           if(!fs.existsSync(path)){
@@ -71,6 +62,16 @@ const testDataFileLocation = "/mochaTest";
           }
 
           });
+
+          it('should check to see if text is in file, if appropriate word is in, returns false', () => {
+            if(fs.existsSync(path) && fs.readFileSync(path).includes(addInTelemetry.getTelemtryKey())){
+            assert(false === addInTelemetry.checkPrompt(testDataFileLocation));
+            }
+            if(fs.existsSync(path)){
+              fs.unlinkSync(path)//deletes file
+            }
+  
+            });
         });
     describe('test telemetryOptIn method', () => {
         	it('should display user asking to opt in, changes to true if user types y ', () => {
