@@ -110,7 +110,7 @@ describe("start/stop functions", function() {
     const json = fs.readFileSync(debugInfo.getDebuggingInfoPath());
     const devServerInfo = JSON.parse(json.toString());
     const processId = devServerInfo.devServer.processId;
-    assert.strictEqual(processId.toString(), secondPid.toString());
+    assert.strictEqual(processId, secondPid);
     debugInfo.clearDevServerProcessId();
   });
   it("read process id file with corrupt data", async function() {

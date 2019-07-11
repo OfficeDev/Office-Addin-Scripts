@@ -23,11 +23,10 @@ export function getDebuggingInfoPath(): string {
 
 /**
  * Creates the DebugInfo object
- * @param id - process id of the dev server
  */
-function createDebugInfoObject(id: number): IDebugInfo {
+function createDebugInfo(): IDebugInfo {
     const devServer: IDevServerInfo = {
-        processId : id,
+        processId : 0,
     };
     const debugInfo: IDebugInfo = {
         devServer,
@@ -36,10 +35,27 @@ function createDebugInfoObject(id: number): IDebugInfo {
 }
 
 /**
+ * Set the process id of the dev server in the debuginfo object
+ * @param debugInfo DebugInfo object
+ * @param id dev server process id
+ */
+function setDevServerProcessId(debugInfo: IDebugInfo, id: number) {
+    debugInfo.devServer.processId = id;
+}
+
+/**
+ * Loads the DebugInfo object into JSON
+ * @param debugInfo DebugInfo object
+ */
+function loadDebugInfo(debugInfo: IDebugInfo): string {
+    return JSON.stringify(debugInfo, null, 4 );
+}
+
+/**
  * Read the DebugInfo object
  * @param pathToFile - Path to the json file containing debug info
  */
-function readDebugInfoObject(pathToFile: string): any {
+function readDebugInfo(pathToFile: string): any {
     const json = fs.readFileSync(pathToFile);
     return JSON.parse(json.toString());
 }
@@ -51,8 +67,9 @@ function readDebugInfoObject(pathToFile: string): any {
 export async function saveDevServerProcessId(id: number): Promise<void> {
     console.log(`Writing process id: ${id} to file: ${processIdFilePath}`);
     process.env.OfficeAddinDevServerProcessId = id.toString();
-    const json = JSON.stringify(createDebugInfoObject(id), null, 4 );
-    fs.writeFileSync(processIdFilePath, json);
+    const debugInfo = createDebugInfo();
+    setDevServerProcessId(debugInfo, id);
+    fs.writeFileSync(processIdFilePath, loadDebugInfo(debugInfo));
 }
 
 /**
@@ -65,7 +82,7 @@ export function readDevServerProcessId(): number | undefined {
         id = parseNumber(process.env.OfficeAddinDevServerProcessId);
         console.log(`Process id read from env: ${id}`);
     } else if (fs.existsSync(processIdFilePath)) {
-        const devServerProperties = readDebugInfoObject(processIdFilePath);
+        const devServerProperties = readDebugInfo(processIdFilePath);
         const pid = devServerProperties.devServer.processId;
         id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFilePath}`);
         console.log(`Process id read from file: ${id}`);
