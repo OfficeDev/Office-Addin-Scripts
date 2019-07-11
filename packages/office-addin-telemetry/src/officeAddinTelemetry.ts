@@ -5,7 +5,6 @@ import { inherits } from 'util';
 import * as readline from "readline";//used
 import * as fs from 'fs';//used
 import * as chalk from 'chalk';//used
-import * as os from "os";
 import { getMaxListeners } from "cluster";
 export enum telemetryType {
   applicationinsights = "applicationinsights",
@@ -71,9 +70,9 @@ export class OfficeAddinTelemetry {
       	}
 
 
-	public checkPrompt(): boolean{
+	public checkPrompt(fileLocation = "/officeAddinTelemetry"): boolean{
     //const path = require('os').homedir()+ "/AppData/Local/Temp/check.txt";//specific to windows
-    const path = require('os').homedir()+ "/officeAddinTelemetry.txt";
+    const path = require('os').homedir()+ fileLocation;
     if(fs.existsSync(path)) {//checks to see if file exists
       	var text = fs.readFileSync(path,"utf8");
      	if (text.includes(this.getTelemtryKey())){

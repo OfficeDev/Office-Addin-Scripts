@@ -7,6 +7,7 @@ commander
     .version('0.0.1')
     .command("start")
     .command("stop")
+    .command('telemetryStatus')
     //.option(`-p --port [port number]", "Port number must be between 0 - 65535. Default: ${defaultPort}`)
     //.action(commands.start);
 

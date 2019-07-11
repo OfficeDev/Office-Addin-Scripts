@@ -3,9 +3,9 @@ import * as fs from "fs";
 import { OfficeAddinTelemetry } from "../src/officeAddinTelemetry";
 import * as appInsights from "applicationinsights";
 import * as path from 'path';
-import {  describe, before, it } from 'mocha';
+import {  describe, it,} from 'mocha';
 const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e489a015", "",true);
-    
+var err = new Error("this error contains a file path: C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js");//for testing parse method
     describe('reportEvent', () => {
     it('should track event of object passed in with a project name', () => {
         addInTelemetry.setTelemetryOff();
@@ -34,20 +34,19 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
 
     describe('checkPrompt', () => {
           //const path = require('os').homedir()+ "/AppData/Local/Temp/check.txt";//specific to windows
-          const path = require('os').homedir()+ "officeAddinTelemetry.txt"
+          const path = require('os').homedir()+ "/mochaTest"
+          var mochaFileLocation = "/mochaTest";
           it('should check to see if it has writen to a file if not creates file and writes to it returns true', () => {
             if(fs.existsSync(path)){
-            fs.unlinkSync(path)//deletes file
+            fs.unlinkSync(path)//deletes file if it exists
           }
-          assert(true === addInTelemetry.checkPrompt());
+          assert(true === addInTelemetry.checkPrompt(mochaFileLocation));
 
           });
-
-        
           it('should check to see if text is in file, if appropriate word is in, returns false', () => {
-
-          assert(false === addInTelemetry.checkPrompt());
-
+          if(fs.existsSync(path) && fs.readFileSync(path).includes("de0d9e7c-1f46-4552-bc21-4e43e489a015")){
+          assert(false === addInTelemetry.checkPrompt(mochaFileLocation));
+          }
           if(fs.existsSync(path)){
             fs.unlinkSync(path)//deletes file
           }
@@ -58,7 +57,7 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
 
           fs.writeFileSync(path, "");
 
-          assert(true === addInTelemetry.checkPrompt());
+          assert(true === addInTelemetry.checkPrompt(mochaFileLocation));
           var text = fs.readFileSync(path,"utf8");
           if (text.includes('de0d9e7c-1f46-4552-bc21-4e43e489a015')){
             var response = true;
@@ -74,7 +73,7 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
 
           });
         });
-    describe('telemetryOptIn', () => {//Almost done
+    describe('telemetryOptIn', () => {
         	it('should display user asking to opt in, changes to true if user types y ', () => {
                 addInTelemetry.telemetryOptIn(1);
                 assert(true === addInTelemetry.telemetryOptedIn2());
@@ -124,7 +123,6 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
                 addInTelemetry.setTelemetryOff();
                 var test1 = {"Test":true};
                 addInTelemetry.reportEvent("TestData",test1);
-                console.log(addInTelemetry.getEventsSent());
                 assert(1 === addInTelemetry.getEventsSent());
         	});
           });
@@ -134,7 +132,6 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
                 addInTelemetry.setTelemetryOff();
                 const exception = new Error("this error contains a file path: C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js");
                 addInTelemetry.reportError("TestData",exception);
-                console.log(addInTelemetry.getExceptionsSent());
                 assert(1 === addInTelemetry.getExceptionsSent());
             });
           });
@@ -154,26 +151,17 @@ const addInTelemetry = new OfficeAddinTelemetry("de0d9e7c-1f46-4552-bc21-4e43e48
    describe('parseErrors', () => {
             it('should return a parsed file path error',() => {
                   addInTelemetry.setTelemetryOff();
-                  var err = new Error("this error contains a file path: C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js");
-                  err = addInTelemetry.mochaTestFilePaths(err)
+                  err = addInTelemetry.mochaTestFilePaths(err);
                   var compare_error =new Error();
                   compare_error.message = "this error contains a file path: C:index.js";
                   compare_error.stack = `Error: this error contains a file path: C:index.js
-    at Context.mocha_1.it (coreTests.ts:156:29)
-    at callFn (runnable.js:372:21)
-    at Test.Runnable.run (runnable.js:364:7)
-    at Runner.runTest (runner.js:455:10)
-    at runner.js:573:12
-    at next (runner.js:369:14)
-    at runner.js:379:7
-    at next (runner.js:303:14)
-    at Immediate._onImmediate (runner.js:347:5)
-    at runCallback (timers.js:705:18)
-    at tryOnImmediate (timers.js:676:5)
-    at processImmediate (timers.js:658:5)`;
-                  assert(compare_error.name ===  addInTelemetry.mochaTestFilePaths(err).name);
-                  assert(compare_error.message ===  addInTelemetry.mochaTestFilePaths(err).message);
-                  assert(compare_error.stack ===  addInTelemetry.mochaTestFilePaths(err).stack);
+    at Object.<anonymous> (coreTests.ts:8:11)`;//may throw error if change any part of the top of the test file
+    err = addInTelemetry.mochaTestFilePaths(err);
+    //console.log(err.stack);
+    //console.log(compare_error.stack);
+                  assert(compare_error.name ===  err.name);
+                  assert(compare_error.message ===  err.message);
+                  assert(err.stack.includes(compare_error.stack));
               });
             });
 
