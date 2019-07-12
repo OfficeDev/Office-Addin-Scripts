@@ -25,7 +25,7 @@ export class TestServer {
         this.m_testServerStarted = false;
     }
 
-    public async startTestServer(mochaTest: boolean = false): Promise<any> {
+    public async startTestServer(mochaTest: boolean = false): Promise<boolean> {
         try {
             if (mochaTest) {
                 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
@@ -59,8 +59,8 @@ export class TestServer {
         }
     }
 
-    private async startListening(): Promise<any> {
-        return new Promise<any>(async (resolve, reject) => {
+    private async startListening(): Promise<boolean> {
+        return new Promise<boolean>(async (resolve, reject) => {
             try {
                 // set server to listen on specified port
                 this.m_server.listen(this.m_port, () => {
