@@ -15,7 +15,7 @@ addInTelemetry.addTelemetry(test, "Name", "julian", 9);
 //console.log(test);
 addInTelemetry.addTelemetry(test, "Host", "Microsoft", 10);
 addInTelemetry.addTelemetry(test, "Script", "typescript", 11);
-//addInTelemetry.reportEvent("TestData",test);
+addInTelemetry.reportEvent("TestData",test);
 //addInTelemetry.addTelemetry(tester,"Typescript", true);
 const exception = new Error("this error contains a file path: (C://Users//t-juflor//AppData//Roaming//npm//node_modules//balanced-match//index.js)");
 //addInTelemetry.reportError("TestData,remove sensitive info",exception);

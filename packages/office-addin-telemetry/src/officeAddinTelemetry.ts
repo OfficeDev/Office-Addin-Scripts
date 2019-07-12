@@ -57,8 +57,7 @@ export class OfficeAddinTelemetry {
       for (let [key, {value,elapsedTime}] of Object.entries(data)) {
         try {
           if (!this.m_testData) {
-            var temp = "DurationFor" + [key].toLocaleString();
-            this.m_telemetryClient.trackEvent({ name: eventName, properties: { [key]: value}, measurements: { temp: elapsedTime}});
+            this.m_telemetryClient.trackEvent({ name: eventName, properties: { [key]: value}, measurements: { DurationElapsed: elapsedTime}});
             //console.log({ name: eventName, properties: { [key]: value}, metrics: { [key]: elapsedTime} });
           }
           this.m_events_sent++;
