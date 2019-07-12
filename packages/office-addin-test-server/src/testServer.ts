@@ -36,6 +36,21 @@ export class TestServer {
             this.m_app.use(cors());
             this.m_server = https.createServer(options, this.m_app);
 
+            // listen for 'ping'
+            const platformName = this.getPlatformName();
+            this.m_app.get("/ping", function (req: any, res: any, next: any) {
+                res.send(platformName);
+            });
+
+            // listen for posting of test results
+            this.m_resultsPromise = new Promise<JSON>(async (resolveResults) => {
+                this.m_app.post("/results", async (req: any, res: any) => {
+                    res.send("200");
+                    this.m_jsonData = JSON.parse(req.query.data);
+                    resolveResults(this.m_jsonData);
+                });
+            });
+
             // start listening on specified port
             return await this.startListening();
 
@@ -51,21 +66,6 @@ export class TestServer {
                 this.m_server.listen(this.m_port, () => {
                     this.m_testServerStarted = true;
                     resolve(true);
-                });
-
-                // listen for 'ping'
-                const platformName = this.getPlatformName();
-                this.m_app.get("/ping", function (req: any, res: any, next: any) {
-                    res.send(platformName);
-                });
-
-                // listen for posting of test results
-                this.m_resultsPromise = new Promise<JSON>(async (resolveResults) => {
-                    this.m_app.post("/results", async (req: any, res: any) => {
-                        res.send("200");
-                        this.m_jsonData = JSON.parse(req.query.data);
-                        resolveResults(this.m_jsonData);
-                    });
                 });
 
             } catch (err) {
