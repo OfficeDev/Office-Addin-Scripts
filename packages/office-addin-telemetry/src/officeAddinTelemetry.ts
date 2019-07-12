@@ -12,103 +12,104 @@ export enum telemetryType {
 }
 export class OfficeAddinTelemetry {
   private m_instrumentationKey: string = "";
-  private m_telemetryOptIn = true;//change to false once done
+  private m_telemetryOptIn = true;
   private m_telemetryClient = appInsights.defaultClient;
-  private m_appInsights: any;
   private m_telemetrySource = "";
   private m_testData: any;
-  private events_sent = 0;
-  private exceptions_sent = 0;
-
-
-  constructor(instrumentationKey: string, telemetryType2: telemetryType, testData = false) {
+  private m_linkpackages = "";
+  private m_events_sent = 0;
+  private m_exceptions_sent = 0;
+  private m_path = require('os').homedir() + "/officeAddinTelemetry.txt";
+  constructor(instrumentationKey: string, telemetryType2: telemetryType, linkpackages ="", testData = false) {
     //checks to make sure it only displays the opt-in message once
     this.m_instrumentationKey = instrumentationKey;
     this.m_testData = testData;
+    this.m_linkpackages = linkpackages;
     //declaring telemetry structure
-    if (telemetryType2.toLowerCase() === 'applicationinsights') {
+    if (telemetryType2 === telemetryType.applicationinsights) {
       this.m_telemetrySource = telemetryType.applicationinsights;
     } else if (telemetryType2.toLowerCase() === 'oteljs') {
       this.m_telemetrySource = telemetryType.OtelJs;
     }
 
-
     if (!this.m_testData && this.checkPrompt()) {
       this.telemetryOptIn();
     }
+    this.m_path = require('os').homedir() + "/officeAddinTelemetry.txt";
     appInsights.setup(this.m_instrumentationKey)
       .setAutoCollectConsole(true)
       .setAutoCollectExceptions(false)
-      .setAutoCollectDependencies(true)
       .start()
     this.m_telemetryClient = appInsights.defaultClient;
     this.removeSensitiveInformation();
   }
-  public async reportEvent(eventName: string, data: object, elapsedTime = 0): Promise<void> {
-    if (this.telemetryOptedIn()) {
+  public async reportEvent(eventName: string, data: object,timeElapsed = 0): Promise<void> {
+    if (this.telemetryOptedIn() && !this.m_testData) {
       if (this.m_telemetrySource === telemetryType.applicationinsights) {
         this.reportEventApplicationInsights(eventName, data);
       } else if (this.m_telemetrySource === telemetryType.OtelJs) {
+        //to be implemented in a later date
       }
     }
   }
-  public async reportEventApplicationInsights(eventName: string, data: object, elapsedTime = 0): Promise<void> {
+  public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.telemetryOptedIn()) {
-      for (let [key, value] of Object.entries(data)) {
+      for (let [key, {value,elapsedTime}] of Object.entries(data)) {
         try {
           if (!this.m_testData) {
-            this.m_telemetryClient.trackEvent({ name: eventName, properties: { [key]: value } });
+            var temp = "DurationFor" + [key].toLocaleString();
+            this.m_telemetryClient.trackEvent({ name: eventName, properties: { [key]: value}, measurements: { temp: elapsedTime}});
+            //console.log({ name: eventName, properties: { [key]: value}, metrics: { [key]: elapsedTime} });
           }
-          this.events_sent++;
+          this.m_events_sent++;
         } catch (err) {
           this.reportError("sendTelemetryEvents", err);
         }
       }
     }
   }
-  public async reportError(eventName: string, err: Error): Promise<void> {
+  public async reportError(errorName: string, err: Error): Promise<void> {
     if (this.telemetryOptedIn()) {
-      if (this.telemetryOptedIn()) {
         if (this.m_telemetrySource === telemetryType.applicationinsights) {
-          this.reportErrorApplicationInsights(eventName, err);
+          this.reportErrorApplicationInsights(errorName, err);
         } else if (this.m_telemetrySource === telemetryType.OtelJs) {
-
+        //to be implemented in a later date            
         }
-      }
     }
   }
   public async reportErrorApplicationInsights(eventName: string, err: Error): Promise<void> {
     if (this.telemetryOptedIn()) {
       err.name = eventName;
+      if(this.m_testData){
+        err.name = eventName;
+      }
       this.m_telemetryClient.trackException({ exception: this.maskFilePaths(err) });
-      this.exceptions_sent++;
+      this.m_exceptions_sent++;
     }
   }
-  public addTelemetry(data: { [k: string]: any }, key: string, value: any): object {
-    data[key] = value;
+  public addTelemetry(data: { [k: string]: any}, key: string, value: any, elapsedTime: any = 0): object {
+    data[key] = {value,elapsedTime};
     return data;
   }
 
 
-  public checkPrompt(fileLocation = "/officeAddinTelemetry.txt"): boolean {
-
-    const path = require('os').homedir() + fileLocation;
-    // checks to see if file exists
+  public checkPrompt(newFileLocation = this.m_path): boolean {
     try {
-      if (fs.existsSync(path)) {
-        var text = fs.readFileSync(path, "utf8");
-        if (text.includes(this.getTelemtryKey())) {
+      this.m_path = newFileLocation;
+      if (fs.existsSync(this.m_path)) {
+        var text = fs.readFileSync(this.m_path, "utf8");
+        if (text.includes(this.getTelemtryKey()) || text.includes(this.m_linkpackages) && this.m_linkpackages !== "") {
+          if(text.includes(this.getTelemtryKey() + "no") || text.includes(this.m_linkpackages + "no")){
+            this.m_telemetryOptIn = false;
+          }
           return false;
         } else {
-          fs.writeFileSync(path, this.getTelemtryKey());
+          fs.writeFileSync(this.m_path, text + this.getTelemtryKey() + this.m_linkpackages);
           return true;
         }
       } else {
-        fs.writeFile(path, this.getTelemtryKey(), (err) => {
-          if (err) console.log(err);
-
+        fs.writeFileSync(this.m_path, this.getTelemtryKey() + this.m_linkpackages);
           return true;
-        });
       }
     } catch (err) {
       this.reportError("checkPrompt", err);
@@ -119,13 +120,16 @@ export class OfficeAddinTelemetry {
   public telemetryOptIn(testValue = 0): void {
     var chalk = require('chalk');
     var readlineSync = require('readline-sync');
+    if(testValue === 0){
+    var text = fs.readFileSync(this.m_path, "utf8");
+    }
     var response = "";
-    var question = chalk.blue('-----------------------------------------\nDo you want to opt in for telemetry?[y/n]\n-----------------------------------------')
+    var question = chalk.blue('-----------------------------------------\nDo you want to opt in for telemetry?[y/n]\n-----------------------------------------');
     if (testValue === 0) {
       try {
         response = readlineSync.question(question);
       } catch (err) {
-        this.reportError("TelemetryOptIn", err)
+        this.reportError("TelemetryOptIn", err);
       }
     }
     if (response.toLowerCase() === 'y' || testValue === 1) {
@@ -133,6 +137,7 @@ export class OfficeAddinTelemetry {
       console.log('Telemetry will be sent!');
     } else {
       this.m_telemetryOptIn = false;
+      fs.writeFileSync(this.m_path, text + "no");
       console.log('You will not be sending telemetry');
     }
   }
@@ -154,10 +159,10 @@ export class OfficeAddinTelemetry {
     return this.m_instrumentationKey;
   }
   public getEventsSent(): any {
-    return this.events_sent;
+    return this.m_events_sent;
   }
   public getExceptionsSent(): any {
-    return this.exceptions_sent;
+    return this.m_exceptions_sent;
   }
 
   public telemetryOptedIn2(): boolean {//for mocha test
@@ -185,7 +190,7 @@ export class OfficeAddinTelemetry {
       err.stack = err.stack.replace(regex, "");
       err.stack = err.stack.replace(regex2, "");
       return err;
-    } catch(err) {
+    } catch (err) {
       this.reportError("maskFilePaths", err);
     }
   }
