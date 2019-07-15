@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { parseNumber } from "office-addin-cli";
 import * as os from "os";
 import * as path from "path";
+import { debug } from "util";
 
 const processIdFile = "office-addin-debugging.json";
 const processIdFilePath = path.join(os.tmpdir(), processIdFile);
@@ -14,7 +15,7 @@ export interface IDebuggingInfo {
 }
 
 export interface IDevServerInfo {
-    processId: number;
+    processId: number | undefined;
 }
 
 export function getDebuggingInfoPath(): string {
@@ -26,7 +27,7 @@ export function getDebuggingInfoPath(): string {
  */
 function createDebuggingInfo(): IDebuggingInfo {
     const devServer: IDevServerInfo = {
-        processId : 0,
+        processId : undefined,
     };
     const debuggingInfo: IDebuggingInfo = {
         devServer,
@@ -44,16 +45,18 @@ function setDevServerProcessId(debuggingInfo: IDebuggingInfo, id: number) {
 }
 
 /**
- * Loads the DebuggingInfo object into JSON
- * @param debuggingInfo DebugInfo object
+ * Write the DebuggingInfo to the json file
+ * @param debuggingInfo DebuggingInfo object
+ * @param pathToFile Path to the json file containing debug info
  */
-function loadDebuggingInfo(debuggingInfo: IDebuggingInfo): string {
-    return JSON.stringify(debuggingInfo, null, 4 );
+function writeDebuggingInfo(debuggingInfo: IDebuggingInfo, pathToFile: string) {
+    const debuggingInfoJSON = JSON.stringify(debuggingInfo, null, 4 );
+    fs.writeFileSync(pathToFile, debuggingInfoJSON);
 }
 
 /**
- * Read the DebugInfo object
- * @param pathToFile - Path to the json file containing debug info
+ * Read the DebuggingInfo object
+ * @param pathToFile Path to the json file containing debug info
  */
 function readDebuggingInfo(pathToFile: string): any {
     const json = fs.readFileSync(pathToFile);
@@ -69,7 +72,7 @@ export async function saveDevServerProcessId(id: number): Promise<void> {
     process.env.OfficeAddinDevServerProcessId = id.toString();
     const debuggingInfo = createDebuggingInfo();
     setDevServerProcessId(debuggingInfo, id);
-    fs.writeFileSync(processIdFilePath, loadDebuggingInfo(debuggingInfo));
+    writeDebuggingInfo(debuggingInfo, processIdFilePath);
 }
 
 /**
