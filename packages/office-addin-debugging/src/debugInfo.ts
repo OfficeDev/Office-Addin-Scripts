@@ -9,7 +9,7 @@ import * as path from "path";
 const processIdFile = "office-addin-debugging.json";
 const processIdFilePath = path.join(os.tmpdir(), processIdFile);
 
-export interface IDebugInfo {
+export interface IDebuggingInfo {
     devServer: IDevServerInfo;
 }
 
@@ -22,40 +22,40 @@ export function getDebuggingInfoPath(): string {
 }
 
 /**
- * Creates the DebugInfo object
+ * Creates the DebuggingInfo object
  */
-function createDebugInfo(): IDebugInfo {
+function createDebuggingInfo(): IDebuggingInfo {
     const devServer: IDevServerInfo = {
         processId : 0,
     };
-    const debugInfo: IDebugInfo = {
+    const debuggingInfo: IDebuggingInfo = {
         devServer,
     };
-    return debugInfo;
+    return debuggingInfo;
 }
 
 /**
- * Set the process id of the dev server in the debuginfo object
- * @param debugInfo DebugInfo object
+ * Set the process id of the dev server in the Debugging object
+ * @param debuggingInfo DebuggingInfo object
  * @param id dev server process id
  */
-function setDevServerProcessId(debugInfo: IDebugInfo, id: number) {
-    debugInfo.devServer.processId = id;
+function setDevServerProcessId(debuggingInfo: IDebuggingInfo, id: number) {
+    debuggingInfo.devServer.processId = id;
 }
 
 /**
- * Loads the DebugInfo object into JSON
- * @param debugInfo DebugInfo object
+ * Loads the DebuggingInfo object into JSON
+ * @param debuggingInfo DebugInfo object
  */
-function loadDebugInfo(debugInfo: IDebugInfo): string {
-    return JSON.stringify(debugInfo, null, 4 );
+function loadDebuggingInfo(debuggingInfo: IDebuggingInfo): string {
+    return JSON.stringify(debuggingInfo, null, 4 );
 }
 
 /**
  * Read the DebugInfo object
  * @param pathToFile - Path to the json file containing debug info
  */
-function readDebugInfo(pathToFile: string): any {
+function readDebuggingInfo(pathToFile: string): any {
     const json = fs.readFileSync(pathToFile);
     return JSON.parse(json.toString());
 }
@@ -67,9 +67,9 @@ function readDebugInfo(pathToFile: string): any {
 export async function saveDevServerProcessId(id: number): Promise<void> {
     console.log(`Writing process id: ${id} to file: ${processIdFilePath}`);
     process.env.OfficeAddinDevServerProcessId = id.toString();
-    const debugInfo = createDebugInfo();
-    setDevServerProcessId(debugInfo, id);
-    fs.writeFileSync(processIdFilePath, loadDebugInfo(debugInfo));
+    const debuggingInfo = createDebuggingInfo();
+    setDevServerProcessId(debuggingInfo, id);
+    fs.writeFileSync(processIdFilePath, loadDebuggingInfo(debuggingInfo));
 }
 
 /**
@@ -82,7 +82,7 @@ export function readDevServerProcessId(): number | undefined {
         id = parseNumber(process.env.OfficeAddinDevServerProcessId);
         console.log(`Process id read from env: ${id}`);
     } else if (fs.existsSync(processIdFilePath)) {
-        const devServerProperties = readDebugInfo(processIdFilePath);
+        const devServerProperties = readDebuggingInfo(processIdFilePath);
         const pid = devServerProperties.devServer.processId;
         id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFilePath}`);
         console.log(`Process id read from file: ${id}`);
