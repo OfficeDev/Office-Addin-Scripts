@@ -4,11 +4,11 @@ import * as fs from "fs";
 import * as mocha from "mocha";
 import { OfficeAddinTelemetry, telemetryType } from "../src/officeAddinTelemetry";
 const telemetryObject = {
-  instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
-  telemetryType: telemetryType.applicationinsights,
   groupName: "Office-Addin-Scripts",
+  instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
   telemetryEnabled: true,
+  telemetryType: telemetryType.applicationinsights,
   testData: true,
 };
 const realObject = JSON.stringify(telemetryObject,null,2);
@@ -19,8 +19,8 @@ const path = require("os").homedir() + "/mochaTest.txt";
     describe("test reportEvent method", () => {
     it("should track event of object passed in with a project name", () => {
         addInTelemetry.setTelemetryOff();
-        var test1 = { Name: { value: "julian", elapsedTime: 9 } };
-        addInTelemetry.reportEvent("TestData",test1);
+        const test1 = { Name: { value: "julian", elapsedTime: 9 } };
+        addInTelemetry.reportEvent("TestData", test1);
         assert(1 === addInTelemetry.getEventsSent());
     });
   });
@@ -35,7 +35,7 @@ const path = require("os").homedir() + "/mochaTest.txt";
 
     describe(" test addTelemetry method", () => {
         it("should add object to telemetry", () => {
-          var test = {};
+          const test = {};
           addInTelemetry.addTelemetry(test, "Name", "julian", 9);
           assert(JSON.stringify(test) === JSON.stringify({ Name: { value: "julian", elapsedTime: 9 } }));
         });
@@ -51,10 +51,11 @@ const path = require("os").homedir() + "/mochaTest.txt";
 
           it("should check to see if text is in file if already created, if appropriate word(s) are not in, returns true and writes to file. Writes entier object out", () => {
           fs.writeFileSync(path, "");
+          let response;
           assert(true === addInTelemetry.checkPrompt(path));
-          var text = fs.readFileSync(path,"utf8");
+          const text = fs.readFileSync(path,"utf8");
           if (text.includes(addInTelemetry.getTelemtryKey() + "")) {
-            var response = true;
+            response = true;
           } else {
             response = false;
           }
@@ -64,7 +65,7 @@ const path = require("os").homedir() + "/mochaTest.txt";
           });
 
           it("should check to see if text is in file, if appropriate word(s) are in, returns false", () => {
-            if(fs.existsSync(path) && fs.readFileSync(path).includes(JSON.stringify(addInTelemetry.getTelemtryObject(),null,2))){
+            if (fs.existsSync(path) && fs.readFileSync(path).includes(JSON.stringify(addInTelemetry.getTelemtryObject(), null, 2))) {
             assert(false === addInTelemetry.checkPrompt(path));
             }
             });
@@ -75,7 +76,7 @@ const path = require("os").homedir() + "/mochaTest.txt";
         console.log(realObject);
         console.log(JSON.stringify(addInTelemetry.getTelemtryObject(), null, 2));
         assert(realObject === JSON.stringify(addInTelemetry.getTelemtryObject(), null, 2));
-        if(fs.existsSync(path)){
+        if (fs.existsSync(path)) {
           fs.unlinkSync(path); // deletes file
         }
         });
@@ -124,8 +125,8 @@ const path = require("os").homedir() + "/mochaTest.txt";
     describe("test getEventsSent method", () => {
         it("should return amount of events successfully sent", () => {
                 addInTelemetry.setTelemetryOff();
-                var test1 = { Name: { value: "julian", elapsedTime: 9 } };
-                addInTelemetry.reportEvent("TestData",test1,12);
+                const test1 = { Name: { value: "julian", elapsedTime: 9 } };
+                addInTelemetry.reportEvent("TestData", test1, 12);
                 assert(1 === addInTelemetry.getEventsSent());
         });
           });
@@ -133,12 +134,12 @@ const path = require("os").homedir() + "/mochaTest.txt";
     describe("test getExceptionsSent method", () => {
         it("should return amount of exceptions successfully sent ",() => {
                 addInTelemetry.setTelemetryOff();
-                addInTelemetry.reportError("TestData",err);
+                addInTelemetry.reportError("TestData", err);
                 assert(2 === addInTelemetry.getExceptionsSent());
             });
           });
 
-    describe("test telemetryOptedIn method", () => {//could be connected with telemetryOptIn
+    describe("test telemetryOptedIn method", () => {
         it("should return true if user opted in", () => {
             addInTelemetry.telemetryOptIn(1);
             assert(true === addInTelemetry.telemetryOptedIn2());
@@ -152,15 +153,15 @@ const path = require("os").homedir() + "/mochaTest.txt";
    describe("test parseErrors method", () => {
             it("should return a parsed file path error", () => {
                   addInTelemetry.setTelemetryOff();
-                  var compare_error =new Error();
-                  compare_error.name = "TestData";
-                  compare_error.message = "this error contains a file path:C:index.js";
-                  compare_error.stack = `ReportErrorCheck: this error contains a file path:C:index.js
-    at Object.<anonymous> (coreTests.ts:16:13)`;//may throw error if change any part of the top of the test file
+                  const compareError = new Error();
+                  compareError.name = "TestData";
+                  compareError.message = "this error contains a file path:C:index.js";
+                  // may throw error if change any part of the top of the test file
+                  compareError.stack = `ReportErrorCheck: this error contains a file path:C:index.js
+    at Object.<anonymous> (coreTests.ts:16:13)`;
     addInTelemetry.testMaskFilePaths(err);
-                  assert(compare_error.name ===  err.name);
-                  assert(compare_error.message ===  err.message);
-                  assert(err.stack.includes(compare_error.stack));
+                  assert(compareError.name ===  err.name);
+                  assert(compareError.message ===  err.message);
+                  assert(err.stack.includes(compareError.stack));
               });
             });
-

@@ -7,13 +7,14 @@ export enum telemetryType {
   OtelJs = "OtelJs",
 }
 export interface telemetryObject {
-  instrumentationKey: string;
-  telemetryType: telemetryType;
   groupName: string;
+  instrumentationKey: string;
   promptQuestion: string;
   telemetryEnabled: boolean;
+  telemetryType: telemetryType;
   testData: boolean;
 }
+
 export class OfficeAddinTelemetry {
   public  chalk = require("chalk");
   private telemetryClient = appInsights.defaultClient;
@@ -27,11 +28,11 @@ export class OfficeAddinTelemetry {
     // checks to make sure it only displays the opt-in message once
     if (groupName === undefined){
     this.telemetryObject =  {
-      instrumentationKey: telemetryObject1.instrumentationKey,
-      telemetryType: telemetryObject1.telemetryType,
       groupName: telemetryObject1.groupName,
+      instrumentationKey: telemetryObject1.instrumentationKey,
       promptQuestion: telemetryObject1.promptQuestion,
       telemetryEnabled: telemetryObject1.telemetryEnabled,
+      telemetryType: telemetryObject1.telemetryType,
       testData: telemetryObject1.testData,
     }
   } else {
@@ -56,7 +57,7 @@ export class OfficeAddinTelemetry {
     this.removeSensitiveInformation();
   }
 
-  public async reportEvent(eventName: string, data: object,timeElapsed = 0): Promise<void> {
+  public async reportEvent(eventName: string, data: object, timeElapsed = 0): Promise<void> {
     if (this.telemetryOptedIn()) {
       if (this.telemetrySource === telemetryType.applicationinsights) {
         this.reportEventApplicationInsights(eventName, data);
@@ -99,10 +100,13 @@ export class OfficeAddinTelemetry {
   }
 
   public addTelemetry(data: { [k: string]: any}, key: string, value: any, elapsedTime: any = 0): object {
-    data[key] = {value,elapsedTime};
+    data[key] = {value, elapsedTime};
     return data;
   }
-
+  public deleteTelemetry(data: { [k: string]: any}, key: string, value: any, elapsedTime: any = 0): object {
+    delete data[key];
+    return data;
+  }
 
   public checkPrompt(newFileLocation = this.path): boolean {
     try {
