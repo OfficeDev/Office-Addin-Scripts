@@ -1,4 +1,4 @@
-/*{
+{
     "defaultSeverity": "error",
     "extends": [
         "tslint:recommended"
@@ -12,4 +12,4 @@
         "max-line-length": false
     },
     "rulesDirectory": []
-}*/
+}
