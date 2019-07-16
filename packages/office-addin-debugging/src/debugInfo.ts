@@ -68,7 +68,6 @@ function readDebuggingInfo(pathToFile: string): any {
  * @param id process id
  */
 export async function saveDevServerProcessId(id: number): Promise<void> {
-    console.log(`Writing process id: ${id} to file: ${processIdFilePath}`);
     process.env.OfficeAddinDevServerProcessId = id.toString();
     const debuggingInfo = createDebuggingInfo();
     setDevServerProcessId(debuggingInfo, id);
@@ -83,12 +82,12 @@ export function readDevServerProcessId(): number | undefined {
     let id;
     if (process.env.OfficeAddinDevServerProcessId) {
         id = parseNumber(process.env.OfficeAddinDevServerProcessId);
-        console.log(`Process id read from env: ${id}`);
     } else if (fs.existsSync(processIdFilePath)) {
         const devServerProperties = readDebuggingInfo(processIdFilePath);
-        const pid = devServerProperties.devServer.processId;
-        id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFilePath}`);
-        console.log(`Process id read from file: ${id}`);
+        if (devServerProperties.devServer && devServerProperties.devServer.processId) {
+            const pid = devServerProperties.devServer.processId;
+            id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFilePath}`);
+        }
     }
     return id;
 }
@@ -98,7 +97,6 @@ export function readDevServerProcessId(): number | undefined {
  * and deletes the debug info json file if it exists
  */
 export function clearDevServerProcessId() {
-    console.log("Clearing dev server process id.");
     if (fs.existsSync(processIdFilePath)) {
         fs.unlinkSync(processIdFilePath);
     }
