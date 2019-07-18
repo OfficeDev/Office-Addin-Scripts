@@ -1,11 +1,19 @@
 import * as appInsights from "applicationinsights";
 import { Base, ExceptionData, ExceptionDetails, StackFrame } from "applicationinsights/out/Declarations/Contracts";
 import * as fs from "fs";
-import * as telemetryJsonData from "./telemetryJsonData";
 export enum telemetryType {
   applicationinsights = "applicationInsights",
   OtelJs = "OtelJs",
 }
+/**
+ * Telemetry object necesary for initialization of telemetry package
+ * @param groupName Event name sent to telemetry structure
+ * @param instrumentationKey Instrumentation key for telemetry resource
+ * @param promptQuestion Question displayed to User over opt-in for telemetry
+ * @param telemetryEnabled User's response to the prompt for telemetry
+ * @param telemetryType Telemetry infrastructure to send data
+ * @param testData Allows user to run program without sending actuall data
+ */
 export interface telemetryObject {
   groupName: string;
   instrumentationKey: string;
@@ -14,34 +22,35 @@ export interface telemetryObject {
   telemetryType: telemetryType;
   testData: boolean;
 }
-// telemetryJsonData.
+/**
+ * Allows developer to create prompts and responses in other applications before object creation
+ * @param groupName Event name sent to telemetry structure
+ * @param telemetryEnabled Whether user agreed to data collection
+ * @param newFileLocation Optional file location to specify the location of json file to write the user's group Name and response to prompt
+ */
 export function promptForTelemetry(groupName: string, enabledTelemetry: boolean, newFileLocation = require("os").homedir() + "/officeAddinTelemetry.json") {
 const chalk = require("chalk");
 try {
   this.path = newFileLocation;
-  const name = this.telemetryObject.groupName;
+  const name = groupName;
   if (fs.existsSync(this.path)) {
     const jsonData = fs.readFileSync(this.path, "utf8");
     if (jsonData !== "") {
     const projectJsonData = JSON.parse(jsonData.toString());
-    if (Object.getOwnPropertyNames(projectJsonData.telemetryInstances).includes(this.telemetryObject.groupName)) {
-      if (projectJsonData.telemetryInstances[name] === false) {
-        this.telemetryObject.telemetryEnabled  = false;
-      } else {
-        this.telemetryObject.telemetryEnabled = true;
-      }
+    if (Object.getOwnPropertyNames(projectJsonData.telemetryInstances).includes(groupName)) {
+      console.log(chalk.red("Group has already been created and assigned a boolean!"));
     } else {
-      projectJsonData.telemetryInstances[name] =  this.telemetryObject.telemetryEnabled;
+      projectJsonData.telemetryInstances[name] =  enabledTelemetry;
       fs.writeFileSync(this.path, JSON.stringify((projectJsonData), null, 2));
     }
   } else {
     const projectJsonData = {};
-    projectJsonData[name] =  this.telemetryObject.telemetryEnabled;
+    projectJsonData[name] =  enabledTelemetry;
     fs.writeFileSync(this.path, JSON.stringify(({ "telemetryInstances" : projectJsonData}), null, 2));
   }
 } else {
     const projectJsonData = {};
-    projectJsonData[name] =  this.telemetryObject.telemetryEnabled;
+    projectJsonData[name] =  enabledTelemetry;
     fs.writeFileSync(this.path, JSON.stringify(({"telemetryInstances": projectJsonData}), null, 2));
   }
 
@@ -50,7 +59,9 @@ try {
 }
 
 }
-
+/**
+ * Allows developer to create a telemetry object and send custom events and exceptions to a unique telemetry structure
+ */
 export class OfficeAddinTelemetry {
   public  chalk = require("chalk");
   private telemetryClient = appInsights.defaultClient;
@@ -59,19 +70,22 @@ export class OfficeAddinTelemetry {
   private exceptionsSent = 0;
   private path = require("os").homedir() + "/officeAddinTelemetry.json";
   private telemetryObject;
-
-  constructor(telemetryObject1: telemetryObject) {
+/**
+ * Creates and intializes memeber variables while prompting user for telemetry collection when necessary
+ * @param telemetryObject
+ */
+  constructor(telemetryObj: telemetryObject) {
     // checks to make sure it only displays the opt-in message once
-    try{
+    try {
     this.telemetryObject =  {
-      groupName: telemetryObject1.groupName,
-      instrumentationKey: telemetryObject1.instrumentationKey,
-      promptQuestion: telemetryObject1.promptQuestion,
-      telemetryEnabled: telemetryObject1.telemetryEnabled,
-      telemetryType: telemetryObject1.telemetryType,
-      testData: telemetryObject1.testData,
+      groupName: telemetryObj.groupName,
+      instrumentationKey: telemetryObj.instrumentationKey,
+      promptQuestion: telemetryObj.promptQuestion,
+      telemetryEnabled: telemetryObj.telemetryEnabled,
+      telemetryType: telemetryObj.telemetryType,
+      testData: telemetryObj.testData,
     }
-  } catch (err){
+  } catch (err) {
     console.log(this.chalk.red("You did not enter all the correct information!"));
     console.log(err);
   }
@@ -92,7 +106,12 @@ export class OfficeAddinTelemetry {
     this.telemetryClient = appInsights.defaultClient;
     this.removeSensitiveInformation();
   }
-
+/**
+ * Reports custom event object to telemetry structure
+ * @param eventName Event name sent to telemetry structure
+ * @param data Data object sent to telemetry structure
+ * @param timeElapsed Optional parameter for custom metric in data object sent
+ */
   public async reportEvent(eventName: string, data: object, timeElapsed = 0): Promise<void> {
     if (this.telemetryOptedIn()) {
       if (this.telemetrySource === telemetryType.applicationinsights) {
@@ -102,7 +121,12 @@ export class OfficeAddinTelemetry {
       }
     }
   }
-
+/**
+ * Reports custom event object to Application Insights
+ * @param eventName Event name sent to Application Insights
+ * @param data Data object sent to Application Insights
+ * @param timeElapsed Optional parameter for custom metric in data object sent to Application Insights
+ */
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.telemetryOptedIn()) {
       for (let [key, {value, elapsedTime}] of Object.entries(data)) {
@@ -117,7 +141,11 @@ export class OfficeAddinTelemetry {
       }
     }
   }
-
+/**
+ * Reports error to telemetry structure
+ * @param errorName Error name sent to telemetry structure
+ * @param err Error sent to telemetry structure
+ */
   public async reportError(errorName: string, err: Error): Promise<void> {
         if (this.telemetrySource === telemetryType.applicationinsights) {
           this.reportErrorApplicationInsights(errorName, err);
@@ -125,7 +153,11 @@ export class OfficeAddinTelemetry {
         console.log(this.chalk.red("Feature has not been yet created."));
         }
   }
-
+/**
+ * Reports error to Application Insights
+ * @param errorName Error name sent to Application Insights
+ * @param err Error sent to Application Insights
+ */
   public async reportErrorApplicationInsights(eventName: string, err: Error): Promise<void> {
       err.name = eventName;
       if (this.telemetryObject.testData) {
@@ -134,16 +166,30 @@ export class OfficeAddinTelemetry {
       this.telemetryClient.trackException({ exception: this.maskFilePaths(err) });
       this.exceptionsSent++;
   }
-
+/**
+ * Adds key and value(s) to given object
+ * @param data Object used to contain custom event data
+ * @param key Name of custom event data collected
+ * @param value Data the user wishes to send
+ * @param elapsedTime Optional duration of time for data to be collected
+ */
   public addTelemetry(data: { [k: string]: any}, key: string, value: any, elapsedTime: any = 0): object {
     data[key] = {value, elapsedTime};
     return data;
   }
-  public deleteTelemetry(data: { [k: string]: any}, key: string, value: any): object {
+/**
+ * Deletes specified key and value(s) from given object
+ * @param data Object used to contain custom event data
+ * @param key Name of key that is deleted along with corresponding values
+ */
+  public deleteTelemetry(data: { [k: string]: any}, key: string): object {
     delete data[key];
     return data;
   }
-
+/**
+ * Checks whether user has been prompted before
+ * @param newFileLocation Optional file location to specify the location of json file to write the user's group Name and response to prompt
+ */
   public checkPrompt(newFileLocation = this.path): boolean {
     try {
       this.path = newFileLocation;
@@ -155,7 +201,7 @@ export class OfficeAddinTelemetry {
         if (Object.getOwnPropertyNames(projectJsonData.telemetryInstances).includes(this.telemetryObject.groupName)) {
           if (projectJsonData.telemetryInstances[name] === false) {
             this.telemetryObject.telemetryEnabled  = false;
-          }else{
+          } else {
             this.telemetryObject.telemetryEnabled = true;
           }
           return false;
@@ -181,8 +227,10 @@ export class OfficeAddinTelemetry {
     return true;
 
   }
-
-  public telemetryOptIn(testValue = 0): void { //FIX TEST
+/**
+ * Prompts user for telemtry participation once and records response
+ */
+  public telemetryOptIn(testValue = 0): void {
     const readlineSync = require("readline-sync");
     const chalk = require("chalk");
     if (this.telemetryObject.promptQuestion === undefined || this.telemetryObject.promptQuestion === "") {
@@ -212,12 +260,21 @@ export class OfficeAddinTelemetry {
     }
   }
   }
+/**
+ * Stops telemetry from being sent, by default telemetry will be on
+ */
   public setTelemetryOff() {
     appInsights.defaultClient.config.samplingPercentage = 0;
   }
+/**
+ * Starts sending telemetry, by default telemetry will be on
+ */
   public setTelemetryOn() {
     appInsights.defaultClient.config.samplingPercentage = 100;
   }
+/**
+ * Returns wheter telemetry is on(true) or off(false)
+ */
   public isTelemetryOn(): boolean {
     if (appInsights.defaultClient.config.samplingPercentage === 100) {
       return true;
@@ -225,15 +282,21 @@ export class OfficeAddinTelemetry {
       return false;
     }
   }
+/**
+ * Returns wheter telemetry is on(true) or off(false)
+ */
   public getTelemetryKey(): string {
     return this.telemetryObject.instrumentationKey;
   }
-  public getTelemetryObject(): Object {
-    return this.telemetryObject;
-  }
+/**
+ * Returns amount of events that have been sent
+ */
   public getEventsSent(): any {
     return this.eventsSent;
   }
+/**
+ * Returns amount of exceptions that have been sent
+ */
   public getExceptionsSent(): any {
     return this.exceptionsSent;
   }

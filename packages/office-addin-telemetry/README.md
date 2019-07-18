@@ -1,2 +1,2 @@
 # Office-Addin-telemetry
-Provides a telemetry package which can be plugged into projects. Allows for the development of the user to clarify which telemetry infrastructure they would like to use(Application Insights, OtelJs...). 
+An extensive and easily accesible telemetry package for a user's given package.

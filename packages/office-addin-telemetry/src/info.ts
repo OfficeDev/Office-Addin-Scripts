@@ -15,8 +15,14 @@ const telemetryObject1 = {
     telemetryEnabled: false,
     testData: false,
   }
-promptForTelemetry("Office-Addin-Scripts", true);
+promptForTelemetry("Office-Addin-Scripts", false);
+var tester = {};
+
 const test = new OfficeAddinTelemetry(telemetryObject1);
+test.addTelemetry(tester, "delete", "shouldn't be here");
+test.addTelemetry(tester, "keep", "should be here");
+test.deleteTelemetry(tester, "delete");
+console.log(JSON.stringify(tester));
 /*const testData = {
     "Host": "Excel",
     "IsTestData":true,
