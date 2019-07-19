@@ -41,6 +41,48 @@
             "name": "RETURNSMATRIXSTRING",
             "parameters": [],
             "result": {}
+        },
+        {
+            "id": "RETURNSBOOLEANPROMISE",
+            "name": "RETURNSBOOLEANPROMISE",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSNUMBERPROMISE",
+            "name": "RETURNSNUMBERPROMISE",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSSTRINGPROMISE",
+            "name": "RETURNSSTRINGPROMISE",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSOBJECTPROMISE",
+            "name": "RETURNSOBJECTPROMISE",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSMATRIXBOOLEANPROMISE",
+            "name": "RETURNSMATRIXBOOLEANPROMISE",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSMATRIXNUMBERPROMISE",
+            "name": "RETURNSMATRIXNUMBERPROMISE",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSMATRIXSTRINGPROMISE",
+            "name": "RETURNSMATRIXSTRINGPROMISE",
+            "parameters": [],
+            "result": {}
         }
     ]
 }
