@@ -12,11 +12,15 @@ import * as os from "os";
 import * as path from "path";
 import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
-import { startDetachedProcess, startProcess  } from "./process";
+import { startDetachedProcess, startProcess } from "./process";
 
 export enum AppType {
     Desktop = "desktop",
     Web = "web",
+    Win32 = "win32",
+    MacOS = "macos",
+    iOS = "ios",
+    Android = "android",
 }
 
 function defaultDebuggingMethod(): DebuggingMethod {
@@ -58,6 +62,14 @@ export function parseAppType(text: string): AppType | undefined {
             return AppType.Desktop;
         case "web":
             return AppType.Web;
+        case "win32":
+            return AppType.Win32;
+        case "macos":
+            return AppType.MacOS;
+        case "ios":
+            return AppType.iOS;
+        case "android":
+            return AppType.Android;
         default:
             return undefined;
     }
@@ -91,7 +103,7 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
 
             // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
-            const devServerProcess =  startDetachedProcess(commandLine);
+            const devServerProcess = startDetachedProcess(commandLine);
             await debugInfo.saveDevServerProcessId(devServerProcess.pid);
 
             if (port !== undefined) {
