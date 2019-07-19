@@ -45,8 +45,15 @@ export class OfficeAddinTelemetry {
     try {
       this.telemetryObject = telemetryObj;
 
-      if (!this.telemetryObject.testData && promptForTelemetry(this.telemetryObject.groupName)) {
+      if (this.telemetryObject.testData) {
+        this.telemetryObject.telemetryEnabled = true;
+      } else if (this.telemetryObject.raisePrompt && promptForTelemetry(this.telemetryObject.groupName)) {
         this.telemetryOptIn();
+      } else {
+        const telemetryJsonData = readTelemetryJsonData();
+        // this.telemetryObject.telemetryEnabled = telemetryJsonData.telemetryInstances[this.telemetryObject.groupName];
+        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
+        fs.writeFileSync(telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
       }
 
       if (this.telemetryObject.instrumentationKey === undefined) {
@@ -56,7 +63,7 @@ export class OfficeAddinTelemetry {
       appInsights.setup(this.telemetryObject.instrumentationKey)
         .setAutoCollectConsole(true)
         .setAutoCollectExceptions(false)
-        .start()
+        .start();
       this.telemetryClient = appInsights.defaultClient;
       this.removeSensitiveInformation();
     } catch (err) {
@@ -249,7 +256,6 @@ export function promptForTelemetry(groupName: string, jsonFilePath: string = tel
     const jsonData: any = readTelemetryJsonData(jsonFilePath);
     if (jsonData) {
       if (Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName)) {
-
         return false;
       }
       return true;

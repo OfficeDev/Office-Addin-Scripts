@@ -4,37 +4,37 @@ import * as fs from "fs";
 import * as mocha from "mocha";
 import * as os from "os";
 import * as path from "path";
-import { OfficeAddinTelemetry, telemetryType, promptForTelemetry } from "../src/officeAddinTelemetry";
+import { OfficeAddinTelemetry, promptForTelemetry, telemetryType } from "../src/officeAddinTelemetry";
 const telemetryObject = {
   groupName: "Office-Addin-Scripts",
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
+  raisePrompt: true,
   telemetryEnabled: true,
   telemetryType: telemetryType.applicationinsights,
   testData: true,
 };
 const addInTelemetry = new OfficeAddinTelemetry(telemetryObject);
-const err = new Error("this error contains a file path:C://" + require("os").homedir() + "/AppData//Roaming//npm//node_modules//balanced-match//index.js"); // for testing parse method
+const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`); // for testing parse method
 const testJsonFilePath = path.join(os.homedir(), "/mochaTest.json");
 
-describe("test reportEvent method", () => {
+describe("Test reportEvent method", () => {
   it("should track event of object passed in with a project name", () => {
     addInTelemetry.setTelemetryOff();
-    const test1 = { Name: { value: "julian", elapsedTime: 9 } };
-    addInTelemetry.reportEvent("TestData", test1);
+    const test1 = { Name: { value: "testValue", elapsedTime: 9 } };
+    addInTelemetry.reportEvent("testData", test1);
     assert.equal(addInTelemetry.getEventsSent(), 1);
   });
 });
 
-describe(" test reportError method", () => {
+describe("Test reportError method", () => {
   it("should send telemetry execption", () => {
-    addInTelemetry.setTelemetryOff();
     addInTelemetry.reportError("ReportErrorCheck", err);
     assert.equal(addInTelemetry.getExceptionsSent(), 1);
   });
 });
 
-describe(" test addTelemetry method", () => {
+describe("Test addTelemetry method", () => {
   it("should add object to telemetry", () => {
     const test = {};
     addInTelemetry.addTelemetry(test, "Name", "julian", 9);
