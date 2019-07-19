@@ -266,24 +266,24 @@ export function promptForTelemetry(groupName: string, jsonFilePath: string = tel
   }
 }
 
-function readTelemetryJsonData(jsonFilePath: string = telemetryJsonFilePath): any {
+export function readTelemetryJsonData(jsonFilePath: string = telemetryJsonFilePath): any {
   if (fs.existsSync(jsonFilePath)) {
     const jsonData = fs.readFileSync(jsonFilePath, "utf8");
     return JSON.parse(jsonData.toString());
   }
 }
 
-function writeTelemetryJsonData(jsonData: any, jsonFilePath: string = telemetryJsonFilePath) {
+export function writeTelemetryJsonData(jsonData: any, jsonFilePath: string = telemetryJsonFilePath) {
   fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
 }
 
-function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled, jsonFilePath: string = telemetryJsonFilePath) {
+export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled, jsonFilePath: string = telemetryJsonFilePath) {
   let jsonData = {};
   jsonData[this.telemetryObject.groupName] = telemetryEnabled;
   jsonData = { telemetryInstances: jsonData };
   writeTelemetryJsonData(jsonData, jsonFilePath);
 }
 
-function groupNameExists(jsonData: any, groupName: string): boolean {
+export function groupNameExists(jsonData: any, groupName: string): boolean {
   return Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName);
 }
