@@ -10,24 +10,23 @@
             "name": "Attach",
             "port": 9229
         },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Mocha Tests",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-            "args": [
-                "-u",
-                "tdd",
-                "--timeout",
-                "999999",
-                "--colors",
-                "${workspaceFolder}\\generators\\test",
-                "--prerelease"
-            ],
-            "internalConsoleOptions": "openOnSessionStart",
-            "outFiles": [
-                "${workspaceRoot}/generators/test/convert-to-single-host.js"
-            ]
-        },
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Tests",
+        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+        "args": [
+            "-u",
+            "bdd",
+            "--timeout",
+            "999999",
+            "--colors",
+            "${workspaceFolder}/test",
+            "-r",
+            "ts-node/register",
+            "${workspaceFolder}/test/**/*.ts"
+        ],
+        "internalConsoleOptions": "openOnSessionStart"
+    }
     ]
 }

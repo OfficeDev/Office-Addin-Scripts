@@ -26,6 +26,7 @@ export interface telemetryObject {
   promptQuestion: string;
   raisePrompt: boolean;
   telemetryEnabled: boolean;
+  telemetryJsonFilePath: string;
   telemetryType: telemetryType;
   testData: boolean;
 }
@@ -44,20 +45,21 @@ export class OfficeAddinTelemetry {
   constructor(telemetryObj: telemetryObject) {
     try {
       this.telemetryObject = telemetryObj;
+      if (this.telemetryObject.telemetryJsonFilePath === undefined){
+        this.telemetryObject.telemetryJsonFilePath = telemetryJsonFilePath;
+      }
 
-      if (this.telemetryObject.testData) {
-        this.telemetryObject.telemetryEnabled = true;
-      } else if (this.telemetryObject.raisePrompt && promptForTelemetry(this.telemetryObject.groupName)) {
+      if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && promptForTelemetry(this.telemetryObject.groupName)) {
         this.telemetryOptIn();
       } else {
-        const telemetryJsonData = readTelemetryJsonData();
+        const telemetryJsonData = readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
         if (telemetryJsonData) {
           if (!groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
             telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
-            writeTelemetryJsonData(telemetryJsonData);
+            writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
           }
         } else {
-          writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled);
+          writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled, this.telemetryObject.telemetryJsonFilePath);
         }
       }
 
@@ -156,23 +158,28 @@ export class OfficeAddinTelemetry {
 
   /**
   * Prompts user for telemtry participation once and records response
-  * @param mochaTest Speificies whether test code is calling this method
+  * @param mochaTest Specifies whether test code is calling this method
+  * @param testReponse Specifies test response
   */
-  public telemetryOptIn(mochaTest: boolean = false): void {
+  public telemetryOptIn(mochaTest: boolean = false, testResponse: string = ""): void {
     try {
-      if (!mochaTest) {
-        const response = readLine.question(chalk.default.blue(this.telemetryObject.promptQuestion));
-        const telemetryJsonData: any = readTelemetryJsonData();
-        const enableTelemetry = response.toLowerCase() === "y";
+      let response: string = "";
+      if (mochaTest) {
+        response = testResponse;
+      } else {
+        response = readLine.question(chalk.default.blue(this.telemetryObject.promptQuestion));
+      }
 
-        if (telemetryJsonData) {
-          this.telemetryObject.telemetryEnabled = enableTelemetry;
-          telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
-          writeTelemetryJsonData(telemetryJsonData);
-          console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
-        } else {
-          writeNewTelemetryJsonFile(this.telemetryObject.groupName, enableTelemetry);
-        }
+      const enableTelemetry = response.toLowerCase() === "y";
+      const telemetryJsonData: any = readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
+
+      if (telemetryJsonData) {
+        this.telemetryObject.telemetryEnabled = enableTelemetry;
+        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
+        writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
+        console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
+      } else {
+        writeNewTelemetryJsonFile(this.telemetryObject.groupName, enableTelemetry, this.telemetryObject.telemetryJsonFilePath);
       }
     } catch (err) {
       this.reportError("TelemetryOptIn", err);
@@ -258,7 +265,7 @@ export function promptForTelemetry(groupName: string, jsonFilePath: string = tel
   try {
     const jsonData: any = readTelemetryJsonData(jsonFilePath);
     if (jsonData) {
-       return !groupNameExists(jsonData, groupName);
+      return !groupNameExists(jsonData, groupName);
     }
     return true;
   } catch (err) {
@@ -266,20 +273,20 @@ export function promptForTelemetry(groupName: string, jsonFilePath: string = tel
   }
 }
 
-export function readTelemetryJsonData(jsonFilePath: string = telemetryJsonFilePath): any {
+export function readTelemetryJsonData(jsonFilePath): any {
   if (fs.existsSync(jsonFilePath)) {
     const jsonData = fs.readFileSync(jsonFilePath, "utf8");
     return JSON.parse(jsonData.toString());
   }
 }
 
-export function writeTelemetryJsonData(jsonData: any, jsonFilePath: string = telemetryJsonFilePath) {
+export function writeTelemetryJsonData(jsonData: any, jsonFilePath) {
   fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
 }
 
-export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled, jsonFilePath: string = telemetryJsonFilePath) {
+export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled, jsonFilePath: string) {
   let jsonData = {};
-  jsonData[this.telemetryObject.groupName] = telemetryEnabled;
+  jsonData[groupName] = telemetryEnabled;
   jsonData = { telemetryInstances: jsonData };
   writeTelemetryJsonData(jsonData, jsonFilePath);
 }

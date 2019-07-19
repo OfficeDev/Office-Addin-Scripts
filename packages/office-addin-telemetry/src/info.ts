@@ -13,6 +13,7 @@ const telemetryObject1 = {
     groupName: "Office-Addin-Scripts2",
     promptQuestion: "-----------------------------------------\nWe collecte diaganoistic data but would welcome the collection of custom events. Would you like to opt-in for the extended telemetry?[y/n]\n-----------------------------------------",
     raisePrompt: true,
+    telemetryJsonFilePath: undefined,
     telemetryEnabled: true,
     testData: false,
   }

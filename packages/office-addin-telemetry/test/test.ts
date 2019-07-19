@@ -6,18 +6,18 @@ import * as os from "os";
 import * as path from "path";
 import * as officeAddinTelemetry from "../src/officeAddinTelemetry";
 
+let addInTelemetry: officeAddinTelemetry.OfficeAddinTelemetry;
+const testJsonFilePath = path.join(os.homedir(), "/mochaTest.json");
 const telemetryObject = {
   groupName: "Office-Addin-Scripts",
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
   raisePrompt: false,
   telemetryEnabled: true,
+  telemetryJsonFilePath: testJsonFilePath,
   telemetryType: officeAddinTelemetry.telemetryType.applicationinsights,
   testData: true,
 };
-
-const testJsonFilePath = path.join(os.homedir(), "/mochaTest.json");
-let addInTelemetry: officeAddinTelemetry.OfficeAddinTelemetry;
 
 describe("Test office-addin-telemetry-package", function() {
   beforeEach(function() {
@@ -45,137 +45,146 @@ describe("Test office-addin-telemetry-package", function() {
   describe("Test addTelemetry method", () => {
     it("should add object to telemetry", () => {
       const testObject = {};
-      addInTelemetry.addTelemetry(testObject, "Name", "testvalue", 9);
-      assert.equal(JSON.stringify(testObject), JSON.stringify({ Name: { value: "julian", elapsedTime: 9 } }));
+      addInTelemetry.addTelemetry(testObject, "Name", "testValue", 9);
+      assert.equal(JSON.stringify(testObject), JSON.stringify({ Name: { value: "testValue", elapsedTime: 9 } }));
     });
   });
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'true' because testJsonFilePath doesn't exist", () => {
-      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, testJsonFilePath), true);
+      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), true);
     });
   });
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'false' because testJsonFilePath exists and groupName exists in file", () => {
-      officeAddinTelemetry.writeNewTelemetryJsonFile(telemetryObject.groupName, telemetryObject.telemetryEnabled, testJsonFilePath);
-      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, testJsonFilePath), false);
+      officeAddinTelemetry.writeNewTelemetryJsonFile(telemetryObject.groupName, telemetryObject.telemetryEnabled, telemetryObject.telemetryJsonFilePath);
+      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), false);
     });
   });
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'false' because testJsonFilePath exists and groupName doesn't exists in file", () => {
-      officeAddinTelemetry.writeNewTelemetryJsonFile("testGroupName", telemetryObject.telemetryEnabled, testJsonFilePath);
-      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, testJsonFilePath), true);
+      officeAddinTelemetry.writeNewTelemetryJsonFile("testGroupName", telemetryObject.telemetryEnabled, telemetryObject.telemetryJsonFilePath);
+      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), true);
     });
   });
 
-
-    it("should check to see if JSON Object is in file if already created, if appropriate word(s) are not in, returns true and writes to file. Writes group name then wether telemetry is enabled or disabled", () => {
-      fs.writeFileSync(testJsonFilePath, "");
-      let response;
-      assert.equal(promptForTelemetry(telemetryObject.groupName, testJsonFilePath), true);
-
-      // let jsonData = fs.readFileSync(testJsonFilePath, "utf8");
-      // let projectJsonData = JSON.parse(jsonData.toString());
-      // if (Object.getOwnPropertyNames(projectJsonData.telemetryInstances).includes(telemetryObject.groupName) && projectJsonData.telemetryInstances[telemetryObject.groupName] === true) {
-      //   response = true;
-      // } else {
-      //   response = false;
-      // }
-
-      // assert(true === response);
-
-    });
-
-    it("should check to see if text is in file, if appropriate word(s) are in, returns false", () => {
-      if (fs.existsSync(path)) {
-        assert(false === addInTelemetry.checkPrompt(path));
-      }
-    });
-  });
-  describe("test telemetryOptIn method", () => {
-    it("should display user asking to opt in, changes to true if user types y ", () => {
-      addInTelemetry.telemetryOptIn(1);
-      assert(true === addInTelemetry.telemetryOptedIn2());
-    });
-    it("should display user asking to opt in, changes to false if user types anything else then y ", () => {
-      addInTelemetry.telemetryOptIn(2);
-      assert(false === addInTelemetry.telemetryOptedIn2());
-    });
-  });
-
-  describe("test setTelemetryOff method", () => {
-    it("should change samplingPercentage to 100, turns telemetry on", () => {
-      addInTelemetry.setTelemetryOn();
-      addInTelemetry.setTelemetryOff();
-      assert(0 === appInsights.defaultClient.config.samplingPercentage);
-    });
-  });
-  describe("test setTelemetryOn method", () => {
-    it("should change samplingPercentage to 100, turns telemetry on", () => {
-      addInTelemetry.setTelemetryOff();
-      addInTelemetry.setTelemetryOn();
-      assert(100 === appInsights.defaultClient.config.samplingPercentage);
-    });
-  });
-  describe("test isTelemetryOn method", () => {
-    it("should return true if samplingPercentage is on(100)", () => {
-      appInsights.defaultClient.config.samplingPercentage = 100;
-      assert(true === addInTelemetry.isTelemetryOn());
-    });
-    it("should return false if samplingPercentage is off(0)", () => {
-      appInsights.defaultClient.config.samplingPercentage = 0;
-      assert(false === addInTelemetry.isTelemetryOn());
-    });
-  });
-  describe("test getTelemetryKey method", () => {
-    it("should return telemetry key", () => {
-      assert("de0d9e7c-1f46-4552-bc21-4e43e489a015" === addInTelemetry.getTelemetryKey());
-    });
-  });
-
-  describe("test getEventsSent method", () => {
-    it("should return amount of events successfully sent", () => {
-      addInTelemetry.setTelemetryOff();
-      const test1 = { Name: { value: "julian", elapsedTime: 9 } };
-      addInTelemetry.reportEvent("TestData", test1, 12);
-      assert(1 === addInTelemetry.getEventsSent());
-    });
-  });
-
-  describe("test getExceptionsSent method", () => {
-    it("should return amount of exceptions successfully sent ", () => {
-      addInTelemetry.setTelemetryOff();
-      addInTelemetry.reportError("TestData", err);
-      assert(2 === addInTelemetry.getExceptionsSent());
-    });
-  });
-
-  describe("test telemetryOptedIn method", () => {
-    it("should return true if user opted in", () => {
-      addInTelemetry.telemetryOptIn(1);
-      assert(true === addInTelemetry.telemetryOptedIn());
-    });
-    it("should return false if user opted out", () => {
-      addInTelemetry.telemetryOptIn(2);
-      assert(false === addInTelemetry.telemetryOptedIn2());
-    });
-  });
-
-  describe("test parseErrors method", () => {
-    it("should return a parsed file path error", () => {
-      addInTelemetry.setTelemetryOff();
-      const compareError = new Error();
-      compareError.name = "TestData";
-      compareError.message = "this error contains a file path:C:index.js";
-      // may throw error if change any part of the top of the test file
-      compareError.stack = `ReportErrorCheck: this error contains a file path:C:index.js
-    at Object.<anonymous> (coreTests.ts:15:13)`;
-      addInTelemetry.maskFilePaths(err);
-      assert(compareError.name === err.name);
-      assert(compareError.message === err.message);
-      assert(err.stack.includes(compareError.stack));
+  describe("Test telemetryOptIn method", () => {
+    it("Should write out file with groupName set to true to testJsonFilePath", () => {
+      addInTelemetry.telemetryOptIn(telemetryObject.testData, "y");
+      const jsonData = officeAddinTelemetry.readTelemetryJsonData(telemetryObject.telemetryJsonFilePath);
+      assert.equal(jsonData.telemetryInstances[telemetryObject.groupName], true);
     });
   });
 });
+
+
+    // it("should check to see if JSON Object is in file if already created, if appropriate word(s) are not in, returns true and writes to file. Writes group name then wether telemetry is enabled or disabled", () => {
+    //   fs.writeFileSync(testJsonFilePath, "");
+    //   let response;
+    //   assert.equal(promptForTelemetry(telemetryObject.groupName, testJsonFilePath), true);
+
+    //   // let jsonData = fs.readFileSync(testJsonFilePath, "utf8");
+    //   // let projectJsonData = JSON.parse(jsonData.toString());
+    //   // if (Object.getOwnPropertyNames(projectJsonData.telemetryInstances).includes(telemetryObject.groupName) && projectJsonData.telemetryInstances[telemetryObject.groupName] === true) {
+    //   //   response = true;
+    //   // } else {
+    //   //   response = false;
+    //   // }
+
+    //   // assert(true === response);
+
+
+
+  //   it("should check to see if text is in file, if appropriate word(s) are in, returns false", () => {
+  //     if (fs.existsSync(path)) {
+  //       assert(false === addInTelemetry.checkPrompt(path));
+  //     }
+  //   });
+  // });
+  // describe("test telemetryOptIn method", () => {
+  //   it("should display user asking to opt in, changes to true if user types y ", () => {
+  //     addInTelemetry.telemetryOptIn(1);
+  //     assert(true === addInTelemetry.telemetryOptedIn2());
+  //   });
+  //   it("should display user asking to opt in, changes to false if user types anything else then y ", () => {
+  //     addInTelemetry.telemetryOptIn(2);
+  //     assert(false === addInTelemetry.telemetryOptedIn2());
+  //   });
+  // });
+
+  // describe("test setTelemetryOff method", () => {
+  //   it("should change samplingPercentage to 100, turns telemetry on", () => {
+  //     addInTelemetry.setTelemetryOn();
+  //     addInTelemetry.setTelemetryOff();
+  //     assert(0 === appInsights.defaultClient.config.samplingPercentage);
+  //   });
+  // });
+  // describe("test setTelemetryOn method", () => {
+  //   it("should change samplingPercentage to 100, turns telemetry on", () => {
+  //     addInTelemetry.setTelemetryOff();
+  //     addInTelemetry.setTelemetryOn();
+  //     assert(100 === appInsights.defaultClient.config.samplingPercentage);
+  //   });
+  // });
+  // describe("test isTelemetryOn method", () => {
+  //   it("should return true if samplingPercentage is on(100)", () => {
+  //     appInsights.defaultClient.config.samplingPercentage = 100;
+  //     assert(true === addInTelemetry.isTelemetryOn());
+  //   });
+  //   it("should return false if samplingPercentage is off(0)", () => {
+  //     appInsights.defaultClient.config.samplingPercentage = 0;
+  //     assert(false === addInTelemetry.isTelemetryOn());
+  //   });
+  // });
+  // describe("test getTelemetryKey method", () => {
+  //   it("should return telemetry key", () => {
+  //     assert("de0d9e7c-1f46-4552-bc21-4e43e489a015" === addInTelemetry.getTelemetryKey());
+  //   });
+  // });
+
+  // describe("test getEventsSent method", () => {
+  //   it("should return amount of events successfully sent", () => {
+  //     addInTelemetry.setTelemetryOff();
+  //     const test1 = { Name: { value: "julian", elapsedTime: 9 } };
+  //     addInTelemetry.reportEvent("TestData", test1, 12);
+  //     assert(1 === addInTelemetry.getEventsSent());
+  //   });
+  // });
+
+  // describe("test getExceptionsSent method", () => {
+  //   it("should return amount of exceptions successfully sent ", () => {
+  //     addInTelemetry.setTelemetryOff();
+  //     addInTelemetry.reportError("TestData", err);
+  //     assert(2 === addInTelemetry.getExceptionsSent());
+  //   });
+  // });
+
+  // describe("test telemetryOptedIn method", () => {
+  //   it("should return true if user opted in", () => {
+  //     addInTelemetry.telemetryOptIn(1);
+  //     assert(true === addInTelemetry.telemetryOptedIn());
+  //   });
+  //   it("should return false if user opted out", () => {
+  //     addInTelemetry.telemetryOptIn(2);
+  //     assert(false === addInTelemetry.telemetryOptedIn2());
+  //   });
+  // });
+
+  // describe("test parseErrors method", () => {
+  //   it("should return a parsed file path error", () => {
+  //     addInTelemetry.setTelemetryOff();
+  //     const compareError = new Error();
+  //     compareError.name = "TestData";
+  //     compareError.message = "this error contains a file path:C:index.js";
+  //     // may throw error if change any part of the top of the test file
+  //     compareError.stack = `ReportErrorCheck: this error contains a file path:C:index.js
+  //   at Object.<anonymous> (coreTests.ts:15:13)`;
+  //     addInTelemetry.maskFilePaths(err);
+  //     assert(compareError.name === err.name);
+  //     assert(compareError.message === err.message);
+  //     assert(err.stack.includes(compareError.stack));
+  //   });
+  // });
+
