@@ -223,11 +223,11 @@ export class OfficeAddinTelemetry {
     delete this.telemetryClient.context.tags["ai.user.accountId"]; // subscription
   }
 
-  private telemetryOptedIn(): boolean {
+  public telemetryOptedIn(): boolean {
     return this.telemetryObject.telemetryEnabled;
   }
 
-  private maskFilePaths(err: Error): Error {
+  public maskFilePaths(err: Error): Error {
     try {
       const regex = /\/(.*)\//gmi;
       const regex2 = /\w:\\(?:[^\\\s]+\\)+/gmi;
@@ -246,9 +246,9 @@ export class OfficeAddinTelemetry {
  * @param groupName Event name sent to telemetry structure
  * @param telemetryEnabled Whether user agreed to data collection
  */
-export function promptForTelemetry(groupName: string) : boolean {
+export function promptForTelemetry(groupName: string, jsonFilePath :string = telemetryJsonFilePath) : boolean {
   try {
-    const jsonData: any = readTelemetryJsonData();
+    const jsonData: any = readTelemetryJsonData(jsonFilePath);
     if (jsonData) {
       if (Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName)) {
         return false;
@@ -261,9 +261,9 @@ export function promptForTelemetry(groupName: string) : boolean {
   }
 }
 
-function readTelemetryJsonData() : any {
-  if (fs.existsSync(telemetryJsonFilePath)) {
-    const jsonData = fs.readFileSync(telemetryJsonFilePath, "utf8");
+function readTelemetryJsonData(jsonFilePath : string = telemetryJsonFilePath) : any {
+  if (fs.existsSync(jsonFilePath)) {
+    const jsonData = fs.readFileSync(jsonFilePath, "utf8");
     return JSON.parse(jsonData.toString());
   }
 }
