@@ -550,8 +550,20 @@ function getResults(func: ts.FunctionDeclaration, isStreamingFunction: boolean, 
             const errorString = `Type {${ts.SyntaxKind[func.type.kind]}:${ts.SyntaxKind[returnTypeFromJSDoc.kind]}} doesn't match for return type : ${name}`;
             extra.errors.push(logError(errorString, returnPosition));
         }
-        resultType = getParamType(returnTypeFromJSDoc, extra, enumList);
-        resultDim = getParamDim(returnTypeFromJSDoc);
+        if (returnTypeFromJSDoc.kind === ts.SyntaxKind.TypeReference &&
+            (returnTypeFromJSDoc as ts.TypeReferenceNode).typeName.getText() === "Promise" &&
+            (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments &&
+            // @ts-ignore
+            (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments.length === 1
+        ) {
+            // @ts-ignore
+            resultType = getParamType((returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0], extra, enumList);
+            // @ts-ignore
+            resultDim = getParamDim((returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0]);
+        } else {
+            resultType = getParamType(returnTypeFromJSDoc, extra, enumList);
+            resultDim = getParamDim(returnTypeFromJSDoc);
+        }
     }
 
     const resultItem: IFunctionResult = {
