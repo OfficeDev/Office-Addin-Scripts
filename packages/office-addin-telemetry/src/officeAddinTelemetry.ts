@@ -13,12 +13,12 @@ const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelem
 
 /**
  * Telemetry object necesary for initialization of telemetry package
- * @param groupName Event name sent to telemetry structure
- * @param instrumentationKey Instrumentation key for telemetry resource
- * @param promptQuestion Question displayed to User over opt-in for telemetry
- * @param telemetryEnabled User's response to the prompt for telemetry
- * @param telemetryType Telemetry infrastructure to send data
- * @param testData Allows user to run program without sending actuall data
+ * @member groupName Event name sent to telemetry structure
+ * @member instrumentationKey Instrumentation key for telemetry resource
+ * @member promptQuestion Question displayed to User over opt-in for telemetry
+ * @member telemetryEnabled User's response to the prompt for telemetry
+ * @member telemetryType Telemetry infrastructure to send data
+ * @member testData Allows user to run program without sending actuall data
  */
 export interface telemetryObject {
   groupName: string;
@@ -32,15 +32,14 @@ export interface telemetryObject {
 }
 
 /**
- * Creates and intializes memeber variables while prompting user for telemetry collection when necessary
+ * Creates and initializes member variables while prompting user for telemetry collection when necessary
  * @param telemetryObject
  */
 export class OfficeAddinTelemetry {
-  public chalk = require("chalk");
   private telemetryClient = appInsights.defaultClient;
-  private eventsSent = 0;
-  private exceptionsSent = 0;
-  private telemetryObject;
+  private eventsSent: number = 0;
+  private exceptionsSent: number = 0;
+  private telemetryObject: telemetryObject;
 
   constructor(telemetryObj: telemetryObject) {
     try {
@@ -156,7 +155,7 @@ export class OfficeAddinTelemetry {
     return data;
   }
 
-  /**
+ /**
   * Prompts user for telemtry participation once and records response
   * @param mochaTest Specifies whether test code is calling this method
   * @param testReponse Specifies test response
@@ -203,7 +202,7 @@ export class OfficeAddinTelemetry {
   }
 
   /**
-   * Returns wheter telemetry is on(true) or off(false)
+   * Returns whether the telemetry is currently on or off
    */
   public isTelemetryOn(): boolean {
     if (appInsights.defaultClient.config.samplingPercentage === 100) {
@@ -214,7 +213,7 @@ export class OfficeAddinTelemetry {
   }
 
   /**
-   * Returns wheter telemetry is on(true) or off(false)
+   * Returns the instrumentation key associated with the resource
    */
   public getTelemetryKey(): string {
     return this.telemetryObject.instrumentationKey;
@@ -233,18 +232,22 @@ export class OfficeAddinTelemetry {
   public getExceptionsSent(): any {
     return this.exceptionsSent;
   }
-
+  /**
+   * Returns whether the user opted in or not
+   */
   public telemetryOptedIn(): boolean {
     return this.telemetryObject.telemetryEnabled;
   }
-
+  /**
+   * Returns whether the user opted in or not
+   */
   public maskFilePaths(err: Error): Error {
     try {
-      const regex = /\/(.*)\//gmi;
-      const regex2 = /\w:\\(?:[^\\\s]+\\)+/gmi;
-      err.message = err.message.replace(regex, "");
-      err.stack = err.stack.replace(regex, "");
-      err.stack = err.stack.replace(regex2, "");
+      const regexRemoveUserFilePaths   = /\/(.*)\//gmi;
+      const regexRemoveUserFilePathsFromStack   = /\w:\\(?:[^\\\s]+\\)+/gmi;
+      err.message = err.message.replace(regexRemoveUserFilePaths  , "");
+      err.stack = err.stack.replace(regexRemoveUserFilePaths  , "");
+      err.stack = err.stack.replace(regexRemoveUserFilePathsFromStack  , "");
       return err;
     } catch (err) {
       this.reportError("maskFilePaths", err);

@@ -2,12 +2,11 @@ import * as commander from "commander";
 import * as commands from "./command";
 commander.name("office-addin-telemetry");
 commander.version(process.env.npm_package_version || "(version not available)");
-console.log('made it');
 commander
-    .version('0.0.1')
+    .version("0.0.1");
 commander
     .command("help")
-    .description(`Information about telemetry package`)
+    .description(`This package allows for sending telemetry event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights).`)
     .action(commands.help);
 
     commander.on("command:*", function() {

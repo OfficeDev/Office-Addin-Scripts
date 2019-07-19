@@ -1,2 +1,5 @@
 # Office-Addin-telemetry
-An extensive and easily accesible telemetry package for a user's given package.
+This package allows for sending telemetry event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights).
+
+CLI options coming soon:
+Examples of how to use methods:
