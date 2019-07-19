@@ -45,7 +45,7 @@ const path = require("os").homedir() + "/mochaTest.json";
             if(fs.existsSync(path)){
             fs.unlinkSync(path); // deletes file if it exists
           }
-          assert(true === addInTelemetry.checkPrompt(path));
+          assert(true === addInTelemetrycheckPrompt(path));
           });
 
           it("should check to see if JSON Object is in file if already created, if appropriate word(s) are not in, returns true and writes to file. Writes group name then wether telemetry is enabled or disabled", () => {
@@ -131,7 +131,7 @@ const path = require("os").homedir() + "/mochaTest.json";
     describe("test telemetryOptedIn method", () => {
         it("should return true if user opted in", () => {
             addInTelemetry.telemetryOptIn(1);
-            assert(true === addInTelemetry.telemetryOptedIn2());
+            assert(true === addInTelemetry.telemetryOptedIn());
           });
           it("should return false if user opted out", () => {
             addInTelemetry.telemetryOptIn(2);

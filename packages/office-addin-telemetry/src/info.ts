@@ -15,7 +15,7 @@ const telemetryObject1 = {
     telemetryEnabled: false,
     testData: false,
   }
-promptForTelemetry("Office-Addin-Scripts", false);
+promptForTelemetry("Office-Addin-Scripts");
 var tester = {};
 
 const test = new OfficeAddinTelemetry(telemetryObject1);

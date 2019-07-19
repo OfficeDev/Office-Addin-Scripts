@@ -38,37 +38,18 @@ export class OfficeAddinTelemetry {
   private telemetrySource = "";
   private eventsSent = 0;
   private exceptionsSent = 0;
-  private path = require("os").homedir() + "/officeAddinTelemetry.json";
   private telemetryObject;
   /**
    * Creates and intializes memeber variables while prompting user for telemetry collection when necessary
    * @param telemetryObject
    */
   constructor(telemetryObj: telemetryObject) {
-    // checks to make sure it only displays the opt-in message once
-    try {
-      this.telemetryObject = {
-        groupName: telemetryObj.groupName,
-        instrumentationKey: telemetryObj.instrumentationKey,
-        promptQuestion: telemetryObj.promptQuestion,
-        telemetryEnabled: telemetryObj.telemetryEnabled,
-        telemetryType: telemetryObj.telemetryType,
-        testData: telemetryObj.testData,
-      }
-    } catch (err) {
-      console.log(this.chalk.red("You did not enter all the correct information!"));
-      console.log(err);
-    }
-    // declaring telemetry structure
-    if (this.telemetryObject.telemetryType === telemetryType.applicationinsights) {
-      this.telemetrySource = telemetryType.applicationinsights;
-    } else if (this.telemetryObject.telmetryType.toLowerCase() === "oteljs") {
-      this.telemetrySource = telemetryType.OtelJs;
-    }
-    if (!this.telemetryObject.testData && this.checkPrompt()) {
+    this.telemetryObject = telemetryObj;
+
+    if (!this.telemetryObject.testData && promptForTelemetry(this.telemetryObject.groupName)) {
       this.telemetryOptIn();
     }
-    this.path = require("os").homedir() + "/officeAddinTelemetry.json";
+
     appInsights.setup(this.telemetryObject.instrumentationKey)
       .setAutoCollectConsole(true)
       .setAutoCollectExceptions(false)
@@ -163,81 +144,6 @@ export class OfficeAddinTelemetry {
     return data;
   }
 
-  /**
-   * Checks whether user has been prompted before
-   * @param newFileLocation Optional file location to specify the location of json file to write the user's group Name and response to prompt
-   */
-  public checkPrompt(newFileLocation = this.path): boolean {
-    try {
-      this.path = newFileLocation;
-      const name = this.telemetryObject.groupName;
-      if (fs.existsSync(this.path)) {
-        const jsonData = fs.readFileSync(this.path, "utf8");
-        if (jsonData !== "") {
-          const projectJsonData = JSON.parse(jsonData.toString());
-          if (Object.getOwnPropertyNames(projectJsonData.telemetryInstances).includes(this.telemetryObject.groupName)) {
-            if (projectJsonData.telemetryInstances[name] === false) {
-              this.telemetryObject.telemetryEnabled = false;
-            } else {
-              this.telemetryObject.telemetryEnabled = true;
-            }
-            return false;
-          } else {
-            projectJsonData.telemetryInstances[name] = this.telemetryObject.telemetryEnabled;
-            fs.writeFileSync(this.path, JSON.stringify((projectJsonData), null, 2));
-            return true;
-          }
-        } else {
-          const projectJsonData = {};
-          projectJsonData[name] = this.telemetryObject.telemetryEnabled;
-          fs.writeFileSync(this.path, JSON.stringify(({ "telemetryInstances": projectJsonData }), null, 2));
-        }
-      } else {
-        const projectJsonData = {};
-        projectJsonData[name] = this.telemetryObject.telemetryEnabled;
-        fs.writeFileSync(this.path, JSON.stringify(({ "telemetryInstances": projectJsonData }), null, 2));
-      }
-    } catch (err) {
-      this.reportError("checkPrompt", err);
-    }
-
-    return true;
-  }
-
-  // /**
-  //  * Prompts user for telemtry participation once and records response
-  //  */
-  // public telemetryOptIn(testValue = false): void {
-  //   const readlineSync = require("readline-sync");
-  //   const chalk = require("chalk");
-  //   if (this.telemetryObject.promptQuestion === undefined || this.telemetryObject.promptQuestion === "") {
-  //     this.telemetryObject.telemetryEnabled = false;
-  //   } else {
-  //     const name = this.telemetryObject.groupName;
-  //     const jsonData = fs.readFileSync(this.path, "utf8");
-  //     const projectJsonData = JSON.parse(jsonData.toString());
-  //     let response = "";
-  //     if (testValue === 0) {
-  //       try {
-  //         response = readlineSync.question(chalk.blue(this.telemetryObject.promptQuestion));
-  //       } catch (err) {
-  //         this.reportError("TelemetryOptIn", err);
-  //       }
-  //     }
-  //     if (response.toLowerCase() === "y" || testValue === 1) {
-  //       this.telemetryObject.telemetryEnabled = true;
-  //       projectJsonData.telemetryInstances[name] = true;
-  //       fs.writeFileSync(this.path, JSON.stringify((projectJsonData), null, 2));
-  //       console.log(chalk.green("Telemetry will be sent!"));
-  //     } else {
-  //       this.telemetryObject.telemetryEnabled = false;
-  //       projectJsonData.telemetryInstances[name] = false;
-  //       fs.writeFileSync(this.path, JSON.stringify((projectJsonData), null, 2));
-  //       console.log(chalk.red("You will not be sending telemetry"));
-  //     }
-  //   }
-  // }
-
    /**
    * Prompts user for telemtry participation once and records response
    */
@@ -251,12 +157,12 @@ export class OfficeAddinTelemetry {
         if (telemetryJsonData) {
             this.telemetryObject.telemetryEnabled = enableTelemetry;
             telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
-            fs.writeFileSync(this.path, JSON.stringify((telemetryJsonData), null, 2));
+            fs.writeFileSync(telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
             console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
        } else {
             const projectJsonData = {};
             projectJsonData[this.telemetryObject.groupName] =  enableTelemetry;
-            fs.writeFileSync(this.path, JSON.stringify(({"telemetryInstances": projectJsonData}), null, 2));
+            fs.writeFileSync(telemetryJsonData, JSON.stringify(({"telemetryInstances": projectJsonData}), null, 2));
           }
       }
     } catch (err) {
@@ -310,12 +216,7 @@ export class OfficeAddinTelemetry {
     return this.exceptionsSent;
   }
 
-  public telemetryOptedIn2(): boolean {// for mocha test
-    return this.telemetryObject.telemetryEnabled;
-  }
-  public testMaskFilePaths(err: Error): Error {
-    return this.maskFilePaths(err);
-  }
+
   private removeSensitiveInformation() {
     delete this.telemetryClient.context.tags["ai.cloud.roleInstance"]; // cloud name
     delete this.telemetryClient.context.tags["ai.device.id"]; // machine name
