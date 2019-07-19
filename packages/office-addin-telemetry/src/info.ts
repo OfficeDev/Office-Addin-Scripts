@@ -10,12 +10,13 @@ import { getMaxListeners } from "cluster";
 const telemetryObject1 = {
     instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
     telemetryType: telemetryType.applicationinsights,
-    groupName: "Office-Addin-Scripts",
+    groupName: "Office-Addin-Scripts2",
     promptQuestion: "-----------------------------------------\nWe collecte diaganoistic data but would welcome the collection of custom events. Would you like to opt-in for the extended telemetry?[y/n]\n-----------------------------------------",
-    telemetryEnabled: false,
+    raisePrompt: true,
+    telemetryEnabled: true,
     testData: false,
   }
-promptForTelemetry("Office-Addin-Scripts");
+promptForTelemetry(telemetryObject1.groupName);
 var tester = {};
 
 const test = new OfficeAddinTelemetry(telemetryObject1);

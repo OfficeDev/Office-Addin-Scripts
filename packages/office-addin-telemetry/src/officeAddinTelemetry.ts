@@ -24,38 +24,44 @@ export interface telemetryObject {
   groupName: string;
   instrumentationKey: string;
   promptQuestion: string;
+  raisePrompt: boolean;
   telemetryEnabled: boolean;
   telemetryType: telemetryType;
   testData: boolean;
 }
 
 /**
- * Allows developer to create a telemetry object and send custom events and exceptions to a unique telemetry structure
+ * Creates and intializes memeber variables while prompting user for telemetry collection when necessary
+ * @param telemetryObject
  */
 export class OfficeAddinTelemetry {
   public chalk = require("chalk");
   private telemetryClient = appInsights.defaultClient;
-  private telemetrySource = "";
   private eventsSent = 0;
   private exceptionsSent = 0;
   private telemetryObject;
-  /**
-   * Creates and intializes memeber variables while prompting user for telemetry collection when necessary
-   * @param telemetryObject
-   */
+
   constructor(telemetryObj: telemetryObject) {
-    this.telemetryObject = telemetryObj;
+    try {
+      this.telemetryObject = telemetryObj;
 
-    if (!this.telemetryObject.testData && promptForTelemetry(this.telemetryObject.groupName)) {
-      this.telemetryOptIn();
+      if (!this.telemetryObject.testData && promptForTelemetry(this.telemetryObject.groupName)) {
+        this.telemetryOptIn();
+      }
+
+      if (this.telemetryObject.instrumentationKey === undefined) {
+        throw new Error("Instrumentation not defined - cannot create telemetry object");
+      }
+
+      appInsights.setup(this.telemetryObject.instrumentationKey)
+        .setAutoCollectConsole(true)
+        .setAutoCollectExceptions(false)
+        .start()
+      this.telemetryClient = appInsights.defaultClient;
+      this.removeSensitiveInformation();
+    } catch (err) {
+      console.log(`Failed to create telemetry object.\n${err}`);
     }
-
-    appInsights.setup(this.telemetryObject.instrumentationKey)
-      .setAutoCollectConsole(true)
-      .setAutoCollectExceptions(false)
-      .start()
-    this.telemetryClient = appInsights.defaultClient;
-    this.removeSensitiveInformation();
   }
 
   /**
@@ -66,11 +72,7 @@ export class OfficeAddinTelemetry {
    */
   public async reportEvent(eventName: string, data: object, timeElapsed = 0): Promise<void> {
     if (this.telemetryOptedIn()) {
-      if (this.telemetrySource === telemetryType.applicationinsights) {
-        this.reportEventApplicationInsights(eventName, data);
-      } else if (this.telemetrySource === telemetryType.OtelJs) {
-        console.log(this.chalk.red("Feature has not been yet created."));
-      }
+      this.reportEventApplicationInsights(eventName, data);
     }
   }
 
@@ -82,7 +84,7 @@ export class OfficeAddinTelemetry {
    */
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.telemetryOptedIn()) {
-      for (let [key, { value, elapsedTime }] of Object.entries(data)) {
+      for (const [key, { value, elapsedTime }] of Object.entries(data)) {
         try {
           if (!this.telemetryObject.testData) {
             this.telemetryClient.trackEvent({ name: eventName, properties: { [key]: value }, measurements: { DurationElapsed: elapsedTime } });
@@ -101,11 +103,7 @@ export class OfficeAddinTelemetry {
    * @param err Error sent to telemetry structure
    */
   public async reportError(errorName: string, err: Error): Promise<void> {
-    if (this.telemetrySource === telemetryType.applicationinsights) {
-      this.reportErrorApplicationInsights(errorName, err);
-    } else if (this.telemetrySource === telemetryType.OtelJs) {
-      console.log(this.chalk.red("Feature has not been yet created."));
-    }
+    this.reportErrorApplicationInsights(errorName, err);
   }
 
   /**
@@ -113,10 +111,10 @@ export class OfficeAddinTelemetry {
    * @param errorName Error name sent to Application Insights
    * @param err Error sent to Application Insights
    */
-  public async reportErrorApplicationInsights(eventName: string, err: Error): Promise<void> {
-    err.name = eventName;
+  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
+    err.name = errorName;
     if (this.telemetryObject.testData) {
-      err.name = eventName;
+      err.name = errorName;
     }
     this.telemetryClient.trackException({ exception: this.maskFilePaths(err) });
     this.exceptionsSent++;
@@ -144,26 +142,27 @@ export class OfficeAddinTelemetry {
     return data;
   }
 
-   /**
-   * Prompts user for telemtry participation once and records response
-   */
+  /**
+  * Prompts user for telemtry participation once and records response
+  * @param mochaTest Speificies whether test code is calling this method
+  */
   public telemetryOptIn(mochaTest: boolean = false): void {
     try {
-      if (promptForTelemetry(this.telemetryObject.groupName) && !mochaTest) {
+      if (!mochaTest) {
         const response = readLine.question(chalk.default.blue(this.telemetryObject.promptQuestion));
         const telemetryJsonData: any = readTelemetryJsonData();
         const enableTelemetry = response.toLowerCase() === "y";
 
         if (telemetryJsonData) {
-            this.telemetryObject.telemetryEnabled = enableTelemetry;
-            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
-            fs.writeFileSync(telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
-            console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
-       } else {
-            const projectJsonData = {};
-            projectJsonData[this.telemetryObject.groupName] =  enableTelemetry;
-            fs.writeFileSync(telemetryJsonData, JSON.stringify(({"telemetryInstances": projectJsonData}), null, 2));
-          }
+          this.telemetryObject.telemetryEnabled = enableTelemetry;
+          telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
+          fs.writeFileSync(telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
+          console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
+        } else {
+          const projectJsonData = {};
+          projectJsonData[this.telemetryObject.groupName] = enableTelemetry;
+          fs.writeFileSync(telemetryJsonFilePath, JSON.stringify(({ telemetryInstances: projectJsonData }), null, 2));
+        }
       }
     } catch (err) {
       this.reportError("TelemetryOptIn", err);
@@ -216,13 +215,6 @@ export class OfficeAddinTelemetry {
     return this.exceptionsSent;
   }
 
-
-  private removeSensitiveInformation() {
-    delete this.telemetryClient.context.tags["ai.cloud.roleInstance"]; // cloud name
-    delete this.telemetryClient.context.tags["ai.device.id"]; // machine name
-    delete this.telemetryClient.context.tags["ai.user.accountId"]; // subscription
-  }
-
   public telemetryOptedIn(): boolean {
     return this.telemetryObject.telemetryEnabled;
   }
@@ -239,6 +231,12 @@ export class OfficeAddinTelemetry {
       this.reportError("maskFilePaths", err);
     }
   }
+
+  private removeSensitiveInformation() {
+    delete this.telemetryClient.context.tags["ai.cloud.roleInstance"]; // cloud name
+    delete this.telemetryClient.context.tags["ai.device.id"]; // machine name
+    delete this.telemetryClient.context.tags["ai.user.accountId"]; // subscription
+  }
 }
 
 /**
@@ -246,22 +244,23 @@ export class OfficeAddinTelemetry {
  * @param groupName Event name sent to telemetry structure
  * @param telemetryEnabled Whether user agreed to data collection
  */
-export function promptForTelemetry(groupName: string, jsonFilePath :string = telemetryJsonFilePath) : boolean {
+export function promptForTelemetry(groupName: string, jsonFilePath: string = telemetryJsonFilePath): boolean {
   try {
     const jsonData: any = readTelemetryJsonData(jsonFilePath);
     if (jsonData) {
       if (Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName)) {
+
         return false;
       }
       return true;
-     }
-     return true;
+    }
+    return true;
   } catch (err) {
     console.log(chalk.default.red(err));
   }
 }
 
-function readTelemetryJsonData(jsonFilePath : string = telemetryJsonFilePath) : any {
+function readTelemetryJsonData(jsonFilePath: string = telemetryJsonFilePath): any {
   if (fs.existsSync(jsonFilePath)) {
     const jsonData = fs.readFileSync(jsonFilePath, "utf8");
     return JSON.parse(jsonData.toString());
