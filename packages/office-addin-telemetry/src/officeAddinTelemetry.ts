@@ -6,7 +6,7 @@ import * as path from "path";
 import * as readLine from "readline-sync";
 export enum telemetryType {
   applicationinsights = "applicationInsights",
-  OtelJs = "OtelJs",
+  // OtelJs = "OtelJs" - Not yet implemented
 }
 
 const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
@@ -177,7 +177,9 @@ export class OfficeAddinTelemetry {
         this.telemetryObject.telemetryEnabled = enableTelemetry;
         telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
         writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
-        console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
+        if (!this.telemetryObject.testData) {
+          console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
+        }
       } else {
         writeNewTelemetryJsonFile(this.telemetryObject.groupName, enableTelemetry, this.telemetryObject.telemetryJsonFilePath);
       }

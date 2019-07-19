@@ -52,6 +52,10 @@ describe("Test office-addin-telemetry-package", function() {
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'true' because testJsonFilePath doesn't exist", () => {
+      // Delete mochaTest.json
+      if (fs.existsSync(testJsonFilePath)) {
+        fs.unlinkSync(testJsonFilePath);
+      }
       assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), true);
     });
   });
