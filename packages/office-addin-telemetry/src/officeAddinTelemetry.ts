@@ -57,10 +57,7 @@ export class OfficeAddinTelemetry {
             writeTelemetryJsonData(telemetryJsonData);
           }
         } else {
-          let jsonData = {};
-          jsonData[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
-          jsonData = { telemetryInstances: jsonData };
-          writeTelemetryJsonData(jsonData);
+          writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled);
         }
       }
 
@@ -174,10 +171,7 @@ export class OfficeAddinTelemetry {
           writeTelemetryJsonData(telemetryJsonData);
           console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
         } else {
-          let jsonData = {};
-          jsonData[this.telemetryObject.groupName] = enableTelemetry;
-          jsonData = {telemetryInstances: jsonData};
-          writeTelemetryJsonData(jsonData);
+          writeNewTelemetryJsonFile(this.telemetryObject.groupName, enableTelemetry);
         }
       }
     } catch (err) {
@@ -281,6 +275,13 @@ function readTelemetryJsonData(jsonFilePath: string = telemetryJsonFilePath): an
 
 function writeTelemetryJsonData(jsonData: any, jsonFilePath: string = telemetryJsonFilePath) {
   fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
+}
+
+function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled, jsonFilePath: string = telemetryJsonFilePath) {
+  let jsonData = {};
+  jsonData[this.telemetryObject.groupName] = telemetryEnabled;
+  jsonData = { telemetryInstances: jsonData };
+  writeTelemetryJsonData(jsonData, jsonFilePath);
 }
 
 function groupNameExists(jsonData: any, groupName: string): boolean {
