@@ -1,0 +1,45 @@
+{
+  "name": "office-addin-telemetry",
+  "version": "0.0.1",
+  "description": "Read and modify Office Add-in manifest files.",
+  "main": "./lib/main.js",
+  "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "cli": "node lib/cli.js",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
+  },
+  "author": "Office Dev",
+  "license": "MIT",
+  "bin": {
+    "office-addin-manifest": "./lib/cli.js"
+  },
+  "keywords": [
+    "Office",
+    "Office Add-in"
+  ],
+  "dependencies": {
+    "applicationinsights": "^1.4.0",
+    "commander": "^2.20.0",
+    "readline-sync": "^1.4.9"
+  },
+  "devDependencies": {
+    "@types/applicationinsights": "^0.20.0",
+    "@types/es6-promise": "3.3.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.6.8",
+    "concurrently": "^4.1.1",
+    "mocha": "^6.2.0",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  }
+}

@@ -40,6 +40,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application. 
 
+* [office-addin-telemetry](packages/office-addin-telemetry/README.md)
+
+  This package allows for sending telemetry event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights)
+
 ## Requirements
 
 * [Node.js](https://nodejs.org) 
