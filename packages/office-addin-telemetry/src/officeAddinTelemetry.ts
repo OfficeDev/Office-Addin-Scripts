@@ -51,9 +51,17 @@ export class OfficeAddinTelemetry {
         this.telemetryOptIn();
       } else {
         const telemetryJsonData = readTelemetryJsonData();
-        // this.telemetryObject.telemetryEnabled = telemetryJsonData.telemetryInstances[this.telemetryObject.groupName];
-        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
-        fs.writeFileSync(telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
+        if (telemetryJsonData) {
+          if (!groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
+            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
+            writeTelemetryJsonData(telemetryJsonData);
+          }
+        } else {
+          let jsonData = {};
+          jsonData[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
+          jsonData = { telemetryInstances: jsonData };
+          writeTelemetryJsonData(jsonData);
+        }
       }
 
       if (this.telemetryObject.instrumentationKey === undefined) {
@@ -163,12 +171,13 @@ export class OfficeAddinTelemetry {
         if (telemetryJsonData) {
           this.telemetryObject.telemetryEnabled = enableTelemetry;
           telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
-          fs.writeFileSync(telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
+          writeTelemetryJsonData(telemetryJsonData);
           console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
         } else {
-          const projectJsonData = {};
-          projectJsonData[this.telemetryObject.groupName] = enableTelemetry;
-          fs.writeFileSync(telemetryJsonFilePath, JSON.stringify(({ telemetryInstances: projectJsonData }), null, 2));
+          let jsonData = {};
+          jsonData[this.telemetryObject.groupName] = enableTelemetry;
+          jsonData = {telemetryInstances: jsonData};
+          writeTelemetryJsonData(jsonData);
         }
       }
     } catch (err) {
@@ -255,10 +264,7 @@ export function promptForTelemetry(groupName: string, jsonFilePath: string = tel
   try {
     const jsonData: any = readTelemetryJsonData(jsonFilePath);
     if (jsonData) {
-      if (Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName)) {
-        return false;
-      }
-      return true;
+       return !groupNameExists(jsonData, groupName);
     }
     return true;
   } catch (err) {
@@ -271,4 +277,12 @@ function readTelemetryJsonData(jsonFilePath: string = telemetryJsonFilePath): an
     const jsonData = fs.readFileSync(jsonFilePath, "utf8");
     return JSON.parse(jsonData.toString());
   }
+}
+
+function writeTelemetryJsonData(jsonData: any, jsonFilePath: string = telemetryJsonFilePath) {
+  fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
+}
+
+function groupNameExists(jsonData: any, groupName: string): boolean {
+  return Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName);
 }
