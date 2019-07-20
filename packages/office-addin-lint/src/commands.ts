@@ -20,15 +20,15 @@ function getPathToFiles(command: commander.Command):string {
 
 export async function lint(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
-    prettierLint.lintCheck(pathToFiles);
+    prettierLint.performLintCheck(pathToFiles);
 }
 
 export async function lintFix(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
-    prettierLint.lintFix(pathToFiles);
+    prettierLint.performLintFix(pathToFiles);
 }
 
 export async function prettier(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
-    prettierLint.prettier(pathToFiles);
+    prettierLint.makeFilesPrettier(pathToFiles);
 }

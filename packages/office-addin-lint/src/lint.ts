@@ -9,35 +9,32 @@ function execCommand(command: string) {
     const child = execSync(command, { stdio: 'inherit' });
 }
 
-export function lintCheckCommand(files: string): string {
+export function getLintCheckCommand(files: string): string {
   const eslintCommand: string = "eslint " + files;
   return eslintCommand;
 }
 
-export function lintCheck(files: string) {
-  console.log("Lint check for files: " + files);
-  const command = lintCheckCommand(files);
+export function performLintCheck(files: string) {
+  const command = getLintCheckCommand(files);
   execCommand(command);
 }
 
-export function lintFixCommand(files: string): string {
+export function getLintFixCommand(files: string): string {
   const eslintCommand: string = "eslint --fix " + files;
   return eslintCommand;
 }
 
-export function lintFix(files: string) {
-    console.log("Fixing lint issues for files: " + files);
-    const command = lintFixCommand(files);
+export function performLintFix(files: string) {
+    const command = getLintFixCommand(files);
     execCommand(command);
 }
 
-export function prettierCommand(files: string): string {
+export function getPrettierCommand(files: string): string {
   const prettierFixCommand: string = "prettier --parser typescript --write " + files;
   return prettierFixCommand;
 }
 
-export function prettier(files: string) {
-    console.log("Fixing prettier issues for files: " + files);
-    const command = prettierCommand(files);
+export function makeFilesPrettier(files: string) {
+    const command = getPrettierCommand(files);
     execCommand(command);
 }

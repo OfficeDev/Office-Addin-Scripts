@@ -13,11 +13,11 @@ describe("test cases", function() {
         const lintExpectedCommand = "eslint ./test/cases/basic/functions.ts";
         const lintFixExpectedCommand = "eslint --fix ./test/cases/basic/functions.ts";
         const prettierExpectedCommand = "prettier --parser typescript --write ./test/cases/basic/functions.ts";
-        const lintCheckCommand = prettierLint.lintCheckCommand(inputFile);
+        const lintCheckCommand = prettierLint.getLintCheckCommand(inputFile);
         assert.strictEqual(lintCheckCommand, lintExpectedCommand, "eslint lint command");
-        const lintFixCommand = prettierLint.lintFixCommand(inputFile);
+        const lintFixCommand = prettierLint.getLintFixCommand(inputFile);
         assert.strictEqual(lintFixCommand, lintFixExpectedCommand, "eslint fix command");
-        const prettierCommand = prettierLint.prettierCommand(inputFile);
+        const prettierCommand = prettierLint.getPrettierCommand(inputFile);
         assert.strictEqual(prettierCommand, prettierExpectedCommand, "prettier command");
     });
 });

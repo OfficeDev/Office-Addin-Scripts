@@ -13,20 +13,20 @@ commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
     .command("lint")
-    .option("--files <files>", `Path to files to perform lint check. Default: ${defaults.lintFiles}`)
-    .description(`Perform lint and prettier check`)
+    .option("--files <files>", `Specifies the source files to check. Default: ${defaults.lintFiles}`)
+    .description(`Check source files against lint rules.`)
     .action(commands.lint);
 
 commander
     .command("lint:fix")
-    .option("--files <files>", `Path to files to perform lint fix. Default: ${defaults.lintFiles}`)
-    .description(`Fix lint and prettier errors.`)
+    .option("--files <files>", `Specifies the source files to fix. Default: ${defaults.lintFiles}`)
+    .description(`Apply fixes to source based on lint rules.`)
     .action(commands.lintFix);
 
 commander
     .command("prettier")
-    .option("--files <files>", `Path to files to perform prettier. Default: ${defaults.lintFiles}`)
-    .description(`Fix all prettier issues.`)
+    .option("--files <files>", `Specifies which files to use. Default: ${defaults.lintFiles}`)
+    .description(`Make the source prettier.`)
     .action(commands.prettier);
 
 // if the command is not known, display an error
