@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as mocha from "mocha";
 import * as os from "os";
 import * as path from "path";
+import * as jsonData from "../src/jsonData";
 import * as officeAddinTelemetry from "../src/officeAddinTelemetry";
 
 let addInTelemetry: officeAddinTelemetry.OfficeAddinTelemetry;
@@ -65,29 +66,29 @@ describe("Test office-addin-telemetry-package", function() {
       if (fs.existsSync(testJsonFilePath)) {
         fs.unlinkSync(testJsonFilePath);
       }
-      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), true);
+      assert.equal(jsonData.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), true);
     });
   });
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'false' because testJsonFilePath exists and groupName exists in file", () => {
-      officeAddinTelemetry.writeNewTelemetryJsonFile(telemetryObject.groupName, telemetryObject.telemetryEnabled, telemetryObject.telemetryJsonFilePath);
-      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), false);
+      jsonData.writeNewTelemetryJsonFile(telemetryObject.groupName, telemetryObject.telemetryEnabled, telemetryObject.telemetryJsonFilePath);
+      assert.equal(jsonData.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), false);
     });
   });
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'false' because testJsonFilePath exists and groupName doesn't exists in file", () => {
-      officeAddinTelemetry.writeNewTelemetryJsonFile("testGroupName", telemetryObject.telemetryEnabled, telemetryObject.telemetryJsonFilePath);
-      assert.equal(officeAddinTelemetry.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), true);
+      jsonData.writeNewTelemetryJsonFile("testGroupName", telemetryObject.telemetryEnabled, telemetryObject.telemetryJsonFilePath);
+      assert.equal(jsonData.promptForTelemetry(telemetryObject.groupName, telemetryObject.telemetryJsonFilePath), true);
     });
   });
 
   describe("Test telemetryOptIn method", () => {
     it("Should write out file with groupName set to true to testJsonFilePath", () => {
       addInTelemetry.telemetryOptIn(telemetryObject.testData, "y");
-      const jsonData = officeAddinTelemetry.readTelemetryJsonData(telemetryObject.telemetryJsonFilePath);
-      assert.equal(jsonData.telemetryInstances[telemetryObject.groupName], true);
+      const jsonTelemtryData = jsonData.readTelemetryJsonData(telemetryObject.telemetryJsonFilePath);
+      assert.equal(jsonTelemtryData.telemetryInstances[telemetryObject.groupName], true);
     });
   });
 
@@ -149,7 +150,7 @@ describe("Test office-addin-telemetry-package", function() {
       compareError.message = "this error contains a file path:C:index.js";
       // may throw error if change any part of the top of the test file
       compareError.stack = `ReportErrorCheck: this error contains a file path:C:index.js
-    at Object.<anonymous> (test.ts:10:13)`;
+    at Object.<anonymous> (test.ts:11:13)`;
       addInTelemetry.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);

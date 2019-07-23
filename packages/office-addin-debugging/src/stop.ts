@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as fs from "fs";
 import { parseNumber } from "office-addin-cli";
 import { clearDevSettings} from "office-addin-dev-settings";
 import { readManifestFile } from "office-addin-manifest";
+import { isNumber } from "util";
+import * as debugInfo from "./debugInfo";
 import { startProcess, stopProcess } from "./process";
 
 export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
@@ -30,15 +33,11 @@ export async function stopDebugging(manifestPath: string, unregisterCommandLine?
         }
     }
 
-    if (process.env.OfficeAddinDevServerProcessId) {
-        const processId = parseNumber(process.env.OfficeAddinDevServerProcessId);
-
-        if (processId) {
-            stopProcess(processId);
-            console.log(`Stopped dev server. Process id: ${processId}`);
-        }
-
-        delete process.env.OfficeAddinDevServerProcessId;
+    const processId = debugInfo.readDevServerProcessId();
+    if (processId) {
+        stopProcess(processId);
+        console.log(`Stopped dev server. Process id: ${processId}`);
+        debugInfo.clearDevServerProcessId();
     }
 
     console.log("Debugging has been stopped.");

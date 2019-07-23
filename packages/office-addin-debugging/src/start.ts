@@ -1,12 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as fs from "fs";
 import * as fetch from "node-fetch";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
 import { DebuggingMethod } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
+import * as os from "os";
+import * as path from "path";
+import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
 
@@ -81,14 +85,14 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
             // therefore the user cannot enter the password when prompted.
             if (process.platform !== "win32") {
                 if (!devCerts.verifyCertificates()) {
-                    devCerts.ensureCertificatesAreInstalled();
+                    await devCerts.ensureCertificatesAreInstalled();
                 }
             }
 
             // start the dev server
             console.log(`Starting the dev server... (${commandLine})`);
             const devServerProcess =  startDetachedProcess(commandLine);
-            process.env.OfficeAddinDevServerProcessId = devServerProcess.pid.toString();
+            await debugInfo.saveDevServerProcessId(devServerProcess.pid);
 
             if (port !== undefined) {
                 // wait until the dev server is running
