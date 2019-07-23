@@ -1,9 +1,9 @@
 import * as appInsights from "applicationinsights";
 import * as chalk from "chalk";
-import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as readLine from "readline-sync";
+import * as jsonData from "./jsonData";
 export enum telemetryType {
   applicationinsights = "applicationInsights",
   // OtelJs = "OtelJs" - Not yet implemented
@@ -16,7 +16,9 @@ const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelem
  * @member groupName Event name sent to telemetry structure
  * @member instrumentationKey Instrumentation key for telemetry resource
  * @member promptQuestion Question displayed to User over opt-in for telemetry
+ * @member raisePrompt Specifies whether to raise telemetry prompt (this allows for using a custom prompt)
  * @member telemetryEnabled User's response to the prompt for telemetry
+ * @member telemetryJsonFilePath Path to where telemetry json config file is written to.
  * @member telemetryType Telemetry infrastructure to send data
  * @member testData Allows user to run program without sending actuall data
  */
@@ -44,21 +46,21 @@ export class OfficeAddinTelemetry {
   constructor(telemetryObj: ITelemetryObject) {
     try {
       this.telemetryObject = telemetryObj;
-      if (this.telemetryObject.telemetryJsonFilePath === undefined){
+      if (this.telemetryObject.telemetryJsonFilePath === undefined) {
         this.telemetryObject.telemetryJsonFilePath = telemetryJsonFilePath;
       }
 
-      if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && promptForTelemetry(this.telemetryObject.groupName)) {
+      if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && jsonData.promptForTelemetry(this.telemetryObject.groupName, this.telemetryObject.telemetryJsonFilePath)) {
         this.telemetryOptIn();
       } else {
-        const telemetryJsonData = readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
+        const telemetryJsonData = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
         if (telemetryJsonData) {
-          if (!groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
+          if (!jsonData.groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
             telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
-            writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
+            jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
           }
         } else {
-          writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled, this.telemetryObject.telemetryJsonFilePath);
+          jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled, this.telemetryObject.telemetryJsonFilePath);
         }
       }
 
@@ -71,7 +73,7 @@ export class OfficeAddinTelemetry {
         .setAutoCollectExceptions(false)
         .start();
       this.telemetryClient = appInsights.defaultClient;
-      this.removeSensitiveInformation();
+      this.removeApplicationInsightsSensitiveInformation();
     } catch (err) {
       console.log(`Failed to create telemetry object.\n${err}`);
     }
@@ -139,6 +141,7 @@ export class OfficeAddinTelemetry {
    * @param key Name of custom event data collected
    * @param value Data the user wishes to send
    * @param elapsedTime Optional duration of time for data to be collected
+   * @returns returns the updated object with the new telemetry event added
    */
   public addTelemetry(data: { [k: string]: any }, key: string, value: any, elapsedTime: any = 0): object {
     data[key] = { value, elapsedTime };
@@ -149,17 +152,18 @@ export class OfficeAddinTelemetry {
    * Deletes specified key and value(s) from given object
    * @param data Object used to contain custom event data
    * @param key Name of key that is deleted along with corresponding values
+   * @returns returns the updated object with the telemetry event removed
    */
   public deleteTelemetry(data: { [k: string]: any }, key: string): object {
     delete data[key];
     return data;
   }
 
- /**
-  * Prompts user for telemtry participation once and records response
-  * @param mochaTest Specifies whether test code is calling this method
-  * @param testReponse Specifies test response
-  */
+  /**
+   * Prompts user for telemtry participation once and records response
+   * @param mochaTest Specifies whether test code is calling this method
+   * @param testReponse Specifies test response
+   */
   public telemetryOptIn(mochaTest: boolean = false, testResponse: string = ""): void {
     try {
       let response: string = "";
@@ -170,17 +174,17 @@ export class OfficeAddinTelemetry {
       }
 
       const enableTelemetry = response.toLowerCase() === "y";
-      const telemetryJsonData: any = readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
+      const telemetryJsonData: any = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
 
       if (telemetryJsonData) {
         this.telemetryObject.telemetryEnabled = enableTelemetry;
         telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
-        writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
+        jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
         if (!this.telemetryObject.testData) {
           console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
         }
       } else {
-        writeNewTelemetryJsonFile(this.telemetryObject.groupName, enableTelemetry, this.telemetryObject.telemetryJsonFilePath);
+        jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, enableTelemetry, this.telemetryObject.telemetryJsonFilePath);
       }
     } catch (err) {
       this.reportError("TelemetryOptIn", err);
@@ -203,6 +207,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns whether the telemetry is currently on or off
+   * @returns returns whether telemetry is turned on or off
    */
   public isTelemetryOn(): boolean {
     if (appInsights.defaultClient.config.samplingPercentage === 100) {
@@ -214,6 +219,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns the instrumentation key associated with the resource
+   * @returns returns the telemetry instrumentation key
    */
   public getTelemetryKey(): string {
     return this.telemetryObject.instrumentationKey;
@@ -221,6 +227,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns amount of events that have been sent
+   * @returns returns the count of events sent
    */
   public getEventsSent(): any {
     return this.eventsSent;
@@ -228,74 +235,42 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns amount of exceptions that have been sent
+   * @returns returns the count of exceptions sent
    */
   public getExceptionsSent(): any {
     return this.exceptionsSent;
   }
+
   /**
    * Returns whether the user opted in or not
+   * @returns returns the telemetry opt in value (true or false)
    */
   public telemetryOptedIn(): boolean {
     return this.telemetryObject.telemetryEnabled;
   }
+
   /**
    * Returns whether the user opted in or not
+   * @returns error after removing PII
    */
   public maskFilePaths(err: Error): Error {
     try {
-      const regexRemoveUserFilePaths   = /\/(.*)\//gmi;
-      const regexRemoveUserFilePathsFromStack   = /\w:\\(?:[^\\\s]+\\)+/gmi;
-      err.message = err.message.replace(regexRemoveUserFilePaths  , "");
-      err.stack = err.stack.replace(regexRemoveUserFilePaths  , "");
-      err.stack = err.stack.replace(regexRemoveUserFilePathsFromStack  , "");
+      const regexRemoveUserFilePaths = /\/(.*)\//gmi;
+      const regexRemoveUserFilePathsFromStack = /\w:\\(?:[^\\\s]+\\)+/gmi;
+      err.message = err.message.replace(regexRemoveUserFilePaths, "");
+      err.stack = err.stack.replace(regexRemoveUserFilePaths, "");
+      err.stack = err.stack.replace(regexRemoveUserFilePathsFromStack, "");
       return err;
     } catch (err) {
       this.reportError("maskFilePaths", err);
     }
   }
-
-  private removeSensitiveInformation() {
+  /**
+   * Removes fields from ApplicationInsights data
+   */
+  private removeApplicationInsightsSensitiveInformation() {
     delete this.telemetryClient.context.tags["ai.cloud.roleInstance"]; // cloud name
     delete this.telemetryClient.context.tags["ai.device.id"]; // machine name
     delete this.telemetryClient.context.tags["ai.user.accountId"]; // subscription
   }
-}
-
-/**
- * Allows developer to create prompts and responses in other applications before object creation
- * @param groupName Event name sent to telemetry structure
- * @param telemetryEnabled Whether user agreed to data collection
- */
-export function promptForTelemetry(groupName: string, jsonFilePath: string = telemetryJsonFilePath): boolean {
-  try {
-    const jsonData: any = readTelemetryJsonData(jsonFilePath);
-    if (jsonData) {
-      return !groupNameExists(jsonData, groupName);
-    }
-    return true;
-  } catch (err) {
-    console.log(chalk.default.red(err));
-  }
-}
-
-export function readTelemetryJsonData(jsonFilePath): any {
-  if (fs.existsSync(jsonFilePath)) {
-    const jsonData = fs.readFileSync(jsonFilePath, "utf8");
-    return JSON.parse(jsonData.toString());
-  }
-}
-
-export function writeTelemetryJsonData(jsonData: any, jsonFilePath) {
-  fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
-}
-
-export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled, jsonFilePath: string) {
-  let jsonData = {};
-  jsonData[groupName] = telemetryEnabled;
-  jsonData = { telemetryInstances: jsonData };
-  writeTelemetryJsonData(jsonData, jsonFilePath);
-}
-
-export function groupNameExists(jsonData: any, groupName: string): boolean {
-  return Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName);
 }
