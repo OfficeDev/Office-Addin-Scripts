@@ -12,13 +12,13 @@ commander.name("office-addin-lint");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
-    .command("lint")
+    .command("check")
     .option("--files <files>", `Specifies the source files to check. Default: ${defaults.lintFiles}`)
     .description(`Check source files against lint rules.`)
     .action(commands.lint);
 
 commander
-    .command("lint:fix")
+    .command("fix")
     .option("--files <files>", `Specifies the source files to fix. Default: ${defaults.lintFiles}`)
     .description(`Apply fixes to source based on lint rules.`)
     .action(commands.lintFix);

@@ -13,7 +13,7 @@ import * as prettierLint from "./lint";
  * 3 default location
  * @param command command options which can contain files
  */
-function getPathToFiles(command: commander.Command):string {
+function getPathToFiles(command: commander.Command): string {
     const pathToFiles: any = command.files ? command.files : process.env.npm_package_config_lint_files;
     return pathToFiles ? pathToFiles : defaults.lintFiles;
 }
