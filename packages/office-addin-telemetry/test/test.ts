@@ -4,8 +4,8 @@ import * as fs from "fs";
 import * as mocha from "mocha";
 import * as os from "os";
 import * as path from "path";
-import * as jsonData from "../src/jsonData";
 import * as officeAddinTelemetry from "../src/officeAddinTelemetry";
+import * as jsonData from "../src/telemetryJsonData";
 
 let addInTelemetry: officeAddinTelemetry.OfficeAddinTelemetry;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);

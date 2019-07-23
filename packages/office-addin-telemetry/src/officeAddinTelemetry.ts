@@ -3,7 +3,7 @@ import * as chalk from "chalk";
 import * as os from "os";
 import * as path from "path";
 import * as readLine from "readline-sync";
-import * as jsonData from "./jsonData";
+import * as jsonData from "./telemetryJsonData";
 export enum telemetryType {
   applicationinsights = "applicationInsights",
   // OtelJs = "OtelJs" - Not yet implemented
