@@ -91,6 +91,20 @@
       ]
     },
     {
+      "name": "Command Line: register",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["register", "c:\\dev\\git\\Office-Addin-TasKPane\\manifest.xml"]
+    },
+    {
+      "name": "Command Line: registered",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["registered"]
+    },
+    {
       "name": "Command Line: runtime-log",
       "type": "node",
       "request": "launch",
@@ -155,6 +169,13 @@
         "--host", "",
         "--port", "4444",
       ]
+    },
+    {
+      "name": "Command Line: unregister",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["unregister", "c:\\dev\\git\\Office-Addin-TasKPane\\manifest.xml"]
     },
     {
       "type": "node",

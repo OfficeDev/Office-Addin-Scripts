@@ -14,6 +14,16 @@ export enum DebuggingMethod {
   Web = Proxy,
 }
 
+export class RegisteredAddin {
+  public id?: string;
+  public manifestPath?: string;
+
+  constructor(id?: string, manifestPath?: string) {
+    this.id = id;
+    this.manifestPath = manifestPath;
+  }
+}
+
 export class SourceBundleUrlComponents {
   public host?: string;
   public port?: string;
@@ -115,10 +125,13 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
   }
 }
 
-export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
+/**
+ * Returns the manifest paths for the add-ins that are registered
+ */
+export async function getRegisterAddIns(): Promise<RegisteredAddin[]>  {
   switch (process.platform) {
     case "win32":
-      return registry.getSourceBundleUrl(addinId);
+      return registry.getRegisteredAddIns();
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -142,6 +155,15 @@ export async function getRuntimeLoggingPath(): Promise<string | undefined> {
   }
 }
 
+export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
+  switch (process.platform) {
+    case "win32":
+      return registry.getSourceBundleUrl(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":
@@ -160,10 +182,28 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   }
 }
 
+export async function registerAddIn(addinId: string, manifestPath: string): Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      return registry.registerAddIn(addinId, manifestPath);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
   switch (process.platform) {
     case "win32":
       return registry.setSourceBundleUrl(addinId, components);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function unregisterAddIn(addinId: string, manifestPath: string): Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      return registry.unregisterAddIn(addinId, manifestPath);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

@@ -232,6 +232,47 @@ function parseStringCommandOption(optionValue: any): string | undefined {
   return (typeof(optionValue) === "string") ? optionValue : undefined;
 }
 
+export async function register(manifestPath: string, command: commander.Command) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    await devSettings.registerAddIn(manifest.id!, manifestPath);
+
+    console.log("Registered.");
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function registered(command: commander.Command) {
+  try {
+    const registeredAddins = await devSettings.getRegisterAddIns();
+
+    if (registeredAddins.length > 0) {
+      registeredAddins.forEach(async addin => {
+        let id: string | undefined = addin.id;
+
+        if (!id && addin.manifestPath) {
+          try {
+            const manifest = await readManifestFile(addin.manifestPath);
+            id = manifest.id;
+          } catch (err) {
+            // ignore errors
+          }
+        }
+
+        console.log(`${id ? id + " " : ""}${addin.manifestPath}`);
+      });
+    } else {
+      console.log("No add-ins are registered.");
+    }
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 export async function runtimeLogging(command: commander.Command) {
   if (command.enable) {
     const path: string | undefined = (typeof(command.enable) === "string") ? command.enable : undefined;
@@ -284,6 +325,20 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
       return devSettings.DebuggingMethod.Direct;
     default:
       throw new Error(`Please provide a valid debug method instead of '${text}'.`);
+  }
+}
+
+export async function unregister(manifestPath: string, command: commander.Command) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    await devSettings.unregisterAddIn(manifest.id!, manifestPath);
+
+    console.log("Unregistered.");
+  } catch (err) {
+    logErrorMessage(err);
   }
 }
 

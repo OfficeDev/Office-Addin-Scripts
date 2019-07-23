@@ -3,7 +3,7 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
-import { DebuggingMethod, SourceBundleUrlComponents } from "./dev-settings";
+import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents } from "./dev-settings";
 import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
@@ -73,6 +73,15 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
   return methods;
 }
 
+export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+
+  const values = await registry.getValues(key);
+
+  // if the registry value name and data are the same, then the manifest path was used as the name
+  return values.map(value => new RegisteredAddin((value.name !== value.data) ? value.name : undefined, value.data));
+}
+
 export async function getRuntimeLoggingPath(): Promise<string | undefined> {
   const key = getDeveloperSettingsRegistryKey(RuntimeLogging);
 
@@ -121,6 +130,13 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
   return false;
 }
 
+export async function registerAddIn(addinId: string, manifestPath: string) {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+
+  await registry.addStringValue(key, addinId, manifestPath);
+  return registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
+}
+
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
 
@@ -155,4 +171,11 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
       await registry.deleteValue(key, SourceBundleExtension);
     }
   }
+}
+
+export async function unregisterAddIn(addinId: string, manifestPath: string): Promise<void> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+
+  await registry.deleteValue(key, addinId);
+  return registry.deleteValue(key, manifestPath); // since the key used to be manifest path, delete it too
 }
