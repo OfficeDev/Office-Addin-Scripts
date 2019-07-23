@@ -252,12 +252,12 @@ export async function registered(command: commander.Command) {
 
     if (registeredAddins.length > 0) {
       registeredAddins.forEach(async addin => {
-        let id: string | undefined = addin.id;
+        let id: string = addin.id;
 
         if (!id && addin.manifestPath) {
           try {
             const manifest = await readManifestFile(addin.manifestPath);
-            id = manifest.id;
+            id = manifest.id || "";
           } catch (err) {
             // ignore errors
           }
@@ -330,13 +330,19 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
 
 export async function unregister(manifestPath: string, command: commander.Command) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    if (manifestPath === "all") {
+      await devSettings.unregisterAllAddIns();
 
-    validateManifestId(manifest);
+      console.log("Unregistered all.");
+    } else {
+      const manifest = await readManifestFile(manifestPath);
 
-    await devSettings.unregisterAddIn(manifest.id!, manifestPath);
+      validateManifestId(manifest);
 
-    console.log("Unregistered.");
+      await devSettings.unregisterAddIn(manifest.id!, manifestPath);
+
+      console.log("Unregistered.");
+    }
   } catch (err) {
     logErrorMessage(err);
   }

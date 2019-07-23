@@ -79,7 +79,7 @@ export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const values = await registry.getValues(key);
 
   // if the registry value name and data are the same, then the manifest path was used as the name
-  return values.map(value => new RegisteredAddin((value.name !== value.data) ? value.name : undefined, value.data));
+  return values.map(value => new RegisteredAddin((value.name !== value.data) ? value.name : "", value.data));
 }
 
 export async function getRuntimeLoggingPath(): Promise<string | undefined> {
@@ -176,6 +176,19 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
 export async function unregisterAddIn(addinId: string, manifestPath: string): Promise<void> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
-  await registry.deleteValue(key, addinId);
-  return registry.deleteValue(key, manifestPath); // since the key used to be manifest path, delete it too
+  if (addinId) {
+    await registry.deleteValue(key, addinId);
+  }
+
+  // since the key used to be manifest path, delete it too
+  if (manifestPath) {
+    await registry.deleteValue(key, manifestPath);
+  }
+}
+
+export async function unregisterAllAddIns(): Promise<void> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  const values = await registry.getValues(key);
+
+  values.forEach(async value => await registry.deleteValue(key, value.name));
 }

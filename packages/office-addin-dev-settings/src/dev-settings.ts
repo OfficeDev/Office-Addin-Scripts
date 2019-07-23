@@ -15,10 +15,10 @@ export enum DebuggingMethod {
 }
 
 export class RegisteredAddin {
-  public id?: string;
-  public manifestPath?: string;
+  public id: string;
+  public manifestPath: string;
 
-  constructor(id?: string, manifestPath?: string) {
+  constructor(id: string, manifestPath: string) {
     this.id = id;
     this.manifestPath = manifestPath;
   }
@@ -204,6 +204,15 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
   switch (process.platform) {
     case "win32":
       return registry.unregisterAddIn(addinId, manifestPath);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function unregisterAllAddIns(): Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      return registry.unregisterAllAddIns();
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
