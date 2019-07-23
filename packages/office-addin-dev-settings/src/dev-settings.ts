@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
+import { readManifestFile } from "office-addin-manifest";
 import * as fspath from "path";
 import * as registry from "./dev-settings-registry";
 
@@ -182,10 +183,11 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   }
 }
 
-export async function registerAddIn(addinId: string, manifestPath: string): Promise<void> {
+export async function registerAddIn(manifestPath: string): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return registry.registerAddIn(addinId, manifestPath);
+      const manifest = await readManifestFile(manifestPath);
+      return registry.registerAddIn(manifest.id || "", manifestPath);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -200,10 +202,11 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-export async function unregisterAddIn(addinId: string, manifestPath: string): Promise<void> {
+export async function unregisterAddIn(manifestPath: string): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return registry.unregisterAddIn(addinId, manifestPath);
+      const manifest = await readManifestFile(manifestPath);
+      return registry.unregisterAddIn(manifest.id || "", manifestPath);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

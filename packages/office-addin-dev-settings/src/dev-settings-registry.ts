@@ -133,8 +133,8 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 export async function registerAddIn(addinId: string, manifestPath: string) {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
-  await registry.addStringValue(key, addinId, manifestPath);
-  return registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
+  await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
+  return registry.addStringValue(key, addinId, manifestPath);
 }
 
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {

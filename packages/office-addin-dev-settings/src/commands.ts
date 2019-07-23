@@ -234,12 +234,7 @@ function parseStringCommandOption(optionValue: any): string | undefined {
 
 export async function register(manifestPath: string, command: commander.Command) {
   try {
-    const manifest = await readManifestFile(manifestPath);
-
-    validateManifestId(manifest);
-
-    await devSettings.registerAddIn(manifest.id!, manifestPath);
-
+    await devSettings.registerAddIn(manifestPath);
     console.log("Registered.");
   } catch (err) {
     logErrorMessage(err);
@@ -335,11 +330,7 @@ export async function unregister(manifestPath: string, command: commander.Comman
 
       console.log("Unregistered all.");
     } else {
-      const manifest = await readManifestFile(manifestPath);
-
-      validateManifestId(manifest);
-
-      await devSettings.unregisterAddIn(manifest.id!, manifestPath);
+      await devSettings.unregisterAddIn(manifestPath);
 
       console.log("Unregistered.");
     }

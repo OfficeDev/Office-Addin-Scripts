@@ -6,11 +6,12 @@ import * as commander from "commander";
 import * as fsextra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as mocha from "mocha";
-import * as addinManifext from "office-addin-manifest";
+import * as officeAddinManifest from "office-addin-manifest";
 import * as fspath from "path";
 import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import * as devSettings from "../../src/dev-settings";
+import * as devSettingsRegistry from "../../src/dev-settings-registry";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 
 async function testSetSourceBundleUrlComponents(components: devSettings.SourceBundleUrlComponents, expected: devSettings.SourceBundleUrlComponents) {
@@ -193,7 +194,7 @@ describe("Appcontainer", async function() {
     it("undefined source location", async function() {
       const manifest = {defaultSettings: ""};
       const readManifestFile = sinon.fake.returns(manifest);
-      sandbox.stub(addinManifext, "readManifestFile").callsFake(readManifestFile);
+      sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
       try {
         await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
         assert.strictEqual(0, 1); // expecting exception
@@ -205,11 +206,87 @@ describe("Appcontainer", async function() {
       const sourceLocation = {sourceLocation: "https://localhost"};
       const manifest = {defaultSettings: sourceLocation};
       const readManifestFile = sinon.fake.returns(manifest);
-      sandbox.stub(addinManifext, "readManifestFile").callsFake(readManifestFile);
+      sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
       const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost");
       assert.strictEqual(appcontainerName, "1_https___localhost04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
     });
   });
+});
+
+describe("Registration", function() {
+  const manifestsFolder = fspath.resolve("test/files/manifests");
+
+  if (process.platform === "win32") {
+    this.beforeAll(async function() {
+      await devSettings.unregisterAllAddIns();
+    });
+    describe("basic functionality", function() {
+      it("No add-ins should be registered", async function() {
+        const registered = await devSettings.getRegisterAddIns();
+        assert.strictEqual(registered.length, 0);
+      });
+      it("Can register an add-in", async function() {
+        const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+        await devSettings.registerAddIn(manifestPath);
+        const registeredAddins = await devSettings.getRegisterAddIns();
+        const [registeredAddin] = registeredAddins;
+        assert.strictEqual(registeredAddins.length, 1);
+        assert.strictEqual(registeredAddin.id, "6dd581d2-98d1-4eaf-9506-e0a24be515f5");
+        assert.strictEqual(registeredAddin.manifestPath, manifestPath);
+      });
+      it("Can unregister an add-in", async function() {
+        const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+        await devSettings.unregisterAddIn(manifestPath);
+        const registeredAddins = await devSettings.getRegisterAddIns();
+        assert.strictEqual(registeredAddins.length, 0);
+      });
+    });
+    describe("multiple add-ins", function() {
+      const firstManifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+      const secondManifestPath = fspath.resolve(manifestsFolder, "manifest2.xml");
+      const firstManifestId = "6dd581d2-98d1-4eaf-9506-e0a24be515f5";
+      const secondManifestId = "813cfc85-2a0f-49f6-8024-8d942cb73456";
+
+      it("Can register two add-ins", async function() {
+        await devSettings.registerAddIn(firstManifestPath);
+        await devSettings.registerAddIn(secondManifestPath);
+        const registeredAddins = await devSettings.getRegisterAddIns();
+        const [first, second] = registeredAddins;
+        assert.strictEqual(registeredAddins.length, 2);
+        assert.strictEqual(first.id, firstManifestId);
+        assert.strictEqual(second.id, secondManifestId);
+        assert.strictEqual(first.manifestPath, firstManifestPath);
+        assert.strictEqual(second.manifestPath, secondManifestPath);
+      });
+      it("Can unregister one add-in", async function() {
+        await devSettings.unregisterAddIn(secondManifestPath);
+        const registeredAddins = await devSettings.getRegisterAddIns();
+        const [first] = registeredAddins;
+        assert.strictEqual(registeredAddins.length, 1);
+        assert.strictEqual(first.id, firstManifestId);
+      });
+      it("Supports manifest path instead of id for registry value name", async function() {
+        await devSettingsRegistry.registerAddIn(secondManifestPath, secondManifestPath);
+        const registeredAddins = await devSettings.getRegisterAddIns();
+        const [first, second] = registeredAddins;
+        assert.strictEqual(registeredAddins.length, 2);
+        assert.strictEqual(first.id, firstManifestId);
+        assert.strictEqual(second.id, "");
+        assert.strictEqual(first.manifestPath, firstManifestPath);
+        assert.strictEqual(second.manifestPath, secondManifestPath);
+      });
+      it("When registered by id, registry value name with manifest path is removed", async function() {
+        await devSettings.registerAddIn(secondManifestPath);
+        const registeredAddins = await devSettings.getRegisterAddIns();
+        const [first, second] = registeredAddins;
+        assert.strictEqual(registeredAddins.length, 2);
+        assert.strictEqual(first.id, firstManifestId);
+        assert.strictEqual(second.id, secondManifestId);
+        assert.strictEqual(first.manifestPath, firstManifestPath);
+        assert.strictEqual(second.manifestPath, secondManifestPath);
+      });
+    });
+  }
 });
 
 describe("RuntimeLogging", async function() {
