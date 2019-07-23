@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commnder from "commander";
+import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as manifestInfo from "./manifestInfo";
 
@@ -48,7 +48,7 @@ function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestIn
   }
 }
 
-export async function modify(manifestPath: string, command: commnder.Command) {
+export async function modify(manifestPath: string, command: commander.Command) {
   try {
     // if the --guid command option is provided without a value, use "" to specify to change to a random guid value.
     const guid: string | undefined = getCommandOptionString(command.guid, "");
