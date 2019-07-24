@@ -136,6 +136,7 @@ describe("office-addin-dev-certs", function() {
             }
         });
         if (process.platform === "win32") {
+            const script = path.resolve(__dirname, "..\\scripts\\install.ps1");
             it("with --machine option", async function() {
                 const execSync = sandbox.fake();
                 const machine = true;
@@ -143,7 +144,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").returns(false);
                 await install.installCaCertificate(testCaCertificatePath, machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass scripts\\install.ps1 LocalMachine '${testCaCertificatePath}'`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass ${script} LocalMachine '${testCaCertificatePath}'`), true);
             });
             it("without --machine option", async function() {
                 const execSync = sandbox.fake();
@@ -152,7 +153,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").returns(false);
                 await install.installCaCertificate(testCaCertificatePath, machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass scripts\\install.ps1 CurrentUser '${testCaCertificatePath}'`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass ${script} CurrentUser '${testCaCertificatePath}'`), true);
             });
         }
     });
@@ -187,6 +188,7 @@ describe("office-addin-dev-certs", function() {
             }
         });
         if (process.platform === "win32") {
+            const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
             it("with --machine option", async function() {
                 const isCaCertificateInstalled = sandbox.fake.returns(true);
                 const execSync = sandbox.fake();
@@ -195,7 +197,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
                 await uninstall.uninstallCaCertificate(machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass scripts\\uninstall.ps1 LocalMachine '${defaults.certificateName}'`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass ${script} LocalMachine '${defaults.certificateName}'`), true);
             });
             it("without --machine option", async function() {
                 const isCaCertificateInstalled = sandbox.fake.returns(true);
@@ -205,7 +207,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").callsFake(isCaCertificateInstalled);
                 await uninstall.uninstallCaCertificate(machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass scripts\\uninstall.ps1 CurrentUser '${defaults.certificateName}'`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass ${script} CurrentUser '${defaults.certificateName}'`), true);
             });
         }
     });
