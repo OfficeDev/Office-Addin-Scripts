@@ -1,22 +1,41 @@
 import * as commander from "commander";
+import { logErrorMessage } from "office-addin-cli";
+import * as os from "os";
+import * as path from "path";
 import * as commands from "./command";
+
+const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
+
 commander.name("office-addin-telemetry");
 commander.version(process.env.npm_package_version || "(version not available)");
-commander
-    .version("0.0.1");
-commander
-    .command("help")
-    .description(`This package allows for sending telemetry event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights).`)
-    .action(commands.help);
 
-    commander.on("command:*", function() {
-        console.error(`The command syntax is not valid.\n`);
-        process.exitCode = 1;
-        commander.help();
-    });
+commander
+    .command(`start <telemetry-group-name>`)
+    .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
+    .description(`Turn telemetry on for the specified group name.`)
+    .action(commands.startTelemetryGroup);
 
-    if (process.argv.length > 2) {
-        commander.parse(process.argv);
-    } else {
-        commander.help();
-    }
+commander
+    .command(`stop <telemetry-group-name>`)
+    .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
+    .description(`Turn telemetry off for the specified group name.`)
+    .action(commands.stopTelemetryGroup);
+
+commander
+    .command(`list`)
+    .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
+    .description(`List all telemetry groups in the telemetry config file.`)
+    .action(commands.listTelemetryGroups);
+
+// if the command is not known, display an error
+commander.on("command:*", function() {
+    logErrorMessage(`The command syntax is not valid.\n`);
+    process.exitCode = 1;
+    commander.help();
+});
+
+if (process.argv.length > 2) {
+    commander.parse(process.argv);
+} else {
+    commander.help();
+}
