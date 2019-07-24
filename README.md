@@ -20,6 +20,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   A WebPack plugin which generates the metadata for custom functions.
 
+* [office-addin-cli](packages/office-addin-cli/README.md)
+
+  A command-line interface for Office Add-ins.
+
 * [office-addin-debugging](packages/office-addin-debugging/README.md)
 
   This package provides the orchestration of components related to debugging Office Add-ins. When debugging is started, it will ensure that the dev-server is running, that dev settings are configured for debugging, and will register and sideload the Office Add-in. When debugging is stopped, it will unregister and shutdown components.
@@ -38,15 +42,15 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
-  This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application. 
+  This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
   
 * [office-addin-test-helpers](packages/office-addin-test-helpers/README.md)
 
-  This package provides test helpers for automating validation of Office Addins. Use in conjunction with the office-addin-test-server package and Mocha tests.
+  This package provides tools that make validating your Office Add-in easier. You can use it with the office-addin-test-server package and the Mocha test framework (or another testing framework of your choice).
 
 * [office-addin-test-server](packages/office-addin-test-server/README.md)
 
-  This package provides a framework for testing Office Taskpane Add-ins by allowing Add-ins to send results to a test server. The results can then be consumed and used by tests to validate that the Add-in is working as expected.
+  This package provides a framework for testing Office task pane add-ins by allowing add-ins to send results to a test server. The results can then be consumed and used by tests to validate that the add-in is working as expected.
 
 ## Requirements
 

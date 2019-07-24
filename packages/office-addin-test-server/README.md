@@ -1,7 +1,6 @@
 # Office-Addin-Test-Infrastructure
 
-Provides a framework for testing Office Taskpane Add-ins by allowing Add-ins to send results to a test server.  The results can then be consumed and used
-by tests to validate that the Add-in is working as expected.
+This package provides a framework for testing Office task pane add-ins by allowing add-ins to send results to a test server. The results can then be consumed and used by tests to validate that the add-in is working as expected.
 
 ## Command-Line Interface
 * [start](#start)

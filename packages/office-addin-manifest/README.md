@@ -1,6 +1,6 @@
 # Office-Addin-Manifest
 
-Provides the ability to view and modify the manifest for Office Add-ins.
+This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
 
 For more information, see the [documentation](
 https://docs.microsoft.com/en-us/office/dev/add-ins/develop/add-in-manifests).
