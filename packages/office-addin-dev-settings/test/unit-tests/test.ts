@@ -11,7 +11,7 @@ import * as fspath from "path";
 import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import * as devSettings from "../../src/dev-settings";
-import * as devSettingsRegistry from "../../src/dev-settings-registry";
+import * as devSettingsWindows from "../../src/dev-settings-windows";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 
 async function testSetSourceBundleUrlComponents(components: devSettings.SourceBundleUrlComponents, expected: devSettings.SourceBundleUrlComponents) {
@@ -266,7 +266,7 @@ describe("Registration", function() {
         assert.strictEqual(first.id, firstManifestId);
       });
       it("Supports manifest path instead of id for registry value name", async function() {
-        await devSettingsRegistry.registerAddIn(secondManifestPath, secondManifestPath);
+        await devSettingsWindows.registerAddIn(secondManifestPath, secondManifestPath);
         const registeredAddins = await devSettings.getRegisterAddIns();
         const [first, second] = registeredAddins;
         assert.strictEqual(registeredAddins.length, 2);
