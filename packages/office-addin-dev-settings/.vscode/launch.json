@@ -175,7 +175,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["unregister", "c:\\dev\\git\\Office-Addin-TasKPane\\manifest.xml"]
+      "args": ["unregister", "/Users/adamk/dev/git/Office-Addin-TaskPane/manifest.word.xml"]
     },
     {
       "type": "node",
