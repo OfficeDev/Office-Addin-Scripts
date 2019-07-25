@@ -95,7 +95,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["register", "c:\\dev\\git\\Office-Addin-TasKPane\\manifest.xml"]
+      "args": ["register", "~/dev/git/Office-Addin-TaskPane/manifest.xml"]
     },
     {
       "name": "Command Line: registered",

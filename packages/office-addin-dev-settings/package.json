@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
-    "@types/fs-extra": "^5.0.4",
+    "@types/fs-extra": "^5.1.0",
     "@types/inquirer": "^6.0.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.5.7",
