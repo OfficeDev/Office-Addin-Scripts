@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "info",
-        "${workspaceFolder}\\test\\manifests\\ExcelCustomFunctions.manifest.xml"
+        "${workspaceFolder}/test/manifests/Office-Addin-TaskPane.manifest.xml"
       ]
     },
     {
