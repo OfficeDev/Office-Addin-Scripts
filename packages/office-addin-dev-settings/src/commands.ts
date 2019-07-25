@@ -235,7 +235,6 @@ function parseStringCommandOption(optionValue: any): string | undefined {
 export async function register(manifestPath: string, command: commander.Command) {
   try {
     await devSettings.registerAddIn(manifestPath);
-    console.log("Registered.");
   } catch (err) {
     logErrorMessage(err);
   }
@@ -327,12 +326,8 @@ export async function unregister(manifestPath: string, command: commander.Comman
   try {
     if (manifestPath === "all") {
       await devSettings.unregisterAllAddIns();
-
-      console.log("Unregistered all.");
     } else {
       await devSettings.unregisterAddIn(manifestPath);
-
-      console.log("Unregistered.");
     }
   } catch (err) {
     logErrorMessage(err);
