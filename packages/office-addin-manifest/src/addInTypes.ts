@@ -61,6 +61,23 @@ export function toAddInType(value: string): AddInType | undefined {
 }
 
 /**
+ * Get the Office app for the manifest Host name
+ * @param host Host name
+ */
+export function getAddInTypeForManifestOfficeAppType(officeAppType: string): AddInType | undefined {
+  switch (officeAppType.toLowerCase()) {
+    case "contentapp":
+      return AddInType.Content;
+    case "mailapp":
+      return AddInType.Mail;
+    case "taskpaneapp":
+      return AddInType.TaskPane;
+    default:
+      return undefined;
+  }
+}
+
+/**
  * Returns the Office add-in types.
  */
 export function getAddInTypes(): AddInType[] {

@@ -126,6 +126,13 @@
       "args": ["runtime-log", "--enable"]
     },
     {
+      "name": "Command Line: sideload",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["sideload", "c:\\dev\\git\\Office-Addin-TaskPane\\manifest.word.xml"]
+    },
+    {
       "name": "Command Line: source-bundle-url",
       "type": "node",
       "request": "launch",

@@ -56,6 +56,12 @@ commander
     .action(commands.runtimeLogging);
 
 commander
+    .command("sideload <manifest-path>")
+    .description("Launch Office with the Office add-in loaded.")
+    .option("-a,--app <app>", `The Office app to launch. ("Excel", "PowerPoint", or "Word")`)
+    .action(commands.sideload);
+
+commander
     .command("source-bundle-url <manifest-path>")
     .description("Specify values for components of the source bundle url.")
     .option("-h,--host <host>", `The host name to use, or "" to use the default ('localhost').`)

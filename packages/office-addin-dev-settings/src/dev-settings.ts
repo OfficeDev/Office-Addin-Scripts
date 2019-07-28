@@ -2,10 +2,11 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
-import { readManifestFile } from "office-addin-manifest";
+import { getOfficeAppsForManifestHosts, OfficeApp, readManifestFile } from "office-addin-manifest";
 import * as fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
+import { chooseOfficeApp } from "./prompt";
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
@@ -213,7 +214,7 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
       return devSettingsMac.unregisterAddIn(manifestPath);
     case "win32":
       const manifest = await readManifestFile(manifestPath);
-      return devSettingsWindows.unregisterAddIn(manifest.id || "", manifestPath);      
+      return devSettingsWindows.unregisterAddIn(manifest.id || "", manifestPath);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
