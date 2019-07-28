@@ -290,8 +290,9 @@ export async function runtimeLogging(command: commander.Command) {
 export async function sideload(manifestPath: string, command: commander.Command) {
   try {
     const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
+    const canPrompt = true;
 
-    await sideloadAddIn(manifestPath, app);
+    await sideloadAddIn(manifestPath, app, canPrompt);
   } catch (err) {
     logErrorMessage(err);
   }

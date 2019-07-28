@@ -124,7 +124,7 @@ export function parseOfficeApps(input: string): OfficeApp[] {
  * @param value Office app string
  */
 export function toOfficeApp(value: string): OfficeApp | undefined {
-  switch (value.toLowerCase()) {
+  switch (value ? value.toLowerCase() : value) {
     case OfficeApp.Excel:
       return OfficeApp.Excel;
     case OfficeApp.OneNote:

@@ -174,16 +174,22 @@ async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo): Pro
 export async function sideloadAddIn(
   manifestPath: string,
   app?: OfficeApp,
+  canPrompt: boolean = false
 ): Promise<void> {
   const manifest = await readManifestFile(manifestPath);
 
   if (!app) {
     const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
-    app =
-      appsInManifest.length === 1
-        ? appsInManifest[0]
-        : await chooseOfficeApp(appsInManifest);
+    if (appsInManifest.length === 1) {
+      app = appsInManifest[0];
+    } else if (appsInManifest.length === 0) {
+      throw new Error("Manifest does not specify Hosts.");
+    } else if (canPrompt) {
+      app = await chooseOfficeApp(appsInManifest);
+    } else {
+      throw new Error("Please specify the Office app to sideload.");
+    }
   }
 
   await registerAddIn(manifestPath);

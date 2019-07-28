@@ -27,7 +27,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": [],
+      "args": ["start", "/Users/adamk/dev/git/Excel-Custom-Functions/manifest.xml"],
     }
   ]
 }

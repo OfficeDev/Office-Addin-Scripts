@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as fetch from "node-fetch";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
-import { DebuggingMethod } from "office-addin-dev-settings";
+import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
 import * as manifest from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
 import * as os from "os";
@@ -13,6 +13,7 @@ import * as path from "path";
 import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess, startProcess  } from "./process";
+import { OfficeApp } from "office-addin-manifest";
 
 export enum AppType {
     Desktop = "desktop",
@@ -139,8 +140,9 @@ export async function runPackager(commandLine: string, host: string = "localhost
 
 /**
  * Start debugging
- * @param appType The type of application to debug.
  * @param manifestPath The path to the manifest file.
+ * @param appType The type of application to debug.
+ * @param app The Office application to debug.
  * @param debuggingMethod The method to use when debugging.
  * @param sourceBundleUrlComponents Specify components of the source bundle url.
  * @param devServerCommandLine If provided, starts the dev server.
@@ -151,12 +153,12 @@ export async function runPackager(commandLine: string, host: string = "localhost
  * @param sideloadCommandLine If provided, launches the add-in.
  * @param enableDebugging If false, start without debugging.
  */
-export async function startDebugging(manifestPath: string, appType: AppType,
+export async function startDebugging(manifestPath: string, appType: AppType, app: OfficeApp | undefined,
     debuggingMethod: DebuggingMethod = defaultDebuggingMethod(),
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    sideloadCommandLine?: string, enableDebugging: boolean = true, enableLiveReload: boolean = true) {
+    enableDebugging: boolean = true, enableLiveReload: boolean = true) {
 
     const isWindowsPlatform = (process.platform === "win32");
     const isDesktopAppType = (appType === AppType.Desktop);
@@ -244,12 +246,12 @@ export async function startDebugging(manifestPath: string, appType: AppType,
         }
     }
 
-    if (sideloadCommandLine && isDesktopAppType) {
+    if (isDesktopAppType) {
         try {
             console.log(`Sideloading the Office Add-in...`);
-            await startProcess(sideloadCommandLine);
+            await sideloadAddIn(manifestPath, app);
         } catch (err) {
-            console.log(`Unable to sideload the Office Add-in. ${err}`);
+            throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
         }
     }
 
