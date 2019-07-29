@@ -8,7 +8,7 @@ const prettierPath = require.resolve("prettier");
 const esLintDir = path.parse(esLintPath).dir;
 const esLintFilePath = path.resolve(esLintDir, "\..\\bin/eslint.js");
 const prettierFilePath = path.resolve(prettierPath, "\..\\bin-prettier.js");
-const esLintConfigPath = path.resolve(__dirname, "..\\src\\.eslintrc.json");
+const esLintConfigPath = path.resolve(__dirname, "..\\config\\.eslintrc.json");
 
 function execCommand(command: string) {
     const execSync = require("child_process").execSync;
