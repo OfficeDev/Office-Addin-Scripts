@@ -1,6 +1,6 @@
 # Custom-Functions-Metadata
 
-Provides the ability to auto generate the custom functions metadata.
+This package allows metadata for custom functions to be generated automatically from JSDoc tags and the function parameter types.
 
 ## Command-Line Interface
 * [generate](#generate)
