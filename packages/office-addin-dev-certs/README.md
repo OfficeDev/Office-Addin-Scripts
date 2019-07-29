@@ -1,6 +1,6 @@
 # Office-Addin-dev-certs
 
-Provides the ability to manage certificates for a development server using https://localhost.
+This package can be used to manage certificates for development server using https://localhost. 
 
 ## Command-Line Interface
 * [install](#install)
