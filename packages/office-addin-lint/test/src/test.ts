@@ -10,14 +10,14 @@ import * as prettierLint from "../../src/lint";
 describe("test cases", function() {
     it("eslint and prettier commands", async function() {
         const inputFile = "./test/cases/basic/functions.ts";
-        const lintExpectedCommand = "eslint ./test/cases/basic/functions.ts";
-        const lintFixExpectedCommand = "eslint --fix ./test/cases/basic/functions.ts";
-        const prettierExpectedCommand = "prettier --parser typescript --write ./test/cases/basic/functions.ts";
+        const lintExpectedCommand = "./test/cases/basic/functions.ts";
+        const lintFixExpectedCommand = "--fix ./test/cases/basic/functions.ts";
+        const prettierExpectedCommand = "--parser typescript --write ./test/cases/basic/functions.ts";
         const lintCheckCommand = prettierLint.getLintCheckCommand(inputFile);
-        assert.strictEqual(lintCheckCommand, lintExpectedCommand, "Lint command does not match expected value.");
+        assert.strictEqual(lintCheckCommand.indexOf(lintExpectedCommand) > 0 , true, "Lint command does not match expected value.");
         const lintFixCommand = prettierLint.getLintFixCommand(inputFile);
-        assert.strictEqual(lintFixCommand, lintFixExpectedCommand, "Lint fix command does not match expected value.");
+        assert.strictEqual(lintFixCommand.indexOf(lintFixExpectedCommand) > 0, true, "Lint fix command does not match expected value.");
         const prettierCommand = prettierLint.getPrettierCommand(inputFile);
-        assert.strictEqual(prettierCommand, prettierExpectedCommand, "Prettier command does not match expected value.");
+        assert.strictEqual(prettierCommand.indexOf(prettierExpectedCommand) > 0, true, "Prettier command does not match expected value.");
     });
 });

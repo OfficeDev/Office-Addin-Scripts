@@ -5,12 +5,10 @@ import * as path from "path";
 
 const esLintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
-const config = require.resolve("office-addin-lint");
-const configDir = path.parse(config).dir;
 const esLintDir = path.parse(esLintPath).dir;
 const esLintFilePath = path.resolve(esLintDir, "\..\\bin/eslint.js");
 const prettierFilePath = path.resolve(prettierPath, "\..\\bin-prettier.js");
-const esLintConfigPath = path.resolve(configDir, "\..\\src/.eslintrc.json");
+const esLintConfigPath = path.resolve(__dirname, "..\\src\\.eslintrc.json");
 
 function execCommand(command: string) {
     const execSync = require("child_process").execSync;
@@ -18,7 +16,7 @@ function execCommand(command: string) {
 }
 
 function getEsLintBaseCommand(): string {
-  const eslintBaseCommand: string = "node " + esLintFilePath + " -c " + esLintConfigPath + " --resolve-plugins-relative-to " + configDir + " ";
+  const eslintBaseCommand: string = "node " + esLintFilePath + " -c " + esLintConfigPath + " --resolve-plugins-relative-to " + __dirname + " ";
   return eslintBaseCommand;
 }
 
