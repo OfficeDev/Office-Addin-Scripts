@@ -1,19 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
 import * as fetch from "node-fetch";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
 import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
-import * as manifest from "office-addin-manifest";
+import { OfficeApp, readManifestFile } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
-import * as os from "os";
-import * as path from "path";
 import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
-import { startDetachedProcess, startProcess  } from "./process";
-import { OfficeApp } from "office-addin-manifest";
+import { startDetachedProcess  } from "./process";
 
 export enum AppType {
     Desktop = "desktop",
@@ -178,7 +174,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
         : "Starting without debugging...");
     console.log(`App type: ${appType.toString()}`);
 
-    const manifestInfo = await manifest.readManifestFile(manifestPath);
+    const manifestInfo = await readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
         throw new Error("Manifest does not contain the id for the Office Add-in.");

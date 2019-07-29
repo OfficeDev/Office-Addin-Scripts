@@ -4,9 +4,9 @@
 import * as commander from "commander";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
+import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseAppType, parseDebuggingMethod, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
-import { parseOfficeApp, OfficeApp, toOfficeApp } from "office-addin-manifest";
 
 function parseDevServerPort(optionValue: any): number | undefined {
     const devServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
@@ -53,10 +53,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
 
 export async function stop(manifestPath: string, command: commander.Command) {
     try {
-        const app: string = command.app || process.env.npm_package_config_app_to_debug;
-        const unload: string | undefined = command.unload || process.env[`npm_package_scripts_unload_${app}`] || process.env.npm_package_scripts_unload;
-
-        await stopDebugging(manifestPath, unload);
+        await stopDebugging(manifestPath);
     } catch (err) {
         logErrorMessage(`Unable to stop debugging.\n${err}`);
     }

@@ -16,7 +16,7 @@ import open = require("open");
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
-import { registerAddIn } from "./dev-settings-mac";
+import { registerAddIn } from "./dev-settings";
 import { chooseOfficeApp } from "./prompt";
 
 const readFileAsync = util.promisify(fs.readFile);
@@ -171,11 +171,7 @@ async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo): Pro
   return pathToWrite;
 }
 
-export async function sideloadAddIn(
-  manifestPath: string,
-  app?: OfficeApp,
-  canPrompt: boolean = false
-): Promise<void> {
+export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false): Promise<void> {
   const manifest = await readManifestFile(manifestPath);
 
   if (!app) {
