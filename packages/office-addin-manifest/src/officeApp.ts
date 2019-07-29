@@ -9,8 +9,8 @@ export enum OfficeApp {
   Excel = "excel",
   OneNote = "onenote",
   Outlook = "outlook",
-  Project = "project",
   PowerPoint = "powerpoint",
+  Project = "project",
   Word = "word",
   // when adding new entries, update the toOfficeApp() function
   // since there isn't an automatic reverse mapping from string to enum values
@@ -37,6 +37,8 @@ export function getOfficeAppName(app: OfficeApp): string {
       return "Project";
     case OfficeApp.Word:
       return "Word";
+    default:
+      throw new Error(`Unable to provide name for Office app "${app}"`);
   }
 }
 
@@ -100,7 +102,7 @@ export function parseOfficeApp(value: string): OfficeApp {
   const officeApp = toOfficeApp(value);
 
   if (!officeApp) {
-    throw new Error(`${value} is not a valid Office app.`);
+    throw new Error(`"${value}" is not a valid Office app.`);
   }
 
   return officeApp;
@@ -112,7 +114,7 @@ export function parseOfficeApp(value: string): OfficeApp {
  * @throws Error if a value is not a valid Office app.
  */
 export function parseOfficeApps(input: string): OfficeApp[] {
-  if (input === "all") {
+  if (input.trim().toLowerCase() === "all") {
     return getOfficeApps();
   } else {
     return input.split(",").map<OfficeApp>(appString => parseOfficeApp(appString));
@@ -124,7 +126,7 @@ export function parseOfficeApps(input: string): OfficeApp[] {
  * @param value Office app string
  */
 export function toOfficeApp(value: string): OfficeApp | undefined {
-  switch (value ? value.toLowerCase() : value) {
+  switch (value ? value.trim().toLowerCase() : value) {
     case OfficeApp.Excel:
       return OfficeApp.Excel;
     case OfficeApp.OneNote:
