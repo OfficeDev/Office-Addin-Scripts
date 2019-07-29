@@ -6,7 +6,6 @@ import { readManifestFile } from "office-addin-manifest";
 import * as fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
-import { chooseOfficeApp } from "./prompt";
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
