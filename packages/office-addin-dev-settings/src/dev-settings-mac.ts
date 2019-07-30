@@ -11,16 +11,17 @@ import { RegisteredAddin } from "./dev-settings";
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const registeredAddins: RegisteredAddin[] = [];
 
-  getOfficeApps().forEach(app => {
+  for (const app of getOfficeApps()) {
     const sideloadDirectory = getSideloadDirectory(app);
 
     if (sideloadDirectory && fs.existsSync(sideloadDirectory)) {
-      fs.readdirSync(sideloadDirectory).filter(junk.not).forEach(fileName => {
+      for (const fileName of fs.readdirSync(sideloadDirectory).filter(junk.not)) {
         const manifestPath = fs.realpathSync(path.join(sideloadDirectory, fileName));
-        registeredAddins.push(new RegisteredAddin("", manifestPath));
-      });
+        const manifest = await readManifestFile(manifestPath);
+        registeredAddins.push(new RegisteredAddin(manifest.id || "", manifestPath));
+      }      
     }
-  });
+  };
 
   return registeredAddins;
 }
@@ -52,7 +53,7 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
       throw new Error("The manifest file doesn't contain the id of the Office add-in.");
     }
 
-    officeApps.forEach(app => {
+    for (const app of officeApps) {
       const sideloadDirectory = getSideloadDirectory(app);
 
       if (sideloadDirectory) {
@@ -62,7 +63,7 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
         fs.ensureDirSync(sideloadDirectory);
         fs.ensureLinkSync(manifestPath, sideloadPath);
       }
-    });
+    }
   } catch (err) {
     throw new Error(`Unable to register the Office add-in.\n${err}`);
   }
@@ -77,22 +78,21 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
 
   const registeredAddIns = await getRegisteredAddIns();
 
-  registeredAddIns.forEach(registeredAddIn => {
+  for (const registeredAddIn of registeredAddIns) {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
     const manifestFileName = path.basename(manifestPath);
     const sideloadFileName = `${manifest.id!}.${manifestFileName}`;
     if ((registeredFileName === manifestFileName)
       || (registeredFileName === sideloadFileName)) {
       fs.unlinkSync(registeredAddIn.manifestPath);
-      console.log(`removed: ${registeredAddIn.id} ${registeredAddIn.manifestPath}`);
     }
-  });
+  }
 }
 
 export async function unregisterAllAddIns(): Promise<void> {
   const registeredAddIns = await getRegisteredAddIns();
 
-  registeredAddIns.forEach(registeredAddIn => {
+  for (const registeredAddIn of registeredAddIns) {
     fs.unlinkSync(registeredAddIn.manifestPath);
-  });
+  }
 }

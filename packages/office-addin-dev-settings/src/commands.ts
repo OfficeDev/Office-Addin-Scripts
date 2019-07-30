@@ -250,7 +250,7 @@ export async function registered(command: commander.Command) {
     const registeredAddins = await devSettings.getRegisterAddIns();
 
     if (registeredAddins.length > 0) {
-      registeredAddins.forEach(async addin => {
+      for (const addin of registeredAddins) {
         let id: string = addin.id;
 
         if (!id && addin.manifestPath) {
@@ -263,7 +263,7 @@ export async function registered(command: commander.Command) {
         }
 
         console.log(`${id ? id + " " : ""}${addin.manifestPath}`);
-      });
+      }
     } else {
       console.log("No add-ins are registered.");
     }

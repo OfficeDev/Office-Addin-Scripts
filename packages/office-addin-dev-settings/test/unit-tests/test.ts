@@ -7,12 +7,15 @@ import * as fsextra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as mocha from "mocha";
 import * as officeAddinManifest from "office-addin-manifest";
+import * as os from "os";
 import * as fspath from "path";
 import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
+const isWindows = (process.platform === "win32");
+const isMac = (process.platform === "darwin");
 
 async function testSetSourceBundleUrlComponents(components: devSettings.SourceBundleUrlComponents, expected: devSettings.SourceBundleUrlComponents) {
   await devSettings.setSourceBundleUrl(addinId, components);
@@ -25,7 +28,7 @@ async function testSetSourceBundleUrlComponents(components: devSettings.SourceBu
 }
 
 describe("DevSettingsForAddIn", function() {
-  if (process.platform === "win32") {
+  if (isWindows) {
     this.beforeAll(async function() {
       await devSettings.clearDevSettings(addinId);
     });
@@ -226,12 +229,15 @@ describe("Registration", function() {
     });
     it("Can register an add-in", async function() {
       const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+      const registeredManifestPath = isMac 
+        ? fspath.join(os.homedir(), "/Library/Containers/com.microsoft.Excel/Data/Documents/wef/6dd581d2-98d1-4eaf-9506-e0a24be515f5.manifest.xml")
+        : manifestPath;
       await devSettings.registerAddIn(manifestPath);
       const registeredAddins = await devSettings.getRegisterAddIns();
       const [registeredAddin] = registeredAddins;
       assert.strictEqual(registeredAddins.length, 1);
       assert.strictEqual(registeredAddin.id, "6dd581d2-98d1-4eaf-9506-e0a24be515f5");
-      assert.strictEqual(registeredAddin.manifestPath, manifestPath);
+      assert.strictEqual(registeredAddin.manifestPath, registeredManifestPath);
     });
     it("Can unregister an add-in", async function() {
       const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
@@ -245,6 +251,12 @@ describe("Registration", function() {
     const secondManifestPath = fspath.resolve(manifestsFolder, "manifest2.xml");
     const firstManifestId = "6dd581d2-98d1-4eaf-9506-e0a24be515f5";
     const secondManifestId = "813cfc85-2a0f-49f6-8024-8d942cb73456";
+    const firstRegisteredManifestPath = isMac 
+      ? fspath.join(os.homedir(), "/Library/Containers/com.microsoft.Excel/Data/Documents/wef/6dd581d2-98d1-4eaf-9506-e0a24be515f5.manifest.xml")
+      : firstManifestPath;
+    const secondRegisteredManifestPath = isMac 
+      ? fspath.join(os.homedir(), "/Library/Containers/com.microsoft.Excel/Data/Documents/wef/813cfc85-2a0f-49f6-8024-8d942cb73456.manifest2.xml")
+      : secondManifestPath;
 
     it("Can register two add-ins", async function() {
       await devSettings.registerAddIn(firstManifestPath);
@@ -254,8 +266,8 @@ describe("Registration", function() {
       assert.strictEqual(registeredAddins.length, 2);
       assert.strictEqual(first.id, firstManifestId);
       assert.strictEqual(second.id, secondManifestId);
-      assert.strictEqual(first.manifestPath, firstManifestPath);
-      assert.strictEqual(second.manifestPath, secondManifestPath);
+      assert.strictEqual(first.manifestPath, firstRegisteredManifestPath);
+      assert.strictEqual(second.manifestPath, secondRegisteredManifestPath);
     });
     it("Can unregister one add-in", async function() {
       await devSettings.unregisterAddIn(secondManifestPath);
@@ -263,6 +275,7 @@ describe("Registration", function() {
       const [first] = registeredAddins;
       assert.strictEqual(registeredAddins.length, 1);
       assert.strictEqual(first.id, firstManifestId);
+      assert.strictEqual(first.manifestPath, firstRegisteredManifestPath);
     });
     if (process.platform === "win32") {
       it("Supports manifest path instead of id for registry value name", async function() {

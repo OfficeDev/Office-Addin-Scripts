@@ -190,5 +190,7 @@ export async function unregisterAllAddIns(): Promise<void> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
   const values = await registry.getValues(key);
 
-  values.forEach(async value => await registry.deleteValue(key, value.name));
+  for (const value of values) {
+    await registry.deleteValue(key, value.name);
+  }
 }
