@@ -6,13 +6,13 @@ import * as path from "path";
 const esLintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
 const esLintDir = path.parse(esLintPath).dir;
-const esLintFilePath = path.resolve(esLintDir, "\..\\bin/eslint.js");
-const prettierFilePath = path.resolve(prettierPath, "\..\\bin-prettier.js");
-const esLintConfigPath = path.resolve(__dirname, "..\\config\\.eslintrc.json");
+const esLintFilePath = path.resolve(esLintDir, "../bin/eslint.js");
+const prettierFilePath = path.resolve(prettierPath, "../bin-prettier.js");
+const esLintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
 
 function execCommand(command: string) {
-    const execSync = require("child_process").execSync;
-    const child = execSync(command, { stdio: "inherit" });
+  const execSync = require("child_process").execSync;
+  const child = execSync(command, { stdio: "inherit" });
 }
 
 function getEsLintBaseCommand(): string {
@@ -36,8 +36,8 @@ export function getLintFixCommand(files: string): string {
 }
 
 export function performLintFix(files: string) {
-    const command = getLintFixCommand(files);
-    execCommand(command);
+  const command = getLintFixCommand(files);
+  execCommand(command);
 }
 
 export function getPrettierCommand(files: string): string {
@@ -46,6 +46,6 @@ export function getPrettierCommand(files: string): string {
 }
 
 export function makeFilesPrettier(files: string) {
-    const command = getPrettierCommand(files);
-    execCommand(command);
+  const command = getPrettierCommand(files);
+  execCommand(command);
 }
