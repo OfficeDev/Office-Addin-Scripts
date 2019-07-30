@@ -1,7 +1,7 @@
 
 # Custom-Functions-Metadata-Plugin
 
-Provides the ability to auto generate the custom functions metadata with a webpack plugin.
+A WebPack plugin which generates the metadata for custom functions.
 
 # Webpack example (webpack.config.js)
 
