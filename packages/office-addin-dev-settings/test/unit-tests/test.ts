@@ -229,7 +229,7 @@ describe("Registration", function() {
     });
     it("Can register an add-in", async function() {
       const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
-      const registeredManifestPath = isMac 
+      const registeredManifestPath = isMac
         ? fspath.join(os.homedir(), "/Library/Containers/com.microsoft.Excel/Data/Documents/wef/6dd581d2-98d1-4eaf-9506-e0a24be515f5.manifest.xml")
         : manifestPath;
       await devSettings.registerAddIn(manifestPath);
@@ -251,10 +251,10 @@ describe("Registration", function() {
     const secondManifestPath = fspath.resolve(manifestsFolder, "manifest2.xml");
     const firstManifestId = "6dd581d2-98d1-4eaf-9506-e0a24be515f5";
     const secondManifestId = "813cfc85-2a0f-49f6-8024-8d942cb73456";
-    const firstRegisteredManifestPath = isMac 
+    const firstRegisteredManifestPath = isMac
       ? fspath.join(os.homedir(), "/Library/Containers/com.microsoft.Excel/Data/Documents/wef/6dd581d2-98d1-4eaf-9506-e0a24be515f5.manifest.xml")
       : firstManifestPath;
-    const secondRegisteredManifestPath = isMac 
+    const secondRegisteredManifestPath = isMac
       ? fspath.join(os.homedir(), "/Library/Containers/com.microsoft.Excel/Data/Documents/wef/813cfc85-2a0f-49f6-8024-8d942cb73456.manifest2.xml")
       : secondManifestPath;
 
