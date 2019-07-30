@@ -20,6 +20,29 @@ export enum OfficeApp {
 const officeApps: OfficeApp[] = Object.keys(OfficeApp).map<OfficeApp>(key => parseOfficeApp(key));
 
 /**
+ * Get the Office app for the manifest Host name
+ * @param host Host name
+ */
+export function getOfficeAppForManifestHost(host: string): OfficeApp | undefined {
+  switch (host.toLowerCase()) {
+    case "document":
+      return OfficeApp.Word;
+    case "mailbox":
+      return OfficeApp.Outlook;
+    case "notebook":
+      return OfficeApp.OneNote;
+    case "presentation":
+      return OfficeApp.PowerPoint;
+    case "project":
+      return OfficeApp.Project;
+    case "workbook":
+      return OfficeApp.Excel;
+    default:
+      return undefined;
+  }
+}
+
+/**
  * Gets the Office application name suitable for display.
  * @param app Office app
  */
@@ -51,26 +74,10 @@ export function getOfficeAppNames(apps: OfficeApp[]): string[] {
 }
 
 /**
- * Get the Office app for the manifest Host name
- * @param host Host name
+ * Returns the Office apps that support Office add-ins.
  */
-export function getOfficeAppForManifestHost(host: string): OfficeApp | undefined {
-  switch (host.toLowerCase()) {
-    case "document":
-      return OfficeApp.Word;
-    case "mailbox":
-      return OfficeApp.Outlook;
-    case "notebook":
-      return OfficeApp.OneNote;
-    case "presentation":
-      return OfficeApp.PowerPoint;
-    case "project":
-      return OfficeApp.Project;
-    case "workbook":
-      return OfficeApp.Excel;
-    default:
-      return undefined;
-  }
+export function getOfficeApps(): OfficeApp[] {
+  return officeApps;
 }
 
 /**
@@ -142,11 +149,4 @@ export function toOfficeApp(value: string): OfficeApp | undefined {
     default:
       return undefined;
   }
-}
-
-/**
- * Returns the Office apps that support Office add-ins.
- */
-export function getOfficeApps(): OfficeApp[] {
-    return officeApps;
 }

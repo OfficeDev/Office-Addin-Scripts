@@ -7,6 +7,7 @@ import * as mocha from "mocha";
 import * as path from "path";
 import * as uuid from "uuid";
 import { isUUID } from "validator";
+import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
 import * as manifestInfo from "../src/manifestInfo";
 import {
   getOfficeAppForManifestHost,
@@ -25,7 +26,161 @@ const manifestTestFolder = `${process.cwd()}/testExecution/testManifests`;
 const testManifest = `${manifestTestFolder}/Taskpane.manifest.xml`;
 
 describe("Unit Tests", function() {
+  describe("addInTypes.ts", function() {
+    describe("getAddInTypeForManifestOfficeAppType()", function() {
+      it("Content", function() {
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType("ContentApp"), AddInType.Content);
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType("contentapp"), AddInType.Content);
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType(" contentApp "), AddInType.Content);
+      });
+      it("Mail", function() {
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType("MailApp"), AddInType.Mail);
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType("mailapp"), AddInType.Mail);
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType(" mailApp "), AddInType.Mail);
+      });
+      it("TaskPane", function() {
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType("TaskPaneApp"), AddInType.TaskPane);
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType("taskpaneapp"), AddInType.TaskPane);
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType(" taskpaneApp "), AddInType.TaskPane);
+      });
+      it("unknown", function() {
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType("Unknown"), undefined);
+        assert.strictEqual(getAddInTypeForManifestOfficeAppType(""), undefined);
+      });
+    });
+    describe("getAddInTypes()", function() {
+      it("should return all add-in types", function() {
+        const types = getAddInTypes();
+        assert.strictEqual(types.length, 3);
+        assert.strictEqual(types[0], AddInType.Content);
+        assert.strictEqual(types[1], AddInType.Mail);
+        assert.strictEqual(types[2], AddInType.TaskPane);
+      });
+    });
+    describe("parseAddInType()", function() {
+      it("Content", function() {
+        assert.strictEqual(parseAddInType("content"), AddInType.Content);
+        assert.strictEqual(parseAddInType("Content"), AddInType.Content);
+        assert.strictEqual(parseAddInType(" CONTENT "), AddInType.Content);
+      });
+      it("Mail", function() {
+        assert.strictEqual(parseAddInType("mail"), AddInType.Mail);
+        assert.strictEqual(parseAddInType("Mail"), AddInType.Mail);
+        assert.strictEqual(parseAddInType(" MAIL "), AddInType.Mail);
+      });
+      it("TaskPane", function() {
+        assert.strictEqual(parseAddInType("taskpane"), AddInType.TaskPane);
+        assert.strictEqual(parseAddInType("TaskPane"), AddInType.TaskPane);
+        assert.strictEqual(parseAddInType(" TASKPANE "), AddInType.TaskPane);
+      });
+    });
+    describe("parseAddInTypes()", function() {
+      it("one type", function() {
+        const types = parseAddInTypes("taskpane");
+        const [firstType] = types;
+        assert.strictEqual(types.length, 1);
+        assert.strictEqual(firstType, AddInType.TaskPane);
+      });
+      it("two types", function() {
+        const types = parseAddInTypes("Mail,Content");
+        const [first, second] = types;
+        assert.strictEqual(types.length, 2);
+        assert.strictEqual(first, AddInType.Mail);
+        assert.strictEqual(second, AddInType.Content);
+      });
+      it("two types with whitespace", function() {
+        const types = parseAddInTypes(" TaskPane, Content ");
+        const [first, second] = types;
+        assert.strictEqual(types.length, 2);
+        assert.strictEqual(first, AddInType.TaskPane);
+        assert.strictEqual(second, AddInType.Content);
+      });
+      it("all", function() {
+        const types = parseAddInTypes("all");
+        assert.strictEqual(types.length, 3);
+        assert.strictEqual(types[0], AddInType.Content);
+        assert.strictEqual(types[1], AddInType.Mail);
+        assert.strictEqual(types[2], AddInType.TaskPane);
+        const typesWithWhitespace = parseAddInTypes(" all ");
+        assert.strictEqual(typesWithWhitespace.length, 3);
+        assert.strictEqual(typesWithWhitespace[0], AddInType.Content);
+        assert.strictEqual(typesWithWhitespace[1], AddInType.Mail);
+        assert.strictEqual(typesWithWhitespace[2], AddInType.TaskPane);
+      });
+      it("unknown app", function() {
+        const unknown = "unknown";
+        assert.throws(() => {
+          parseOfficeApps(unknown);
+        }, new Error(`"${unknown}" is not a valid Office app.`));
+        assert.throws(() => {
+          parseOfficeApps(`Excel,${unknown}`);
+        }, new Error(`"${unknown}" is not a valid Office app.`));
+      });
+      it("empty string", function() {
+        assert.throws(() => {
+          parseOfficeApps("");
+        }, new Error(`"" is not a valid Office app.`));
+      });
+    });
+    describe("toAddInType()", function() {
+      it("Content", function() {
+        assert.strictEqual(toAddInType("Content"), AddInType.Content);
+        assert.strictEqual(toAddInType("content"), AddInType.Content);
+      });
+      it("Mail", function() {
+        assert.strictEqual(toAddInType("Mail"), AddInType.Mail);
+        assert.strictEqual(toAddInType("mail"), AddInType.Mail);
+      });
+      it("TaskPane", function() {
+        assert.strictEqual(toAddInType("TaskPane"), AddInType.TaskPane);
+        assert.strictEqual(toAddInType("taskpane"), AddInType.TaskPane);
+      });
+      it("should return undefined for an unknown or empty value", function() {
+        assert.strictEqual(toAddInType("unknown"), undefined);
+        assert.strictEqual(toAddInType(""), undefined);
+      });
+      it("should trim whitespace", function() {
+        assert.strictEqual(toAddInType(" taskPane "), AddInType.TaskPane);
+      });
+    });
+  });
   describe("officeApp.ts", function() {
+    describe("getOfficeAppForManifestHost()", function() {
+      it("Document", function() {
+        assert.strictEqual(getOfficeAppForManifestHost("Document"), OfficeApp.Word);
+        assert.strictEqual(getOfficeAppForManifestHost("document"), OfficeApp.Word);
+        assert.strictEqual(getOfficeAppForManifestHost("DOCUMENT"), OfficeApp.Word);
+      });
+      it("Mailbox", function() {
+        assert.strictEqual(getOfficeAppForManifestHost("Mailbox"), OfficeApp.Outlook);
+        assert.strictEqual(getOfficeAppForManifestHost("mailbox"), OfficeApp.Outlook);
+        assert.strictEqual(getOfficeAppForManifestHost("MAILBOX"), OfficeApp.Outlook);
+      });
+      it("Notebook", function() {
+        assert.strictEqual(getOfficeAppForManifestHost("Notebook"), OfficeApp.OneNote);
+        assert.strictEqual(getOfficeAppForManifestHost("notebook"), OfficeApp.OneNote);
+        assert.strictEqual(getOfficeAppForManifestHost("NOTEBOOK"), OfficeApp.OneNote);
+      });
+      it("Presentation", function() {
+        assert.strictEqual(getOfficeAppForManifestHost("Presentation"), OfficeApp.PowerPoint);
+        assert.strictEqual(getOfficeAppForManifestHost("presentation"), OfficeApp.PowerPoint);
+        assert.strictEqual(getOfficeAppForManifestHost("PRESENTATION"), OfficeApp.PowerPoint);
+      });
+      it("Project", function() {
+        assert.strictEqual(getOfficeAppForManifestHost("Project"), OfficeApp.Project);
+        assert.strictEqual(getOfficeAppForManifestHost("project"), OfficeApp.Project);
+        assert.strictEqual(getOfficeAppForManifestHost("PROJECT"), OfficeApp.Project);
+      });
+      it("Workbook", function() {
+        assert.strictEqual(getOfficeAppForManifestHost("Workbook"), OfficeApp.Excel);
+        assert.strictEqual(getOfficeAppForManifestHost("workbook"), OfficeApp.Excel);
+        assert.strictEqual(getOfficeAppForManifestHost("WORKBOOK"), OfficeApp.Excel);
+      });
+      it("undefined", function() {
+        assert.strictEqual(getOfficeAppForManifestHost(""), undefined);
+        assert.strictEqual(getOfficeAppForManifestHost("Unknown"), undefined);
+      });
+    });
     describe("getOfficeAppName()", function() {
       it("Excel", function() {
         assert.strictEqual(getOfficeAppName(OfficeApp.Excel), "Excel");
@@ -66,40 +221,16 @@ describe("Unit Tests", function() {
         assert.strictEqual(secondAppName, "PowerPoint");
       });
     });
-    describe("getOfficeAppForManifestHost()", function() {
-      it("Document", function() {
-        assert.strictEqual(getOfficeAppForManifestHost("Document"), OfficeApp.Word);
-        assert.strictEqual(getOfficeAppForManifestHost("document"), OfficeApp.Word);
-        assert.strictEqual(getOfficeAppForManifestHost("DOCUMENT"), OfficeApp.Word);
-      });
-      it("Mailbox", function() {
-        assert.strictEqual(getOfficeAppForManifestHost("Mailbox"), OfficeApp.Outlook);
-        assert.strictEqual(getOfficeAppForManifestHost("mailbox"), OfficeApp.Outlook);
-        assert.strictEqual(getOfficeAppForManifestHost("MAILBOX"), OfficeApp.Outlook);
-      });
-      it("Notebook", function() {
-        assert.strictEqual(getOfficeAppForManifestHost("Notebook"), OfficeApp.OneNote);
-        assert.strictEqual(getOfficeAppForManifestHost("notebook"), OfficeApp.OneNote);
-        assert.strictEqual(getOfficeAppForManifestHost("NOTEBOOK"), OfficeApp.OneNote);
-      });
-      it("Presentation", function() {
-        assert.strictEqual(getOfficeAppForManifestHost("Presentation"), OfficeApp.PowerPoint);
-        assert.strictEqual(getOfficeAppForManifestHost("presentation"), OfficeApp.PowerPoint);
-        assert.strictEqual(getOfficeAppForManifestHost("PRESENTATION"), OfficeApp.PowerPoint);
-      });
-      it("Project", function() {
-        assert.strictEqual(getOfficeAppForManifestHost("Project"), OfficeApp.Project);
-        assert.strictEqual(getOfficeAppForManifestHost("project"), OfficeApp.Project);
-        assert.strictEqual(getOfficeAppForManifestHost("PROJECT"), OfficeApp.Project);
-      });
-      it("Workbook", function() {
-        assert.strictEqual(getOfficeAppForManifestHost("Workbook"), OfficeApp.Excel);
-        assert.strictEqual(getOfficeAppForManifestHost("workbook"), OfficeApp.Excel);
-        assert.strictEqual(getOfficeAppForManifestHost("WORKBOOK"), OfficeApp.Excel);
-      });
-      it("undefined", function() {
-        assert.strictEqual(getOfficeAppForManifestHost(""), undefined);
-        assert.strictEqual(getOfficeAppForManifestHost("Unknown"), undefined);
+    describe("getOfficeApps()", function() {
+      it("should return all Office apps", function() {
+        const apps = getOfficeApps();
+        assert.strictEqual(apps.length, 6);
+        assert.strictEqual(apps[0], OfficeApp.Excel);
+        assert.strictEqual(apps[1], OfficeApp.OneNote);
+        assert.strictEqual(apps[2], OfficeApp.Outlook);
+        assert.strictEqual(apps[3], OfficeApp.PowerPoint);
+        assert.strictEqual(apps[4], OfficeApp.Project);
+        assert.strictEqual(apps[5], OfficeApp.Word);
       });
     });
     describe("getOfficeAppsForManifestHosts()", function() {
@@ -264,18 +395,6 @@ describe("Unit Tests", function() {
         assert.strictEqual(toOfficeApp("  \toutlook  "), OfficeApp.Outlook);
         assert.strictEqual(toOfficeApp("  unknown  "), undefined);
         assert.strictEqual(toOfficeApp("    "), undefined);
-      });
-    });
-    describe("getOfficeApps()", function() {
-      it("should return all Office apps", function() {
-        const apps = getOfficeApps();
-        assert.strictEqual(apps.length, 6);
-        assert.strictEqual(apps[0], OfficeApp.Excel);
-        assert.strictEqual(apps[1], OfficeApp.OneNote);
-        assert.strictEqual(apps[2], OfficeApp.Outlook);
-        assert.strictEqual(apps[3], OfficeApp.PowerPoint);
-        assert.strictEqual(apps[4], OfficeApp.Project);
-        assert.strictEqual(apps[5], OfficeApp.Word);
       });
     });
   });

@@ -16,6 +16,30 @@ export enum AddInType {
 const addInTypes: AddInType[] = Object.keys(AddInType).map<AddInType>(key => parseAddInType(key));
 
 /**
+ * Get the Office app for the manifest Host name
+ * @param host Host name
+ */
+export function getAddInTypeForManifestOfficeAppType(officeAppType: string): AddInType | undefined {
+  switch (officeAppType ? officeAppType.trim().toLowerCase() : officeAppType) {
+    case "contentapp":
+      return AddInType.Content;
+    case "mailapp":
+      return AddInType.Mail;
+    case "taskpaneapp":
+      return AddInType.TaskPane;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Returns the Office add-in types.
+ */
+export function getAddInTypes(): AddInType[] {
+    return addInTypes;
+}
+
+/**
  * Converts the string to the AddInType enum value.
  * @param value string
  * @throws Error if the value is not a valid Office add-in type.
@@ -36,7 +60,7 @@ export function parseAddInType(value: string): AddInType {
  * @throws Error if a value is not a valid Office app.
  */
 export function parseAddInTypes(input: string): AddInType[] {
-  if (input === "all") {
+  if (input.trim().toLowerCase() === "all") {
     return getAddInTypes();
   } else {
     return input.split(",").map<AddInType>(appString => parseAddInType(appString));
@@ -48,7 +72,7 @@ export function parseAddInTypes(input: string): AddInType[] {
  * @param value Office add-in type string
  */
 export function toAddInType(value: string): AddInType | undefined {
-  switch (value.toLowerCase()) {
+  switch (value.trim().toLowerCase()) {
     case AddInType.Content:
       return AddInType.Content;
     case AddInType.Mail:
@@ -58,28 +82,4 @@ export function toAddInType(value: string): AddInType | undefined {
     default:
       return undefined;
   }
-}
-
-/**
- * Get the Office app for the manifest Host name
- * @param host Host name
- */
-export function getAddInTypeForManifestOfficeAppType(officeAppType: string): AddInType | undefined {
-  switch (officeAppType.toLowerCase()) {
-    case "contentapp":
-      return AddInType.Content;
-    case "mailapp":
-      return AddInType.Mail;
-    case "taskpaneapp":
-      return AddInType.TaskPane;
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Returns the Office add-in types.
- */
-export function getAddInTypes(): AddInType[] {
-    return addInTypes;
 }
