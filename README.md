@@ -36,6 +36,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package can be used to configure developer settings for an Office Add-in.
 
+* [office-addin-lint](packages/office-addin-lint/README.md)
+
+  This package can be used to ensure code quality with lint rules and standardize code formatting.
+
 * [office-addin-manifest](packages/office-addin-manifest/README.md)
 
   This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
