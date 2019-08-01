@@ -13,7 +13,8 @@ const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelem
 
 /**
  * Telemetry object necesary for initialization of telemetry package
- * @member groupName Event name sent to telemetry structure
+ * @member groupName Telemetry Group name that will be written to the telemetry config file (i.e. telemetryJsonFilePath)
+ * @member projectName The name of the project that is using the telemetry package (e.g "generator-office")
  * @member instrumentationKey Instrumentation key for telemetry resource
  * @member promptQuestion Question displayed to User over opt-in for telemetry
  * @member raisePrompt Specifies whether to raise telemetry prompt (this allows for using a custom prompt)
@@ -24,6 +25,7 @@ const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelem
  */
 export interface ITelemetryObject {
   groupName: string;
+  projectName: string;
   instrumentationKey: string;
   promptQuestion: string;
   raisePrompt: boolean;
@@ -46,6 +48,15 @@ export class OfficeAddinTelemetry {
   constructor(telemetryObj: ITelemetryObject) {
     try {
       this.telemetryObject = telemetryObj;
+
+      if (this.telemetryObject.instrumentationKey === undefined) {
+        throw new Error(chalk.default.red("Instrumentation not defined - cannot create telemetry object"));
+      }
+
+      if (this.telemetryObject.promptQuestion === undefined) {
+        this.telemetryObject.promptQuestion = `Help improve ${this.telemetryObject.projectName} by allowing the collection of usage data. Would you like to particpate? Y/N`;
+      }
+
       if (this.telemetryObject.telemetryJsonFilePath === undefined) {
         this.telemetryObject.telemetryJsonFilePath = telemetryJsonFilePath;
       }
@@ -62,10 +73,6 @@ export class OfficeAddinTelemetry {
         } else {
           jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled, this.telemetryObject.telemetryJsonFilePath);
         }
-      }
-
-      if (this.telemetryObject.instrumentationKey === undefined) {
-        throw new Error("Instrumentation not defined - cannot create telemetry object");
       }
 
       appInsights.setup(this.telemetryObject.instrumentationKey)
@@ -164,27 +171,27 @@ export class OfficeAddinTelemetry {
    * @param mochaTest Specifies whether test code is calling this method
    * @param testReponse Specifies test response
    */
-  public telemetryOptIn(mochaTest: boolean = false, testResponse: string = ""): void {
+  public telemetryOptIn(testData: boolean = this.telemetryObject.testData, testResponse: string = ""): void {
     try {
       let response: string = "";
-      if (mochaTest) {
+      if (testData) {
         response = testResponse;
       } else {
-        response = readLine.question(chalk.default.blue(this.telemetryObject.promptQuestion));
+        response = readLine.question(chalk.default.blue(`${this.telemetryObject.promptQuestion}\n`));
       }
 
-      const enableTelemetry = response.toLowerCase() === "y";
+      this.telemetryObject.telemetryEnabled = response.toLowerCase() === "y";
       const telemetryJsonData: any = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
 
       if (telemetryJsonData) {
-        this.telemetryObject.telemetryEnabled = enableTelemetry;
-        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = enableTelemetry;
+        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = { telemetryEnabled: this.telemetryObject.telemetryEnabled };
         jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
-        if (!this.telemetryObject.testData) {
-          console.log(chalk.default.green(enableTelemetry ? "Telemetry will be sent!" : "You will not be sending telemetry"));
-        }
       } else {
-        jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, enableTelemetry, this.telemetryObject.telemetryJsonFilePath);
+        jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled, this.telemetryObject.telemetryJsonFilePath);
+      }
+
+      if (!this.telemetryObject.testData) {
+        console.log(chalk.default.green(this.telemetryObject.telemetryEnabled ? "Telemetry will be sent!" : "You will not be sending telemetry"));
       }
     } catch (err) {
       this.reportError("TelemetryOptIn", err);

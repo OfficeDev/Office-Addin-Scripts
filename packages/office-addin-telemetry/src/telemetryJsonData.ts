@@ -1,12 +1,13 @@
 
 import * as chalk from "chalk";
 import * as fs from "fs";
-
+import * as os from "os";
+import * as path from "path";
 /**
  * Allows developer to create prompts and responses in other applications before object creation
  * @param groupName Event name sent to telemetry structure
  * @param telemetryEnabled Whether user agreed to data collection
- * @returns boolean of whether the program should prompt
+ * @returns Boolean of whether the program should prompt
  */
 export function promptForTelemetry(groupName: string, jsonFilePath): boolean {
     try {
@@ -23,7 +24,7 @@ export function promptForTelemetry(groupName: string, jsonFilePath): boolean {
 /**
  * Reads data from the telemetry json config file
  * @param jsonFilePath Path to the json config file
- * @returns parsed object from json file if it exists
+ * @returns Parsed object from json file if it exists
  */
 export function readTelemetryJsonData(jsonFilePath: string): any {
     if (fs.existsSync(jsonFilePath)) {
@@ -37,7 +38,7 @@ export function readTelemetryJsonData(jsonFilePath: string): any {
  * @param jsonData telemetry json data to write to the json config file
  * @param jsonFilePath Path to the json config file
  */
-export function writeTelemetryJsonData(jsonData: any, jsonFilePath: string): void {
+export function writeTelemetryJsonData(jsonData: any, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
     fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
 }
 
@@ -47,18 +48,16 @@ export function writeTelemetryJsonData(jsonData: any, jsonFilePath: string): voi
  * @param telemetryEnabled specifies whether opted into telemetry collection
  * @param jsonFilePath Path to the json config file
  */
-export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled, jsonFilePath: string): void {
-    let jsonData = {};
-    jsonData[groupName] = telemetryEnabled;
-    jsonData = { telemetryInstances: jsonData };
+export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled: boolean, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
+    const jsonData = { telemetryInstances: {[groupName]: {telemetryEnabled}} };
     writeTelemetryJsonData(jsonData, jsonFilePath);
 }
 
 /**
  * Checks to see if a give group name exists in the specified json data
- * @param jsonData telemetry json data to search
- * @param groupName group name to search for in the specified json data
- * @returns boolean of whether group name exists
+ * @param jsonData Telemetry json data to search
+ * @param groupName Group name to search for in the specified json data
+ * @returns Boolean of whether group name exists
  */
 export function groupNameExists(jsonData: any, groupName: string): boolean {
     return Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName);

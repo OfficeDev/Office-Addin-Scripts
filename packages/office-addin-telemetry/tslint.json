@@ -1,3 +1,4 @@
+
 {
     "defaultSeverity": "error",
     "extends": [
@@ -9,7 +10,8 @@
         "no-console": false,
         "only-arrow-functions": false,
         "max-classes-per-file": false,
-        "max-line-length": false
+        "max-line-length": false,
+        "object-literal-sort-keys": false
     },
     "rulesDirectory": []
 }

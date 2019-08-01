@@ -12,6 +12,7 @@ const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppDat
 const testJsonFilePath = path.join(os.homedir(), "/mochaTest.json");
 const telemetryObject: officeAddinTelemetry.ITelemetryObject = {
   groupName: "Office-Addin-Scripts",
+  projectName: "Test-Project",
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
   raisePrompt: false,
@@ -62,7 +63,7 @@ describe("Test office-addin-telemetry-package", function() {
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'true' because testJsonFilePath doesn't exist", () => {
-      // Delete mochaTest.json
+      // delete mochaTest.json
       if (fs.existsSync(testJsonFilePath)) {
         fs.unlinkSync(testJsonFilePath);
       }
@@ -88,7 +89,7 @@ describe("Test office-addin-telemetry-package", function() {
     it("Should write out file with groupName set to true to testJsonFilePath", () => {
       addInTelemetry.telemetryOptIn(telemetryObject.testData, "y");
       const jsonTelemtryData = jsonData.readTelemetryJsonData(telemetryObject.telemetryJsonFilePath);
-      assert.equal(jsonTelemtryData.telemetryInstances[telemetryObject.groupName], true);
+      assert.equal(jsonTelemtryData.telemetryInstances[telemetryObject.groupName].telemetryEnabled, true);
     });
   });
 
