@@ -35,7 +35,7 @@ export function readTelemetryJsonData(jsonFilePath: string): any {
 
 /**
  * Writes data to the telemetry json config file
- * @param jsonData telemetry json data to write to the json config file
+ * @param jsonData Telemetry json data to write to the json config file
  * @param jsonFilePath Path to the json config file
  */
 export function writeTelemetryJsonData(jsonData: any, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
@@ -44,8 +44,8 @@ export function writeTelemetryJsonData(jsonData: any, jsonFilePath = path.join(o
 
 /**
  * Writes new telemetry json config file if one doesn't already exist
- * @param groupName telemetry group name to write to the json config file
- * @param telemetryEnabled specifies whether opted into telemetry collection
+ * @param groupName Telemetry group name to write to the json config file
+ * @param telemetryEnabled Specifies whether opted into telemetry collection
  * @param jsonFilePath Path to the json config file
  */
 export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled: boolean, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
