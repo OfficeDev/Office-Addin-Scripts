@@ -360,6 +360,6 @@ export async function unregister(manifestPath: string, command: commander.Comman
 
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
-    throw new Error(`The manifest file doesn't contain the id of the Office add-in.`);
+    throw new Error(`The manifest file doesn't contain the id of the Office Add-in.`);
   }
 }

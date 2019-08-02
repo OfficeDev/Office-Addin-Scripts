@@ -57,7 +57,7 @@ commander
 
 commander
     .command("sideload <manifest-path>")
-    .description("Launch Office with the Office add-in loaded.")
+    .description("Launch Office with the Office Add-in loaded.")
     .option("-a,--app <app>", `The Office app to launch. ("Excel", "PowerPoint", or "Word")`)
     .action(commands.sideload);
 

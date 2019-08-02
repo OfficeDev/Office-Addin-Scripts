@@ -189,8 +189,8 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
 }
 
 /**
- * Starts the Office app and loads the Office add-in.
- * @param manifestPath Path to the manifest file for the Office add-in.
+ * Starts the Office app and loads the Office Add-in.
+ * @param manifestPath Path to the manifest file for the Office Add-in.
  * @param app Office app to launch.
  * @param canPrompt
  */
@@ -203,7 +203,7 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
     if (!app) {
       app = appsInManifest[0];
     } else if (app !== appsInManifest[0]) {
-      throw new Error(`The Office add-in does not support ${getOfficeAppName(app)}.`);
+      throw new Error(`The Office Add-in does not support ${getOfficeAppName(app)}.`);
     }
   } else if (appsInManifest.length === 0) {
     throw new Error("The manifest does not support any Office apps.");
