@@ -182,7 +182,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["unregister", "/Users/adamk/dev/git/Office-Addin-TaskPane/manifest.word.xml"]
+      "args": ["unregister", "{$workspaceFolder}/test/manifest.xml"]
     },
     {
       "type": "node",
