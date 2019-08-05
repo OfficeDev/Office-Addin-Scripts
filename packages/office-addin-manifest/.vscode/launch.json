@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Command Line: Info",
+      "name": "Command Line: info",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
@@ -15,7 +15,7 @@
       ]
     },
     {
-      "name": "Command Line: Modify",
+      "name": "Command Line: modify",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
@@ -26,6 +26,16 @@
         "bfb2fbf0-c71c-11e8-9c8a-d321d86ae926",
         "-d",
         "TestDisplayName"
+      ]
+    },
+    {
+      "name": "Command Line: validate",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [
+        "validate",
+        "${workspaceFolder}/../../../office-addin-validator/manifest-to-test/valid_excel.xml"
       ]
     },
     {

@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import chalk from "chalk";
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as manifestInfo from "./manifestInfo";
+import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
 
 function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
@@ -48,6 +50,66 @@ function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestIn
   }
 }
 
+function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefined) {
+  if (errors) {
+    let errorNumber = 1;
+    for (const currentError of errors) {
+      console.log(chalk.bold.red(`\nError # ${errorNumber}: `));
+      logManifestValidationIssue(currentError);
+      ++errorNumber;
+    }
+  }
+}
+
+function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined) {
+  if (infos) {
+    for (const currentInfo of infos) {
+      console.log(chalk.bold.blue(`  Additional information: `));
+      logManifestValidationIssue(currentInfo);
+    }
+  }
+}
+
+function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | undefined) {
+  if (warnings) {
+    let warningNumber = 1;
+    for (const currentWarning of warnings) {
+      console.log(chalk.bold.yellow(`  Warning # ${warningNumber}: `));
+      logManifestValidationIssue(currentWarning);
+      ++warningNumber;
+    }
+  }
+}
+
+function logManifestValidationIssue(issue: ManifestValidationIssue) {
+  console.log(`${issue.title}: ${issue.detail} (link: ${issue.link})`);
+
+  if (issue.code) {
+    console.log(`  - Details: ${issue.code}`);
+  }
+  if (issue.line) {
+    console.log(`  - Line: ${issue.line}`);
+  }
+  if (issue.column) {
+    console.log(`  - Column: ${issue.column}`);
+  }
+}
+
+function logManifestValidationSupportedProducts(products: ManifestValidationProduct[] | undefined) {
+  if (products) {
+    const productTitles = new Set(products.filter(product => product.title).map(product => product.title));
+
+    if (productTitles.size > 0) {
+      console.log(`Based on the requirements specified in your manifest, your add-in can run on the following platforms; your add-in will be tested on these platforms when you submit it to the Office Store:`);
+      for (const productTitle of productTitles) {
+        console.log(`  - ${productTitle}`);
+      }
+      console.log(`Important: This analysis is based on the requirements specified in your manifest and does not account for any runtime JavaScript calls within your add-in. For information about which API sets and features are supported on each platform, see Office Add-in host and platform availability. (https://dev.office.com/add-in-availability).\n`);
+      console.log(`*This does not include mobile apps. You can opt-in to support mobile apps when you submit your add-in.`);
+    }
+  }
+}
+
 export async function modify(manifestPath: string, command: commander.Command) {
   try {
     // if the --guid command option is provided without a value, use "" to specify to change to a random guid value.
@@ -56,6 +118,33 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
     const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function validate(manifestPath: string, command: commander.Command) {
+  try {
+    const validation: ManifestValidation = await validateManifest(manifestPath);
+
+    if (validation.isValid) {
+      console.log("The manifest is valid.");
+    } else {
+      console.log("The manifest is not valid.");
+    }
+    console.log();
+
+    if (validation.report) {
+      logManifestValidationErrors(validation.report.errors);
+      logManifestValidationWarnings(validation.report.warnings);
+      logManifestValidationInfos(validation.report.infos);
+
+      if (validation.isValid) {
+        if (validation.details) {
+          logManifestValidationSupportedProducts(validation.details.supportedProducts);
+        }
+      }
+    }
   } catch (err) {
     logErrorMessage(err);
   }
