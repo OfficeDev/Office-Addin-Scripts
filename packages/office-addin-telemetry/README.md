@@ -3,9 +3,9 @@ This package allows for sending telemetry event and exception data to the select
 
 
 ## Command-Line Interface
-* [start](#start)
-* [stop](#stop)
-* [list](#list)
+* [Start](#start)
+* [Stop](#stop)
+* [List](#list)
 
 #
 

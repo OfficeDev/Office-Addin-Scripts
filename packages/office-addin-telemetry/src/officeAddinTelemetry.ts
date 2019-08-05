@@ -67,6 +67,7 @@ export class OfficeAddinTelemetry {
         const telemetryJsonData = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
         if (telemetryJsonData) {
           if (!jsonData.groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
+            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = {telemetryEnabled: Boolean};
             telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
             jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
           }
@@ -252,7 +253,7 @@ export class OfficeAddinTelemetry {
    * Returns whether the user opted in or not
    * @returns returns the telemetry opt in value (true or false)
    */
-  public telemetryOptedIn(): boolean {
+  public  telemetryOptedIn(): boolean {
     return this.telemetryObject.telemetryEnabled;
   }
 

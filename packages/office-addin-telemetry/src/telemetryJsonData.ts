@@ -49,7 +49,10 @@ export function writeTelemetryJsonData(jsonData: any, jsonFilePath = path.join(o
  * @param jsonFilePath Path to the json config file
  */
 export function writeNewTelemetryJsonFile(groupName: string, telemetryEnabled: boolean, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
-    const jsonData = { telemetryInstances: {[groupName]: {telemetryEnabled}} };
+    let jsonData = {};
+    jsonData[groupName] = telemetryEnabled;
+    jsonData = { telemetryInstances: jsonData};
+    jsonData = { telemetryInstances: {[groupName]: {telemetryEnabled}} };
     writeTelemetryJsonData(jsonData, jsonFilePath);
 }
 

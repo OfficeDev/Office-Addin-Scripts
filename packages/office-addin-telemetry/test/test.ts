@@ -93,7 +93,7 @@ describe("Test office-addin-telemetry-package", function() {
     });
   });
 
-  describe("test setTelemetryOff method", () => {
+  describe("Test setTelemetryOff method", () => {
     it("should change samplingPercentage to 100, turns telemetry on", () => {
       addInTelemetry.setTelemetryOn();
       addInTelemetry.setTelemetryOff();
@@ -101,7 +101,7 @@ describe("Test office-addin-telemetry-package", function() {
     });
   });
 
-  describe("test setTelemetryOn method", () => {
+  describe("Test setTelemetryOn method", () => {
     it("should change samplingPercentage to 100, turns telemetry on", () => {
       addInTelemetry.setTelemetryOff();
       addInTelemetry.setTelemetryOn();
@@ -109,7 +109,7 @@ describe("Test office-addin-telemetry-package", function() {
     });
   });
 
-  describe("test isTelemetryOn method", () => {
+  describe("Test isTelemetryOn method", () => {
     it("should return true if samplingPercentage is on(100)", () => {
       appInsights.defaultClient.config.samplingPercentage = 100;
       assert.equal(addInTelemetry.isTelemetryOn(), true);
@@ -120,13 +120,13 @@ describe("Test office-addin-telemetry-package", function() {
     });
   });
 
-  describe("test getTelemetryKey method", () => {
+  describe("Test getTelemetryKey method", () => {
     it("should return telemetry key", () => {
       assert.equal(addInTelemetry.getTelemetryKey(), "de0d9e7c-1f46-4552-bc21-4e43e489a015");
     });
   });
 
-  describe("test getEventsSent method", () => {
+  describe("Test getEventsSent method", () => {
     it("should return amount of events successfully sent", () => {
       addInTelemetry.setTelemetryOff();
       const test1 = { Name: { value: "test", elapsedTime: 9 } };
@@ -135,7 +135,7 @@ describe("Test office-addin-telemetry-package", function() {
     });
   });
 
-  describe("test getExceptionsSent method", () => {
+  describe("Test getExceptionsSent method", () => {
     it("should return amount of exceptions successfully sent ", () => {
       addInTelemetry.setTelemetryOff();
       addInTelemetry.reportError("TestData", err);
@@ -143,7 +143,7 @@ describe("Test office-addin-telemetry-package", function() {
     });
   });
 
-  describe("test parseErrors method", () => {
+  describe("Test parseErrors method", () => {
     it("should return a parsed file path error", () => {
       addInTelemetry.setTelemetryOff();
       const compareError = new Error();
