@@ -4,8 +4,22 @@ import * as os from "os";
 import * as path from "path";
 import * as readLine from "readline-sync";
 import * as jsonData from "./telemetryJsonData";
+/**
+ * Specifies the telemetry infrastructure the user wishes to use
+ * @enum Application Insights: Microsoft Azure service used to collect and query through data sent
+ */
 export enum telemetryType {
   applicationinsights = "applicationInsights",
+  // OtelJs = "OtelJs" - Not yet implemented
+}
+/**
+ * Level controlling what type of telemetry is being sent
+ * @enum basic: basic level of telemetry, only sends errors
+ * @enum verbose: verbose level of telemetry, sends errors and events
+ */
+export enum telemetryLevel {
+  basic = "basic",
+  verbose = "verbose",
   // OtelJs = "OtelJs" - Not yet implemented
 }
 
@@ -18,7 +32,7 @@ const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelem
  * @member instrumentationKey Instrumentation key for telemetry resource
  * @member promptQuestion Question displayed to User over opt-in for telemetry
  * @member raisePrompt Specifies whether to raise telemetry prompt (this allows for using a custom prompt)
- * @member telemetryEnabled User's response to the prompt for telemetry
+ * @member telemetryLevel User's response to the prompt for telemetry and level of telemetry being sent
  * @member telemetryJsonFilePath Path to where telemetry json config file is written to.
  * @member telemetryType Telemetry infrastructure to send data
  * @member testData Allows user to run program without sending actuall data
@@ -29,7 +43,7 @@ export interface ITelemetryObject {
   instrumentationKey: string;
   promptQuestion: string;
   raisePrompt: boolean;
-  telemetryEnabled: boolean;
+  telemetryLevel: telemetryLevel;
   telemetryJsonFilePath: string;
   telemetryType: telemetryType;
   testData: boolean;
@@ -67,12 +81,12 @@ export class OfficeAddinTelemetry {
         const telemetryJsonData = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
         if (telemetryJsonData) {
           if (!jsonData.groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
-            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = {telemetryEnabled: Boolean};
-            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryEnabled;
+            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = {telemetryLevel: String};
+            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryLevel;
             jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
           }
         } else {
-          jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled, this.telemetryObject.telemetryJsonFilePath);
+          jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
         }
       }
 
@@ -94,7 +108,7 @@ export class OfficeAddinTelemetry {
    * @param timeElapsed Optional parameter for custom metric in data object sent
    */
   public async reportEvent(eventName: string, data: object, timeElapsed = 0): Promise<void> {
-    if (this.telemetryOptedIn()) {
+    if (this.telemetryLevel() === telemetryLevel.verbose) {
       this.reportEventApplicationInsights(eventName, data);
     }
   }
@@ -106,7 +120,7 @@ export class OfficeAddinTelemetry {
    * @param timeElapsed Optional parameter for custom metric in data object sent to Application Insights
    */
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
-    if (this.telemetryOptedIn()) {
+    if (this.telemetryLevel() === telemetryLevel.verbose) {
       for (const [key, { value, elapsedTime }] of Object.entries(data)) {
         try {
           if (!this.telemetryObject.testData) {
@@ -177,19 +191,22 @@ export class OfficeAddinTelemetry {
       } else {
         response = readLine.question(chalk.default.blue(`${this.telemetryObject.promptQuestion}\n`));
       }
-
-      this.telemetryObject.telemetryEnabled = response.toLowerCase() === "y";
+      if (response.toLowerCase() === "y") {
+        this.telemetryObject.telemetryLevel = telemetryLevel.verbose;
+      } else {
+        this.telemetryObject.telemetryLevel = telemetryLevel.basic;
+      }
       const telemetryJsonData: any = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
 
       if (telemetryJsonData) {
-        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = { telemetryEnabled: this.telemetryObject.telemetryEnabled };
+        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = { telemetryLevel: this.telemetryObject.telemetryLevel };
         jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
       } else {
-        jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled, this.telemetryObject.telemetryJsonFilePath);
+        jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
       }
 
       if (!this.telemetryObject.testData) {
-        console.log(chalk.default.green(this.telemetryObject.telemetryEnabled ? "Telemetry will be sent!" : "You will not be sending telemetry"));
+        console.log(chalk.default.green(this.telemetryObject.telemetryLevel ? "Telemetry will be sent!" : "You will not be sending telemetry"));
       }
     } catch (err) {
       this.reportError("TelemetryOptIn", err);
@@ -215,7 +232,7 @@ export class OfficeAddinTelemetry {
    * @returns Returns whether telemetry is turned on or off
    */
   public isTelemetryOn(): boolean {
-    return appInsights.defaultClient.config.samplingPercentage === 100
+    return appInsights.defaultClient.config.samplingPercentage === 100;
   }
 
   /**
@@ -246,8 +263,8 @@ export class OfficeAddinTelemetry {
    * Returns whether the user opted in or not
    * @returns Returns whether the user opted in (true or false)
    */
-  public  telemetryOptedIn(): boolean {
-    return this.telemetryObject.telemetryEnabled;
+  public  telemetryLevel(): string {
+    return this.telemetryObject.telemetryLevel;
   }
 
   /**
