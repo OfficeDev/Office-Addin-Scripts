@@ -209,7 +209,7 @@ describe("Test writeNewTelemetryJsonFile method", () => {
   });
 });
 describe("Test groupNameExists method", () => {
-  it("should create new existing file with correct format", () => {
+  it("should check if groupName exists", () => {
     fs.writeFileSync(testJsonFilePath, "test");
     const telemetryLevel = telemetryObject.telemetryLevel;
     let jsonObject = {};
