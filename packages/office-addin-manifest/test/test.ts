@@ -20,6 +20,7 @@ import {
   parseOfficeApps,
   toOfficeApp,
 } from "../src/officeApp";
+import { validateManifest } from "../src/validate";
 
 const manifestOriginalFolder = `${process.cwd()}/test/manifests`;
 const manifestTestFolder = `${process.cwd()}/testExecution/testManifests`;
@@ -432,14 +433,14 @@ describe("Unit Tests", function() {
       it("should throw an error if there is a bad xml end tag", async function() {
           let result;
           try {
-            await manifestInfo.readManifestFile("test/manifests/manifest.incorrect-end-tag.xml");
+            await manifestInfo.readManifestFile("test/manifests/invalid/incorrect-end-tag.manifest.xml");
           } catch (err) {
             result = err;
           }
-          assert.equal(result.message, "Unable to parse the manifest file: test/manifests/manifest.incorrect-end-tag.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
+          assert.equal(result.message, "Unable to parse the manifest file: test/manifests/invalid/incorrect-end-tag.manifest.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
       });
       it ("should handle OfficeApp with no info", async function() {
-        const info = await manifestInfo.readManifestFile("test/manifests/manifest.officeapp-empty.xml");
+        const info = await manifestInfo.readManifestFile("test/manifests/invalid/officeapp-empty.manifest.xml");
 
         assert.strictEqual(info.allowSnapshot, undefined);
         assert.strictEqual(info.alternateId, undefined);
@@ -459,7 +460,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.version, undefined);
       });
       it("should handle a missing description", async function() {
-        const info = await manifestInfo.readManifestFile("test/manifests/manifest.no-description.xml");
+        const info = await manifestInfo.readManifestFile("test/manifests/invalid/no-description.manifest.xml");
 
         assert.strictEqual(info.defaultLocale, "en-US");
         assert.strictEqual(info.description, undefined);
@@ -534,6 +535,80 @@ describe("Unit Tests", function() {
         }
 
         assert.strictEqual(result, `Unable to modify xml data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      });
+    });
+  });
+  describe("validate.ts", function() {
+    describe("validateManifest()", function() {
+      it("valid manifest", async function() {
+        const validation = await validateManifest("test/manifests/TaskPane.manifest.xml");
+        assert.strictEqual(validation.isValid, true);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 0);
+        assert.strictEqual(validation.report!.infos!.length, 0);
+        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+      });
+      it("Excel", async function() {
+        const validation = await validateManifest("test/manifests/TaskPane.Excel.manifest.xml");
+        assert.strictEqual(validation.isValid, true);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 0);
+        assert.strictEqual(validation.report!.infos!.length, 0);
+        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+      });
+      it("OneNote", async function() {
+        const validation = await validateManifest("test/manifests/TaskPane.OneNote.manifest.xml");
+        assert.strictEqual(validation.isValid, true);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 0);
+        assert.strictEqual(validation.report!.infos!.length, 0);
+        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+      });
+      it("Outlook", async function() {
+        const validation = await validateManifest("test/manifests/TaskPane.Outlook.manifest.xml");
+        assert.strictEqual(validation.isValid, true);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 0);
+        assert.strictEqual(validation.report!.infos!.length, 0);
+        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+      });
+      it("PowerPoint", async function() {
+        const validation = await validateManifest("test/manifests/TaskPane.PowerPoint.manifest.xml");
+        assert.strictEqual(validation.isValid, true);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 0);
+        assert.strictEqual(validation.report!.infos!.length, 0);
+        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+      });
+      // it("Project", async function() {
+      //   const validation = await validateManifest("test/manifests/TaskPane.Project.manifest.xml");
+      //   assert.strictEqual(validation.isValid, true);
+      //   assert.strictEqual(validation.status, 200);
+      //   assert.strictEqual(validation.report!.errors!.length, 0);
+      //   assert.strictEqual(validation.report!.infos!.length, 0);
+      //   assert.strictEqual(validation.report!.suggestions!.length, 0);
+      //   assert.strictEqual(validation.report!.warnings!.length, 0);
+      //   assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+      // });
+      it("Word", async function() {
+        const validation = await validateManifest("test/manifests/TaskPane.Word.manifest.xml");
+        assert.strictEqual(validation.isValid, true);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 0);
+        assert.strictEqual(validation.report!.infos!.length, 0);
+        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
       });
     });
   });

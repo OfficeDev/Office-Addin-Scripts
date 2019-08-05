@@ -78,15 +78,18 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
 
     const text = await response.text();
     const json = JSON.parse(text.trim());
-    const report: ManifestValidationReport = (json && json.checkReport) ? json.checkReport.validationReport : undefined;
-    const details: ManifestValidationDetails = (json && json.checkReport) ? json.checkReport.details : undefined;
 
-    if (report) {
-        validation.report = report;
-        validation.details = details;
+    if (json && json.checkReport) {
+        validation.report = json.checkReport.validationReport;
+        validation.details = json.checkReport.details;
+        validation.status = json.status;
+    }
 
-        if (report.result) {
-            switch (report.result.toLowerCase()) {
+    if (validation.report) {
+        const result = validation.report.result;
+
+        if (result) {
+            switch (result.toLowerCase()) {
                 case "passed":
                     validation.isValid = true;
                     break;
