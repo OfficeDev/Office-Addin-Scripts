@@ -9,8 +9,7 @@ import * as jsonData from "./telemetryJsonData";
  * @enum Application Insights: Microsoft Azure service used to collect and query through data sent
  */
 export enum telemetryType {
-  applicationinsights = "applicationInsights",
-  // OtelJs = "OtelJs" - Not yet implemented
+  applicationinsights = "applicationInsights"
 }
 /**
  * Level controlling what type of telemetry is being sent
@@ -43,8 +42,8 @@ export interface ITelemetryObject {
   instrumentationKey: string;
   promptQuestion: string;
   raisePrompt: boolean;
-  telemetryLevel: telemetryLevel;
   telemetryJsonFilePath: string;
+  telemetryLevel: telemetryLevel;
   telemetryType: telemetryType;
   testData: boolean;
 }

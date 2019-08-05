@@ -26,7 +26,7 @@ export function promptForTelemetry(groupName: string, jsonFilePath): boolean {
  * @param jsonFilePath Path to the json config file
  * @returns Parsed object from json file if it exists
  */
-export function readTelemetryJsonData(jsonFilePath: string): any {
+export function readTelemetryJsonData(jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): any {
     if (fs.existsSync(jsonFilePath)) {
         const jsonData = fs.readFileSync(jsonFilePath, "utf8");
         return JSON.parse(jsonData.toString());
