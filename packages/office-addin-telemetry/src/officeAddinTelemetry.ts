@@ -9,7 +9,7 @@ import * as jsonData from "./telemetryJsonData";
  * @enum Application Insights: Microsoft Azure service used to collect and query through data sent
  */
 export enum telemetryType {
-  applicationinsights = "applicationInsights"
+  applicationinsights = "applicationInsights",
 }
 /**
  * Level controlling what type of telemetry is being sent
@@ -81,7 +81,7 @@ export class OfficeAddinTelemetry {
         if (telemetryJsonData) {
           if (!jsonData.groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
             telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = {telemetryLevel: String};
-            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = this.telemetryObject.telemetryLevel;
+            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName].telemetryLevel = this.telemetryObject.telemetryLevel;
             jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
           }
         } else {

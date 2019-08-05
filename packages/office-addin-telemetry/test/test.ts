@@ -173,6 +173,20 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(err.stack.includes(compareError.stack), true);
     });
   });
+  describe("Test modifySetting method", () => {
+    it("should modify or create specific property to new value", () => {
+      const telemetryLevel = telemetryObject.telemetryLevel;
+      let jsonObject = {};
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject = { telemetryInstances: jsonData};
+      jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
+      fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
+      const telemetryJsonData = jsonData.readTelemetryJsonData(testJsonFilePath);
+      telemetryJsonData.telemetryInstances[telemetryObject.groupName]["testProperty"] = 0;
+      jsonData.modifySetting(telemetryObject.groupName, "testProperty", 0, testJsonFilePath);
+      assert.equal( JSON.stringify(telemetryJsonData),  JSON.stringify(jsonData.readTelemetryJsonData(testJsonFilePath)));
+    });
+  });
   describe("Test readTelemetryJsonData method", () => {
     it("should read and return parsed object object from telemetry", () => {
       const telemetryLevel = telemetryObject.telemetryLevel;

@@ -3,13 +3,13 @@ This package allows for sending telemetry event and exception data to the select
 
 
 ## Command-Line Interface
-* [Start](#start)
-* [Stop](#stop)
-* [List](#list)
+* [Start](#Start)
+* [Stop](#Stop)
+* [List](#List)
 
 #
 
-### start
+### Start
 Turns telemetry on for the specific telemetry group.
 
 Syntax:
@@ -24,7 +24,7 @@ Optional filepath that user can specify where the json object changes will be ke
 
 #
 
-### stop
+### Stop
 Turns telemetry off for the specific telemetry group.
 
 Syntax:
@@ -37,7 +37,7 @@ Options:
 
 Optional filepath that user can specify where the json object changes will be kept.
 
-### list
+### List
 List out all the telemetry groups in the telemetry config file.
 
 Syntax:

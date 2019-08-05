@@ -20,10 +20,25 @@ export function promptForTelemetry(groupName: string, jsonFilePath): boolean {
         console.log(chalk.default.red(err));
     }
 }
-
+/**
+ * Allows developer to add or modify a specific property to the group
+ * @param groupName Group name of property
+ * @param property Property that will be created or modified
+ * @param value Property's value that will be assigned
+ * @param jsonFilePath Optional path to the json config file
+ */
+export function modifySetting(groupName: string, property: any, value: any, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
+    try {
+        const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
+        telemetryJsonData.telemetryInstances[groupName][property] = value;
+        writeTelemetryJsonData(telemetryJsonData, jsonFilePath);
+    } catch {
+        console.log(chalk.default.red("Could not modify property!\n Make sure the group name and file exists!"));
+    }
+}
 /**
  * Reads data from the telemetry json config file
- * @param jsonFilePath Path to the json config file
+ * @param jsonFilePath Optional path to the json config file
  * @returns Parsed object from json file if it exists
  */
 export function readTelemetryJsonData(jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): any {
@@ -36,7 +51,7 @@ export function readTelemetryJsonData(jsonFilePath = path.join(os.homedir(), "/o
 /**
  * Writes data to the telemetry json config file
  * @param jsonData Telemetry json data to write to the json config file
- * @param jsonFilePath Path to the json config file
+ * @param jsonFilePath Optional path to the json config file
  */
 export function writeTelemetryJsonData(jsonData: any, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
     fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
@@ -46,7 +61,7 @@ export function writeTelemetryJsonData(jsonData: any, jsonFilePath = path.join(o
  * Writes new telemetry json config file if one doesn't already exist
  * @param groupName Telemetry group name to write to the json config file
  * @param telemetryEnabled Specifies whether opted into telemetry collection
- * @param jsonFilePath Path to the json config file
+ * @param jsonFilePath Optional path to the json config file
  */
 export function writeNewTelemetryJsonFile(groupName: string, telemetryLevel: string, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
     let jsonData = {};
