@@ -136,9 +136,6 @@ export class OfficeAddinTelemetry {
    */
   public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
     err.name = errorName;
-    if (this.telemetryObject.testData) {
-      err.name = errorName;
-    }
     this.telemetryClient.trackException({ exception: this.maskFilePaths(err) });
     this.exceptionsSent++;
   }
@@ -149,7 +146,7 @@ export class OfficeAddinTelemetry {
    * @param key Name of custom event data collected
    * @param value Data the user wishes to send
    * @param elapsedTime Optional duration of time for data to be collected
-   * @returns returns the updated object with the new telemetry event added
+   * @returns Returns the updated object with the new telemetry event added
    */
   public addTelemetry(data: { [k: string]: any }, key: string, value: any, elapsedTime: any = 0): object {
     data[key] = { value, elapsedTime };
@@ -160,7 +157,7 @@ export class OfficeAddinTelemetry {
    * Deletes specified key and value(s) from given object
    * @param data Object used to contain custom event data
    * @param key Name of key that is deleted along with corresponding values
-   * @returns returns the updated object with the telemetry event removed
+   * @returns Returns the updated object with the telemetry event removed
    */
   public deleteTelemetry(data: { [k: string]: any }, key: string): object {
     delete data[key];
@@ -215,19 +212,15 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns whether the telemetry is currently on or off
-   * @returns returns whether telemetry is turned on or off
+   * @returns Returns whether telemetry is turned on or off
    */
   public isTelemetryOn(): boolean {
-    if (appInsights.defaultClient.config.samplingPercentage === 100) {
-      return true;
-    } else {
-      return false;
-    }
+    return appInsights.defaultClient.config.samplingPercentage === 100
   }
 
   /**
    * Returns the instrumentation key associated with the resource
-   * @returns returns the telemetry instrumentation key
+   * @returns Returns the telemetry instrumentation key
    */
   public getTelemetryKey(): string {
     return this.telemetryObject.instrumentationKey;
@@ -235,7 +228,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns amount of events that have been sent
-   * @returns returns the count of events sent
+   * @returns Returns the count of events sent
    */
   public getEventsSent(): any {
     return this.eventsSent;
@@ -243,7 +236,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns amount of exceptions that have been sent
-   * @returns returns the count of exceptions sent
+   * @returns Returns the count of exceptions sent
    */
   public getExceptionsSent(): any {
     return this.exceptionsSent;
@@ -251,7 +244,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns whether the user opted in or not
-   * @returns returns the telemetry opt in value (true or false)
+   * @returns Returns whether the user opted in (true or false)
    */
   public  telemetryOptedIn(): boolean {
     return this.telemetryObject.telemetryEnabled;
@@ -259,7 +252,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns whether the user opted in or not
-   * @returns error after removing PII
+   * @returns Error after removing PII
    */
   public maskFilePaths(err: Error): Error {
     try {
