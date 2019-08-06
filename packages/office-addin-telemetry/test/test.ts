@@ -23,7 +23,7 @@ const telemetryObject: officeAddinTelemetry.ITelemetryObject = {
 };
 
 describe("Test office-addin-telemetry-package", function() {
-  beforeEach(function() {
+  beforeEach(function () {
     if (fs.existsSync(testJsonFilePath)) {
       fs.unlinkSync(testJsonFilePath);
     }
@@ -168,14 +168,14 @@ describe("Test office-addin-telemetry-package", function() {
       const telemetryLevel = telemetryObject.telemetryLevel;
       let jsonObject = {};
       jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData};
-      jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
+      jsonObject = { telemetryInstances: jsonData };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
       fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
       const telemetryJsonData = jsonData.readTelemetryJsonData(testJsonFilePath);
       const testPropertyName = "testProperty";
       telemetryJsonData.telemetryInstances[telemetryObject.groupName][testPropertyName] = 0;
       jsonData.modifyTelemetryJsonData(telemetryObject.groupName, testPropertyName, 0, testJsonFilePath);
-      assert.equal( JSON.stringify(telemetryJsonData),  JSON.stringify(jsonData.readTelemetryJsonData(testJsonFilePath)));
+      assert.equal(JSON.stringify(telemetryJsonData), JSON.stringify(jsonData.readTelemetryJsonData(testJsonFilePath)));
     });
   });
   describe("Test readTelemetryJsonData method", () => {
@@ -183,10 +183,10 @@ describe("Test office-addin-telemetry-package", function() {
       const telemetryLevel = telemetryObject.telemetryLevel;
       let jsonObject = {};
       jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData};
-      jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
+      jsonObject = { telemetryInstances: jsonData };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
       fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal( JSON.stringify(jsonObject),  JSON.stringify(jsonData.readTelemetryJsonData(testJsonFilePath)));
+      assert.equal(JSON.stringify(jsonObject), JSON.stringify(jsonData.readTelemetryJsonData(testJsonFilePath)));
     });
   });
   describe("Test readTelemetryLevel method", () => {
@@ -194,10 +194,10 @@ describe("Test office-addin-telemetry-package", function() {
       const telemetryLevel = telemetryObject.telemetryLevel;
       let jsonObject = {};
       jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData};
-      jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
+      jsonObject = { telemetryInstances: jsonData };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
       fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal( officeAddinTelemetry.telemetryLevel.verbose,  jsonData.readTelemetryLevel(telemetryObject.groupName, testJsonFilePath));
+      assert.equal(officeAddinTelemetry.telemetryLevel.verbose, jsonData.readTelemetryLevel(telemetryObject.groupName, testJsonFilePath));
     });
   });
   describe("Test readTelemetryObjectProperty method", () => {
@@ -205,10 +205,10 @@ describe("Test office-addin-telemetry-package", function() {
       const telemetryLevel = telemetryObject.telemetryLevel;
       let jsonObject = {};
       jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData};
-      jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
+      jsonObject = { telemetryInstances: jsonData };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
       fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal( officeAddinTelemetry.telemetryLevel.verbose,  jsonData.readTelemetryObjectProperty(telemetryObject.groupName, "telemetryLevel", testJsonFilePath));
+      assert.equal(officeAddinTelemetry.telemetryLevel.verbose, jsonData.readTelemetryObjectProperty(telemetryObject.groupName, "telemetryLevel", testJsonFilePath));
     });
   });
   describe("Test writeTelemetryJsonData method", () => {
@@ -217,33 +217,33 @@ describe("Test office-addin-telemetry-package", function() {
       const telemetryLevel = telemetryObject.telemetryLevel;
       let jsonObject = {};
       jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData};
-      jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
+      jsonObject = { telemetryInstances: jsonData };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
       jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel, testJsonFilePath);
       assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(testJsonFilePath, "utf8"));
     });
-});
-describe("Test writeTelemetryJsonData method", () => {
-  it("should create new existing file with correct format", () => {
-    const telemetryLevel = telemetryObject.telemetryLevel;
-    let jsonObject = {};
-    jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-    jsonObject = { telemetryInstances: jsonData};
-    jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
-    jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel, testJsonFilePath);
-    assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(testJsonFilePath, "utf8"));
   });
-});
-describe("Test groupNameExists method", () => {
-  it("should check if groupName exists", () => {
-    fs.writeFileSync(testJsonFilePath, "test");
-    const telemetryLevel = telemetryObject.telemetryLevel;
-    let jsonObject = {};
-    jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-    jsonObject = { telemetryInstances: jsonData};
-    jsonObject = { telemetryInstances: {[telemetryObject.groupName]: {telemetryLevel}} };
-    fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
-    assert.equal(true, jsonData.groupNameExists(jsonData.readTelemetryJsonData(testJsonFilePath), "Office-Addin-Scripts"));
+  describe("Test writeTelemetryJsonData method", () => {
+    it("should create new existing file with correct format", () => {
+      const telemetryLevel = telemetryObject.telemetryLevel;
+      let jsonObject = {};
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject = { telemetryInstances: jsonData };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel, testJsonFilePath);
+      assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(testJsonFilePath, "utf8"));
+    });
   });
-});
+  describe("Test groupNameExists method", () => {
+    it("should check if groupName exists", () => {
+      fs.writeFileSync(testJsonFilePath, "test");
+      const telemetryLevel = telemetryObject.telemetryLevel;
+      let jsonObject = {};
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject = { telemetryInstances: jsonData };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
+      assert.equal(true, jsonData.groupNameExists(jsonData.readTelemetryJsonData(testJsonFilePath), "Office-Addin-Scripts"));
+    });
+  });
 });

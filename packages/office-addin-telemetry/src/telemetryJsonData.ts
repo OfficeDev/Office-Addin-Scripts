@@ -96,7 +96,7 @@ export function writeTelemetryJsonData(groupName: string, level: telemetryLevel,
         let jsonData = {};
         jsonData[groupName] = level;
         jsonData = { telemetryInstances: jsonData };
-        jsonData = { telemetryInstances: { [groupName]: { ["telemetryLevel"]: level} } };
+        jsonData = { telemetryInstances: { [groupName]: { ["telemetryLevel"]: level } } };
         fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
     }
 }

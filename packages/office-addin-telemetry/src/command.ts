@@ -3,7 +3,7 @@ import * as commander from "commander";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import {telemetryLevel} from "./officeAddinTelemetry";
+import { telemetryLevel } from "./officeAddinTelemetry";
 import * as jsonData from "./telemetryJsonData";
 const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
 
@@ -28,7 +28,7 @@ export function listTelemetryGroups(command: commander.Command): void {
       for (const key of Object.keys(telemetryJsonData.telemetryInstances)) {
          console.log(`${key}:\n`);
          for (const value of Object.keys(telemetryJsonData.telemetryInstances[key])) {
-         console.log(`  ${value}:${telemetryJsonData.telemetryInstances[key][value]}\n`);
+            console.log(`  ${value}:${telemetryJsonData.telemetryInstances[key][value]}\n`);
          }
       }
    } else {
