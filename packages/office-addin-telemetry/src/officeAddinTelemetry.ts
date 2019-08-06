@@ -6,7 +6,7 @@ import * as readLine from "readline-sync";
 import * as jsonData from "./telemetryJsonData";
 /**
  * Specifies the telemetry infrastructure the user wishes to use
- * @enum Application Insights: Microsoft Azure service used to collect and query through data sent
+ * @enum Application Insights: Microsoft Azure service used to collect and query through data
  */
 export enum telemetryType {
   applicationinsights = "applicationInsights",
@@ -19,22 +19,21 @@ export enum telemetryType {
 export enum telemetryLevel {
   basic = "basic",
   verbose = "verbose",
-  // OtelJs = "OtelJs" - Not yet implemented
 }
 
 const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
 
 /**
- * Telemetry object necesary for initialization of telemetry package
+ * Telemetry object necessary for initialization of telemetry package
  * @member groupName Telemetry Group name that will be written to the telemetry config file (i.e. telemetryJsonFilePath)
  * @member projectName The name of the project that is using the telemetry package (e.g "generator-office")
  * @member instrumentationKey Instrumentation key for telemetry resource
- * @member promptQuestion Question displayed to User over opt-in for telemetry
+ * @member promptQuestion Question displayed to user over opt-in for telemetry
  * @member raisePrompt Specifies whether to raise telemetry prompt (this allows for using a custom prompt)
  * @member telemetryLevel User's response to the prompt for telemetry and level of telemetry being sent
  * @member telemetryJsonFilePath Path to where telemetry json config file is written to.
  * @member telemetryType Telemetry infrastructure to send data
- * @member testData Allows user to run program without sending actuall data
+ * @member testData Allows user to run program without sending actual data
  */
 export interface ITelemetryObject {
   groupName: string;
@@ -81,7 +80,6 @@ export class OfficeAddinTelemetry {
       }
 
       appInsights.setup(this.telemetryObject.instrumentationKey)
-        .setAutoCollectConsole(true)
         .setAutoCollectExceptions(false)
         .start();
       this.telemetryClient = appInsights.defaultClient;
@@ -95,7 +93,7 @@ export class OfficeAddinTelemetry {
    * Reports custom event object to telemetry structure
    * @param eventName Event name sent to telemetry structure
    * @param data Data object sent to telemetry structure
-   * @param timeElapsed Optional parameter for custom metric in data object sent
+   * @param timeElapsed Optional parameter for custom metric in data object
    */
   public async reportEvent(eventName: string, data: object, timeElapsed = 0): Promise<void> {
     if (this.telemetryLevel() === telemetryLevel.verbose) {
@@ -150,7 +148,7 @@ export class OfficeAddinTelemetry {
    * @param key Name of custom event data collected
    * @param value Data the user wishes to send
    * @param elapsedTime Optional duration of time for data to be collected
-   * @returns Returns the updated object with the new telemetry event added
+   * @returns The updated object with the new telemetry event added
    */
   public addTelemetry(data: { [k: string]: any }, key: string, value: any, elapsedTime: any = 0): object {
     data[key] = { value, elapsedTime };
@@ -161,7 +159,7 @@ export class OfficeAddinTelemetry {
    * Deletes specified key and value(s) from given object
    * @param data Object used to contain custom event data
    * @param key Name of key that is deleted along with corresponding values
-   * @returns Returns the updated object with the telemetry event removed
+   * @returns The updated object with the telemetry event removed
    */
   public deleteTelemetry(data: { [k: string]: any }, key: string): object {
     delete data[key];
@@ -169,8 +167,8 @@ export class OfficeAddinTelemetry {
   }
 
   /**
-   * Prompts user for telemtry participation once and records response
-   * @param mochaTest Specifies whether test code is calling this method
+   * Prompts user for telemetry participation once and records response
+   * @param testData Specifies whether test code is calling this method
    * @param testReponse Specifies test response
    */
   public telemetryOptIn(testData: boolean = this.telemetryObject.testData, testResponse: string = ""): void {
@@ -211,7 +209,7 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns whether the telemetry is currently on or off
-   * @returns Returns whether telemetry is turned on or off
+   * @returns Whether telemetry is turned on or off
    */
   public isTelemetryOn(): boolean {
     return appInsights.defaultClient.config.samplingPercentage === 100;
@@ -219,38 +217,38 @@ export class OfficeAddinTelemetry {
 
   /**
    * Returns the instrumentation key associated with the resource
-   * @returns Returns the telemetry instrumentation key
+   * @returns The telemetry instrumentation key
    */
   public getTelemetryKey(): string {
     return this.telemetryObject.instrumentationKey;
   }
 
   /**
-   * Returns amount of events that have been sent
-   * @returns Returns the count of events sent
+   * Returns the amount of events that have been sent
+   * @returns The count of events sent
    */
   public getEventsSent(): any {
     return this.eventsSent;
   }
 
   /**
-   * Returns amount of exceptions that have been sent
-   * @returns Returns the count of exceptions sent
+   * Returns the amount of exceptions that have been sent
+   * @returns The count of exceptions sent
    */
   public getExceptionsSent(): any {
     return this.exceptionsSent;
   }
 
   /**
-   * Returns whether the user opted in or not
-   * @returns Returns whether the user opted in (true or false)
+   * Returns the telemetry level of the current object
+   * @returns Telemetry level of the object
    */
   public telemetryLevel(): string {
     return this.telemetryObject.telemetryLevel;
   }
 
   /**
-   * Returns whether the user opted in or not
+   * Returns parsed file path, scrubbing file names and sensitive information
    * @returns Error after removing PII
    */
   public maskFilePaths(err: Error): Error {
@@ -266,7 +264,7 @@ export class OfficeAddinTelemetry {
     }
   }
   /**
-   * Removes fields from ApplicationInsights data
+   * Removes sensitive information fields from ApplicationInsights data
    */
   private removeApplicationInsightsSensitiveInformation() {
     delete this.telemetryClient.context.tags["ai.cloud.roleInstance"]; // cloud name

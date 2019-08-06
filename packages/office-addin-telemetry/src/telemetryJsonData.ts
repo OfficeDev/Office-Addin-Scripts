@@ -58,6 +58,7 @@ export function readTelemetryJsonData(jsonFilePath = telemetryJsonFilePath): any
  * Returns telemetry level of telemetry object
  * @param groupName Group name to search for in the specified json data
  * @param jsonFilePath Optional path to the json config file
+ * @returns Telemetry level specific to the group name
  */
 export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJsonFilePath): string {
     const jsonData = readTelemetryJsonData(jsonFilePath);
@@ -68,8 +69,9 @@ export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJs
  * @param groupName Group name to search for in the specified json data
  * @param propertyName Property name that will be used to access and return the associated value
  * @param jsonFilePath Optional path to the json config file
+ * @returns Property of the specific group name
  */
-export function readTelemetryObjectProperty(groupName: string, propertyName: string, jsonFilePath = telemetryJsonFilePath): string {
+export function readTelemetryObjectProperty(groupName: string, propertyName: string, jsonFilePath = telemetryJsonFilePath): any {
     const jsonData = readTelemetryJsonData(jsonFilePath);
     return jsonData.telemetryInstances[groupName][propertyName];
 }
@@ -92,14 +94,14 @@ export function writeTelemetryJsonData(groupName: string, level: telemetryLevel,
         }
     } else {
         let jsonData = {};
-        jsonData[groupName] = telemetryLevel;
+        jsonData[groupName] = level;
         jsonData = { telemetryInstances: jsonData };
-        jsonData = { telemetryInstances: { [groupName]: { telemetryLevel } } };
+        jsonData = { telemetryInstances: { [groupName]: { ["telemetryLevel"]: level} } };
         fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
     }
 }
 /**
- * Checks to see if a give group name exists in the specified json data
+ * Checks to see if the given group name exists in the specified json data
  * @param jsonData Telemetry json data to search
  * @param groupName Group name to search for in the specified json data
  * @returns Boolean of whether group name exists

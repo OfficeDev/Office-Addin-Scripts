@@ -12,19 +12,19 @@ commander.version(process.env.npm_package_version || "(version not available)");
 commander
     .command(`start <telemetry-group-name>`)
     .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
-    .description(`Turn telemetry on for the specified group name.`)
+    .description(`Sets telemetry level to verbose for the specified group name`)
     .action(commands.startTelemetryGroup);
 
 commander
     .command(`stop <telemetry-group-name>`)
     .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
-    .description(`Turn telemetry off for the specified group name.`)
+    .description(`Sets telemetry level to basic for the specified group name`)
     .action(commands.stopTelemetryGroup);
 
 commander
     .command(`list`)
     .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
-    .description(`List all telemetry groups in the telemetry config file.`)
+    .description(`List all telemetry groups in the specified telemetry config file.`)
     .action(commands.listTelemetryGroups);
 
 // if the command is not known, display an error
