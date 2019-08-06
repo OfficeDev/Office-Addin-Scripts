@@ -60,7 +60,7 @@ export function readTelemetryJsonData(jsonFilePath = telemetryJsonFilePath): any
  * @param jsonFilePath Optional path to the json config file
  * @returns Telemetry level specific to the group name
  */
-export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJsonFilePath): string {
+export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJsonFilePath): telemetryLevel {
     const jsonData = readTelemetryJsonData(jsonFilePath);
     return jsonData.telemetryInstances[groupName].telemetryLevel;
 }
