@@ -77,7 +77,7 @@ export class OfficeAddinTelemetry {
       if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && jsonData.promptForTelemetry(this.telemetryObject.groupName, this.telemetryObject.telemetryJsonFilePath)) {
         this.telemetryOptIn();
       } else {
-            jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
+        jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
       }
 
       appInsights.setup(this.telemetryObject.instrumentationKey)
@@ -245,7 +245,7 @@ export class OfficeAddinTelemetry {
    * Returns whether the user opted in or not
    * @returns Returns whether the user opted in (true or false)
    */
-  public  telemetryLevel(): string {
+  public telemetryLevel(): string {
     return this.telemetryObject.telemetryLevel;
   }
 

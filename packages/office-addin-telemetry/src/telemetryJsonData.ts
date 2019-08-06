@@ -35,8 +35,8 @@ export function modifyTelemetryJsonData(groupName: string, property: any, value:
         if (fs.existsSync(jsonFilePath)) {
             const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
             if (groupNameExists(telemetryJsonData, groupName)) {
-            telemetryJsonData.telemetryInstances[groupName][property] = value;
-            fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
+                telemetryJsonData.telemetryInstances[groupName][property] = value;
+                fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
             }
         }
     } catch {
@@ -60,8 +60,8 @@ export function readTelemetryJsonData(jsonFilePath = telemetryJsonFilePath): any
  * @param jsonFilePath Optional path to the json config file
  */
 export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJsonFilePath): string {
-        const jsonData = readTelemetryJsonData(jsonFilePath);
-        return jsonData.telemetryInstances[groupName].telemetryObjectLevel;
+    const jsonData = readTelemetryJsonData(jsonFilePath);
+    return jsonData.telemetryInstances[groupName].telemetryLevel;
 }
 /**
  * Returns telemetry property of telemetry object
@@ -80,21 +80,23 @@ export function readTelemetryObjectProperty(groupName: string, propertyName: str
  * @param jsonFilePath Optional path to the json config file
  */
 
-export function writeTelemetryJsonData(groupName: string, telemetryObjectLevel: string, jsonFilePath = telemetryJsonFilePath): void {
+export function writeTelemetryJsonData(groupName: string, level: telemetryLevel, jsonFilePath = telemetryJsonFilePath): void {
     if (fs.existsSync(jsonFilePath) && fs.readFileSync(jsonFilePath, "utf8") !== "") {
         const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
-        if (!groupNameExists(telemetryJsonData, groupName)) {
-        telemetryJsonData.telemetryInstances[groupName] = {telemetryObjectLevel: String};
-        telemetryJsonData.telemetryInstances[groupName].telemetryObjectLevel = telemetryObjectLevel;
-        fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
+        if (groupNameExists(telemetryJsonData, groupName)) {
+            modifyTelemetryJsonData(groupName, "telemetryLevel", level);
+        } else {
+            telemetryJsonData.telemetryInstances[groupName] = { telemetryLevel: String };
+            telemetryJsonData.telemetryInstances[groupName].telemetryLevel = level;
+            fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
         }
     } else {
-    let jsonData = {};
-    jsonData[groupName] = telemetryObjectLevel;
-    jsonData = { telemetryInstances: jsonData};
-    jsonData = { telemetryInstances: {[groupName]: {telemetryObjectLevel}} };
-    fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
-}
+        let jsonData = {};
+        jsonData[groupName] = telemetryLevel;
+        jsonData = { telemetryInstances: jsonData };
+        jsonData = { telemetryInstances: { [groupName]: { telemetryLevel } } };
+        fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
+    }
 }
 /**
  * Checks to see if a give group name exists in the specified json data

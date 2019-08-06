@@ -36,7 +36,7 @@ export function listTelemetryGroups(command: commander.Command): void {
    }
 }
 
-function modifyTelemetryConfigSetting(telemetryGroupName: string, level: string, telemetryConfigFilePath: string) {
+function modifyTelemetryConfigSetting(telemetryGroupName: string, level: telemetryLevel, telemetryConfigFilePath: string) {
    try {
       if (fs.existsSync(telemetryConfigFilePath)) {
          const telemetryJsonData = jsonData.readTelemetryJsonData(telemetryJsonFilePath);
@@ -44,7 +44,7 @@ function modifyTelemetryConfigSetting(telemetryGroupName: string, level: string,
             if (jsonData.readTelemetryLevel(telemetryGroupName, telemetryConfigFilePath) === level) {
                console.log(chalk.default.yellow(`\nTelemetry is already set to ${level} for telemetry group: ${chalk.default.blue(telemetryGroupName)}\n`));
             } else {
-               jsonData.modifyTelemetryJsonData(telemetryGroupName, "telemetryObjectLevel", level, telemetryConfigFilePath);
+               jsonData.modifyTelemetryJsonData(telemetryGroupName, "telemetryLevel", level, telemetryConfigFilePath);
                console.log(chalk.default.green(`\nTelemetry has been set to ${level} for ${chalk.default.blue(telemetryGroupName)}\n`));
             }
          } else {
