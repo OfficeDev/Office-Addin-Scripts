@@ -20,7 +20,6 @@
     ],
     "exclude": [
         "node_modules",
-        "lib",
-        "test/cases/**/*"
+        "lib"
     ]
 }
