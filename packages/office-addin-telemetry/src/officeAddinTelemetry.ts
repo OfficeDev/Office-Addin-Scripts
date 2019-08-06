@@ -77,16 +77,7 @@ export class OfficeAddinTelemetry {
       if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && jsonData.promptForTelemetry(this.telemetryObject.groupName, this.telemetryObject.telemetryJsonFilePath)) {
         this.telemetryOptIn();
       } else {
-        const telemetryJsonData = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
-        if (telemetryJsonData) {
-          if (!jsonData.groupNameExists(telemetryJsonData, this.telemetryObject.groupName)) {
-            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = {telemetryLevel: String};
-            telemetryJsonData.telemetryInstances[this.telemetryObject.groupName].telemetryLevel = this.telemetryObject.telemetryLevel;
-            jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
-          }
-        } else {
-          jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
-        }
+            jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
       }
 
       appInsights.setup(this.telemetryObject.instrumentationKey)
@@ -195,15 +186,7 @@ export class OfficeAddinTelemetry {
       } else {
         this.telemetryObject.telemetryLevel = telemetryLevel.basic;
       }
-      const telemetryJsonData: any = jsonData.readTelemetryJsonData(this.telemetryObject.telemetryJsonFilePath);
-
-      if (telemetryJsonData) {
-        telemetryJsonData.telemetryInstances[this.telemetryObject.groupName] = { telemetryLevel: this.telemetryObject.telemetryLevel };
-        jsonData.writeTelemetryJsonData(telemetryJsonData, this.telemetryObject.telemetryJsonFilePath);
-      } else {
-        jsonData.writeNewTelemetryJsonFile(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
-      }
-
+      jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
       if (!this.telemetryObject.testData) {
         console.log(chalk.default.green(this.telemetryObject.telemetryLevel ? "Telemetry will be sent!" : "You will not be sending telemetry"));
       }

@@ -3,6 +3,9 @@ import * as chalk from "chalk";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { telemetryLevel } from "./officeAddinTelemetry";
+const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
+
 /**
  * Allows developer to create prompts and responses in other applications before object creation
  * @param groupName Event name sent to telemetry structure
@@ -27,11 +30,15 @@ export function promptForTelemetry(groupName: string, jsonFilePath): boolean {
  * @param value Property's value that will be assigned
  * @param jsonFilePath Optional path to the json config file
  */
-export function modifySetting(groupName: string, property: any, value: any, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
+export function modifyTelemetryJsonData(groupName: string, property: any, value: any, jsonFilePath = telemetryJsonFilePath): void {
     try {
-        const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
-        telemetryJsonData.telemetryInstances[groupName][property] = value;
-        writeTelemetryJsonData(telemetryJsonData, jsonFilePath);
+        if (fs.existsSync(jsonFilePath)) {
+            const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
+            if (groupNameExists(telemetryJsonData, groupName)) {
+            telemetryJsonData.telemetryInstances[groupName][property] = value;
+            fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
+            }
+        }
     } catch {
         console.log(chalk.default.red("Could not modify property!\n Make sure the group name and file exists!"));
     }
@@ -41,36 +48,54 @@ export function modifySetting(groupName: string, property: any, value: any, json
  * @param jsonFilePath Optional path to the json config file
  * @returns Parsed object from json file if it exists
  */
-export function readTelemetryJsonData(jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): any {
+export function readTelemetryJsonData(jsonFilePath = telemetryJsonFilePath): any {
     if (fs.existsSync(jsonFilePath)) {
         const jsonData = fs.readFileSync(jsonFilePath, "utf8");
         return JSON.parse(jsonData.toString());
     }
 }
-
 /**
- * Writes data to the telemetry json config file
- * @param jsonData Telemetry json data to write to the json config file
+ * Returns telemetry level of telemetry object
+ * @param groupName Group name to search for in the specified json data
  * @param jsonFilePath Optional path to the json config file
  */
-export function writeTelemetryJsonData(jsonData: any, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
+export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJsonFilePath): string {
+        const jsonData = readTelemetryJsonData(jsonFilePath);
+        return jsonData.telemetryInstances[groupName].telemetryObjectLevel;
+}
+/**
+ * Returns telemetry property of telemetry object
+ * @param groupName Group name to search for in the specified json data
+ * @param propertyName Property name that will be used to access and return the associated value
+ * @param jsonFilePath Optional path to the json config file
+ */
+export function readTelemetryObjectProperty(groupName: string, propertyName: string, jsonFilePath = telemetryJsonFilePath): string {
+    const jsonData = readTelemetryJsonData(jsonFilePath);
+    return jsonData.telemetryInstances[groupName][propertyName];
+}
+/**
+ * Writes to telemetry config file either appending to already existing file or creating new file
+ * @param groupName Group name of telemetry object
+ * @param telemetryLevel Whether user is sending basic or verbose telemetry
+ * @param jsonFilePath Optional path to the json config file
+ */
+
+export function writeTelemetryJsonData(groupName: string, telemetryObjectLevel: string, jsonFilePath = telemetryJsonFilePath): void {
+    if (fs.existsSync(jsonFilePath) && fs.readFileSync(jsonFilePath, "utf8") !== "") {
+        const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
+        if (!groupNameExists(telemetryJsonData, groupName)) {
+        telemetryJsonData.telemetryInstances[groupName] = {telemetryObjectLevel: String};
+        telemetryJsonData.telemetryInstances[groupName].telemetryObjectLevel = telemetryObjectLevel;
+        fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
+        }
+    } else {
+    let jsonData = {};
+    jsonData[groupName] = telemetryObjectLevel;
+    jsonData = { telemetryInstances: jsonData};
+    jsonData = { telemetryInstances: {[groupName]: {telemetryObjectLevel}} };
     fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
 }
-
-/**
- * Writes new telemetry json config file if one doesn't already exist
- * @param groupName Telemetry group name to write to the json config file
- * @param telemetryEnabled Specifies whether opted into telemetry collection
- * @param jsonFilePath Optional path to the json config file
- */
-export function writeNewTelemetryJsonFile(groupName: string, telemetryLevel: string, jsonFilePath = path.join(os.homedir(), "/officeAddinTelemetry.json")): void {
-    let jsonData = {};
-    jsonData[groupName] = telemetryLevel;
-    jsonData = { telemetryInstances: jsonData};
-    jsonData = { telemetryInstances: {[groupName]: {telemetryLevel}} };
-    writeTelemetryJsonData(jsonData, jsonFilePath);
 }
-
 /**
  * Checks to see if a give group name exists in the specified json data
  * @param jsonData Telemetry json data to search
