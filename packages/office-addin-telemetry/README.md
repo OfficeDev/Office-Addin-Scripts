@@ -10,7 +10,7 @@ This package allows for sending telemetry event and exception data to the select
 #
 
 ### Start
-Turns telemetry on for the specific telemetry group.
+Sets telemetry level to verbose for the specific telemetry group.
 
 Syntax:
 
@@ -25,7 +25,7 @@ Optional filepath that user can specify where the json object changes will be ke
 #
 
 ### Stop
-Turns telemetry off for the specific telemetry group.
+Sets telemetry level to basic for the specific telemetry group.
 
 Syntax:
 

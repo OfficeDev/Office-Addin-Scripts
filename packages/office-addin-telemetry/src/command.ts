@@ -3,26 +3,27 @@ import * as commander from "commander";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { groupNameExists, readTelemetryJsonData, writeTelemetryJsonData } from "./telemetryJsonData";
+import {telemetryLevel} from "./officeAddinTelemetry";
+import * as jsonData from "./telemetryJsonData";
 const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
 
 export function stopTelemetryGroup(telemetryGroupName: string, command: commander.Command): void {
    const commandOption = getCommandOptionString(command.filepath);
    const telemetryConfigFilePath = commandOption ? commandOption : telemetryJsonFilePath;
-   modifyTelemetryConfigSetting(telemetryGroupName, false /* disable */, telemetryConfigFilePath);
+   modifyTelemetryConfigSetting(telemetryGroupName, telemetryLevel.basic /* disable */, telemetryConfigFilePath);
 }
 
 export function startTelemetryGroup(telemetryGroupName: string, command: commander.Command): void {
    const commandOption = getCommandOptionString(command.filepath);
    const telemetryConfigFilePath = commandOption ? commandOption : telemetryJsonFilePath;
-   modifyTelemetryConfigSetting(telemetryGroupName, true /* enable */, telemetryConfigFilePath);
+   modifyTelemetryConfigSetting(telemetryGroupName, telemetryLevel.verbose /* enable */, telemetryConfigFilePath);
 }
 
 export function listTelemetryGroups(command: commander.Command): void {
    const commandOption = getCommandOptionString(command.filepath);
    const telemetryConfigFilePath = commandOption ? commandOption : telemetryJsonFilePath;
    if (fs.existsSync(telemetryConfigFilePath)) {
-      const telemetryJsonData = readTelemetryJsonData(telemetryConfigFilePath);
+      const telemetryJsonData = jsonData.readTelemetryJsonData(telemetryConfigFilePath);
       console.log(chalk.default.blue(`\nTelemetry groups and enabled settings listed in ${telemetryConfigFilePath}:\n`));
       for (const key of Object.keys(telemetryJsonData.telemetryInstances)) {
          console.log(`${key}:\n`);
@@ -35,17 +36,16 @@ export function listTelemetryGroups(command: commander.Command): void {
    }
 }
 
-function modifyTelemetryConfigSetting(telemetryGroupName: string, enable: boolean, telemetryConfigFilePath: string) {
+function modifyTelemetryConfigSetting(telemetryGroupName: string, level: string, telemetryConfigFilePath: string) {
    try {
       if (fs.existsSync(telemetryConfigFilePath)) {
-         const telemetryJsonData = readTelemetryJsonData(telemetryJsonFilePath);
-         if (groupNameExists(telemetryJsonData, telemetryGroupName)) {
-            if (telemetryJsonData.telemetryInstances[telemetryGroupName].telemetryEnabled === enable) {
-               console.log(chalk.default.yellow(`\nTelemetry is already set to ${enable} for telemetry group: ${chalk.default.blue(telemetryGroupName)}\n`));
+         const telemetryJsonData = jsonData.readTelemetryJsonData(telemetryJsonFilePath);
+         if (jsonData.groupNameExists(telemetryJsonData, telemetryGroupName)) {
+            if (jsonData.readTelemetryLevel(telemetryGroupName, telemetryConfigFilePath) === level) {
+               console.log(chalk.default.yellow(`\nTelemetry is already set to ${level} for telemetry group: ${chalk.default.blue(telemetryGroupName)}\n`));
             } else {
-               telemetryJsonData.telemetryInstances[telemetryGroupName].telemetryEnabled = enable;
-               writeTelemetryJsonData(telemetryJsonData, telemetryConfigFilePath);
-               console.log(chalk.default.green(`\nTelemetry has been set to ${enable} for ${chalk.default.blue(telemetryGroupName)}\n`));
+               jsonData.modifyTelemetryJsonData(telemetryGroupName, "telemetryObjectLevel", level, telemetryConfigFilePath);
+               console.log(chalk.default.green(`\nTelemetry has been set to ${level} for ${chalk.default.blue(telemetryGroupName)}\n`));
             }
          } else {
             console.log(chalk.default.yellow(`\nTelemetry group name ${chalk.default.blue(telemetryGroupName)} not found in ${telemetryConfigFilePath}\n`));
