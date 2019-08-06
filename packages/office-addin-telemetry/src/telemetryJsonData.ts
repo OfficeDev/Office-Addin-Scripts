@@ -7,12 +7,12 @@ import { telemetryLevel } from "./officeAddinTelemetry";
 const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
 
 /**
- * Allows developer to create prompts and responses in other applications before object creation
- * @param groupName Event name sent to telemetry structure
- * @param telemetryEnabled Whether user agreed to data collection
+ * Allows developer to check to check if the program has already prompted before
+ * @param groupName Group name of the telemetry object
+ * @param jsonFilePath Optional path to the json config file
  * @returns Boolean of whether the program should prompt
  */
-export function promptForTelemetry(groupName: string, jsonFilePath): boolean {
+export function promptForTelemetry(groupName: string, jsonFilePath = telemetryJsonFilePath): boolean {
     try {
         const jsonData: any = readTelemetryJsonData(jsonFilePath);
         if (jsonData) {
