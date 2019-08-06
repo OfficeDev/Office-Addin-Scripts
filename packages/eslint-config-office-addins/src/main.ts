@@ -1,4 +1,5 @@
 export = {
+    extends: "eslint:recommended",
     rules: {
         "no-eval": "error",
         "no-delete-var": "error",
