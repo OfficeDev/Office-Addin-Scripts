@@ -40,7 +40,7 @@ function modifyTelemetryConfigSetting(telemetryGroupName: string, level: telemet
    try {
       if (fs.existsSync(telemetryConfigFilePath)) {
          const telemetryJsonData = jsonData.readTelemetryJsonData(telemetryJsonFilePath);
-         if (jsonData.groupNameExists(telemetryJsonData, telemetryGroupName)) {
+         if (jsonData.groupNameExists(telemetryGroupName, telemetryJsonFilePath)) {
             if (jsonData.readTelemetryLevel(telemetryGroupName, telemetryConfigFilePath) === level) {
                console.log(chalk.default.yellow(`\nTelemetry is already set to ${level} for telemetry group: ${chalk.default.blue(telemetryGroupName)}\n`));
             } else {

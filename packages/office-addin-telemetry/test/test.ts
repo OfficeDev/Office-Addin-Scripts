@@ -130,7 +130,7 @@ describe("Test office-addin-telemetry-package", function() {
     it("should return amount of events successfully sent", () => {
       addInTelemetry.setTelemetryOff();
       const test1 = { Name: { value: "test", elapsedTime: 9 } };
-      addInTelemetry.reportEvent("TestData", test1, 12);
+      addInTelemetry.reportEvent("TestData", test1);
       assert.equal(addInTelemetry.getEventsSent(), 1);
     });
   });
@@ -243,7 +243,7 @@ describe("Test office-addin-telemetry-package", function() {
       jsonObject = { telemetryInstances: jsonData };
       jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
       fs.writeFileSync(testJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(true, jsonData.groupNameExists(jsonData.readTelemetryJsonData(testJsonFilePath), "Office-Addin-Scripts"));
+      assert.equal(true, jsonData.groupNameExists("Office-Addin-Scripts", testJsonFilePath));
     });
   });
 });

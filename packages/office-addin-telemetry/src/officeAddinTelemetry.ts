@@ -73,6 +73,10 @@ export class OfficeAddinTelemetry {
         this.telemetryObject.telemetryJsonFilePath = telemetryJsonFilePath;
       }
 
+      if (jsonData.groupNameExists(this.telemetryObject.groupName, this.telemetryObject.telemetryJsonFilePath)) {
+        this.telemetryObject.telemetryLevel = jsonData.readTelemetryLevel(this.telemetryObject.groupName);
+      }
+
       if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && jsonData.promptForTelemetry(this.telemetryObject.groupName, this.telemetryObject.telemetryJsonFilePath)) {
         this.telemetryOptIn();
       } else {
@@ -93,9 +97,8 @@ export class OfficeAddinTelemetry {
    * Reports custom event object to telemetry structure
    * @param eventName Event name sent to telemetry structure
    * @param data Data object sent to telemetry structure
-   * @param timeElapsed Optional parameter for custom metric in data object
    */
-  public async reportEvent(eventName: string, data: object, timeElapsed = 0): Promise<void> {
+  public async reportEvent(eventName: string, data: object): Promise<void> {
     if (this.telemetryLevel() === telemetryLevel.verbose) {
       this.reportEventApplicationInsights(eventName, data);
     }
@@ -105,7 +108,6 @@ export class OfficeAddinTelemetry {
    * Reports custom event object to Application Insights
    * @param eventName Event name sent to Application Insights
    * @param data Data object sent to Application Insights
-   * @param timeElapsed Optional parameter for custom metric in data object sent to Application Insights
    */
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.telemetryLevel() === telemetryLevel.verbose) {

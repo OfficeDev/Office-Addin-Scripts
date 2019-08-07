@@ -12,13 +12,9 @@ const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelem
  * @param jsonFilePath Optional path to the json config file
  * @returns Boolean of whether the program should prompt
  */
-export function promptForTelemetry(groupName: string, jsonFilePath = telemetryJsonFilePath): boolean {
+export function promptForTelemetry(groupName: string, jsonFilePath: string = telemetryJsonFilePath): boolean {
     try {
-        const jsonData: any = readTelemetryJsonData(jsonFilePath);
-        if (jsonData) {
-            return !groupNameExists(jsonData, groupName);
-        }
-        return true;
+        return !groupNameExists(groupName, jsonFilePath);
     } catch (err) {
         console.log(chalk.default.red(err));
     }
@@ -30,11 +26,11 @@ export function promptForTelemetry(groupName: string, jsonFilePath = telemetryJs
  * @param value Property's value that will be assigned
  * @param jsonFilePath Optional path to the json config file
  */
-export function modifyTelemetryJsonData(groupName: string, property: any, value: any, jsonFilePath = telemetryJsonFilePath): void {
+export function modifyTelemetryJsonData(groupName: string, property: any, value: any, jsonFilePath: string = telemetryJsonFilePath): void {
     try {
         if (fs.existsSync(jsonFilePath)) {
-            const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
-            if (groupNameExists(telemetryJsonData, groupName)) {
+            if (groupNameExists(groupName, jsonFilePath)) {
+                const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
                 telemetryJsonData.telemetryInstances[groupName][property] = value;
                 fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
             }
@@ -48,7 +44,7 @@ export function modifyTelemetryJsonData(groupName: string, property: any, value:
  * @param jsonFilePath Optional path to the json config file
  * @returns Parsed object from json file if it exists
  */
-export function readTelemetryJsonData(jsonFilePath = telemetryJsonFilePath): any {
+export function readTelemetryJsonData(jsonFilePath: string = telemetryJsonFilePath): any {
     if (fs.existsSync(jsonFilePath)) {
         const jsonData = fs.readFileSync(jsonFilePath, "utf8");
         return JSON.parse(jsonData.toString());
@@ -60,7 +56,7 @@ export function readTelemetryJsonData(jsonFilePath = telemetryJsonFilePath): any
  * @param jsonFilePath Optional path to the json config file
  * @returns Telemetry level specific to the group name
  */
-export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJsonFilePath): telemetryLevel {
+export function readTelemetryLevel(groupName: string, jsonFilePath: string = telemetryJsonFilePath): telemetryLevel {
     const jsonData = readTelemetryJsonData(jsonFilePath);
     return jsonData.telemetryInstances[groupName].telemetryLevel;
 }
@@ -71,7 +67,7 @@ export function readTelemetryLevel(groupName: string, jsonFilePath = telemetryJs
  * @param jsonFilePath Optional path to the json config file
  * @returns Property of the specific group name
  */
-export function readTelemetryObjectProperty(groupName: string, propertyName: string, jsonFilePath = telemetryJsonFilePath): any {
+export function readTelemetryObjectProperty(groupName: string, propertyName: string, jsonFilePath: string = telemetryJsonFilePath): any {
     const jsonData = readTelemetryJsonData(jsonFilePath);
     return jsonData.telemetryInstances[groupName][propertyName];
 }
@@ -82,30 +78,33 @@ export function readTelemetryObjectProperty(groupName: string, propertyName: str
  * @param jsonFilePath Optional path to the json config file
  */
 
-export function writeTelemetryJsonData(groupName: string, level: telemetryLevel, jsonFilePath = telemetryJsonFilePath): void {
+export function writeTelemetryJsonData(groupName: string, level: telemetryLevel, jsonFilePath: string = telemetryJsonFilePath): void {
     if (fs.existsSync(jsonFilePath) && fs.readFileSync(jsonFilePath, "utf8") !== "") {
-        const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
-        if (groupNameExists(telemetryJsonData, groupName)) {
+        if (groupNameExists(groupName, jsonFilePath)) {
             modifyTelemetryJsonData(groupName, "telemetryLevel", level);
         } else {
+            const telemetryJsonData = readTelemetryJsonData(jsonFilePath);
             telemetryJsonData.telemetryInstances[groupName] = { telemetryLevel: String };
             telemetryJsonData.telemetryInstances[groupName].telemetryLevel = level;
             fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
         }
     } else {
-        let jsonData = {};
-        jsonData[groupName] = level;
-        jsonData = { telemetryInstances: jsonData };
-        jsonData = { telemetryInstances: { [groupName]: { ["telemetryLevel"]: level } } };
-        fs.writeFileSync(jsonFilePath, JSON.stringify((jsonData), null, 2));
+        let telemetryJsonData = {};
+        telemetryJsonData[groupName] = level;
+        telemetryJsonData = { telemetryInstances: telemetryJsonData };
+        telemetryJsonData = { telemetryInstances: { [groupName]: { ["telemetryLevel"]: level } } };
+        fs.writeFileSync(jsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
     }
 }
 /**
  * Checks to see if the given group name exists in the specified json data
- * @param jsonData Telemetry json data to search
  * @param groupName Group name to search for in the specified json data
  * @returns Boolean of whether group name exists
  */
-export function groupNameExists(jsonData: any, groupName: string): boolean {
-    return Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName);
+export function groupNameExists(groupName: string, jsonFilePath: string = telemetryJsonFilePath): boolean {
+    if (fs.existsSync(jsonFilePath) && fs.readFileSync(jsonFilePath, "utf8") !== "") {
+        const jsonData = readTelemetryJsonData(jsonFilePath);
+        return Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName);
+    }
+    return false;
 }
