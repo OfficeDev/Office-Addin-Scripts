@@ -1,7 +1,5 @@
 import * as appInsights from "applicationinsights";
 import * as chalk from "chalk";
-import * as os from "os";
-import * as path from "path";
 import * as readLine from "readline-sync";
 import * as jsonData from "./telemetryJsonData";
 /**
@@ -21,8 +19,6 @@ export enum telemetryLevel {
   verbose = "verbose",
 }
 
-const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
-
 /**
  * Telemetry object necessary for initialization of telemetry package
  * @member groupName Telemetry Group name that will be written to the telemetry config file (i.e. telemetryJsonFilePath)
@@ -31,17 +27,15 @@ const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelem
  * @member promptQuestion Question displayed to user over opt-in for telemetry
  * @member raisePrompt Specifies whether to raise telemetry prompt (this allows for using a custom prompt)
  * @member telemetryLevel User's response to the prompt for telemetry and level of telemetry being sent
- * @member telemetryJsonFilePath Path to where telemetry json config file is written to.
  * @member telemetryType Telemetry infrastructure to send data
  * @member testData Allows user to run program without sending actual data
  */
-export interface ITelemetryObject {
+export interface ITelemetryOptions {
   groupName: string;
   projectName: string;
   instrumentationKey: string;
   promptQuestion: string;
   raisePrompt: boolean;
-  telemetryJsonFilePath: string;
   telemetryLevel: telemetryLevel;
   telemetryType: telemetryType;
   testData: boolean;
@@ -55,9 +49,9 @@ export class OfficeAddinTelemetry {
   private telemetryClient = appInsights.defaultClient;
   private eventsSent: number = 0;
   private exceptionsSent: number = 0;
-  private telemetryObject: ITelemetryObject;
+  private telemetryObject: ITelemetryOptions;
 
-  constructor(telemetryObj: ITelemetryObject) {
+  constructor(telemetryObj: ITelemetryOptions) {
     try {
       this.telemetryObject = telemetryObj;
 
@@ -68,19 +62,18 @@ export class OfficeAddinTelemetry {
       if (this.telemetryObject.promptQuestion === undefined) {
         this.telemetryObject.promptQuestion = `Help improve ${this.telemetryObject.projectName} by allowing the collection of usage data. Would you like to particpate? Y/N`;
       }
-
-      if (this.telemetryObject.telemetryJsonFilePath === undefined) {
-        this.telemetryObject.telemetryJsonFilePath = telemetryJsonFilePath;
+      if (this.telemetryObject.groupName === undefined) {
+        throw new Error(chalk.default.red("Group Name not defined - cannot create telemetry object"));
       }
 
-      if (jsonData.groupNameExists(this.telemetryObject.groupName, this.telemetryObject.telemetryJsonFilePath)) {
+      if (jsonData.groupNameExists(this.telemetryObject.groupName)) {
         this.telemetryObject.telemetryLevel = jsonData.readTelemetryLevel(this.telemetryObject.groupName);
       }
 
-      if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && jsonData.promptForTelemetry(this.telemetryObject.groupName, this.telemetryObject.telemetryJsonFilePath)) {
+      if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && jsonData.needToPromptForTelemetry(this.telemetryObject.groupName)) {
         this.telemetryOptIn();
       } else {
-        jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
+        jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel);
       }
 
       appInsights.setup(this.telemetryObject.instrumentationKey)
@@ -186,7 +179,7 @@ export class OfficeAddinTelemetry {
       } else {
         this.telemetryObject.telemetryLevel = telemetryLevel.basic;
       }
-      jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel, this.telemetryObject.telemetryJsonFilePath);
+      jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel);
       if (!this.telemetryObject.testData) {
         console.log(chalk.default.green(this.telemetryObject.telemetryLevel ? "Telemetry will be sent!" : "You will not be sending telemetry"));
       }

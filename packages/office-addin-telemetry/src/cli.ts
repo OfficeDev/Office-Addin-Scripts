@@ -10,20 +10,17 @@ commander.name("office-addin-telemetry");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
-    .command(`start <telemetry-group-name>`)
-    .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
+    .command(`on`)
     .description(`Sets telemetry level to verbose for the specified group name`)
-    .action(commands.startTelemetryGroup);
+    .action(commands.turnTelemetryGroupOn);
 
 commander
-    .command(`stop <telemetry-group-name>`)
-    .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
+    .command(`off`)
     .description(`Sets telemetry level to basic for the specified group name`)
-    .action(commands.stopTelemetryGroup);
+    .action(commands.turnTelemetryGroupOff);
 
 commander
     .command(`list`)
-    .option(`-f --filepath <path to telemetry config file>, Default file path is ${telemetryJsonFilePath}`)
     .description(`List all telemetry groups in the specified telemetry config file.`)
     .action(commands.listTelemetryGroups);
 
