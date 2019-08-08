@@ -23,7 +23,7 @@ const telemetryObject: officeAddinTelemetry.ITelemetryOptions = {
 
 describe("Test office-addin-telemetry-package", function() {
   this.beforeAll(function() {
-    if (fs.existsSync(defaults.telemetryJsonFilePath)) {
+    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== undefined) {
       telemetryData = JSON.parse(fs.readFileSync(defaults.telemetryJsonFilePath, "utf8").toString());
     }
   });
