@@ -11,7 +11,7 @@ let addInTelemetry: officeAddinTelemetry.OfficeAddinTelemetry;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
 let telemetryData: string;
 const telemetryObject: officeAddinTelemetry.ITelemetryOptions = {
-  groupName: "Office-Addin-Scripts",
+  groupName: "Office-Addin-Telemetry",
   projectName: "Test-Project",
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
@@ -23,9 +23,13 @@ const telemetryObject: officeAddinTelemetry.ITelemetryOptions = {
 
 describe("Test office-addin-telemetry-package", function() {
   this.beforeAll(function() {
-    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== undefined) {
+    try {
+    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8").toString() !== undefined) {
       telemetryData = JSON.parse(fs.readFileSync(defaults.telemetryJsonFilePath, "utf8").toString());
     }
+  } catch {
+    telemetryData = undefined;
+  }
   });
   this.afterAll(function() {
     if (fs.existsSync(defaults.telemetryJsonFilePath)) {
@@ -241,7 +245,7 @@ describe("Test office-addin-telemetry-package", function() {
       jsonObject = { telemetryInstances: jsonData };
       jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
       fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(true, jsonData.groupNameExists("Office-Addin-Scripts"));
+      assert.equal(true, jsonData.groupNameExists("Office-Addin-Telemetry"));
     });
   });
   describe("Test readTelemetrySettings method", () => {
