@@ -90,10 +90,11 @@ export class OfficeAddinTelemetry {
    * Reports custom event object to telemetry structure
    * @param eventName Event name sent to telemetry structure
    * @param data Data object sent to telemetry structure
+   * @param byPass Boolean to still report events even when telemetry level is set to basic
    */
-  public async reportEvent(eventName: string, data: object): Promise<void> {
-    if (this.telemetryLevel() === telemetryLevel.verbose) {
-      this.reportEventApplicationInsights(eventName, data);
+  public async reportEvent(eventName: string, data: object, byPass: boolean = false): Promise<void> {
+    if (this.telemetryLevel() === telemetryLevel.verbose || byPass === true) {
+      this.reportEventApplicationInsights(eventName, data, byPass);
     }
   }
 
@@ -101,18 +102,23 @@ export class OfficeAddinTelemetry {
    * Reports custom event object to Application Insights
    * @param eventName Event name sent to Application Insights
    * @param data Data object sent to Application Insights
+   * @param byPass Boolean to still report events to Application Insights even when telemetry level is set to basic
    */
-  public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
-    if (this.telemetryLevel() === telemetryLevel.verbose) {
-      for (const [key, { value, elapsedTime }] of Object.entries(data)) {
-        try {
-          if (!this.telemetryObject.testData) {
-            this.telemetryClient.trackEvent({ name: eventName, properties: { [key]: value }, measurements: { DurationElapsed: elapsedTime } });
-          }
-          this.eventsSent++;
-        } catch (err) {
-          this.reportError("sendTelemetryEvents", err);
+  public async reportEventApplicationInsights(eventName: string, data: object, byPass: boolean = false): Promise<void> {
+    if (this.telemetryLevel() === telemetryLevel.verbose || byPass === true) {
+      const telemetryEvent = new appInsights.Contracts.EventData();
+      telemetryEvent.name = eventName;
+      try {
+        for (const [key, [value, elapsedTime]] of Object.entries(data)) {
+          telemetryEvent.properties[key] = value;
+          telemetryEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
+        if (!this.telemetryObject.testData) {
+          this.telemetryClient.trackEvent(telemetryEvent);
+        }
+        this.eventsSent++;
+      } catch (err) {
+        this.reportError("sendTelemetryEvents", err);
       }
     }
   }
@@ -135,30 +141,6 @@ export class OfficeAddinTelemetry {
     err.name = errorName;
     this.telemetryClient.trackException({ exception: this.maskFilePaths(err) });
     this.exceptionsSent++;
-  }
-
-  /**
-   * Adds key and value(s) to given object
-   * @param data Object used to contain custom event data
-   * @param key Name of custom event data collected
-   * @param value Data the user wishes to send
-   * @param elapsedTime Optional duration of time for data to be collected
-   * @returns The updated object with the new telemetry event added
-   */
-  public addTelemetry(data: { [k: string]: any }, key: string, value: any, elapsedTime: any = 0): object {
-    data[key] = { value, elapsedTime };
-    return data;
-  }
-
-  /**
-   * Deletes specified key and value(s) from given object
-   * @param data Object used to contain custom event data
-   * @param key Name of key that is deleted along with corresponding values
-   * @returns The updated object with the telemetry event removed
-   */
-  public deleteTelemetry(data: { [k: string]: any }, key: string): object {
-    delete data[key];
-    return data;
   }
 
   /**

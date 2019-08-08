@@ -25,7 +25,7 @@ describe("Test office-addin-telemetry-package", function() {
   this.beforeAll(function() {
     if (fs.existsSync(defaults.telemetryJsonFilePath)) {
       telemetryData = JSON.parse(fs.readFileSync(defaults.telemetryJsonFilePath, "utf8").toString());
-  }
+    }
   });
   this.afterAll(function() {
     if (fs.existsSync(defaults.telemetryJsonFilePath)) {
@@ -40,7 +40,10 @@ describe("Test office-addin-telemetry-package", function() {
   });
   describe("Test reportEvent method", () => {
     it("should track event of object passed in with a project name", () => {
-      const testEvent = { Name: { value: "testValue", elapsedTime: 9 } };
+      const testEvent = {
+        Test1: [true, 100],
+        ScriptType: ["Java", 1],
+      };
       addInTelemetry.reportEvent("testData", testEvent);
       assert.equal(addInTelemetry.getEventsSent(), 1);
     });
@@ -50,23 +53,6 @@ describe("Test office-addin-telemetry-package", function() {
     it("should send telemetry exception", () => {
       addInTelemetry.reportError("ReportErrorCheck", err);
       assert.equal(addInTelemetry.getExceptionsSent(), 1);
-    });
-  });
-
-  describe("Test addTelemetry method", () => {
-    it("should add object to telemetry", () => {
-      const testObject = {};
-      addInTelemetry.addTelemetry(testObject, "Name", "testValue", 9);
-      assert.equal(JSON.stringify(testObject), JSON.stringify({ Name: { value: "testValue", elapsedTime: 9 } }));
-    });
-  });
-
-  describe("Test deleteTelemetry method", () => {
-    it("should delete object from telemetry", () => {
-      const testObject = {};
-      addInTelemetry.addTelemetry(testObject, "Name", "testvalue", 9);
-      addInTelemetry.deleteTelemetry(testObject, "Name");
-      assert.equal(JSON.stringify(testObject), JSON.stringify({}));
     });
   });
 
@@ -138,8 +124,11 @@ describe("Test office-addin-telemetry-package", function() {
   describe("Test getEventsSent method", () => {
     it("should return amount of events successfully sent", () => {
       addInTelemetry.setTelemetryOff();
-      const test1 = { Name: { value: "test", elapsedTime: 9 } };
-      addInTelemetry.reportEvent("TestData", test1);
+      const testEvent = {
+        Test1: [true, 100],
+        ScriptType: ["Java", 1],
+      };
+      addInTelemetry.reportEvent("TestData", testEvent);
       assert.equal(addInTelemetry.getEventsSent(), 1);
     });
   });
@@ -255,4 +244,13 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(true, jsonData.groupNameExists("Office-Addin-Scripts"));
     });
   });
+  describe("Test readTelemetrySettings method", () => {
+    it("should read and return parsed telemetry object group settings", () => {
+      const telemetryLevel = telemetryObject.telemetryLevel;
+      const jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
+      assert.equal(JSON.stringify(jsonObject.telemetryInstances[telemetryObject.groupName]), JSON.stringify(jsonData.readTelemetrySettings(telemetryObject.groupName)));
+    });
+  });
+
 });

@@ -3,32 +3,31 @@ This package allows for sending telemetry event and exception data to the select
 
 
 ## Command-Line Interface
-* [On](#On)
-* [Off](#Off)
 * [List](#List)
+* [Off](#Off)
+* [On](#On)
 
-#
-
-### On
-Sets telemetry level to verbose for the specific telemetry group.
+### List
+Display the current telemetry settings.
 
 Syntax:
 
-`on`
+`list`
 
 #
 
 ### Off
-Sets telemetry level to basic for the specific telemetry group.
+Sets the telemetry level to Basic.
 
 Syntax:
 
 `off`
 
+#
 
-### List
-List out telemetry group with its settings in the telemetry config file.
+### On
+Sets the telemetry level to Verbose.
 
 Syntax:
 
-`list`
+`on`

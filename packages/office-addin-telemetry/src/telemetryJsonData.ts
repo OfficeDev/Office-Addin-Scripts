@@ -101,3 +101,14 @@ export function groupNameExists(groupName: string): boolean {
     }
     return false;
 }
+/**
+ * Reads telemetry settings from the telemetry json config file for a specific group
+ * @returns Telemerty settings of the group name
+ */
+export function readTelemetrySettings(groupName = defaults.groupName): object | undefined {
+    if (fs.existsSync(defaults.telemetryJsonFilePath)) {
+        return readTelemetryJsonData().telemetryInstances[groupName];
+    } else {
+        return undefined;
+    }
+}

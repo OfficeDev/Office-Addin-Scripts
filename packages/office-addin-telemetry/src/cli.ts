@@ -10,19 +10,19 @@ commander.name("office-addin-telemetry");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
-    .command(`on`)
-    .description(`Sets telemetry level to verbose for the specified group name`)
-    .action(commands.turnTelemetryGroupOn);
+    .command(`list`)
+    .description(`Display the current telemetry settings.`)
+    .action(commands.listTelemetrySettings);
 
 commander
     .command(`off`)
-    .description(`Sets telemetry level to basic for the specified group name`)
-    .action(commands.turnTelemetryGroupOff);
+    .description(`Sets the telemetry level to Basic.`)
+    .action(commands.turnTelemetryOff);
 
 commander
-    .command(`list`)
-    .description(`List all telemetry groups in the specified telemetry config file.`)
-    .action(commands.listTelemetryGroups);
+    .command(`on`)
+    .description(`Sets the telemetry level to Verbose.`)
+    .action(commands.turnTelemetryOn);
 
 // if the command is not known, display an error
 commander.on("command:*", function() {
