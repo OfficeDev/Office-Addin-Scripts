@@ -28,8 +28,9 @@
         "concurrently": "^4.1.0",
         "mocha": "^5.2.0",
         "rimraf": "^2.6.3",
-        "ts-node": "^8.0.3",
-        "typescript": "^3.3.3333"
+        "ts-node": "^8.3.0",
+        "tslint": "^5.18.0",
+        "typescript": "^3.5.3"
     },
     "repository": {
         "type": "git",
