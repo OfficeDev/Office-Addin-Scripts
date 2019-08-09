@@ -19,7 +19,6 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "chalk": "^2.4.2",
     "commander": "^2.19.0",
     "node-fetch": "^2.6.0",
     "office-addin-cli": "^0.2.9",
@@ -40,8 +39,8 @@
     "fs-extra": "^7.0.0",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
     "typescript": "^3.5.3",
     "validator": "^10.8.0"
   },
