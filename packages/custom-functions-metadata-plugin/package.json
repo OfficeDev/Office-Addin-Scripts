@@ -26,14 +26,14 @@
   "dependencies": {
     "custom-functions-metadata": "^1.0.6",
     "es6-promise": "^4.2.5",
-    "rimraf": "^2.6.2",
-    "typescript": "^3.1.6",
     "webpack": "^4.27.1"
   },
   "devDependencies": {
     "@types/node": "^10.12.12",
     "@types/webpack": "^4.4.21",
     "concurrently": "^4.1.0",
-    "tslint": "^5.11.0"
+    "rimraf": "^2.6.2",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
   }
 }
