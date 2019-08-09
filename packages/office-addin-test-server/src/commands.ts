@@ -2,18 +2,17 @@
 // Licensed under the MIT license.
 
 import * as commnder from "commander";
-import { defaultPort, TestServer } from "./testServer"
 import { parseNumber } from "office-addin-cli";
+import { defaultPort, TestServer } from "./testServer";
 
 export async function start(command: commnder.Command) {
     const testServerPort: number = (command.port !== undefined) ? parseTestServerPort(command.port) : defaultPort;
     const testServer = new TestServer(testServerPort);
     const serverStarted: boolean = await testServer.startTestServer();
 
-    if (serverStarted){
+    if (serverStarted) {
         console.log(`Server started successfully on port ${testServerPort}`);
-    }
-    else{
+    } else {
         console.log("Server failed to start");
     }
 }
