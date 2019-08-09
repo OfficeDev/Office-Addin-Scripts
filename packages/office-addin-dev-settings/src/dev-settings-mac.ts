@@ -19,9 +19,9 @@ export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
         const manifestPath = fs.realpathSync(path.join(sideloadDirectory, fileName));
         const manifest = await readManifestFile(manifestPath);
         registeredAddins.push(new RegisteredAddin(manifest.id || "", manifestPath));
-      }      
+      }
     }
-  };
+  }
 
   return registeredAddins;
 }
