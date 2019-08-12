@@ -144,7 +144,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").returns(false);
                 await install.installCaCertificate(testCaCertificatePath, machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass ${script} LocalMachine '${testCaCertificatePath}'`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass "& '${script}' ${machine ? "LocalMachine" : "CurrentUser"} '${testCaCertificatePath}'`), true);
             });
             it("without --machine option", async function() {
                 const execSync = sandbox.fake();
@@ -153,7 +153,7 @@ describe("office-addin-dev-certs", function() {
                 sandbox.stub(verify, "isCaCertificateInstalled").returns(false);
                 await install.installCaCertificate(testCaCertificatePath, machine);
                 assert.strictEqual(execSync.callCount, 1);
-                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass ${script} CurrentUser '${testCaCertificatePath}'`), true);
+                assert.strictEqual(execSync.calledWith(`powershell -ExecutionPolicy Bypass "& '${script}' ${machine ? "LocalMachine" : "CurrentUser"} '${testCaCertificatePath}'`), true);
             });
         }
     });
@@ -269,6 +269,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(install, "ensureCertificatesAreInstalled").callsFake(ensureCertificatesAreInstalled);
             sandbox.stub(fs, "readFileSync").returns("test");
             const serverOptions = await getHttpsServerOptions();
+            assert.strictEqual(serverOptions.ca, "test");
             assert.strictEqual(serverOptions.cert, "test");
             assert.strictEqual(serverOptions.key, "test");
         });
@@ -282,7 +283,7 @@ describe("office-addin-dev-certs", function() {
                 assert.strictEqual(0, 1);
             } catch (err) {
 
-                assert.strictEqual(err.toString().includes("Unable to read the certificate file."), true);
+                assert.strictEqual(err.toString().includes("Unable to read the ca certificate file."), true);
             }
         });
     });
