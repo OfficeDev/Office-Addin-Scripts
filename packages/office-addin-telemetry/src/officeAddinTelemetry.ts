@@ -51,9 +51,9 @@ export class OfficeAddinTelemetry {
   private exceptionsSent: number = 0;
   private telemetryObject: ITelemetryOptions;
 
-  constructor(telemetryObj: ITelemetryOptions) {
+  constructor(telemetryOptions: ITelemetryOptions) {
     try {
-      this.telemetryObject = telemetryObj;
+      this.telemetryObject = telemetryOptions;
 
       if (this.telemetryObject.instrumentationKey === undefined) {
         throw new Error(chalk.default.red("Instrumentation not defined - cannot create telemetry object"));

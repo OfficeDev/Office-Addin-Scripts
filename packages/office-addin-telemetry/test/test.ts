@@ -46,13 +46,12 @@ describe("Test office-addin-telemetry-package", function() {
     it("should track event of object passed in with a project name", () => {
       const testEvent = {
         Test1: [true, 100],
-        ScriptType: ["Java", 1],
+        ScriptType: ["JavaScript", 1],
       };
       addInTelemetry.reportEvent("testData", testEvent);
       assert.equal(addInTelemetry.getEventsSent(), 1);
     });
   });
-
   describe("Test reportError method", () => {
     it("should send telemetry exception", () => {
       addInTelemetry.reportError("ReportErrorCheck", err);

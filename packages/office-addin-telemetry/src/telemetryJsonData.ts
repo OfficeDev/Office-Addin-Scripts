@@ -5,7 +5,7 @@ import * as defaults from "./defaults";
 import { telemetryLevel } from "./officeAddinTelemetry";
 
 /**
- * Allows developer to check to check if the program has already prompted before
+ * Allows developer to check if the program has already prompted before
  * @param groupName Group name of the telemetry object
  * @returns Boolean of whether the program should prompt
  */
@@ -103,7 +103,7 @@ export function groupNameExists(groupName: string): boolean {
 }
 /**
  * Reads telemetry settings from the telemetry json config file for a specific group
- * @returns Telemerty settings of the group name
+ * @returns Telemetry settings of the group name
  */
 export function readTelemetrySettings(groupName = defaults.groupName): object | undefined {
     if (fs.existsSync(defaults.telemetryJsonFilePath)) {
