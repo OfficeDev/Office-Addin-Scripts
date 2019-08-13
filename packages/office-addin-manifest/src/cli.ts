@@ -20,6 +20,10 @@ commander
     .option("-d, --displayName <name>", "Change the display name.")
     .action(commands.modify);
 
+commander
+    .command("validate <manifest-path>")
+    .action(commands.validate);
+
 // if the command is not known, display an error
 commander.on("command:*", function() {
     logErrorMessage(`The command syntax is not valid.\n`);

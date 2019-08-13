@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "commander": "^2.19.0",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.0",
     "office-addin-cli": "^0.2.10",
     "path": "^0.12.7",
     "uuid": "^3.3.2",

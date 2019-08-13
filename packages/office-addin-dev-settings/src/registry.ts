@@ -198,6 +198,24 @@ export async function getValue(key: RegistryKey, value: string): Promise<Registr
   });
 }
 
+export async function getValues(key: RegistryKey): Promise<RegistryValue[]> {
+  return new Promise<RegistryValue[]>((resolve, reject) => {
+    const callback = (err: Error, items: winreg.RegistryItem[]) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(items.map(item => new RegistryValue(key.path, item.name, item.type, item.value)));
+      }
+    };
+
+    try {
+      key.winreg.values(callback);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
 export function isNumberType(registryType: string) {
   // NOTE: REG_QWORD is not included as a number type since it cannot be returned as a "number".
   return (registryType === RegistryTypes.REG_DWORD);
