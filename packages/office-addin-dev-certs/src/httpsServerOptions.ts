@@ -16,9 +16,9 @@ export async function getHttpsServerOptions(): Promise<IHttpsServerOptions> {
 
     const httpsServerOptions = {} as IHttpsServerOptions;
     try {
-        httpsServerOptions.ca = fs.readFileSync(defaults.localhostCaCertificatePath);
+        httpsServerOptions.ca = fs.readFileSync(defaults.caCertificatePath);
     } catch (err) {
-        throw new Error(`Unable to read the ca certificate file.\n${err}`);
+        throw new Error(`Unable to read the CA certificate file.\n${err}`);
     }
 
     try {

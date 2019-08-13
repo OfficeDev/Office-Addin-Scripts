@@ -283,7 +283,7 @@ describe("office-addin-dev-certs", function() {
                 assert.strictEqual(0, 1);
             } catch (err) {
 
-                assert.strictEqual(err.toString().includes("Unable to read the ca certificate file."), true);
+                assert.strictEqual(err.toString().includes("Unable to read the CA certificate file."), true);
             }
         });
     });
