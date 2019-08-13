@@ -26,7 +26,7 @@ export enum telemetryEnabled {
  * @member instrumentationKey Instrumentation key for telemetry resource
  * @member promptQuestion Question displayed to user over opt-in for telemetry
  * @member raisePrompt Specifies whether to raise telemetry prompt (this allows for using a custom prompt)
- * @member telemetryEnabled User's response to the prompt for telemetry and level of telemetry being sent
+ * @member telemetryEnabled User's response to the prompt for telemetry
  * @member telemetryType Telemetry infrastructure to send data
  * @member testData Allows user to run program without sending actual data
  */
@@ -56,14 +56,15 @@ export class OfficeAddinTelemetry {
       this.telemetryObject = telemetryOptions;
 
       if (this.telemetryObject.instrumentationKey === undefined) {
-        throw new Error(chalk.default.red("Instrumentation not defined - cannot create telemetry object"));
+        throw new Error(chalk.default.red("Instrumentation Key not defined - cannot create telemetry object"));
+      }
+
+      if (this.telemetryObject.groupName === undefined) {
+        throw new Error(chalk.default.red("Group Name not defined - cannot create telemetry object"));
       }
 
       if (this.telemetryObject.promptQuestion === undefined) {
-        this.telemetryObject.promptQuestion = `Help improve ${this.telemetryObject.projectName} by allowing the collection of usage data. Would you like to particpate? Y/N`;
-      }
-      if (this.telemetryObject.groupName === undefined) {
-        throw new Error(chalk.default.red("Group Name not defined - cannot create telemetry object"));
+        this.telemetryObject.promptQuestion = `Help improve ${this.telemetryObject.projectName} by allowing the collection of usage data and exception. Would you like to particpate? Y/N`;
       }
 
       if (jsonData.groupNameExists(this.telemetryObject.groupName)) {

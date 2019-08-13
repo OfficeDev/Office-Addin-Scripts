@@ -58,7 +58,6 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(addInTelemetry.getExceptionsSent(), 1);
     });
   });
-
   describe("Test promptForTelemetry method", () => {
     it("Should return 'true' because telemetryJsonFilePath doesn't exist", () => {
       // delete officeAddinTelemetry.json
@@ -68,21 +67,18 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(jsonData.needToPromptForTelemetry(telemetryObject.groupName), true);
     });
   });
-
   describe("Test promptForTelemetry method", () => {
     it("Should return 'false' because telemetryJsonFilePath exists and groupName exists in file", () => {
       jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryEnabled);
       assert.equal(jsonData.needToPromptForTelemetry(telemetryObject.groupName), false);
     });
   });
-
   describe("Test promptForTelemetry method", () => {
     it("Should return 'true' because telemetryJsonFilePath exists but groupName doesn't exist on file", () => {
       jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryEnabled);
       assert.equal(jsonData.needToPromptForTelemetry("test group name"), true);
     });
   });
-
   describe("Test telemetryOptIn method", () => {
     it("Should write out file with groupName set to true to telemetryJsonFilePath", () => {
       addInTelemetry.telemetryOptIn(telemetryObject.testData, "y");
@@ -90,7 +86,6 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(jsonTelemtryData.telemetryInstances[telemetryObject.groupName].telemetryEnabled, telemetryObject.telemetryEnabled);
     });
   });
-
   describe("Test setTelemetryOff method", () => {
     it("should change samplingPercentage to 100, turns telemetry on", () => {
       addInTelemetry.setTelemetryOn();
@@ -98,7 +93,6 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(addInTelemetry.isTelemetryOn(), false);
     });
   });
-
   describe("Test setTelemetryOn method", () => {
     it("should change samplingPercentage to 100, turns telemetry on", () => {
       addInTelemetry.setTelemetryOff();
@@ -106,7 +100,6 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(appInsights.defaultClient.config.samplingPercentage, 100);
     });
   });
-
   describe("Test isTelemetryOn method", () => {
     it("should return true if samplingPercentage is on(100)", () => {
       appInsights.defaultClient.config.samplingPercentage = 100;
@@ -117,13 +110,11 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(addInTelemetry.isTelemetryOn(), false);
     });
   });
-
   describe("Test getTelemetryKey method", () => {
     it("should return telemetry key", () => {
       assert.equal(addInTelemetry.getTelemetryKey(), "de0d9e7c-1f46-4552-bc21-4e43e489a015");
     });
   });
-
   describe("Test getEventsSent method", () => {
     it("should return amount of events successfully sent", () => {
       addInTelemetry.setTelemetryOff();
@@ -135,7 +126,6 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(addInTelemetry.getEventsSent(), 1);
     });
   });
-
   describe("Test getExceptionsSent method", () => {
     it("should return amount of exceptions successfully sent ", () => {
       addInTelemetry.setTelemetryOff();
@@ -143,7 +133,6 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(addInTelemetry.getExceptionsSent(), 1);
     });
   });
-
   describe("Test telemetryEnabled method", () => {
     it("should return the telemetry level of the object", () => {
       assert.equal("on", addInTelemetry.telemetryEnabled());
@@ -255,5 +244,4 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(JSON.stringify(jsonObject.telemetryInstances[telemetryObject.groupName]), JSON.stringify(jsonData.readTelemetrySettings(telemetryObject.groupName)));
     });
   });
-
 });
