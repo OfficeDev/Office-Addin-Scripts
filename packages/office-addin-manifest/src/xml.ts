@@ -95,12 +95,18 @@ export function getXmlElements(xml: Xml, name: string): Xml[] {
 export function getXmlElementsAttributeValue(xml: Xml, name: string, itemElementName: string, attributeName: string = "DefaultValue"): string[] {
   const values: string[] = [];
 
-  getXmlElements(xml, name).forEach((xmlElement) => {
-    const elementValue = getXmlElementAttributeValue(xmlElement, itemElementName, attributeName);
-    if (elementValue !== undefined) {
-      values.push(elementValue);
-    }
-  });
+  try {
+    const xmlElements: Xml[] = xml[name][0][itemElementName];
+
+    xmlElements.forEach((xmlElement: Xml) => {
+      const elementValue = getXmlAttributeValue(xmlElement, attributeName);
+      if (elementValue !== undefined) {
+        values.push(elementValue);
+      }
+    });
+  } catch (err) {
+    // do nothing
+  }
 
   return values;
 }

@@ -7,8 +7,12 @@ Provides the ability to configure developer settings for Office Add-ins.
 * [clear](#clear)
 * [debugging](#debugging)
 * [live-reload](#live-reload)
+* [register](#register)
+* [registered](#registered)
 * [runtime-log](#runtime-log)
+* [sideload](#sideload)
 * [source-bundle-url](#source-bundle-url)
+* [unregister](#unregister)
 
 #
 
@@ -60,7 +64,7 @@ Syntax:
 
 `manifest`: path to manifest file. 
 
-Without options, displays whether devbugging is enabled.
+Without options, displays whether debugging is enabled.
 
 Notes:
 
@@ -107,6 +111,26 @@ Enable live-reload for the Office Add-in.
  
 #
 
+### register 
+Registers an Office Add-in for development. 
+
+Syntax:
+
+`office addin-dev-settings register <manifest> [options]`
+
+`manifest`: path to manifest file. 
+
+#
+
+### registered 
+Displays the Office Add-ins registered for development. 
+
+Syntax:
+
+`office addin-dev-settings registered [options]`
+
+#
+
 ### runtime-log 
  Use the command to enable or disable writing any Office Add-in runtime events to a log file. Without options, it displays whether runtime logging is enabled.
 
@@ -133,6 +157,26 @@ Enable runtime logging.
 * `path`: Specify the path to the log file. If not specified, uses "OfficeAddins.log.txt" in the TEMP folder.
  
 #
+
+### sideload 
+Start Office and open a document so the Office Add-in is loaded. 
+
+Syntax:
+
+`office addin-dev-settings sideload <manifest> [options]`
+
+`manifest`: path to manifest file. 
+
+Note:
+
+If the add-in supports more than one Office app, the command will prompt to choose the app unless the `--app` parameter is provided.  
+
+Options:
+
+`-a`
+`--app`
+
+Specify the Office application to load.
 
 ### source-bundle-url 
 Configure the url used to obtain the source bundle from the packager for an Office Add-in.
@@ -173,4 +217,15 @@ Specify the path or "" to use the default.
 
 Specify the extension (which should start with a period) or "" to use the default.
  
+#
+
+### unregister 
+Unregisters an Office Add-in for development. 
+
+Syntax:
+
+`office addin-dev-settings register <manifest> [options]`
+
+`manifest`: path to manifest file. 
+
 #

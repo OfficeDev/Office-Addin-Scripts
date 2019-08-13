@@ -39,11 +39,27 @@ commander
     .action(commands.liveReload);
 
 commander
+    .command("register <manifest-path>")
+    .description("Register the Office Add-in for development.")
+    .action(commands.register);
+
+commander
+    .command("registered")
+    .description("Show the Office Add-ins registered for development.")
+    .action(commands.registered);
+
+commander
     .command("runtime-log")
     .option("--enable [path]", `Enable the runtime log.`)
     .option("--disable", "Disable the runtime log.")
     .description("Configure the runtime log for all Office Add-ins.")
     .action(commands.runtimeLogging);
+
+commander
+    .command("sideload <manifest-path>")
+    .description("Launch Office with the Office Add-in loaded.")
+    .option("-a,--app <app>", `The Office app to launch. ("Excel", "PowerPoint", or "Word")`)
+    .action(commands.sideload);
 
 commander
     .command("source-bundle-url <manifest-path>")
@@ -53,6 +69,11 @@ commander
     .option("--path <path>", `The path to use, or "" to use the default.`)
     .option("-e,--extension <extension>", `The extension to use, or "" to use the default (".bundle").`)
     .action(commands.sourceBundleUrl);
+
+commander
+    .command("unregister <manifest-path>")
+    .description("Unregister the Office Add-in for development.")
+    .action(commands.unregister);
 
 // if the command is not known, display an error
 commander.on("command:*", function() {

@@ -4,7 +4,7 @@
 
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
-import { ManifestInfo, readManifestFile } from "office-addin-manifest";
+import { ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
   getAppcontainerNameFromManifestPath,
@@ -13,6 +13,7 @@ import {
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
+import { sideloadAddIn } from "./sideload";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -65,12 +66,16 @@ export async function clear(manifestPath: string) {
 }
 
 export async function debugging(manifestPath: string, command: commander.Command) {
-  if (command.enable) {
-    await enableDebugging(manifestPath, command);
-  } else if (command.disable) {
-    await disableDebugging(manifestPath);
-  } else {
-    await isDebuggingEnabled(manifestPath);
+  try {
+    if (command.enable) {
+      await enableDebugging(manifestPath, command);
+    } else if (command.disable) {
+      await disableDebugging(manifestPath);
+    } else {
+      await isDebuggingEnabled(manifestPath);
+    }
+  } catch (err) {
+    logErrorMessage(err);
   }
 }
 
@@ -232,14 +237,64 @@ function parseStringCommandOption(optionValue: any): string | undefined {
   return (typeof(optionValue) === "string") ? optionValue : undefined;
 }
 
+export async function register(manifestPath: string, command: commander.Command) {
+  try {
+    await devSettings.registerAddIn(manifestPath);
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function registered(command: commander.Command) {
+  try {
+    const registeredAddins = await devSettings.getRegisterAddIns();
+
+    if (registeredAddins.length > 0) {
+      for (const addin of registeredAddins) {
+        let id: string = addin.id;
+
+        if (!id && addin.manifestPath) {
+          try {
+            const manifest = await readManifestFile(addin.manifestPath);
+            id = manifest.id || "";
+          } catch (err) {
+            // ignore errors
+          }
+        }
+
+        console.log(`${id ? id + " " : ""}${addin.manifestPath}`);
+      }
+    } else {
+      console.log("No add-ins are registered.");
+    }
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 export async function runtimeLogging(command: commander.Command) {
-  if (command.enable) {
-    const path: string | undefined = (typeof(command.enable) === "string") ? command.enable : undefined;
-    await enableRuntimeLogging(path);
-  } else if (command.disable) {
-    await disableRuntimeLogging();
-  } else {
-    await isRuntimeLoggingEnabled();
+  try {
+    if (command.enable) {
+      const path: string | undefined = (typeof(command.enable) === "string") ? command.enable : undefined;
+      await enableRuntimeLogging(path);
+    } else if (command.disable) {
+      await disableRuntimeLogging();
+    } else {
+      await isRuntimeLoggingEnabled();
+    }
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function sideload(manifestPath: string, command: commander.Command) {
+  try {
+    const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
+    const canPrompt = true;
+
+    await sideloadAddIn(manifestPath, app, canPrompt);
+  } catch (err) {
+    logErrorMessage(err);
   }
 }
 
@@ -264,10 +319,14 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
 }
 
 export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
-  if (command.host !== undefined || command.port !== undefined || command.path !== undefined || command.extension !== undefined) {
-    await setSourceBundleUrl(manifestPath, command);
-  } else {
-    await getSourceBundleUrl(manifestPath);
+  try {
+    if (command.host !== undefined || command.port !== undefined || command.path !== undefined || command.extension !== undefined) {
+      await setSourceBundleUrl(manifestPath, command);
+    } else {
+      await getSourceBundleUrl(manifestPath);
+    }
+  } catch (err) {
+    logErrorMessage(err);
   }
 }
 
@@ -287,8 +346,20 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
   }
 }
 
+export async function unregister(manifestPath: string, command: commander.Command) {
+  try {
+    if (manifestPath === "all") {
+      await devSettings.unregisterAllAddIns();
+    } else {
+      await devSettings.unregisterAddIn(manifestPath);
+    }
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
-    throw new Error(`The manifest file doesn't contain the id of the Office add-in.`);
+    throw new Error(`The manifest file doesn't contain the id of the Office Add-in.`);
   }
 }

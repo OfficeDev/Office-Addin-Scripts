@@ -91,6 +91,20 @@
       ]
     },
     {
+      "name": "Command Line: register",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["register", "~/dev/git/Office-Addin-TaskPane/manifest.xml"]
+    },
+    {
+      "name": "Command Line: registered",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["registered"]
+    },
+    {
       "name": "Command Line: runtime-log",
       "type": "node",
       "request": "launch",
@@ -110,6 +124,13 @@
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
       "args": ["runtime-log", "--enable"]
+    },
+    {
+      "name": "Command Line: sideload",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["sideload", "c:\\dev\\git\\Office-Addin-TaskPane\\manifest.word.xml"]
     },
     {
       "name": "Command Line: source-bundle-url",
@@ -155,6 +176,13 @@
         "--host", "",
         "--port", "4444",
       ]
+    },
+    {
+      "name": "Command Line: unregister",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["unregister", "{$workspaceFolder}/test/manifest.xml"]
     },
     {
       "type": "node",
