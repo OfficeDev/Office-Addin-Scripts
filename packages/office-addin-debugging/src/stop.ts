@@ -1,15 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import { parseNumber } from "office-addin-cli";
-import { clearDevSettings} from "office-addin-dev-settings";
+import { clearDevSettings, unregisterAddIn } from "office-addin-dev-settings";
 import { readManifestFile } from "office-addin-manifest";
-import { isNumber } from "util";
 import * as debugInfo from "./debugInfo";
 import { startProcess, stopProcess } from "./process";
 
-export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
+export async function stopDebugging(manifestPath: string) {
     console.log("Debugging is being stopped...");
 
     const isWindowsPlatform = (process.platform === "win32");
@@ -24,13 +21,11 @@ export async function stopDebugging(manifestPath: string, unregisterCommandLine?
       await clearDevSettings(manifestInfo.id);
     }
 
-    if (unregisterCommandLine) {
-        // unregister
-        try {
-            await startProcess(unregisterCommandLine);
-        } catch (err) {
-            console.log(`Unable to unregister the Office Add-in. ${err}`);
-        }
+    // unregister
+    try {
+        await unregisterAddIn(manifestPath);
+    } catch (err) {
+        console.log(`Unable to unregister the Office Add-in. ${err}`);
     }
 
     const processId = debugInfo.readDevServerProcessId();
