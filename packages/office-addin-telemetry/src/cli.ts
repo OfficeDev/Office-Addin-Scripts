@@ -16,12 +16,12 @@ commander
 
 commander
     .command(`off`)
-    .description(`Sets the telemetry level to Basic.`)
+    .description(`Sets the telemetry level to Off.`)
     .action(commands.turnTelemetryOff);
 
 commander
     .command(`on`)
-    .description(`Sets the telemetry level to Verbose.`)
+    .description(`Sets the telemetry level to On.`)
     .action(commands.turnTelemetryOn);
 
 // if the command is not known, display an error

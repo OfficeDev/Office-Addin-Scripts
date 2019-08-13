@@ -16,7 +16,7 @@ const telemetryObject: officeAddinTelemetry.ITelemetryOptions = {
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
   raisePrompt: false,
-  telemetryLevel: officeAddinTelemetry.telemetryLevel.verbose,
+  telemetryEnabled: officeAddinTelemetry.telemetryEnabled.on,
   telemetryType: officeAddinTelemetry.telemetryType.applicationinsights,
   testData: true,
 };
@@ -71,14 +71,14 @@ describe("Test office-addin-telemetry-package", function() {
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'false' because telemetryJsonFilePath exists and groupName exists in file", () => {
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
+      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryEnabled);
       assert.equal(jsonData.needToPromptForTelemetry(telemetryObject.groupName), false);
     });
   });
 
   describe("Test promptForTelemetry method", () => {
     it("Should return 'true' because telemetryJsonFilePath exists but groupName doesn't exist on file", () => {
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
+      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryEnabled);
       assert.equal(jsonData.needToPromptForTelemetry("test group name"), true);
     });
   });
@@ -87,7 +87,7 @@ describe("Test office-addin-telemetry-package", function() {
     it("Should write out file with groupName set to true to telemetryJsonFilePath", () => {
       addInTelemetry.telemetryOptIn(telemetryObject.testData, "y");
       const jsonTelemtryData = jsonData.readTelemetryJsonData();
-      assert.equal(jsonTelemtryData.telemetryInstances[telemetryObject.groupName].telemetryLevel, telemetryObject.telemetryLevel);
+      assert.equal(jsonTelemtryData.telemetryInstances[telemetryObject.groupName].telemetryEnabled, telemetryObject.telemetryEnabled);
     });
   });
 
@@ -144,9 +144,9 @@ describe("Test office-addin-telemetry-package", function() {
     });
   });
 
-  describe("Test telemetryLevel method", () => {
+  describe("Test telemetryEnabled method", () => {
     it("should return the telemetry level of the object", () => {
-      assert.equal("verbose", addInTelemetry.telemetryLevel());
+      assert.equal("on", addInTelemetry.telemetryEnabled());
     });
   });
   describe("Test maskFilePaths method", () => {
@@ -166,11 +166,11 @@ describe("Test office-addin-telemetry-package", function() {
   });
   describe("Test modifySetting method", () => {
     it("should modify or create specific property to new value", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryEnabled;
       jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
       fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
       const telemetryJsonData = jsonData.readTelemetryJsonData();
       const testPropertyName = "testProperty";
@@ -181,76 +181,76 @@ describe("Test office-addin-telemetry-package", function() {
   });
   describe("Test readTelemetryJsonData method", () => {
     it("should read and return parsed object object from telemetry", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryEnabled;
       jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
       fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
       assert.equal(JSON.stringify(jsonObject), JSON.stringify(jsonData.readTelemetryJsonData()));
     });
   });
   describe("Test readTelemetryLevel method", () => {
     it("should read and return object's telemetry level from file", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryEnabled;
       jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
       fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(officeAddinTelemetry.telemetryLevel.verbose, jsonData.readTelemetryLevel(telemetryObject.groupName));
+      assert.equal(officeAddinTelemetry.telemetryEnabled.on, jsonData.readTelemetryLevel(telemetryObject.groupName));
     });
   });
   describe("Test readTelemetryObjectProperty method", () => {
     it("should read and return parsed object object from telemetry", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryEnabled;
       jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
       fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(officeAddinTelemetry.telemetryLevel.verbose, jsonData.readTelemetryObjectProperty(telemetryObject.groupName, "telemetryLevel"));
+      assert.equal(officeAddinTelemetry.telemetryEnabled.on, jsonData.readTelemetryObjectProperty(telemetryObject.groupName, "telemetryEnabled"));
     });
   });
   describe("Test writeTelemetryJsonData method", () => {
     it("should write to already existing file", () => {
       fs.writeFileSync(defaults.telemetryJsonFilePath, "");
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryEnabled;
       jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
+      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryEnabled);
       assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(defaults.telemetryJsonFilePath, "utf8"));
     });
   });
   describe("Test writeTelemetryJsonData method", () => {
     it("should create new existing file with correct format", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryEnabled;
       jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
+      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryEnabled);
       assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(defaults.telemetryJsonFilePath, "utf8"));
     });
   });
   describe("Test groupNameExists method", () => {
     it("should check if groupName exists", () => {
       fs.writeFileSync(defaults.telemetryJsonFilePath, "test");
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
+      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryEnabled;
       jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
       fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
       assert.equal(true, jsonData.groupNameExists("Office-Addin-Telemetry"));
     });
   });
   describe("Test readTelemetrySettings method", () => {
     it("should read and return parsed telemetry object group settings", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
-      const jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
+      const telemetryEnabled = telemetryObject.telemetryEnabled;
+      const jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryEnabled } } };
       fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
       assert.equal(JSON.stringify(jsonObject.telemetryInstances[telemetryObject.groupName]), JSON.stringify(jsonData.readTelemetrySettings(telemetryObject.groupName)));
     });

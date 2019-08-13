@@ -11,12 +11,12 @@ export enum telemetryType {
 }
 /**
  * Level controlling what type of telemetry is being sent
- * @enum basic: basic level of telemetry, only sends errors
- * @enum verbose: verbose level of telemetry, sends errors and events
+ * @enum off: off level of telemetry, sends no telemetry
+ * @enum on: on level of telemetry, sends errors and events
  */
-export enum telemetryLevel {
-  basic = "basic",
-  verbose = "verbose",
+export enum telemetryEnabled {
+  off = "off",
+  on = "on",
 }
 
 /**
@@ -26,7 +26,7 @@ export enum telemetryLevel {
  * @member instrumentationKey Instrumentation key for telemetry resource
  * @member promptQuestion Question displayed to user over opt-in for telemetry
  * @member raisePrompt Specifies whether to raise telemetry prompt (this allows for using a custom prompt)
- * @member telemetryLevel User's response to the prompt for telemetry and level of telemetry being sent
+ * @member telemetryEnabled User's response to the prompt for telemetry and level of telemetry being sent
  * @member telemetryType Telemetry infrastructure to send data
  * @member testData Allows user to run program without sending actual data
  */
@@ -36,7 +36,7 @@ export interface ITelemetryOptions {
   instrumentationKey: string;
   promptQuestion: string;
   raisePrompt: boolean;
-  telemetryLevel: telemetryLevel;
+  telemetryEnabled: telemetryEnabled;
   telemetryType: telemetryType;
   testData: boolean;
 }
@@ -67,13 +67,13 @@ export class OfficeAddinTelemetry {
       }
 
       if (jsonData.groupNameExists(this.telemetryObject.groupName)) {
-        this.telemetryObject.telemetryLevel = jsonData.readTelemetryLevel(this.telemetryObject.groupName);
+        this.telemetryObject.telemetryEnabled = jsonData.readTelemetryLevel(this.telemetryObject.groupName);
       }
 
       if (!this.telemetryObject.testData && this.telemetryObject.raisePrompt && jsonData.needToPromptForTelemetry(this.telemetryObject.groupName)) {
         this.telemetryOptIn();
       } else {
-        jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel);
+        jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled);
       }
 
       appInsights.setup(this.telemetryObject.instrumentationKey)
@@ -90,10 +90,10 @@ export class OfficeAddinTelemetry {
    * Reports custom event object to telemetry structure
    * @param eventName Event name sent to telemetry structure
    * @param data Data object sent to telemetry structure
-   * @param byPass Boolean to still report events even when telemetry level is set to basic
+   * @param byPass Boolean to still report events even when telemetry enabled is set to off
    */
   public async reportEvent(eventName: string, data: object, byPass: boolean = false): Promise<void> {
-    if (this.telemetryLevel() === telemetryLevel.verbose || byPass === true) {
+    if (this.telemetryEnabled() === telemetryEnabled.on || byPass === true) {
       this.reportEventApplicationInsights(eventName, data, byPass);
     }
   }
@@ -102,10 +102,10 @@ export class OfficeAddinTelemetry {
    * Reports custom event object to Application Insights
    * @param eventName Event name sent to Application Insights
    * @param data Data object sent to Application Insights
-   * @param byPass Boolean to still report events to Application Insights even when telemetry level is set to basic
+   * @param byPass Boolean to still report events to Application Insights even when telemetry enabled is set to off
    */
   public async reportEventApplicationInsights(eventName: string, data: object, byPass: boolean = false): Promise<void> {
-    if (this.telemetryLevel() === telemetryLevel.verbose || byPass === true) {
+    if (this.telemetryEnabled() === telemetryEnabled.on || byPass === true) {
       const telemetryEvent = new appInsights.Contracts.EventData();
       telemetryEvent.name = eventName;
       try {
@@ -127,20 +127,26 @@ export class OfficeAddinTelemetry {
    * Reports error to telemetry structure
    * @param errorName Error name sent to telemetry structure
    * @param err Error sent to telemetry structure
+   * @param byPass Boolean to still report errors even when telemetry enabled is set to off
    */
-  public async reportError(errorName: string, err: Error): Promise<void> {
-    this.reportErrorApplicationInsights(errorName, err);
+  public async reportError(errorName: string, err: Error, byPass: boolean = false): Promise<void> {
+    if (this.telemetryEnabled() === telemetryEnabled.on || byPass === true) {
+      this.reportErrorApplicationInsights(errorName, err, byPass);
+    }
   }
 
   /**
    * Reports error to Application Insights
    * @param errorName Error name sent to Application Insights
    * @param err Error sent to Application Insights
+   * @param byPass Boolean to still report errors even when telemetry enabled is set to off
    */
-  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
+  public async reportErrorApplicationInsights(errorName: string, err: Error, byPass: boolean = false): Promise<void> {
+    if (this.telemetryEnabled() === telemetryEnabled.on || byPass === true) {
     err.name = errorName;
     this.telemetryClient.trackException({ exception: this.maskFilePaths(err) });
     this.exceptionsSent++;
+    }
   }
 
   /**
@@ -157,13 +163,13 @@ export class OfficeAddinTelemetry {
         response = readLine.question(chalk.default.blue(`${this.telemetryObject.promptQuestion}\n`));
       }
       if (response.toLowerCase() === "y") {
-        this.telemetryObject.telemetryLevel = telemetryLevel.verbose;
+        this.telemetryObject.telemetryEnabled = telemetryEnabled.on;
       } else {
-        this.telemetryObject.telemetryLevel = telemetryLevel.basic;
+        this.telemetryObject.telemetryEnabled = telemetryEnabled.off;
       }
-      jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryLevel);
+      jsonData.writeTelemetryJsonData(this.telemetryObject.groupName, this.telemetryObject.telemetryEnabled);
       if (!this.telemetryObject.testData) {
-        console.log(chalk.default.green(this.telemetryObject.telemetryLevel ? "Telemetry will be sent!" : "You will not be sending telemetry"));
+        console.log(chalk.default.green(this.telemetryObject.telemetryEnabled ? "Telemetry will be sent!" : "You will not be sending telemetry"));
       }
     } catch (err) {
       this.reportError("TelemetryOptIn", err);
@@ -217,11 +223,11 @@ export class OfficeAddinTelemetry {
   }
 
   /**
-   * Returns the telemetry level of the current object
-   * @returns Telemetry level of the object
+   * Returns whether telemetry is enabled on the current object
+   * @returns Telemetry is enabled or not
    */
-  public telemetryLevel(): string {
-    return this.telemetryObject.telemetryLevel;
+  public telemetryEnabled(): string {
+    return this.telemetryObject.telemetryEnabled;
   }
 
   /**

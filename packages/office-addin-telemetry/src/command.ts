@@ -1,8 +1,7 @@
 import * as chalk from "chalk";
 import * as commander from "commander";
-import * as fs from "fs";
 import * as defaults from "./defaults";
-import { telemetryLevel } from "./officeAddinTelemetry";
+import { telemetryEnabled } from "./officeAddinTelemetry";
 import * as jsonData from "./telemetryJsonData";
 
 export function listTelemetrySettings(): void {
@@ -18,17 +17,17 @@ export function listTelemetrySettings(): void {
 }
 
 export function turnTelemetryOff(): void {
-   setTelemetryLevel(telemetryLevel.basic);
+   setTelemetryLevel(telemetryEnabled.off);
 }
 
 export function turnTelemetryOn(): void {
-   setTelemetryLevel(telemetryLevel.verbose);
+   setTelemetryLevel(telemetryEnabled.on);
 }
 
-function setTelemetryLevel(level: telemetryLevel) {
+function setTelemetryLevel(level: telemetryEnabled) {
    try {
-      jsonData.modifyTelemetryJsonData(defaults.groupName, "telemetryLevel", level);
-      console.log(chalk.default.green(`Telemetry level is now set to ${level}`));
+      jsonData.modifyTelemetryJsonData(defaults.groupName, "telemetryEnabled", level);
+      console.log(chalk.default.green(`Telemetry enabled is now set to ${level}`));
    } catch (err) {
       throw new Error(`Error occurred while trying to change telemetry level`);
    }

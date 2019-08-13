@@ -18,7 +18,7 @@ Syntax:
 #
 
 ### Off
-Sets the telemetry level to Basic(sending only exception data).
+Sets the telemetry level to Off(sending no telemetry data).
 
 Syntax:
 
@@ -27,7 +27,7 @@ Syntax:
 #
 
 ### On
-Sets the telemetry level to Verbose(sending usage and exception data).
+Sets the telemetry level to On(sending usage and exception data).
 
 Syntax:
 
