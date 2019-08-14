@@ -68,7 +68,7 @@ export function readTelemetryObjectProperty(groupName: string, propertyName: str
 /**
  * Writes to telemetry config file either appending to already existing file or creating new file
  * @param groupName Group name of telemetry object
- * @param telemetryLevel Whether user is sending basic or verbose telemetry
+ * @param telemetryEnabled Whether user is sending none or full telemetry
  */
 
 export function writeTelemetryJsonData(groupName: string, level: telemetryEnabled): void {
@@ -78,7 +78,7 @@ export function writeTelemetryJsonData(groupName: string, level: telemetryEnable
         } else {
             const telemetryJsonData = readTelemetryJsonData();
             telemetryJsonData.telemetryInstances[groupName] = { telemetryEnabled: String };
-            telemetryJsonData.telemetryInstances[groupName].telemetryEnabled = telemetryEnabled;
+            telemetryJsonData.telemetryInstances[groupName].telemetryEnabled = level;
             fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
         }
     } else {
