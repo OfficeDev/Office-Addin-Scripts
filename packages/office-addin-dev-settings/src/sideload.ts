@@ -199,18 +199,25 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
 
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
-  if (appsInManifest.length === 1) {
-    if (!app) {
-      app = appsInManifest[0];
-    } else if (app !== appsInManifest[0]) {
-      throw new Error(`The Office Add-in does not support ${getOfficeAppName(app)}.`);
+  if (app) {
+    if (appsInManifest.indexOf(app) < 0) {
+      throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
     }
-  } else if (appsInManifest.length === 0) {
-    throw new Error("The manifest does not support any Office apps.");
-  } else if (canPrompt) {
-    app = await chooseOfficeApp(appsInManifest);
   } else {
-    throw new Error("Please specify the Office app.");
+    switch (appsInManifest.length) {
+      case 0:
+        throw new Error("The manifest does not support any Office apps.");
+      case 1:
+        app = appsInManifest[0];
+        break;
+      default:
+        if (canPrompt) {
+          app = await chooseOfficeApp(appsInManifest);
+        } else {
+          throw new Error("Please specify the Office app.");
+        }
+        break;
+    }
   }
 
   await registerAddIn(manifestPath);
