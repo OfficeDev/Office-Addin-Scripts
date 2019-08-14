@@ -37,7 +37,7 @@ Syntax:
 
 ### Privacy
 The Office Addin-Telemetery package collects anonymized usage data and sends it to Microsoft. For more details on how we use this data and under what circumstances it may be shared, 
-please see the Microsoft privacy statement.
+please see the [Microsoft privacy statement](https://privacy.microsoft.com/en-us/privacystatement).
 
 The package collects:
 * Usage data about operations performed.
