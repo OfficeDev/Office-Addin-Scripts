@@ -64,7 +64,7 @@ export class OfficeAddinTelemetry {
       }
 
       if (this.telemetryObject.promptQuestion === undefined) {
-        this.telemetryObject.promptQuestion = `Help improve ${this.telemetryObject.projectName} by allowing the collection of usage data and exception. Would you like to particpate? Y/N`;
+        this.telemetryObject.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and telemetry details at https://aka.ms/OfficeAddInCLIPrivacy.`;
       }
 
       if (jsonData.groupNameExists(this.telemetryObject.groupName)) {
