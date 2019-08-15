@@ -190,7 +190,8 @@ export async function registerAddIn(manifestPath: string): Promise<void> {
   switch (process.platform) {
     case "win32":
       const manifest = await readManifestFile(manifestPath);
-      return devSettingsWindows.registerAddIn(manifest.id || "", manifestPath);
+      const realManifestPath = fs.realpathSync(manifestPath);
+      return devSettingsWindows.registerAddIn(manifest.id || "", realManifestPath);
     case "darwin":
       return devSettingsMac.registerAddIn(manifestPath);
     default:
@@ -213,7 +214,8 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
       return devSettingsMac.unregisterAddIn(manifestPath);
     case "win32":
       const manifest = await readManifestFile(manifestPath);
-      return devSettingsWindows.unregisterAddIn(manifest.id || "", manifestPath);
+      const realManifestPath = fs.realpathSync(manifestPath);
+      return devSettingsWindows.unregisterAddIn(manifest.id || "", realManifestPath);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
