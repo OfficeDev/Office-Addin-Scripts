@@ -4,14 +4,14 @@
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as commands from "./commands";
-import { defaultPort } from "./testServer";
+import { defaultHttpsPort } from "./testServer";
 
 commander.name("office-addin-test-server");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
     .command("start")
-    .option(`-p --port [port number]", "Port number must be between 0 - 65535. Default: ${defaultPort}`)
+    .option(`-p --port [port number]", "Port number must be between 0 - 65535. Default: ${defaultHttpsPort}`)
     .action(commands.start);
 
 // if the command is not known, display an error

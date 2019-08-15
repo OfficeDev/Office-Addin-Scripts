@@ -3,10 +3,10 @@
 
 import * as commnder from "commander";
 import { parseNumber } from "office-addin-cli";
-import { defaultPort, TestServer } from "./testServer";
+import { defaultHttpsPort, TestServer } from "./testServer";
 
 export async function start(command: commnder.Command) {
-    const testServerPort: number = (command.port !== undefined) ? parseTestServerPort(command.port) : defaultPort;
+    const testServerPort: number = (command.port !== undefined) ? parseTestServerPort(command.port) : defaultHttpsPort;
     const testServer = new TestServer(testServerPort);
     const serverStarted: boolean = await testServer.startTestServer();
 

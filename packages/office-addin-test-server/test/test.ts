@@ -3,12 +3,11 @@
 
 import * as assert from "assert";
 import * as mocha from "mocha";
-import * as testHelper from "../../office-addin-test-helpers"
-import { TestServer } from "../src/testServer";
-const port: number = 4201;
-const testServer = new TestServer(port);
+import * as testHelper from "../../office-addin-test-helpers";
+import { defaultHttpPort, defaultHttpsPort, TestServer } from "../src/testServer";
+const testServer = new TestServer(defaultHttpsPort);
 const platformName = testServer.getPlatformName();
-const promiseStartTestServer = testServer.startTestServer(true /* mochaTest */);
+const promiseStartTestServer = testServer.startTestServer();
 const testKey: string = "TestString";
 const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
@@ -16,44 +15,51 @@ const testValues: any = [];
 describe("End-to-end validation of test server", function() {
     describe("Setup test server", function() {
         it("Test server should have started", async function() {
+            testHelper.setTLSRejectUnauthorized(false);
             const startTestServer = await promiseStartTestServer;
             assert.equal(startTestServer, true);
         });
-        it(`Test server port should be ${port}`, async function () {
-            assert.equal(testServer.getTestServerPort(), port);
+        it(`Http test server port should be ${defaultHttpPort}`, async function() {
+            assert.equal(testServer.getTestHttpServerPort(), defaultHttpPort);
         });
-        it(`Test server state should be set to true (i.e. started)`, async function () {
+        it(`Https test server port should be ${defaultHttpsPort}`, async function() {
+            assert.equal(testServer.getTestHttpsServerPort(), defaultHttpsPort);
+        });
+        it(`Test server state should be set to true (i.e. started)`, async function() {
             assert.equal(testServer.getTestServerState(), true);
         });
     });
-
-    describe("Ping server for response", function () {
-        let testServerResponse: any;
-        it("Test server should have responded to ping", async function () {
-            testServerResponse = await testHelper.pingTestServer(port);
-            assert.equal(testServerResponse != undefined, true);
+    describe("Ping server for response", function() {
+        it("Http Test server should have responded to ping", async function() {
+            const testServerResponse = await testHelper.pingTestServer(defaultHttpPort, false /* https */);
+            assert.equal(testServerResponse !== undefined, true);
+            assert.equal(testServerResponse["status"], 200);
+            assert.equal(testServerResponse["platform"], platformName);
+        });
+        it("Https Test server should have responded to ping", async function() {
+            const testServerResponse = await testHelper.pingTestServer(defaultHttpsPort);
+            assert.equal(testServerResponse !== undefined, true);
             assert.equal(testServerResponse["status"], 200);
             assert.equal(testServerResponse["platform"], platformName);
         });
     });
-    describe("Send data to server and get results", function () {
-        it("Send data should have succeeded", async function () {
+    describe("Send data to server and get results", function() {
+        it("Send data should have succeeded", async function() {
             const sendData: boolean = await _sendTestData();
             assert.equal(sendData, true);
         });
-        it("Getting sent data back from test server should succeed", async function () {
+        it("Getting sent data back from test server should succeed", async function() {
             const getResults: any = await testServer.getTestResults();
             assert.equal(getResults[0].Name, testKey);
             assert.equal(getResults[0].Value, testValue);
         });
     });
-
-    describe("Stop test server", function () {
-        it("Test server should have stopped ", async function () {
+    describe("Stop test server", function() {
+        it("Test server should have stopped ", async function() {
             const stopTestServer: boolean = await testServer.stopTestServer();
             assert.equal(stopTestServer, true);
         });
-        it(`Dev-server state should be set to false (i.e. stopped)`, async function () {
+        it(`Dev-server state should be set to false (i.e. stopped)`, async function() {
             assert.equal(testServer.getTestServerState(), false);
         });
     });
@@ -67,6 +73,5 @@ async function _sendTestData(): Promise<boolean> {
     testData[nameKey] = testKey;
     testData[valueKey] = testValue;
     testValues.push(testData);
-
-    return testHelper.sendTestResults(testValues, port);
+    return testHelper.sendTestResults(testValues, defaultHttpsPort);
 }

@@ -3,37 +3,40 @@
 
 import * as cors from "cors";
 import * as express from "express";
+import * as http from "http";
 import * as https from "https";
 import * as devCerts from "office-addin-dev-certs";
 
-export const defaultPort: number = 4201;
+export const defaultHttpPort: number = 4200;
+export const defaultHttpsPort: number = 4201;
 
 export class TestServer {
     private jsonData: any;
-    private port: number;
+    private httpPort: number;
+    private httpsPort: number;
     private testServerStarted: boolean;
     private app: express.Express;
     private resultsPromise: Promise<JSON>;
-    private server: https.Server;
+    private httpServer: http.Server;
+    private httpsServer: https.Server;
 
     constructor(port: number) {
         this.app = express();
         this.jsonData = {};
-        this.port = port;
+        this.httpsPort = port;
+        this.httpPort = defaultHttpPort;
         this.resultsPromise = undefined;
         this.testServerStarted = false;
     }
 
-    public async startTestServer(mochaTest: boolean = false): Promise<boolean> {
+    public async startTestServer(mochaTest = false /* deprecated */): Promise<boolean> {
         try {
-            if (mochaTest) {
-                process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-            }
-
             // create express server instance
             const options = await devCerts.getHttpsServerOptions();
             this.app.use(cors());
-            this.server = https.createServer(options, this.app);
+            this.app.use(express.json());
+            this.httpServer = http.createServer(this.app);
+            this.httpsServer = https.createServer(options, this.app);
 
             // listen for 'ping'
             const platformName = this.getPlatformName();
@@ -45,7 +48,7 @@ export class TestServer {
             this.resultsPromise = new Promise<JSON>(async (resolveResults) => {
                 this.app.post("/results", async (req: any, res: any) => {
                     res.send("200");
-                    this.jsonData = JSON.parse(req.query.data);
+                    this.jsonData = req.body;
                     resolveResults(this.jsonData);
                 });
             });
@@ -62,7 +65,8 @@ export class TestServer {
         return new Promise<boolean>(async (resolve, reject) => {
             if (this.testServerStarted) {
                 try {
-                    this.server.close();
+                    this.httpServer.close();
+                    this.httpsServer.close();
                     this.testServerStarted = false;
                     resolve(true);
                 } catch (err) {
@@ -83,8 +87,12 @@ export class TestServer {
         return this.testServerStarted;
     }
 
-    public getTestServerPort(): number {
-        return this.port;
+    public getTestHttpsServerPort(): number {
+        return this.httpsPort;
+    }
+
+    public getTestHttpServerPort(): number {
+        return this.httpPort;
     }
 
     public getPlatformName(): string {
@@ -101,10 +109,12 @@ export class TestServer {
     private async startListening(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             try {
-                // set server to listen on specified port
-                this.server.listen(this.port, () => {
-                    this.testServerStarted = true;
-                    resolve(true);
+                // set server to listen on specified ports
+                this.httpsServer.listen(this.httpsPort, () => {
+                    this.httpServer.listen(this.httpPort, () => {
+                        this.testServerStarted = true;
+                        resolve(true);
+                    });
                 });
 
             } catch (err) {
