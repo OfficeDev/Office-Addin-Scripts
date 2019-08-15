@@ -17,7 +17,7 @@ Display the information in the Office Add-in manifest.
 
 Syntax:
 
-`office addin-manifest info <manifest> [options]`
+`office-addin-manifest info <manifest> [options]`
 
 `manifest`: path to manifest file.
 
@@ -28,7 +28,7 @@ Modify values in the Office Add-in manifest file.
 
 Syntax:
 
-`office addin-manifest modify <manifest> [options]`
+`office-addin-manifest modify <manifest> [options]`
 
 `manifest`: path to manifest file. 
 
@@ -59,7 +59,7 @@ Determines whether the Office Add-in manifest is valid.
 
 Syntax:
 
-`office addin-manifest validate <manifest>`
+`office-addin-manifest validate <manifest>`
 
 `manifest`: path to manifest file.
 
