@@ -2,7 +2,7 @@
 import * as chalk from "chalk";
 import * as fs from "fs";
 import * as defaults from "./defaults";
-import { telemetryEnabled } from "./officeAddinTelemetry";
+import { TelemetryLevel } from "./officeAddinTelemetry";
 
 /**
  * Allows developer to check if the program has already prompted before
@@ -10,11 +10,7 @@ import { telemetryEnabled } from "./officeAddinTelemetry";
  * @returns Boolean of whether the program should prompt
  */
 export function needToPromptForTelemetry(groupName: string): boolean {
-    try {
-        return !groupNameExists(groupName);
-    } catch (err) {
-        console.log(chalk.default.red(err));
-    }
+    return !groupNameExists(groupName);
 }
 
 /**
@@ -25,15 +21,13 @@ export function needToPromptForTelemetry(groupName: string): boolean {
  */
 export function modifyTelemetryJsonData(groupName: string, property: any, value: any): void {
     try {
-        if (fs.existsSync(defaults.telemetryJsonFilePath)) {
             if (groupNameExists(groupName)) {
                 const telemetryJsonData = readTelemetryJsonData();
                 telemetryJsonData.telemetryInstances[groupName][property] = value;
                 fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
             }
-        }
-    } catch {
-        console.log(chalk.default.red("Could not modify property!\n Make sure the group name and file exists!"));
+    } catch (err) {
+        throw new Error(err);
     }
 }
 /**
@@ -51,9 +45,9 @@ export function readTelemetryJsonData(): any {
  * @param groupName Group name to search for in the specified json data
  * @returns Whether telemetry is enabled specific to the group name
  */
-export function readTelemetryLevel(groupName: string): telemetryEnabled {
+export function readTelemetryLevel(groupName: string): TelemetryLevel {
     const jsonData = readTelemetryJsonData();
-    return jsonData.telemetryInstances[groupName].telemetryEnabled;
+    return jsonData.telemetryInstances[groupName].telemetryLevel;
 }
 /**
  * Returns whether telemetry is enabled on the telemetry object
@@ -68,24 +62,24 @@ export function readTelemetryObjectProperty(groupName: string, propertyName: str
 /**
  * Writes to telemetry config file either appending to already existing file or creating new file
  * @param groupName Group name of telemetry object
- * @param telemetryEnabled Whether user is sending none or full telemetry
+ * @param telemetryLevel Whether user is sending none or full telemetry
  */
 
-export function writeTelemetryJsonData(groupName: string, level: telemetryEnabled): void {
-    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== "") {
+export function writeTelemetryJsonData(groupName: string, level: TelemetryLevel): void {
+    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== "" && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== "undefined") {
         if (groupNameExists(groupName)) {
-            modifyTelemetryJsonData(groupName, "telemetryEnabled", level);
+            modifyTelemetryJsonData(groupName, "telemetryLevel", level);
         } else {
             const telemetryJsonData = readTelemetryJsonData();
-            telemetryJsonData.telemetryInstances[groupName] = { telemetryEnabled: String };
-            telemetryJsonData.telemetryInstances[groupName].telemetryEnabled = level;
+            telemetryJsonData.telemetryInstances[groupName] = { telemetryLevel: String };
+            telemetryJsonData.telemetryInstances[groupName].telemetryLevel = level;
             fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
         }
     } else {
         let telemetryJsonData = {};
         telemetryJsonData[groupName] = level;
         telemetryJsonData = { telemetryInstances: telemetryJsonData };
-        telemetryJsonData = { telemetryInstances: { [groupName]: { ["telemetryEnabled"]: level } } };
+        telemetryJsonData = { telemetryInstances: { [groupName]: { ["telemetryLevel"]: level } } };
         fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((telemetryJsonData), null, 2));
     }
 }
@@ -95,7 +89,7 @@ export function writeTelemetryJsonData(groupName: string, level: telemetryEnable
  * @returns Boolean of whether group name exists
  */
 export function groupNameExists(groupName: string): boolean {
-    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== "" && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== undefined) {
+    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== "" && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8") !== "undefined") {
         const jsonData = readTelemetryJsonData();
         return Object.getOwnPropertyNames(jsonData.telemetryInstances).includes(groupName);
     }
