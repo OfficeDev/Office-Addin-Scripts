@@ -540,7 +540,9 @@ describe("Unit Tests", function() {
   });
   describe("validate.ts", function() {
     describe("validateManifest()", function() {
+      this.slow(5000);
       it("valid manifest", async function() {
+        this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.manifest.xml");
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
@@ -551,6 +553,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
       });
       it("Excel", async function() {
+        this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Excel.manifest.xml");
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
@@ -561,6 +564,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
       });
       it("OneNote", async function() {
+        this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.OneNote.manifest.xml");
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
@@ -571,6 +575,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
       });
       it("Outlook", async function() {
+        this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Outlook.manifest.xml");
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
@@ -581,6 +586,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
       });
       it("PowerPoint", async function() {
+        this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.PowerPoint.manifest.xml");
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
@@ -601,6 +607,7 @@ describe("Unit Tests", function() {
       //   assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
       // });
       it("Word", async function() {
+        this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Word.manifest.xml");
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
