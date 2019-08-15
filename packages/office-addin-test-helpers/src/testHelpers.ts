@@ -3,11 +3,11 @@
 import * as fetch from "isomorphic-fetch";
 export const defaultPort: number = 4201;
 
-export async function pingTestServer(port: number = defaultPort): Promise<object> {
+export async function pingTestServer(port: number = defaultPort, https: boolean = true): Promise<object> {
     return new Promise<object>(async (resolve, reject) => {
         const serverResponse: any = {};
         try {
-            const pingUrl: string = `https://localhost:${port}/ping`;
+            const pingUrl: string = https ? `https://localhost:${port}/ping` : `http://localhost:${port}/ping`;
             const response = await fetch(pingUrl);
             serverResponse["status"] = response.status;
             const text = await response.text();
@@ -37,5 +37,9 @@ export async function sendTestResults(data: object, port: number = defaultPort):
             reject(false);
         }
     });
+}
+
+export function setTLSRejectUnauthorized(on: boolean) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = on ? " 1" : "0";
 }
 
