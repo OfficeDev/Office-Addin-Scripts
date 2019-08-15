@@ -145,7 +145,7 @@ describe("Test office-addin-telemetry-package", function() {
       compareError.name = "TestData";
       compareError.message = "this error contains a file path:C:index.js";
       // may throw error if change any part of the top of the test file
-      compareError.stack = `ReportErrorCheck: this error contains a file path:C:index.js
+      compareError.stack = `TestData: this error contains a file path:C:index.js
     at Object.<anonymous> (test.ts:11:13)`;
       addInTelemetry.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
@@ -153,6 +153,7 @@ describe("Test office-addin-telemetry-package", function() {
       assert.equal(err.stack.includes(compareError.stack), true);
     });
   });
+
   describe("Test modifySetting method", () => {
     it("should modify or create specific property to new value", () => {
       const telemetryEnabled = telemetryObject.telemetryEnabled;

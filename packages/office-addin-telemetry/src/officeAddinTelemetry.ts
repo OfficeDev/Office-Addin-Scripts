@@ -145,10 +145,13 @@ export class OfficeAddinTelemetry {
   public async reportErrorApplicationInsights(errorName: string, err: Error, byPass: boolean = false): Promise<void> {
     if (this.telemetryEnabled() === telemetryEnabled.on || byPass === true) {
     err.name = errorName;
+    if (!this.telemetryObject.testData) {
     this.telemetryClient.trackException({ exception: this.maskFilePaths(err) });
+    }
     this.exceptionsSent++;
     }
   }
+
 
   /**
    * Prompts user for telemetry participation once and records response
