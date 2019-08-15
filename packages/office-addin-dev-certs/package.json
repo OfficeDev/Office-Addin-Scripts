@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-certs",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "commander": "^2.19.0",
     "fs-extra": "^7.0.1",
     "mkcert": "^1.2.0",
-    "office-addin-cli": "^0.2.12"
+    "office-addin-cli": "^0.2.13"
   },
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
