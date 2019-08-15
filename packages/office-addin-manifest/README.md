@@ -59,7 +59,7 @@ Determines whether the Office Add-in manifest is valid.
 
 Syntax:
 
-`office addin-manifest validate <manifest> [options]`
+`office addin-manifest validate <manifest>`
 
 `manifest`: path to manifest file.
 
