@@ -239,10 +239,7 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
 export async function isDevBuildComplete(manifestPath: string): Promise<boolean> {
   try {
     const manifestInfo: any = await readManifestFile(manifestPath);
-
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     const response = await fetch.default(manifestInfo.defaultSettings.sourceLocation);
-
     return response.status === 200;
   } catch {
     return false;
