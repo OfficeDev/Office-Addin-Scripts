@@ -11,7 +11,7 @@ function getVerifyCommand(): string {
     switch (process.platform) {
        case "win32":
           const script = path.resolve(__dirname, "..\\scripts\\verify.ps1");
-          return `powershell -ExecutionPolicy Bypass ${script} '${defaults.certificateName}'`;
+          return `powershell -ExecutionPolicy Bypass -File ${script} '${defaults.certificateName}'`;
        case "darwin": // macOS
           return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
        default:
