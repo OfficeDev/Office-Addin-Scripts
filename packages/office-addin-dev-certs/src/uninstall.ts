@@ -11,7 +11,7 @@ function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
          const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
-         return `powershell -ExecutionPolicy Bypass -File ${script} ${machine ? "LocalMachine" : "CurrentUser"} '${defaults.certificateName}'`;
+         return `powershell -ExecutionPolicy Bypass -File "${script}" ${machine ? "LocalMachine" : "CurrentUser"} "${defaults.certificateName}"`;
       case "darwin": // macOS
          return `sudo security delete-certificate -c '${defaults.certificateName}'`;
       default:
