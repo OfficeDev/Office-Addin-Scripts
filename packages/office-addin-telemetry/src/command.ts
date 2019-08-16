@@ -24,7 +24,7 @@ export function turnTelemetryOn(): void {
 }
 function setTelemetryLevel(level: TelemetryLevel) {
    try {
-      jsonData.modifyTelemetryJsonData(defaults.groupName, "telemetryEnabled", level);
+      jsonData.modifyTelemetryJsonData(defaults.groupName, "telemetryLevel", level);
       console.log(chalk.default.green(`Telemetry enabled is now ${level}`));
    } catch (err) {
       throw new Error(`Error occurred while trying to change telemetry level`);
