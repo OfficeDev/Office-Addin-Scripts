@@ -1,6 +1,6 @@
 {
   "name": "office-addin-prettier-config",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Prettier config for Office-Addins",
   "main": "prettier.config.js",
   "scripts": {
