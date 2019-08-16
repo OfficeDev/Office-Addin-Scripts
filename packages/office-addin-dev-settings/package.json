@@ -25,6 +25,7 @@
     "inquirer": "^6.2.2",
     "jszip": "^3.2.2",
     "junk": "^3.1.0",
+    "node-fetch": "^2.6.0",
     "office-addin-cli": "^0.2.16",
     "office-addin-manifest": "^1.4.6",
     "open": "^6.4.0",

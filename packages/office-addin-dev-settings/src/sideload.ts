@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as fetch from "node-fetch";
 import * as fs from "fs";
 import * as jszip from "jszip";
 import {
@@ -225,6 +226,47 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
   if (app) {
     const sideloadFile = await generateSideloadFile(app, manifest);
 
-    await open(sideloadFile, { wait: false });
+    const devBuildComplete: boolean = await waitUntilDevBuildIsComplete(manifestPath);
+
+    if (devBuildComplete) {
+      await open(sideloadFile, { wait: false });
+    } else {
+      throw new Error(`The dev build did not complete in time.`);
+    }
   }
+}
+
+export async function isDevBuildComplete(manifestPath: string): Promise<boolean> {
+  try {
+    const manifestInfo: any = await readManifestFile(manifestPath);
+
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    const response = await fetch.default(manifestInfo.defaultSettings.sourceLocation);
+
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+export async function waitUntilDevBuildIsComplete(manifestPath: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
+  return waitUntil(async () => await isDevBuildComplete(manifestPath), retryCount, retryDelay);
+}
+
+export async function waitUntil(callback: (() => Promise<boolean>), retryCount: number, retryDelay: number): Promise<boolean> {
+  let done: boolean = await callback();
+
+  while (!done && retryCount) {
+    --retryCount;
+    await delay(retryDelay);
+    done = await callback();
+  }
+
+  return done;
 }
