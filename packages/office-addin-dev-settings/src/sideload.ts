@@ -226,13 +226,10 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
   if (app) {
     const sideloadFile = await generateSideloadFile(app, manifest);
 
-    const devBuildComplete: boolean = await waitUntilDevBuildIsComplete(manifestPath);
+    // give the dev server time to build before sideloading
+    await waitUntilDevBuildIsComplete(manifestPath);
 
-    if (devBuildComplete) {
-      await open(sideloadFile, { wait: false });
-    } else {
-      throw new Error(`The dev build did not complete in time.`);
-    }
+    await open(sideloadFile, { wait: false });
   }
 }
 
