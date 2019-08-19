@@ -4,43 +4,43 @@ import * as fs from "fs";
 import * as mocha from "mocha";
 import * as os from "os";
 import * as defaults from "../src/defaults";
-import * as officeAddinTelemetry from "../src/officeAddinTelemetry";
-import * as jsonData from "../src/telemetryJsonData";
+import * as officeAddinUsageData from "../src/officeAddinUsage-Data";
+import * as jsonData from "../src/usageDataJsonData";
 
-let addInTelemetry: officeAddinTelemetry.OfficeAddinTelemetry;
+let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
-let telemetryData: string;
-const telemetryObject: officeAddinTelemetry.ITelemetryOptions = {
-  groupName: "Office-Addin-Telemetry",
+let usageData: string;
+const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
+  groupName: "Office-Addin-Usage-Data",
   projectName: "Test-Project",
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
-  promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
+  promptQuestion: "-----------------------------------------\nDo you want to opt-in for usage-data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
-  telemetryLevel: officeAddinTelemetry.TelemetryLevel.on,
-  telemetryType: officeAddinTelemetry.TelemetryType.applicationinsights,
+  usageDataLevel: officeAddinUsageData.UsageDataLevel.on,
+  usageDataType: officeAddinUsageData.UsageDataType.applicationinsights,
   testData: true,
 };
 
-describe("Test office-addin-telemetry-package", function() {
+describe("Test office-addin-usage-data-package", function() {
   this.beforeAll(function() {
     try {
-    if (fs.existsSync(defaults.telemetryJsonFilePath) && fs.readFileSync(defaults.telemetryJsonFilePath, "utf8").toString() !== undefined) {
-      telemetryData = JSON.parse(fs.readFileSync(defaults.telemetryJsonFilePath, "utf8").toString());
+    if (fs.existsSync(defaults.usageDataJsonFilePath) && fs.readFileSync(defaults.usageDataJsonFilePath, "utf8").toString() !== undefined) {
+      usageData = JSON.parse(fs.readFileSync(defaults.usageDataJsonFilePath, "utf8").toString());
     }
   } catch {
-    telemetryData = undefined;
+    usageData = undefined;
   }
   });
   this.afterAll(function() {
-    if (fs.existsSync(defaults.telemetryJsonFilePath)) {
-      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((telemetryData), null, 2));
+    if (fs.existsSync(defaults.usageDataJsonFilePath)) {
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageData), null, 2));
     }
   });
   beforeEach(function() {
-    if (fs.existsSync(defaults.telemetryJsonFilePath)) {
-      fs.unlinkSync(defaults.telemetryJsonFilePath);
+    if (fs.existsSync(defaults.usageDataJsonFilePath)) {
+      fs.unlinkSync(defaults.usageDataJsonFilePath);
     }
-    addInTelemetry = new officeAddinTelemetry.OfficeAddinTelemetry(telemetryObject);
+    addInUsageData = new officeAddinUsageData.OfficeAddinUsageData(usageDataObject);
   });
   describe("Test reportEvent method", () => {
     it("should track event of object passed in with a project name", () => {
@@ -48,106 +48,106 @@ describe("Test office-addin-telemetry-package", function() {
         Test1: [true, 100],
         ScriptType: ["JavaScript", 1],
       };
-      addInTelemetry.reportEvent("testData", testEvent);
-      assert.equal(addInTelemetry.getEventsSent(), 1);
+      addInUsageData.reportEvent("testData", testEvent);
+      assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
   describe("Test reportError method", () => {
-    it("should send telemetry exception", () => {
-      addInTelemetry.reportError("ReportErrorCheck", err);
-      assert.equal(addInTelemetry.getExceptionsSent(), 1);
+    it("should send usage-data exception", () => {
+      addInUsageData.reportError("ReportErrorCheck", err);
+      assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
   });
-  describe("Test promptForTelemetry method", () => {
-    it("Should return 'true' because telemetryJsonFilePath doesn't exist", () => {
-      // delete officeAddinTelemetry.json
-      if (fs.existsSync(defaults.telemetryJsonFilePath)) {
-        fs.unlinkSync(defaults.telemetryJsonFilePath);
+  describe("Test promptForUsageData method", () => {
+    it("Should return 'true' because usageDataJsonFilePath doesn't exist", () => {
+      // delete officeAddinUsageData.json
+      if (fs.existsSync(defaults.usageDataJsonFilePath)) {
+        fs.unlinkSync(defaults.usageDataJsonFilePath);
       }
-      assert.equal(jsonData.needToPromptForTelemetry(telemetryObject.groupName), true);
+      assert.equal(jsonData.needToPromptForUsageData(usageDataObject.groupName), true);
     });
   });
-  describe("Test promptForTelemetry method", () => {
-    it("Should return 'false' because telemetryJsonFilePath exists and groupName exists in file", () => {
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
-      assert.equal(jsonData.needToPromptForTelemetry(telemetryObject.groupName), false);
+  describe("Test promptForUsageData method", () => {
+    it("Should return 'false' because usageDataJsonFilePath exists and groupName exists in file", () => {
+      jsonData.writeUsageDataJsonData(usageDataObject.groupName, usageDataObject.usageDataLevel);
+      assert.equal(jsonData.needToPromptForUsageData(usageDataObject.groupName), false);
     });
   });
-  describe("Test promptForTelemetry method", () => {
-    it("Should return 'true' because telemetryJsonFilePath exists but groupName doesn't exist on file", () => {
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
-      assert.equal(jsonData.needToPromptForTelemetry("test group name"), true);
+  describe("Test promptForUsageData method", () => {
+    it("Should return 'true' because usageDataJsonFilePath exists but groupName doesn't exist on file", () => {
+      jsonData.writeUsageDataJsonData(usageDataObject.groupName, usageDataObject.usageDataLevel);
+      assert.equal(jsonData.needToPromptForUsageData("test group name"), true);
     });
   });
-  describe("Test telemetryOptIn method", () => {
-    it("Should write out file with groupName set to true to telemetryJsonFilePath", () => {
-      addInTelemetry.telemetryOptIn(telemetryObject.testData, "y");
-      const jsonTelemtryData = jsonData.readTelemetryJsonData();
-      assert.equal(jsonTelemtryData.telemetryInstances[telemetryObject.groupName].telemetryLevel, telemetryObject.telemetryLevel);
+  describe("Test usageDataOptIn method", () => {
+    it("Should write out file with groupName set to true to usageDataJsonFilePath", () => {
+      addInUsageData.usageDataOptIn(usageDataObject.testData, "y");
+      const jsonTelemtryData = jsonData.readUsageDataJsonData();
+      assert.equal(jsonTelemtryData.usageDataInstances[usageDataObject.groupName].usageDataLevel, usageDataObject.usageDataLevel);
     });
   });
-  describe("Test setTelemetryOff method", () => {
-    it("should change samplingPercentage to 100, turns telemetry on", () => {
-      addInTelemetry.setTelemetryOn();
-      addInTelemetry.setTelemetryOff();
-      assert.equal(addInTelemetry.isTelemetryOn(), false);
+  describe("Test setUsageDataOff method", () => {
+    it("should change samplingPercentage to 100, turns usage-data on", () => {
+      addInUsageData.setUsageDataOn();
+      addInUsageData.setUsageDataOff();
+      assert.equal(addInUsageData.isUsageDataOn(), false);
     });
   });
-  describe("Test setTelemetryOn method", () => {
-    it("should change samplingPercentage to 100, turns telemetry on", () => {
-      addInTelemetry.setTelemetryOff();
-      addInTelemetry.setTelemetryOn();
+  describe("Test setUsageDataOn method", () => {
+    it("should change samplingPercentage to 100, turns usage-data on", () => {
+      addInUsageData.setUsageDataOff();
+      addInUsageData.setUsageDataOn();
       assert.equal(appInsights.defaultClient.config.samplingPercentage, 100);
     });
   });
-  describe("Test isTelemetryOn method", () => {
+  describe("Test isUsageDataOn method", () => {
     it("should return true if samplingPercentage is on(100)", () => {
       appInsights.defaultClient.config.samplingPercentage = 100;
-      assert.equal(addInTelemetry.isTelemetryOn(), true);
+      assert.equal(addInUsageData.isUsageDataOn(), true);
     });
     it("should return false if samplingPercentage is off(0)", () => {
       appInsights.defaultClient.config.samplingPercentage = 0;
-      assert.equal(addInTelemetry.isTelemetryOn(), false);
+      assert.equal(addInUsageData.isUsageDataOn(), false);
     });
   });
-  describe("Test getTelemetryKey method", () => {
-    it("should return telemetry key", () => {
-      assert.equal(addInTelemetry.getTelemetryKey(), "de0d9e7c-1f46-4552-bc21-4e43e489a015");
+  describe("Test getUsageDataKey method", () => {
+    it("should return usage-data key", () => {
+      assert.equal(addInUsageData.getUsageDataKey(), "de0d9e7c-1f46-4552-bc21-4e43e489a015");
     });
   });
   describe("Test getEventsSent method", () => {
     it("should return amount of events successfully sent", () => {
-      addInTelemetry.setTelemetryOff();
+      addInUsageData.setUsageDataOff();
       const testEvent = {
         Test1: [true, 100],
         ScriptType: ["Java", 1],
       };
-      addInTelemetry.reportEvent("TestData", testEvent);
-      assert.equal(addInTelemetry.getEventsSent(), 1);
+      addInUsageData.reportEvent("TestData", testEvent);
+      assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
   describe("Test getExceptionsSent method", () => {
     it("should return amount of exceptions successfully sent ", () => {
-      addInTelemetry.setTelemetryOff();
-      addInTelemetry.reportError("TestData", err);
-      assert.equal(addInTelemetry.getExceptionsSent(), 1);
+      addInUsageData.setUsageDataOff();
+      addInUsageData.reportError("TestData", err);
+      assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
   });
-  describe("Test TelemetryLevel method", () => {
-    it("should return the telemetry level of the object", () => {
-      assert.equal("on", addInTelemetry.TelemetryLevel());
+  describe("Test UsageDataLevel method", () => {
+    it("should return the usage-data level of the object", () => {
+      assert.equal("on", addInUsageData.UsageDataLevel());
     });
   });
   describe("Test maskFilePaths method", () => {
     it("should return a parsed file path error", () => {
-      addInTelemetry.setTelemetryOff();
+      addInUsageData.setUsageDataOff();
       const compareError = new Error();
       compareError.name = "TestData";
       compareError.message = "this error contains a file path:C:index.js";
       // may throw error if change any part of the top of the test file
       compareError.stack = `TestData: this error contains a file path:C:index.js
     at Object.<anonymous> (test.ts:11:13)`;
-      addInTelemetry.maskFilePaths(err);
+      addInUsageData.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);
       assert.equal(err.stack.includes(compareError.stack), true);
@@ -156,93 +156,93 @@ describe("Test office-addin-telemetry-package", function() {
 
   describe("Test modifySetting method", () => {
     it("should modify or create specific property to new value", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      const telemetryJsonData = jsonData.readTelemetryJsonData();
+      jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
+      jsonObject = { usageDataInstances: jsonData };
+      jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
+      const usageDataJsonData = jsonData.readUsageDataJsonData();
       const testPropertyName = "testProperty";
-      telemetryJsonData.telemetryInstances[telemetryObject.groupName][testPropertyName] = 0;
-      jsonData.modifyTelemetryJsonData(telemetryObject.groupName, testPropertyName, 0);
-      assert.equal(JSON.stringify(telemetryJsonData), JSON.stringify(jsonData.readTelemetryJsonData()));
+      usageDataJsonData.usageDataInstances[usageDataObject.groupName][testPropertyName] = 0;
+      jsonData.modifyUsageDataJsonData(usageDataObject.groupName, testPropertyName, 0);
+      assert.equal(JSON.stringify(usageDataJsonData), JSON.stringify(jsonData.readUsageDataJsonData()));
     });
   });
-  describe("Test readTelemetryJsonData method", () => {
-    it("should read and return parsed object object from telemetry", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+  describe("Test readUsageDataJsonData method", () => {
+    it("should read and return parsed object object from usage-data", () => {
+      const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(JSON.stringify(jsonObject), JSON.stringify(jsonData.readTelemetryJsonData()));
+      jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
+      jsonObject = { usageDataInstances: jsonData };
+      jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
+      assert.equal(JSON.stringify(jsonObject), JSON.stringify(jsonData.readUsageDataJsonData()));
     });
   });
-  describe("Test readTelemetryLevel method", () => {
-    it("should read and return object's telemetry level from file", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+  describe("Test readUsageDataLevel method", () => {
+    it("should read and return object's usage-data level from file", () => {
+      const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(officeAddinTelemetry.TelemetryLevel.on, jsonData.readTelemetryLevel(telemetryObject.groupName));
+      jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
+      jsonObject = { usageDataInstances: jsonData };
+      jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
+      assert.equal(officeAddinUsageData.UsageDataLevel.on, jsonData.readUsageDataLevel(usageDataObject.groupName));
     });
   });
-  describe("Test readTelemetryObjectProperty method", () => {
-    it("should read and return parsed object object from telemetry", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+  describe("Test readUsageDataObjectProperty method", () => {
+    it("should read and return parsed object object from usage-data", () => {
+      const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(officeAddinTelemetry.TelemetryLevel.on, jsonData.readTelemetryObjectProperty(telemetryObject.groupName, "telemetryLevel"));
+      jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
+      jsonObject = { usageDataInstances: jsonData };
+      jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
+      assert.equal(officeAddinUsageData.UsageDataLevel.on, jsonData.readUsageDataObjectProperty(usageDataObject.groupName, "usageDataLevel"));
     });
   });
-  describe("Test writeTelemetryJsonData method", () => {
+  describe("Test writeUsageDataJsonData method", () => {
     it("should write to already existing file", () => {
-      fs.writeFileSync(defaults.telemetryJsonFilePath, "");
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      fs.writeFileSync(defaults.usageDataJsonFilePath, "");
+      const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
-      assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(defaults.telemetryJsonFilePath, "utf8"));
+      jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
+      jsonObject = { usageDataInstances: jsonData };
+      jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      jsonData.writeUsageDataJsonData(usageDataObject.groupName, usageDataObject.usageDataLevel);
+      assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(defaults.usageDataJsonFilePath, "utf8"));
     });
   });
-  describe("Test writeTelemetryJsonData method", () => {
+  describe("Test writeUsageDataJsonData method", () => {
     it("should create new existing file with correct format", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      jsonData.writeTelemetryJsonData(telemetryObject.groupName, telemetryObject.telemetryLevel);
-      assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(defaults.telemetryJsonFilePath, "utf8"));
+      jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
+      jsonObject = { usageDataInstances: jsonData };
+      jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      jsonData.writeUsageDataJsonData(usageDataObject.groupName, usageDataObject.usageDataLevel);
+      assert.equal(JSON.stringify(jsonObject, null, 2), fs.readFileSync(defaults.usageDataJsonFilePath, "utf8"));
     });
   });
   describe("Test groupNameExists method", () => {
     it("should check if groupName exists", () => {
-      fs.writeFileSync(defaults.telemetryJsonFilePath, "test");
-      const telemetryLevel = telemetryObject.telemetryLevel;
+      fs.writeFileSync(defaults.usageDataJsonFilePath, "test");
+      const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
-      jsonObject[telemetryObject.groupName] = telemetryObject.telemetryLevel;
-      jsonObject = { telemetryInstances: jsonData };
-      jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(true, jsonData.groupNameExists("Office-Addin-Telemetry"));
+      jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
+      jsonObject = { usageDataInstances: jsonData };
+      jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
+      assert.equal(true, jsonData.groupNameExists("Office-Addin-Usage-Data"));
     });
   });
-  describe("Test readTelemetrySettings method", () => {
-    it("should read and return parsed telemetry object group settings", () => {
-      const telemetryLevel = telemetryObject.telemetryLevel;
-      const jsonObject = { telemetryInstances: { [telemetryObject.groupName]: { telemetryLevel } } };
-      fs.writeFileSync(defaults.telemetryJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(JSON.stringify(jsonObject.telemetryInstances[telemetryObject.groupName]), JSON.stringify(jsonData.readTelemetrySettings(telemetryObject.groupName)));
+  describe("Test readUsageDataSettings method", () => {
+    it("should read and return parsed usage-data object group settings", () => {
+      const usageDataLevel = usageDataObject.usageDataLevel;
+      const jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
+      assert.equal(JSON.stringify(jsonObject.usageDataInstances[usageDataObject.groupName]), JSON.stringify(jsonData.readUsageDataSettings(usageDataObject.groupName)));
     });
   });
 });

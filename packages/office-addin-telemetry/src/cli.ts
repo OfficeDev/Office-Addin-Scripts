@@ -4,25 +4,23 @@ import * as os from "os";
 import * as path from "path";
 import * as commands from "./command";
 
-const telemetryJsonFilePath: string = path.join(os.homedir(), "/officeAddinTelemetry.json");
-
-commander.name("office-addin-telemetry");
+commander.name("office-addin-usage-data");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
     .command(`list`)
-    .description(`Display the current telemetry settings.`)
-    .action(commands.listTelemetrySettings);
+    .description(`Display the current usage-data settings.`)
+    .action(commands.listUsageDataSettings);
 
 commander
     .command(`off`)
-    .description(`Sets the telemetry level to Off.`)
-    .action(commands.turnTelemetryOff);
+    .description(`Sets the usage-data level to Off.`)
+    .action(commands.turnUsageDataOff);
 
 commander
     .command(`on`)
-    .description(`Sets the telemetry level to On.`)
-    .action(commands.turnTelemetryOn);
+    .description(`Sets the usage-data level to On.`)
+    .action(commands.turnUsageDataOn);
 
 // if the command is not known, display an error
 commander.on("command:*", function() {

@@ -1,32 +1,32 @@
 import * as chalk from "chalk";
 import * as defaults from "./defaults";
-import { TelemetryLevel } from "./officeAddinTelemetry";
-import * as jsonData from "./telemetryJsonData";
+import { UsageDataLevel } from "./officeAddinUsage-Data";
+import * as jsonData from "./usageDataJsonData";
 
-export function listTelemetrySettings(): void {
-   const telemetrySettings = jsonData.readTelemetrySettings(defaults.groupName);
-   if (telemetrySettings) {
-      console.log(chalk.default.blue(`\nTelemetry settings for ${defaults.groupName}:\n`));
-      for (const value of Object.keys(telemetrySettings)) {
-         console.log(`  ${value}: ${telemetrySettings[value]}\n`);
+export function listUsageDataSettings(): void {
+   const usageDataSettings = jsonData.readUsageDataSettings(defaults.groupName);
+   if (usageDataSettings) {
+      console.log(chalk.default.blue(`\nUsage-Data settings for ${defaults.groupName}:\n`));
+      for (const value of Object.keys(usageDataSettings)) {
+         console.log(`  ${value}: ${usageDataSettings[value]}\n`);
       }
    } else {
-      console.log(chalk.default.red(`No telemetry settings for ${defaults.groupName}`));
+      console.log(chalk.default.red(`No usage-data settings for ${defaults.groupName}`));
    }
 }
 
-export function turnTelemetryOff(): void {
-   setTelemetryLevel(TelemetryLevel.off);
+export function turnUsageDataOff(): void {
+   setUsageDataLevel(UsageDataLevel.off);
 }
 
-export function turnTelemetryOn(): void {
-   setTelemetryLevel(TelemetryLevel.on);
+export function turnUsageDataOn(): void {
+   setUsageDataLevel(UsageDataLevel.on);
 }
-function setTelemetryLevel(level: TelemetryLevel) {
+function setUsageDataLevel(UsageData: UsageDataLevel) {
    try {
-      jsonData.modifyTelemetryJsonData(defaults.groupName, "telemetryLevel", level);
-      console.log(chalk.default.green(`Telemetry enabled is now ${level}`));
+      jsonData.modifyUsageDataJsonData(defaults.groupName, "usageDataLevel", UsageData);
+      console.log(chalk.default.green(`Usage-Data is now ${UsageData}`));
    } catch (err) {
-      throw new Error(`Error occurred while trying to change telemetry level`);
+      throw new Error(`Error occurred while trying to change UsageData level`);
    }
 }

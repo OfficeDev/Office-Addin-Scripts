@@ -2,4 +2,4 @@
 // Licensed under the MIT license.
 
 export * from "./defaults";
-export * from "./officeAddinTelemetry";
+export * from "./officeAddinUsage-Data";
