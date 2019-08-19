@@ -5,7 +5,7 @@ import * as jsonData from "./telemetryJsonData";
  * Specifies the telemetry infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
  */
-export enum telemetryType {
+export enum TelemetryType {
   applicationinsights = "applicationInsights",
 }
 /**
@@ -36,7 +36,7 @@ export interface ITelemetryOptions {
   promptQuestion: string;
   raisePrompt: boolean;
   telemetryLevel: TelemetryLevel;
-  telemetryType: telemetryType;
+  telemetryType: TelemetryType;
   testData: boolean;
 }
 

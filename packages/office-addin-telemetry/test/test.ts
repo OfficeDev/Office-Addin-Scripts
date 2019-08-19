@@ -17,7 +17,7 @@ const telemetryObject: officeAddinTelemetry.ITelemetryOptions = {
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for telemetry?[y/n]\n-----------------------------------------",
   raisePrompt: false,
   telemetryLevel: officeAddinTelemetry.TelemetryLevel.on,
-  telemetryType: officeAddinTelemetry.telemetryType.applicationinsights,
+  telemetryType: officeAddinTelemetry.TelemetryType.applicationinsights,
   testData: true,
 };
 
