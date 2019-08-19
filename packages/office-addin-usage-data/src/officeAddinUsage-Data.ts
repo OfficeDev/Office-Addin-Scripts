@@ -20,7 +20,7 @@ export enum UsageDataLevel {
 
 /**
  * Usage-Data object necessary for initialization of usage data package
- * @member groupName Usage data Group name that will be written to the usage-Data config file (i.e. usageDataJsonFilePath)
+ * @member groupName Usage data group name that will be written to the usage-Data config file (i.e. usageDataJsonFilePath)
  * @member projectName The name of the project that is using the usage data package (e.g "generator-office")
  * @member instrumentationKey Instrumentation key for usage data resource
  * @member promptQuestion Question displayed to user over opt-in for usage data
