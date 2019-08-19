@@ -35,6 +35,15 @@ export async function isDevServerRunning(port: number): Promise<boolean> {
     return isRunning;
 }
 
+export async function isDevBuildComplete(sourceLocation: string): Promise<boolean> {
+    try {
+        await fetch.default(sourceLocation);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const statusRunningResponse = `packager-status:running`;
 
@@ -71,7 +80,7 @@ export function parseDebuggingMethod(text: string): DebuggingMethod | undefined 
     }
 }
 
-export async function runDevServer(commandLine: string, port?: number): Promise<void> {
+export async function runDevServer(commandLine: string, manifestPath: string, port?: number): Promise<void> {
     if (commandLine) {
         // if the dev server is running
         if ((port !== undefined) && await isDevServerRunning(port)) {
@@ -99,6 +108,16 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
                     console.log(`The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`);
                 } else {
                     throw new Error(`The dev server is not running on port ${port}.`);
+                }
+
+                const manifestInfo: any = await readManifestFile(manifestPath);
+                const sourceLocation: string = manifestInfo.defaultSettings.sourceLocation;
+                const isBuildComplete: boolean = await waitUntilDevBuildIsComplete(sourceLocation);
+
+                if (isBuildComplete) {
+                    console.log(`The dev build completed successfully and fetch of dev source at ${sourceLocation} was successful`);
+                } else {
+                    throw new Error(`The dev build did not complete in the allotted time and the dev source at ${sourceLocation} couldn't be accessed`);
                 }
             }
         }
@@ -214,7 +233,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     }
 
     if (devServerCommandLine) {
-        devServerPromise = runDevServer(devServerCommandLine, devServerPort);
+        devServerPromise = runDevServer(devServerCommandLine, manifestPath, devServerPort);
     }
 
     if (packagerPromise !== undefined) {
@@ -265,6 +284,10 @@ export async function waitUntil(callback: (() => Promise<boolean>), retryCount: 
     }
 
     return done;
+}
+
+export async function waitUntilDevBuildIsComplete(sourceLocation: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
+    return waitUntil(async () => await isDevBuildComplete(sourceLocation), retryCount, retryDelay);
 }
 
 export async function waitUntilDevServerIsRunning(port: number, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
