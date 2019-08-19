@@ -15,6 +15,8 @@ function getVerifyCommand(): string {
           return `powershell -ExecutionPolicy Bypass -File "${script}" "${defaults.certificateName}"`;
        case "darwin": // macOS
           return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
+       case "linux":
+          return `[ -f /usr/local/share/ca-certificates/${defaults.caCertificateFileName} ] && openssl x509 -in /usr/local/share/ca-certificates/${defaults.caCertificateFileName} -checkend 86400 -noout`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
