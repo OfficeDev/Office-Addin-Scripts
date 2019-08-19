@@ -9,17 +9,17 @@ commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
     .command(`list`)
-    .description(`Display the current usage-data settings.`)
+    .description(`Display the current usage data settings.`)
     .action(commands.listUsageDataSettings);
 
 commander
     .command(`off`)
-    .description(`Sets the usage-data level to Off.`)
+    .description(`Sets the usage data level to Off.`)
     .action(commands.turnUsageDataOff);
 
 commander
     .command(`on`)
-    .description(`Sets the usage-data level to On.`)
+    .description(`Sets the usage data level to On.`)
     .action(commands.turnUsageDataOn);
 
 // if the command is not known, display an error

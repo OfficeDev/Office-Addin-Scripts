@@ -14,14 +14,14 @@ const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "Office-Addin-Usage-Data",
   projectName: "Test-Project",
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
-  promptQuestion: "-----------------------------------------\nDo you want to opt-in for usage-data?[y/n]\n-----------------------------------------",
+  promptQuestion: "-----------------------------------------\nDo you want to opt-in for usage data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
   usageDataLevel: officeAddinUsageData.UsageDataLevel.on,
   usageDataType: officeAddinUsageData.UsageDataType.applicationinsights,
   testData: true,
 };
 
-describe("Test office-addin-usage-data-package", function() {
+describe("Test office-addin-usage data-package", function() {
   this.beforeAll(function() {
     try {
     if (fs.existsSync(defaults.usageDataJsonFilePath) && fs.readFileSync(defaults.usageDataJsonFilePath, "utf8").toString() !== undefined) {
@@ -53,7 +53,7 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test reportError method", () => {
-    it("should send usage-data exception", () => {
+    it("should send usage data exception", () => {
       addInUsageData.reportError("ReportErrorCheck", err);
       assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
@@ -87,14 +87,14 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test setUsageDataOff method", () => {
-    it("should change samplingPercentage to 100, turns usage-data on", () => {
+    it("should change samplingPercentage to 100, turns usage data on", () => {
       addInUsageData.setUsageDataOn();
       addInUsageData.setUsageDataOff();
       assert.equal(addInUsageData.isUsageDataOn(), false);
     });
   });
   describe("Test setUsageDataOn method", () => {
-    it("should change samplingPercentage to 100, turns usage-data on", () => {
+    it("should change samplingPercentage to 100, turns usage data on", () => {
       addInUsageData.setUsageDataOff();
       addInUsageData.setUsageDataOn();
       assert.equal(appInsights.defaultClient.config.samplingPercentage, 100);
@@ -111,7 +111,7 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test getUsageDataKey method", () => {
-    it("should return usage-data key", () => {
+    it("should return usage data key", () => {
       assert.equal(addInUsageData.getUsageDataKey(), "de0d9e7c-1f46-4552-bc21-4e43e489a015");
     });
   });
@@ -134,7 +134,7 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test UsageDataLevel method", () => {
-    it("should return the usage-data level of the object", () => {
+    it("should return the usage data level of the object", () => {
       assert.equal("on", addInUsageData.UsageDataLevel());
     });
   });
@@ -170,7 +170,7 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test readUsageDataJsonData method", () => {
-    it("should read and return parsed object object from usage-data", () => {
+    it("should read and return parsed object object from usage data", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
       jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
@@ -181,7 +181,7 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test readUsageDataLevel method", () => {
-    it("should read and return object's usage-data level from file", () => {
+    it("should read and return object's usage data level from file", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
       jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
@@ -192,7 +192,7 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test readUsageDataObjectProperty method", () => {
-    it("should read and return parsed object object from usage-data", () => {
+    it("should read and return parsed object object from usage data", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
       let jsonObject = {};
       jsonObject[usageDataObject.groupName] = usageDataObject.usageDataLevel;
@@ -238,7 +238,7 @@ describe("Test office-addin-usage-data-package", function() {
     });
   });
   describe("Test readUsageDataSettings method", () => {
-    it("should read and return parsed usage-data object group settings", () => {
+    it("should read and return parsed usage data object group settings", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
       const jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));

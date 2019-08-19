@@ -11,7 +11,7 @@ export function listUsageDataSettings(): void {
          console.log(`  ${value}: ${usageDataSettings[value]}\n`);
       }
    } else {
-      console.log(chalk.default.red(`No usage-data settings for ${defaults.groupName}`));
+      console.log(chalk.default.red(`No usage data settings for ${defaults.groupName}`));
    }
 }
 

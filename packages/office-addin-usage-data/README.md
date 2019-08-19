@@ -1,5 +1,5 @@
 # Office-Addin-Usage-Data
-This package allows for sending usage-data event and exception data to the selected usage-data infrastructure (e.g. ApplicationInsights).
+This package allows for reporting usage data events and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights).
 
 # Privacy
 The Office Addin-Usage-Data package collects anonymized usage data and sends it to Microsoft. For more details on how we use this data and under what circumstances it may be shared, 
@@ -16,7 +16,7 @@ The package collects:
 * [On](#On)
 
 ### List
-Display the current usage-data settings.
+Display the current usage data settings.
 
 Syntax:
 
@@ -25,7 +25,7 @@ Syntax:
 #
 
 ### Off
-Sets the usage-data level to Off(sending no usage-data data).
+Sets the usage data level to Off(sending no usage data data).
 
 Syntax:
 
@@ -34,7 +34,7 @@ Syntax:
 #
 
 ### On
-Sets the usage-data level to On(sending usage and exception data).
+Sets the usage data level to On(sending usage and exception data).
 
 Syntax:
 

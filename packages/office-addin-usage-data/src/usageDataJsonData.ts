@@ -6,7 +6,7 @@ import { UsageDataLevel } from "./officeAddinUsage-Data";
 
 /**
  * Allows developer to check if the program has already prompted before
- * @param groupName Group name of the usage-data object
+ * @param groupName Group name of the usage data object
  * @returns Boolean of whether the program should prompt
  */
 export function needToPromptForUsageData(groupName: string): boolean {
@@ -31,7 +31,7 @@ export function modifyUsageDataJsonData(groupName: string, property: any, value:
     }
 }
 /**
- * Reads data from the usage-data json config file
+ * Reads data from the usage data json config file
  * @returns Parsed object from json file if it exists
  */
 export function readUsageDataJsonData(): any {
@@ -41,16 +41,16 @@ export function readUsageDataJsonData(): any {
     }
 }
 /**
- * Returns whether usage-data is enabled on the usage-data object
+ * Returns whether usage data is enabled on the usage data object
  * @param groupName Group name to search for in the specified json data
- * @returns Whether usage-data is enabled specific to the group name
+ * @returns Whether usage data is enabled specific to the group name
  */
 export function readUsageDataLevel(groupName: string): UsageDataLevel {
     const jsonData = readUsageDataJsonData();
     return jsonData.usageDataInstances[groupName].usageDataLevel;
 }
 /**
- * Returns whether usage-data is enabled on the usage-data object
+ * Returns whether usage data is enabled on the usage data object
  * @param groupName Group name to search for in the specified json data
  * @param propertyName Property name that will be used to access and return the associated value
  * @returns Property of the specific group name
@@ -60,9 +60,9 @@ export function readUsageDataObjectProperty(groupName: string, propertyName: str
     return jsonData.usageDataInstances[groupName][propertyName];
 }
 /**
- * Writes to usage-data config file either appending to already existing file or creating new file
- * @param groupName Group name of usage-data object
- * @param usage-dataLevel Whether user is sending none or full usage-data
+ * Writes to usage data config file either appending to already existing file or creating new file
+ * @param groupName Group name of usage data object
+ * @param level usageDataLevel Whether user is sending none or full usage data
  */
 
 export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel): void {
@@ -96,7 +96,7 @@ export function groupNameExists(groupName: string): boolean {
     return false;
 }
 /**
- * Reads usage-data settings from the usage-data json config file for a specific group
+ * Reads usage data settings from the usage data json config file for a specific group
  * @returns Usage-Data settings of the group name
  */
 export function readUsageDataSettings(groupName = defaults.groupName): object | undefined {

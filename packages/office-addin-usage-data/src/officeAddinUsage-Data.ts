@@ -2,16 +2,16 @@ import * as appInsights from "applicationinsights";
 import * as readLine from "readline-sync";
 import * as jsonData from "./usageDataJsonData";
 /**
- * Specifies the usage-data infrastructure the user wishes to use
+ * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
  */
 export enum UsageDataType {
   applicationinsights = "applicationInsights",
 }
 /**
- * Level controlling what type of usage-data is being sent
- * @enum off: off level of usage-data, sends no usage-data
- * @enum on: on level of usage-data, sends errors and events
+ * Level controlling what type of usage data is being sent
+ * @enum off: off level of usage data, sends no usage data
+ * @enum on: on level of usage data, sends errors and events
  */
 export enum UsageDataLevel {
   off = "off",
@@ -19,13 +19,13 @@ export enum UsageDataLevel {
 }
 
 /**
- * Usage-Data object necessary for initialization of usage-data package
- * @member groupName Usage-Data Group name that will be written to the usage-Data config file (i.e. usage-dataJsonFilePath)
- * @member projectName The name of the project that is using the usage-data package (e.g "generator-office")
- * @member instrumentationKey Instrumentation key for usage-data resource
- * @member promptQuestion Question displayed to user over opt-in for usage-data
- * @member raisePrompt Specifies whether to raise usage-data prompt (this allows for using a custom prompt)
- * @member usageDataLevel User's response to the prompt for usage-data
+ * Usage-Data object necessary for initialization of usage data package
+ * @member groupName Usage data Group name that will be written to the usage-Data config file (i.e. usageDataJsonFilePath)
+ * @member projectName The name of the project that is using the usage data package (e.g "generator-office")
+ * @member instrumentationKey Instrumentation key for usage data resource
+ * @member promptQuestion Question displayed to user over opt-in for usage data
+ * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt)
+ * @member usageDataLevel User's response to the prompt for usage data
  * @member usageDataType Usage-Data infrastructure to send data
  * @member testData Allows user to run program without sending actual data
  */
@@ -41,7 +41,7 @@ export interface IUsageDataOptions {
 }
 
 /**
- * Creates and initializes member variables while prompting user for usage-data collection when necessary
+ * Creates and initializes member variables while prompting user for usage data collection when necessary
  * @param usageDataObject
  */
 export class OfficeAddinUsageData {
@@ -55,15 +55,15 @@ export class OfficeAddinUsageData {
       this.usageDataObject = usageDataOptions;
 
       if (this.usageDataObject.instrumentationKey === undefined) {
-        throw new Error("Instrumentation Key not defined - cannot create usage-data object");
+        throw new Error("Instrumentation Key not defined - cannot create usage data object");
       }
 
       if (this.usageDataObject.groupName === undefined) {
-        throw new Error("Group Name not defined - cannot create usage-data object");
+        throw new Error("Group Name not defined - cannot create usage data object");
       }
 
       if (this.usageDataObject.promptQuestion === undefined) {
-        this.usageDataObject.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage-data details at https://aka.ms/OfficeAddInCLIPrivacy.`;
+        this.usageDataObject.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`;
       }
 
       if (jsonData.groupNameExists(this.usageDataObject.groupName)) {
@@ -87,9 +87,9 @@ export class OfficeAddinUsageData {
   }
 
   /**
-   * Reports custom event object to usage-data structure
-   * @param eventName Event name sent to usage-data structure
-   * @param data Data object sent to usage-data structure
+   * Reports custom event object to usage data structure
+   * @param eventName Event name sent to usage data structure
+   * @param data Data object sent to usage data structure
    */
   public async reportEvent(eventName: string, data: object): Promise<void> {
     if (this.UsageDataLevel() === UsageDataLevel.on) {
@@ -123,9 +123,9 @@ export class OfficeAddinUsageData {
   }
 
   /**
-   * Reports error to usage-data structure
-   * @param errorName Error name sent to usage-data structure
-   * @param err Error sent to usage-data structure
+   * Reports error to usage data structure
+   * @param errorName Error name sent to usage data structure
+   * @param err Error sent to usage data structure
    */
   public async reportError(errorName: string, err: Error): Promise<void> {
     if (this.UsageDataLevel() === UsageDataLevel.on) {
@@ -148,7 +148,7 @@ export class OfficeAddinUsageData {
     }
   }
 /**
- * Prompts user for usage-data participation once and records response
+ * Prompts user for usage data participation once and records response
  * @param testData Specifies whether test code is calling this method
  * @param testReponse Specifies test response
  */
@@ -172,22 +172,22 @@ public usageDataOptIn(testData: boolean = this.usageDataObject.testData, testRes
   }
  }
   /**
-   * Stops usage-data from being sent, by default usage-data will be on
+   * Stops usage data from being sent, by default usage data will be on
    */
   public setUsageDataOff() {
     appInsights.defaultClient.config.samplingPercentage = 0;
   }
 
   /**
-   * Starts sending usage-data, by default usage-data will be on
+   * Starts sending usage data, by default usage data will be on
    */
   public setUsageDataOn() {
     appInsights.defaultClient.config.samplingPercentage = 100;
   }
 
   /**
-   * Returns whether the usage-data is currently on or off
-   * @returns Whether usage-data is turned on or off
+   * Returns whether the usage data is currently on or off
+   * @returns Whether usage data is turned on or off
    */
   public isUsageDataOn(): boolean {
     return appInsights.defaultClient.config.samplingPercentage === 100;
@@ -195,7 +195,7 @@ public usageDataOptIn(testData: boolean = this.usageDataObject.testData, testRes
 
   /**
    * Returns the instrumentation key associated with the resource
-   * @returns The usage-data instrumentation key
+   * @returns The usage data instrumentation key
    */
   public getUsageDataKey(): string {
     return this.usageDataObject.instrumentationKey;
@@ -218,7 +218,7 @@ public usageDataOptIn(testData: boolean = this.usageDataObject.testData, testRes
   }
 
   /**
-   * Returns whether usage-data is enabled on the current object
+   * Returns whether usage data is enabled on the current object
    * @returns Usage-Data is enabled or not
    */
   public UsageDataLevel(): string {
