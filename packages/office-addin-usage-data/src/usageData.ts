@@ -1,5 +1,4 @@
 
-import * as chalk from "chalk";
 import * as fs from "fs";
 import * as defaults from "./defaults";
 import { UsageDataLevel } from "./officeAddinUsage-Data";
@@ -21,11 +20,20 @@ export function needToPromptForUsageData(groupName: string): boolean {
  */
 export function modifyUsageDataJsonData(groupName: string, property: any, value: any): void {
     try {
-            if (groupNameExists(groupName)) {
-                const usageDataJsonData = readUsageDataJsonData();
-                usageDataJsonData.usageDataInstances[groupName][property] = value;
-                fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageDataJsonData), null, 2));
+        if (readUsageDataJsonData()) {
+        const usageDataJsonData = readUsageDataJsonData();
+            if (!groupNameExists(groupName)) {
+                usageDataJsonData.usageDataInstances[groupName] = { usageDataLevel: String };
             }
+        usageDataJsonData.usageDataInstances[groupName][property] = value;
+        fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageDataJsonData), null, 2));
+        } else {
+            let usageDataJsonData = {};
+            usageDataJsonData[groupName] = value;
+            usageDataJsonData = { usageDataInstances: usageDataJsonData };
+            usageDataJsonData = { usageDataInstances: { [groupName]: { [property]: value } } };
+            fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageDataJsonData), null, 2));
+        }
     } catch (err) {
         throw new Error(err);
     }

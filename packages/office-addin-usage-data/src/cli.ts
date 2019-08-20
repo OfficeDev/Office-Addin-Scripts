@@ -1,7 +1,5 @@
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
-import * as os from "os";
-import * as path from "path";
 import * as commands from "./command";
 
 commander.name("office-addin-usage-data");

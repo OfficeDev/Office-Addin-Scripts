@@ -1,7 +1,7 @@
 import * as chalk from "chalk";
 import * as defaults from "./defaults";
 import { UsageDataLevel } from "./officeAddinUsage-Data";
-import * as jsonData from "./usageDataJsonData";
+import * as jsonData from "./usageData";
 
 export function listUsageDataSettings(): void {
    const usageDataSettings = jsonData.readUsageDataSettings(defaults.groupName);
@@ -25,7 +25,7 @@ export function turnUsageDataOn(): void {
 function setUsageDataLevel(UsageData: UsageDataLevel) {
    try {
       jsonData.modifyUsageDataJsonData(defaults.groupName, "usageDataLevel", UsageData);
-      console.log(chalk.default.green(`Usage-Data is now ${UsageData}`));
+      console.log(chalk.default.green(`Usage data ${UsageData}`));
    } catch (err) {
       throw new Error(`Error occurred while trying to change UsageData level`);
    }

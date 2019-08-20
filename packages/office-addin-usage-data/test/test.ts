@@ -5,7 +5,7 @@ import * as mocha from "mocha";
 import * as os from "os";
 import * as defaults from "../src/defaults";
 import * as officeAddinUsageData from "../src/officeAddinUsage-Data";
-import * as jsonData from "../src/usageDataJsonData";
+import * as jsonData from "../src/usageData";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);

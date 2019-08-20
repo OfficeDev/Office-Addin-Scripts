@@ -3,3 +3,4 @@
 
 export * from "./defaults";
 export * from "./officeAddinUsage-Data";
+export * from "./usageData";

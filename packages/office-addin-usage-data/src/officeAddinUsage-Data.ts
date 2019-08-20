@@ -1,6 +1,6 @@
 import * as appInsights from "applicationinsights";
 import * as readLine from "readline-sync";
-import * as jsonData from "./usageDataJsonData";
+import * as jsonData from "./usageData";
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
