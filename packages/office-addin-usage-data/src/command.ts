@@ -29,8 +29,10 @@ function setUsageDataLevel(level: UsageDataLevel) {
       switch (level) {
          case UsageDataLevel.off:
             console.log("Usage data has been turned off.");
+            break;
          case UsageDataLevel.on:
             console.log("Usage data has been turned on.");
+            break;
       }
    } catch (err) {
       throw new Error(`Unable to set the usage data level.\n${err}`);
