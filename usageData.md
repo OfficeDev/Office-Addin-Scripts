@@ -1,9 +1,8 @@
-# Privacy Statement
+# Data usage notice
 
-It is important for us to understand how the Office Add-in CLI tools are used so they can be improved. In order to do so, the tools collect anonymized usage data and sends it to Microsoft. 
+It is important for us to understand how the Office Add-in CLI tools are used so they can be improved. In order to do so, the tools collect anonymized usage data and sends it to Microsoft.
 
-For more details on how we use this data and under what circumstances it may be shared, please see the Microsoft privacy statement.
-https://privacy.microsoft.com/en-us/privacystatement
+For more details on how we use this data and under what circumstances it may be shared, please see the Microsoft privacy statement. https://privacy.microsoft.com/en-us/privacystatement
 
 ## Examples of data collected include:
 - Date, time and location of project creation.
@@ -19,5 +18,5 @@ Microsoft uses this data to provide and improve our products, to troubleshoot pr
 
 To disable data collection, run the following command before you use these tools:
 ```
-npx office-addin-telemetry off
+npx office-addin-usage-data off
 ```
