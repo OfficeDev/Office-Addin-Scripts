@@ -1,17 +1,16 @@
-import * as chalk from "chalk";
 import * as defaults from "./defaults";
 import { UsageDataLevel } from "./officeAddinUsage-Data";
 import * as jsonData from "./usageData";
 
 export function listUsageDataSettings(): void {
    const usageDataSettings = jsonData.readUsageDataSettings(defaults.groupName);
+
    if (usageDataSettings) {
-      console.log(chalk.default.blue(`\nUsage-Data settings for ${defaults.groupName}:\n`));
       for (const value of Object.keys(usageDataSettings)) {
-         console.log(`  ${value}: ${usageDataSettings[value]}\n`);
+         console.log(`${value}: ${usageDataSettings[value]}\n`);
       }
    } else {
-      console.log(chalk.default.red(`No usage data settings for ${defaults.groupName}`));
+      console.log(`No usage data settings.`);
    }
 }
 
@@ -22,11 +21,18 @@ export function turnUsageDataOff(): void {
 export function turnUsageDataOn(): void {
    setUsageDataLevel(UsageDataLevel.on);
 }
-function setUsageDataLevel(UsageData: UsageDataLevel) {
+
+function setUsageDataLevel(level: UsageDataLevel) {
    try {
-      jsonData.modifyUsageDataJsonData(defaults.groupName, "usageDataLevel", UsageData);
-      console.log(chalk.default.green(`Usage data ${UsageData}`));
+      jsonData.modifyUsageDataJsonData(defaults.groupName, "usageDataLevel", level);
+
+      switch (level) {
+         case UsageDataLevel.off:
+            console.log("Usage data has been turned off.");
+         case UsageDataLevel.on:
+            console.log("Usage data has been turned on.");
+      }
    } catch (err) {
-      throw new Error(`Error occurred while trying to change UsageData level`);
+      throw new Error(`Unable to set the usage data level.\n${err}`);
    }
 }
