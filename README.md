@@ -47,6 +47,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
+
+* [office-addin-usage-data](packages/office-addin-usage-data/README.md)
+
+  This package allows for sending usage data event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights)
   
 * [office-addin-test-helpers](packages/office-addin-test-helpers/README.md)
 
