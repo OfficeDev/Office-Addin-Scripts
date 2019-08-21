@@ -32,8 +32,10 @@ describe("Test office-addin-usage data-package", function() {
   }
   });
   this.afterAll(function() {
-    if (fs.existsSync(defaults.usageDataJsonFilePath)) {
+    if (fs.existsSync(defaults.usageDataJsonFilePath) && usageData !== undefined) {
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageData), null, 2));
+    } else if (fs.existsSync(defaults.usageDataJsonFilePath)) {
+        fs.unlinkSync(defaults.usageDataJsonFilePath);
     }
   });
   beforeEach(function() {
