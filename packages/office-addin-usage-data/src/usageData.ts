@@ -1,116 +1,253 @@
-
-import * as fs from "fs";
-import * as defaults from "./defaults";
-import { UsageDataLevel } from "./officeAddinUsage-Data";
-
+import * as appInsights from "applicationinsights";
+import * as readLine from "readline-sync";
+import * as jsonData from "./usageDataSettings";
 /**
- * Allows developer to check if the program has already prompted before
- * @param groupName Group name of the usage data object
- * @returns Boolean of whether the program should prompt
+ * Specifies the usage data infrastructure the user wishes to use
+ * @enum Application Insights: Microsoft Azure service used to collect and query through data
  */
-export function needToPromptForUsageData(groupName: string): boolean {
-    return !groupNameExists(groupName);
+export enum UsageDataReportingMethod {
+  applicationInsights = "applicationInsights",
+}
+/**
+ * Level controlling what type of usage data is being sent
+ * @enum off: off level of usage data, sends no usage data
+ * @enum on: on level of usage data, sends errors and events
+ */
+export enum UsageDataLevel {
+  off = "off",
+  on = "on",
 }
 
 /**
- * Allows developer to add or modify a specific property to the group
- * @param groupName Group name of property
- * @param property Property that will be created or modified
- * @param value Property's value that will be assigned
+ * UpdateData options
+ * @member groupName Group name for usage data settings
+ * @member projectName The name of the project that is using the usage data package.
+ * @member instrumentationKey Instrumentation key for usage data resource
+ * @member promptQuestion Question displayed to user over opt-in for usage data
+ * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt)
+ * @member usageDataLevel User's response to the prompt for usage data
+ * @member method The desired method to use for reporting usage data.
+ * @member isForTesting True if the data is just for testing, false for actual data that should be reported.
  */
-export function modifyUsageDataJsonData(groupName: string, property: any, value: any): void {
+export interface IUsageDataOptions {
+  groupName: string;
+  projectName: string;
+  instrumentationKey: string;
+  promptQuestion: string;
+  raisePrompt: boolean;
+  usageDataLevel: UsageDataLevel;
+  method: UsageDataReportingMethod;
+  isForTesting: boolean;
+}
+
+/**
+ * Creates and initializes member variables while prompting user for usage data collection when necessary
+ * @param usageDataObject
+ */
+export class OfficeAddinUsageData {
+  private usageDataClient = appInsights.defaultClient;
+  private eventsSent: number = 0;
+  private exceptionsSent: number = 0;
+  private options: IUsageDataOptions;
+
+  constructor(usageDataOptions: IUsageDataOptions) {
     try {
-        if (readUsageDataJsonData()) {
-        const usageDataJsonData = readUsageDataJsonData();
-            if (!groupNameExists(groupName)) {
-                usageDataJsonData.usageDataInstances[groupName] = { usageDataLevel: String };
-            }
-        usageDataJsonData.usageDataInstances[groupName][property] = value;
-        fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageDataJsonData), null, 2));
-        } else {
-            let usageDataJsonData = {};
-            usageDataJsonData[groupName] = value;
-            usageDataJsonData = { usageDataInstances: usageDataJsonData };
-            usageDataJsonData = { usageDataInstances: { [groupName]: { [property]: value } } };
-            fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageDataJsonData), null, 2));
-        }
-    } catch (err) {
-        throw new Error(err);
-    }
-}
-/**
- * Reads data from the usage data json config file
- * @returns Parsed object from json file if it exists
- */
-export function readUsageDataJsonData(): any {
-    if (fs.existsSync(defaults.usageDataJsonFilePath)) {
-        const jsonData = fs.readFileSync(defaults.usageDataJsonFilePath, "utf8");
-        return JSON.parse(jsonData.toString());
-    }
-}
-/**
- * Returns whether usage data is enabled on the usage data object
- * @param groupName Group name to search for in the specified json data
- * @returns Whether usage data is enabled specific to the group name
- */
-export function readUsageDataLevel(groupName: string): UsageDataLevel {
-    const jsonData = readUsageDataJsonData();
-    return jsonData.usageDataInstances[groupName].usageDataLevel;
-}
-/**
- * Returns whether usage data is enabled on the usage data object
- * @param groupName Group name to search for in the specified json data
- * @param propertyName Property name that will be used to access and return the associated value
- * @returns Property of the specific group name
- */
-export function readUsageDataObjectProperty(groupName: string, propertyName: string): any {
-    const jsonData = readUsageDataJsonData();
-    return jsonData.usageDataInstances[groupName][propertyName];
-}
-/**
- * Writes to usage data config file either appending to already existing file or creating new file
- * @param groupName Group name of usage data object
- * @param level usageDataLevel Whether user is sending none or full usage data
- */
+      this.options = usageDataOptions;
 
-export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel): void {
-    if (fs.existsSync(defaults.usageDataJsonFilePath) && fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "" && fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "undefined") {
-        if (groupNameExists(groupName)) {
-            modifyUsageDataJsonData(groupName, "usageDataLevel", level);
-        } else {
-            const usageDataJsonData = readUsageDataJsonData();
-            usageDataJsonData.usageDataInstances[groupName] = { usageDataLevel: String };
-            usageDataJsonData.usageDataInstances[groupName].usageDataLevel = level;
-            fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageDataJsonData), null, 2));
+      if (this.options.instrumentationKey === undefined) {
+        throw new Error("Instrumentation Key not defined - cannot create usage data object");
+      }
+
+      if (this.options.groupName === undefined) {
+        throw new Error("Group Name not defined - cannot create usage data object");
+      }
+
+      if (this.options.promptQuestion === undefined) {
+        this.options.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`;
+      }
+
+      if (jsonData.groupNameExists(this.options.groupName)) {
+        this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
+      }
+
+      if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
+        this.usageDataOptIn();
+      } else {
+        jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+      }
+
+      appInsights.setup(this.options.instrumentationKey)
+        .setAutoCollectExceptions(false)
+        .start();
+      this.usageDataClient = appInsights.defaultClient;
+      this.removeApplicationInsightsSensitiveInformation();
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  /**
+   * Reports custom event object to usage data structure
+   * @param eventName Event name sent to usage data structure
+   * @param data Data object sent to usage data structure
+   */
+  public async reportEvent(eventName: string, data: object): Promise<void> {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      this.reportEventApplicationInsights(eventName, data);
+    }
+  }
+
+  /**
+   * Reports custom event object to Application Insights
+   * @param eventName Event name sent to Application Insights
+   * @param data Data object sent to Application Insights
+   */
+  public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      const usageDataEvent = new appInsights.Contracts.EventData();
+      usageDataEvent.name = eventName;
+      try {
+        for (const [key, [value, elapsedTime]] of Object.entries(data)) {
+          usageDataEvent.properties[key] = value;
+          usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-    } else {
-        let usageDataJsonData = {};
-        usageDataJsonData[groupName] = level;
-        usageDataJsonData = { usageDataInstances: usageDataJsonData };
-        usageDataJsonData = { usageDataInstances: { [groupName]: { ["usageDataLevel"]: level } } };
-        fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((usageDataJsonData), null, 2));
+        if (!this.options.isForTesting) {
+          this.usageDataClient.trackEvent(usageDataEvent);
+        }
+        this.eventsSent++;
+      } catch (err) {
+        this.reportError("sendUsageDataEvents", err);
+        throw new Error(err);
+      }
     }
-}
+  }
+
+  /**
+   * Reports error to usage data structure
+   * @param errorName Error name sent to usage data structure
+   * @param err Error sent to usage data structure
+   */
+  public async reportError(errorName: string, err: Error): Promise<void> {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      this.reportErrorApplicationInsights(errorName, err);
+    }
+  }
+
+  /**
+   * Reports error to Application Insights
+   * @param errorName Error name sent to Application Insights
+   * @param err Error sent to Application Insights
+   */
+  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      err.name = errorName;
+    if (!this.options.isForTesting) {
+      this.usageDataClient.trackException({ exception: this.maskFilePaths(err) });
+    }
+    this.exceptionsSent++;
+    }
+  }
 /**
- * Checks to see if the given group name exists in the specified json data
- * @param groupName Group name to search for in the specified json data
- * @returns Boolean of whether group name exists
+ * Prompts user for usage data participation once and records response
+ * @param testData Specifies whether test code is calling this method
+ * @param testReponse Specifies test response
  */
-export function groupNameExists(groupName: string): boolean {
-    if (fs.existsSync(defaults.usageDataJsonFilePath) && fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "" && fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "undefined") {
-        const jsonData = readUsageDataJsonData();
-        return Object.getOwnPropertyNames(jsonData.usageDataInstances).includes(groupName);
-    }
-    return false;
-}
-/**
- * Reads usage data settings from the usage data json config file for a specific group
- * @returns Usage-Data settings of the group name
- */
-export function readUsageDataSettings(groupName = defaults.groupName): object | undefined {
-    if (fs.existsSync(defaults.usageDataJsonFilePath)) {
-        return readUsageDataJsonData().usageDataInstances[groupName];
+public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
+  try {
+    let response: string = "";
+    if (testData) {
+      response = testResponse;
     } else {
-        return undefined;
+      response = readLine.question(`${this.options.promptQuestion}\n`);
     }
+    if (response.toLowerCase() === "y") {
+      this.options.usageDataLevel = UsageDataLevel.on;
+    } else {
+      this.options.usageDataLevel = UsageDataLevel.off;
+    }
+    jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+  } catch (err) {
+    this.reportError("UsageDataOptIn", err);
+    throw new Error(err);
+  }
+ }
+  /**
+   * Stops usage data from being sent, by default usage data will be on
+   */
+  public setUsageDataOff() {
+    appInsights.defaultClient.config.samplingPercentage = 0;
+  }
+
+  /**
+   * Starts sending usage data, by default usage data will be on
+   */
+  public setUsageDataOn() {
+    appInsights.defaultClient.config.samplingPercentage = 100;
+  }
+
+  /**
+   * Returns whether the usage data is currently on or off
+   * @returns Whether usage data is turned on or off
+   */
+  public isUsageDataOn(): boolean {
+    return appInsights.defaultClient.config.samplingPercentage === 100;
+  }
+
+  /**
+   * Returns the instrumentation key associated with the resource
+   * @returns The usage data instrumentation key
+   */
+  public getUsageDataKey(): string {
+    return this.options.instrumentationKey;
+  }
+
+  /**
+   * Returns the amount of events that have been sent
+   * @returns The count of events sent
+   */
+  public getEventsSent(): any {
+    return this.eventsSent;
+  }
+
+  /**
+   * Returns the amount of exceptions that have been sent
+   * @returns The count of exceptions sent
+   */
+  public getExceptionsSent(): any {
+    return this.exceptionsSent;
+  }
+
+  /**
+   * Get the usage data level
+   * @returns the usage data level
+   */
+  public getUsageDataLevel(): string {
+    return this.options.usageDataLevel;
+  }
+
+  /**
+   * Returns parsed file path, scrubbing file names and sensitive information
+   * @returns Error after removing PII
+   */
+  public maskFilePaths(err: Error): Error {
+    try {
+      const regexRemoveUserFilePaths = /\/(.*)\//gmi;
+      const regexRemoveUserFilePathsFromStack = /\w:\\(?:[^\\\s]+\\)+/gmi;
+      err.message = err.message.replace(regexRemoveUserFilePaths, "");
+      err.stack = err.stack.replace(regexRemoveUserFilePaths, "");
+      err.stack = err.stack.replace(regexRemoveUserFilePathsFromStack, "");
+      return err;
+    } catch (err) {
+      this.reportError("maskFilePaths", err);
+      throw new Error(err);
+    }
+  }
+  /**
+   * Removes sensitive information fields from ApplicationInsights data
+   */
+  private removeApplicationInsightsSensitiveInformation() {
+    delete this.usageDataClient.context.tags["ai.cloud.roleInstance"]; // cloud name
+    delete this.usageDataClient.context.tags["ai.device.id"]; // machine name
+    delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
+  }
 }

@@ -4,21 +4,21 @@ import * as fs from "fs";
 import * as mocha from "mocha";
 import * as os from "os";
 import * as defaults from "../src/defaults";
-import * as officeAddinUsageData from "../src/officeAddinUsage-Data";
-import * as jsonData from "../src/usageData";
+import * as officeAddinUsageData from "../src/usageData";
+import * as jsonData from "../src/usageDataSettings";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
-  groupName: "Office-Addin-Usage-Data",
+  groupName: "office-addin-usage-data",
   projectName: "Test-Project",
   instrumentationKey: "de0d9e7c-1f46-4552-bc21-4e43e489a015",
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for usage data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
   usageDataLevel: officeAddinUsageData.UsageDataLevel.on,
-  usageDataType: officeAddinUsageData.UsageDataType.applicationinsights,
-  testData: true,
+  method: officeAddinUsageData.UsageDataReportingMethod.applicationInsights,
+  isForTesting: true,
 };
 
 describe("Test office-addin-usage data-package", function() {
@@ -83,7 +83,7 @@ describe("Test office-addin-usage data-package", function() {
   });
   describe("Test usageDataOptIn method", () => {
     it("Should write out file with groupName set to true to usageDataJsonFilePath", () => {
-      addInUsageData.usageDataOptIn(usageDataObject.testData, "y");
+      addInUsageData.usageDataOptIn(usageDataObject.isForTesting, "y");
       const jsonTelemtryData = jsonData.readUsageDataJsonData();
       assert.equal(jsonTelemtryData.usageDataInstances[usageDataObject.groupName].usageDataLevel, usageDataObject.usageDataLevel);
     });
@@ -137,7 +137,7 @@ describe("Test office-addin-usage data-package", function() {
   });
   describe("Test UsageDataLevel method", () => {
     it("should return the usage data level of the object", () => {
-      assert.equal("on", addInUsageData.UsageDataLevel());
+      assert.equal("on", addInUsageData.getUsageDataLevel());
     });
   });
   describe("Test maskFilePaths method", () => {
@@ -236,7 +236,7 @@ describe("Test office-addin-usage data-package", function() {
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
-      assert.equal(true, jsonData.groupNameExists("Office-Addin-Usage-Data"));
+      assert.equal(true, jsonData.groupNameExists("office-addin-usage-data"));
     });
   });
   describe("Test readUsageDataSettings method", () => {

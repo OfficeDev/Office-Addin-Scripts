@@ -12,12 +12,12 @@ commander
 
 commander
     .command(`off`)
-    .description(`Sets the usage data level to Off.`)
+    .description(`Turn off reporting of anonymous usage data.`)
     .action(commands.turnUsageDataOff);
 
 commander
     .command(`on`)
-    .description(`Sets the usage data level to On.`)
+    .description(`Turn on reporting of anonymous usage data.`)
     .action(commands.turnUsageDataOn);
 
 // if the command is not known, display an error

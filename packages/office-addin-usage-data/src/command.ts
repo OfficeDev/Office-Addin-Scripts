@@ -1,6 +1,6 @@
 import * as defaults from "./defaults";
-import { UsageDataLevel } from "./officeAddinUsage-Data";
-import * as jsonData from "./usageData";
+import { UsageDataLevel } from "./usageData";
+import * as jsonData from "./usageDataSettings";
 
 export function listUsageDataSettings(): void {
    const usageDataSettings = jsonData.readUsageDataSettings(defaults.groupName);

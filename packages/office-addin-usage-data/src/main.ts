@@ -2,5 +2,5 @@
 // Licensed under the MIT license.
 
 export * from "./defaults";
-export * from "./officeAddinUsage-Data";
 export * from "./usageData";
+export * from "./usageDataSettings";
