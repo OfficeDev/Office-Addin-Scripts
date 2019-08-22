@@ -35,9 +35,9 @@ export async function isDevServerRunning(port: number): Promise<boolean> {
     return isRunning;
 }
 
-export async function isDevBuildComplete(sourceLocation: string): Promise<boolean> {
+export async function isUrlAvailable(url: string): Promise<boolean> {
     try {
-        await fetch.default(sourceLocation);
+        await fetch.default(url);
         return true;
     } catch {
         return false;
@@ -80,7 +80,7 @@ export function parseDebuggingMethod(text: string): DebuggingMethod | undefined 
     }
 }
 
-export async function runDevServer(commandLine: string, manifestPath: string, port?: number): Promise<void> {
+export async function runDevServer(commandLine: string, port?: number, manifestPath?: string): Promise<void> {
     if (commandLine) {
         // if the dev server is running
         if ((port !== undefined) && await isDevServerRunning(port)) {
@@ -109,15 +109,17 @@ export async function runDevServer(commandLine: string, manifestPath: string, po
                 } else {
                     throw new Error(`The dev server is not running on port ${port}.`);
                 }
+            }
 
+            if (manifestPath !== undefined) {
                 const manifestInfo: any = await readManifestFile(manifestPath);
-                const sourceLocation: string = manifestInfo.defaultSettings.sourceLocation;
-                const isBuildComplete: boolean = await waitUntilDevBuildIsComplete(sourceLocation);
+                const sourceUrl: string = manifestInfo.defaultSettings.sourceLocation;
+                const isAvailable: boolean = await waitUntilUrlIsAvailable(sourceUrl);
 
-                if (isBuildComplete) {
-                    console.log(`The dev build completed successfully and fetch of dev source at ${sourceLocation} was successful`);
+                if (isAvailable) {
+                    console.log(`Url is available: ${sourceUrl}`);
                 } else {
-                    throw new Error(`The dev build did not complete in the allotted time and the dev source at ${sourceLocation} couldn't be accessed`);
+                    throw new Error(`The source location is not available from the dev server: ${sourceUrl}`);
                 }
             }
         }
@@ -233,7 +235,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     }
 
     if (devServerCommandLine) {
-        devServerPromise = runDevServer(devServerCommandLine, manifestPath, devServerPort);
+        devServerPromise = runDevServer(devServerCommandLine, devServerPort, manifestPath);
     }
 
     if (packagerPromise !== undefined) {
@@ -286,8 +288,8 @@ export async function waitUntil(callback: (() => Promise<boolean>), retryCount: 
     return done;
 }
 
-export async function waitUntilDevBuildIsComplete(sourceLocation: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(async () => await isDevBuildComplete(sourceLocation), retryCount, retryDelay);
+export async function waitUntilUrlIsAvailable(url: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
+    return waitUntil(async () => await isUrlAvailable(url), retryCount, retryDelay);
 }
 
 export async function waitUntilDevServerIsRunning(port: number, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
