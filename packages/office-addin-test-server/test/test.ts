@@ -4,8 +4,9 @@
 import * as assert from "assert";
 import * as mocha from "mocha";
 import * as testHelper from "../../office-addin-test-helpers";
-import { defaultHttpPort, defaultHttpsPort, TestServer } from "../src/testServer";
-const testServer = new TestServer(defaultHttpsPort);
+import * as defaults from "../src/defaults";
+import { TestServer } from "../src/testServer";
+const testServer = new TestServer();
 const platformName = testServer.getPlatformName();
 const promiseStartTestServer = testServer.startTestServer();
 const testKey: string = "TestString";
@@ -13,17 +14,23 @@ const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
 
 describe("End-to-end validation of test server", function() {
+    this.beforeAll(async function() {
+        _setTLSRejectUnauthorized(false);
+    });
+
+    this.afterAll(async function() {
+        _setTLSRejectUnauthorized(false);
+    });
     describe("Setup test server", function() {
         it("Test server should have started", async function() {
-            testHelper.setTLSRejectUnauthorized(false);
             const startTestServer = await promiseStartTestServer;
             assert.equal(startTestServer, true);
         });
-        it(`Http test server port should be ${defaultHttpPort}`, async function() {
-            assert.equal(testServer.getTestHttpServerPort(), defaultHttpPort);
+        it(`Http test server port should be ${defaults.httpPort}`, async function() {
+            assert.equal(testServer.getTestHttpServerPort(), defaults.httpPort);
         });
-        it(`Https test server port should be ${defaultHttpsPort}`, async function() {
-            assert.equal(testServer.getTestHttpsServerPort(), defaultHttpsPort);
+        it(`Https test server port should be ${defaults.httpsPort}`, async function() {
+            assert.equal(testServer.getTestHttpsServerPort(), defaults.httpsPort);
         });
         it(`Test server state should be set to true (i.e. started)`, async function() {
             assert.equal(testServer.getTestServerState(), true);
@@ -31,13 +38,13 @@ describe("End-to-end validation of test server", function() {
     });
     describe("Ping server for response", function() {
         it("Http Test server should have responded to ping", async function() {
-            const testServerResponse = await testHelper.pingTestServer(defaultHttpPort, false /* https */);
+            const testServerResponse = await testHelper.pingTestServer(defaults.httpPort, false /* useHttps */);
             assert.equal(testServerResponse !== undefined, true);
             assert.equal(testServerResponse["status"], 200);
             assert.equal(testServerResponse["platform"], platformName);
         });
         it("Https Test server should have responded to ping", async function() {
-            const testServerResponse = await testHelper.pingTestServer(defaultHttpsPort);
+            const testServerResponse = await testHelper.pingTestServer(defaults.httpsPort);
             assert.equal(testServerResponse !== undefined, true);
             assert.equal(testServerResponse["status"], 200);
             assert.equal(testServerResponse["platform"], platformName);
@@ -73,5 +80,9 @@ async function _sendTestData(): Promise<boolean> {
     testData[nameKey] = testKey;
     testData[valueKey] = testValue;
     testValues.push(testData);
-    return testHelper.sendTestResults(testValues, defaultHttpsPort);
+    return testHelper.sendTestResults(testValues, defaults.httpsPort);
+}
+
+function _setTLSRejectUnauthorized(on: boolean) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = on ? " 1" : "0";
 }

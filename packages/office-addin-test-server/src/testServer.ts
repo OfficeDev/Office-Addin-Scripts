@@ -6,9 +6,7 @@ import * as express from "express";
 import * as http from "http";
 import * as https from "https";
 import * as devCerts from "office-addin-dev-certs";
-
-export const defaultHttpPort: number = 4200;
-export const defaultHttpsPort: number = 4201;
+import * as defaults from "./defaults";
 
 export class TestServer {
     private jsonData: any;
@@ -20,16 +18,24 @@ export class TestServer {
     private httpServer: http.Server;
     private httpsServer: https.Server;
 
-    constructor(port: number) {
+    /**
+     * Creates the test server object and initializes member variables
+     * @param port Specifies port the test server will run on
+     */
+    constructor(httpsPort: number = defaults.httpsPort, httpPort: number = defaults.httpPort) {
         this.app = express();
         this.jsonData = {};
-        this.httpsPort = port;
-        this.httpPort = defaultHttpPort;
+        this.httpsPort = httpsPort;
+        this.httpPort = httpPort;
         this.resultsPromise = undefined;
         this.testServerStarted = false;
     }
 
-    public async startTestServer(mochaTest = false /* deprecated */): Promise<boolean> {
+    /**
+     * Start the test server
+     * @param mochaTest @deprecated
+     */
+    public async startTestServer(mochaTest = false): Promise<boolean> {
         try {
             // create express server instance
             const options = await devCerts.getHttpsServerOptions();
@@ -61,6 +67,9 @@ export class TestServer {
         }
     }
 
+    /**
+     * Stop the test server if it's started
+     */
     public async stopTestServer(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             if (this.testServerStarted) {
@@ -78,23 +87,37 @@ export class TestServer {
             }
         });
     }
-
+    /**
+     * Returns the test results sent to the test server
+     */
     public async getTestResults(): Promise<JSON> {
         return this.resultsPromise;
     }
 
+    /**
+     * Returns whether the server is started or stopped
+     */
     public getTestServerState(): boolean {
         return this.testServerStarted;
     }
 
+    /**
+     * Returns the https port for the test server
+     */
     public getTestHttpsServerPort(): number {
         return this.httpsPort;
     }
 
+    /**
+     * Returns the http port for the test server
+     */
     public getTestHttpServerPort(): number {
         return this.httpPort;
     }
 
+    /**
+     * Returns the OS platform the test server is running on
+     */
     public getPlatformName(): string {
         switch (process.platform) {
             case "win32":

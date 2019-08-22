@@ -3,15 +3,17 @@
 
 import * as commnder from "commander";
 import { parseNumber } from "office-addin-cli";
-import { defaultHttpsPort, TestServer } from "./testServer";
+import * as defaults from "./defaults";
+import { TestServer } from "./testServer";
 
 export async function start(command: commnder.Command) {
-    const testServerPort: number = (command.port !== undefined) ? parseTestServerPort(command.port) : defaultHttpsPort;
-    const testServer = new TestServer(testServerPort);
+    const httpPort: number = (command.http !== undefined) ? parseTestServerPort(command.http) : defaults.httpPort;
+    const httpsPort: number = (command.https !== undefined) ? parseTestServerPort(command.https) : defaults.httpsPort;
+    const testServer = new TestServer(httpsPort, httpPort);
     const serverStarted: boolean = await testServer.startTestServer();
 
     if (serverStarted) {
-        console.log(`Server started successfully on port ${testServerPort}`);
+        console.log(`Server started successfully on port ${httpsPort} and ${httpPort}`);
     } else {
         console.log("Server failed to start");
     }
