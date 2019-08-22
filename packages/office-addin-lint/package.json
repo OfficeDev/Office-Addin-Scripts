@@ -1,6 +1,6 @@
 {
   "name": "office-addin-lint",
-  "version": "1.0.3",
+  "version": "1.0.11",
   "description": "Provide eslint and prettier integration",
   "main": "./lib/main.js",
   "scripts": {
@@ -22,13 +22,13 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^1.13.0",
-    "@typescript-eslint/parser": "^1.13.0",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
     "commander": "^2.19.0",
     "eslint": "^6.0.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "office-addin-cli": "^0.2.11",
+    "office-addin-cli": "^0.2.18",
     "prettier": "^1.18.2"
   },
   "devDependencies": {
