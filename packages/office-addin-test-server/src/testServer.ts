@@ -33,7 +33,7 @@ export class TestServer {
 
     /**
      * Start the test server
-     * @param mochaTest @deprecated
+     * @param mochaTest param is deprecated but keeping for backwards compatability
      */
     public async startTestServer(mochaTest = false): Promise<boolean> {
         try {
