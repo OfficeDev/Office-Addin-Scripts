@@ -12,6 +12,8 @@ Upon installation a development CA certicate and localhost key and
 certificate will be generated inside `<userhome>/.office-addin-dev-certs`. 
 The certificate is valid for 30 days by default.
 
+#
+
 ## Command-Line Interface
 * [install](#install)
 * [verify](#verify)
