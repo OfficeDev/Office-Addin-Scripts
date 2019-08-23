@@ -17,7 +17,14 @@
     "office-addin-dev-certs": "./cli.js"
   },
   "keywords": [
-    "Office"
+    "Office",
+    "SSL",
+    "https",
+    "Certificates",
+    "Self-Signed",
+    "devlopment",
+    "secure",
+    "sever"
   ],
   "dependencies": {
     "child_process": "^1.0.2",
