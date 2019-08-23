@@ -24,7 +24,7 @@
     "Self-Signed",
     "devlopment",
     "secure",
-    "sever"
+    "server"
   ],
   "dependencies": {
     "child_process": "^1.0.2",
