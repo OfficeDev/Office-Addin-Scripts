@@ -18,10 +18,13 @@
   },
   "keywords": [
     "Office",
+    "add-in",
+    "localhost",
     "SSL",
     "https",
     "certificates",
-    "self-signed",
+    "keys",
+    "cert",
     "development",
     "secure",
     "server"
