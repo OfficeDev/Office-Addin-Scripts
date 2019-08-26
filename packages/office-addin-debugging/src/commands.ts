@@ -31,24 +31,6 @@ function getManifestPath(manifestPath: string, appTypeToDebug: string | undefine
     return manifestPathToDebug;
 }
 
-function getSideloadCommand(sideload: string | undefined, manifestPath: string): string | undefined {
-    let sideloadCommand: string | undefined = sideload;
-    if (process.env.npm_package_config_sideload_command) {
-        sideloadCommand = process.env.npm_package_config_sideload_command;
-        sideloadCommand = sideloadCommand.replace("${manifestPath}", manifestPath);
-    }
-    return sideloadCommand;
-}
-
-function getUnloadCommand(unload: string | undefined, manifestPath: string): string | undefined {
-    let unloadCommand: string | undefined = unload;
-    if (process.env.npm_package_config_unload_command) {
-        unloadCommand = process.env.npm_package_config_unload_command;
-        unloadCommand = unloadCommand.replace("${manifestPath}", manifestPath);
-    }
-    return unloadCommand;
-}
-
 function parseDevServerPort(optionValue: any): number | undefined {
     const devServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
 
@@ -86,7 +68,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
             throw new Error("Please specify the application type to debug.");
         }
 
-        await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
+        await startDebugging(manifestPathToDebug, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
             devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
@@ -95,7 +77,9 @@ export async function start(manifestPath: string, appType: string | undefined, c
 
 export async function stop(manifestPath: string, appType: string | undefined, command: commander.Command) {
     try {
-        await stopDebugging(manifestPath);
+        const appTypeToDebug: AppType | undefined = parseAppType(appType || process.env.npm_package_config_app_type_to_debug || "desktop");
+        const manifestPathToDebug: string = getManifestPath(manifestPath, appTypeToDebug, command.prod);
+        await stopDebugging(manifestPathToDebug);
     } catch (err) {
         logErrorMessage(`Unable to stop debugging.\n${err}`);
     }

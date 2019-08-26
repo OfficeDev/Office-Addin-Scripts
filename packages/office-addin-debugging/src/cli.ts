@@ -21,7 +21,7 @@ commander
     .option("--packager <command>", "Run the packager.")
     .option("--packager-host <host>")
     .option("--packager-port <port>")
-    .option("--prod", "Use the production bundle")
+    .option("--prod", "Specifies production mode.")
     .option("--sideload <command>")
     .option("--source-bundle-url-host <host>")
     .option("--source-bundle-url-port <port>")
@@ -31,7 +31,7 @@ commander
 
 commander
     .command("stop <manifest-path> [app-type]")
-    .option("--prod", "Use the production bundle")
+    .option("--prod", "Specifies production mode.")
     .option("--unload <command>")
     .action(commands.stop);
 
