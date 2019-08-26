@@ -74,7 +74,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
     }
 }
 
-export async function stop(manifestPath: string, appType: string | undefined, command: commander.Command) {
+export async function stop(manifestPath: string, command: commander.Command) {
     try {
         if (manifestPath === "manifestPath") {
             manifestPath = determineManifestPath(manifestPath, !command.prod);
