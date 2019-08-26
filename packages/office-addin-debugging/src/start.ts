@@ -13,7 +13,7 @@ import { startDetachedProcess  } from "./process";
 
 export enum AppType {
     Desktop = "desktop",
-    Web = "web"
+    Web = "web",
 }
 
 function defaultDebuggingMethod(): DebuggingMethod {

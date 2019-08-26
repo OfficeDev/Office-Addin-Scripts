@@ -10,7 +10,7 @@ import { stopDebugging } from "./stop";
 
 function determineManifestPath(manifestPath: string, dev: boolean): string {
     try {
-        let platform: string = process.platform;
+        const platform: string = process.platform;
         if (platform === "win32") {
             if (process.env.npm_package_config_manifest_path) {
                 manifestPath = process.env.npm_package_config_manifest_path;
