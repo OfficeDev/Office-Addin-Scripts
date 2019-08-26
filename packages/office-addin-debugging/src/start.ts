@@ -13,11 +13,7 @@ import { startDetachedProcess  } from "./process";
 
 export enum AppType {
     Desktop = "desktop",
-    Web = "web",
-    Win32 = "win32",
-    MacOS = "macos",
-    iOS = "ios",
-    Android = "android",
+    Web = "web"
 }
 
 function defaultDebuggingMethod(): DebuggingMethod {
@@ -59,14 +55,6 @@ export function parseAppType(text: string): AppType | undefined {
             return AppType.Desktop;
         case "web":
             return AppType.Web;
-        case "win32":
-            return AppType.Win32;
-        case "macos":
-            return AppType.MacOS;
-        case "ios":
-            return AppType.iOS;
-        case "android":
-            return AppType.Android;
         default:
             return undefined;
     }

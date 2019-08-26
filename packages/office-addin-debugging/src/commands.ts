@@ -8,27 +8,24 @@ import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseAppType, parseDebuggingMethod, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
 
-function getManifestPath(manifestPath: string, appTypeToDebug: string | undefined, prod: boolean): string {
-    let manifestPathToDebug: string = manifestPath;
+function determineManifestPath(manifestPath: string, dev: boolean): string {
     try {
-        if (appTypeToDebug === undefined) {
-            throw new Error("Please specify the application type to debug.");
-        }
-        let platform: string = appTypeToDebug;
-        if (appTypeToDebug === AppType.Desktop) {
-            platform = process.platform;
-        }
-        if (manifestPath === "sdx" && platform !== AppType.Web) {
+        let platform: string = process.platform;
+        if (platform === "win32") {
             if (process.env.npm_package_config_manifest_path) {
-                manifestPathToDebug = process.env.npm_package_config_manifest_path;
-                manifestPathToDebug = manifestPathToDebug.replace("${prodOrDev}", prod ? "prod" : "dev");
-                manifestPathToDebug = manifestPathToDebug.replace("${platform}", platform);
+                manifestPath = process.env.npm_package_config_manifest_path;
+                manifestPath = manifestPathToDebug.replace("${prodOrDev}", dev ? "dev" : "prod");
+                manifestPath = manifestPathToDebug.replace("${platform}", platform);
             }
-        }
+        } else if (platform === "darwin") {
+            manifestPath = "manifest-macos.xml";
+        } else {
+            throw new Error(`Does not support platform type ${platform}`);
+        }  
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }
-    return manifestPathToDebug;
+    return manifestPath;
 }
 
 function parseDevServerPort(optionValue: any): number | undefined {
@@ -59,7 +56,6 @@ export async function start(manifestPath: string, appType: string | undefined, c
         const devServerPort = parseDevServerPort(command.devServerPort || process.env.npm_package_config_dev_server_port);
         const enableDebugging: boolean = command.debug;
         const enableLiveReload: boolean = (command.liveReload === true);
-        const manifestPathToDebug: string = getManifestPath(manifestPath, appTypeToDebug, command.prod);
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
@@ -68,7 +64,10 @@ export async function start(manifestPath: string, appType: string | undefined, c
             throw new Error("Please specify the application type to debug.");
         }
 
-        await startDebugging(manifestPathToDebug, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
+        if (manifestPath === "manifestPath") {
+            manifestPath = determineManifestPath(manifestPath, !command.prod);
+        }
+        await startDebugging(manifest, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
             devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
@@ -77,9 +76,10 @@ export async function start(manifestPath: string, appType: string | undefined, c
 
 export async function stop(manifestPath: string, appType: string | undefined, command: commander.Command) {
     try {
-        const appTypeToDebug: AppType | undefined = parseAppType(appType || process.env.npm_package_config_app_type_to_debug || "desktop");
-        const manifestPathToDebug: string = getManifestPath(manifestPath, appTypeToDebug, command.prod);
-        await stopDebugging(manifestPathToDebug);
+        if (manifestPath === "manifestPath") {
+            manifestPath = determineManifestPath(manifestPath, !command.prod);
+        }
+        await stopDebugging(manifestPath);
     } catch (err) {
         logErrorMessage(`Unable to stop debugging.\n${err}`);
     }

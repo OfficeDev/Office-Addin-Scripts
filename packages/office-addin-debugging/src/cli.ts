@@ -30,7 +30,7 @@ commander
     .action(commands.start);
 
 commander
-    .command("stop <manifest-path> [app-type]")
+    .command("stop <manifest-path>")
     .option("--prod", "Specifies production mode.")
     .option("--unload <command>")
     .action(commands.stop);
