@@ -2,8 +2,10 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
+import { readManifestFile } from "office-addin-manifest";
 import * as fspath from "path";
-import * as registry from "./dev-settings-registry";
+import * as devSettingsMac from "./dev-settings-mac";
+import * as devSettingsWindows from "./dev-settings-windows";
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
@@ -12,6 +14,16 @@ export enum DebuggingMethod {
   Proxy,
   /** @deprecated use Proxy */
   Web = Proxy,
+}
+
+export class RegisteredAddin {
+  public id: string;
+  public manifestPath: string;
+
+  constructor(id: string, manifestPath: string) {
+    this.id = id;
+    this.manifestPath = manifestPath;
+  }
 }
 
 export class SourceBundleUrlComponents {
@@ -40,7 +52,7 @@ export class SourceBundleUrlComponents {
 export async function clearDevSettings(addinId: string): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return registry.clearDevSettings(addinId);
+      return devSettingsWindows.clearDevSettings(addinId);
   default:
     throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -57,7 +69,7 @@ export async function disableLiveReload(addinId: string): Promise<void> {
 export async function disableRuntimeLogging(): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return registry.disableRuntimeLogging();
+      return devSettingsWindows.disableRuntimeLogging();
   default:
     throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -66,7 +78,7 @@ export async function disableRuntimeLogging(): Promise<void> {
 export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return registry.enableDebugging(addinId, enable, method);
+      return devSettingsWindows.enableDebugging(addinId, enable, method);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -75,7 +87,7 @@ export async function enableDebugging(addinId: string, enable: boolean = true, m
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return registry.enableLiveReload(addinId, enable);
+      return devSettingsWindows.enableLiveReload(addinId, enable);
   default:
     throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -108,17 +120,22 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
           : `You need to specify the path where the file can be written. Unable to write to: "${path}".`);
       }
 
-      await registry.enableRuntimeLogging(path);
+      await devSettingsWindows.enableRuntimeLogging(path);
       return path;
   default:
     throw new Error(`Platform not supported: ${process.platform}.`);
   }
 }
 
-export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
+/**
+ * Returns the manifest paths for the add-ins that are registered
+ */
+export async function getRegisterAddIns(): Promise<RegisteredAddin[]>  {
   switch (process.platform) {
+    case "darwin":
+      return devSettingsMac.getRegisteredAddIns();
     case "win32":
-      return registry.getSourceBundleUrl(addinId);
+      return devSettingsWindows.getRegisteredAddIns();
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -127,7 +144,7 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
 export async function getEnabledDebuggingMethods(addinId: string): Promise<DebuggingMethod[]> {
   switch (process.platform) {
     case "win32":
-      return registry.getEnabledDebuggingMethods(addinId);
+      return devSettingsWindows.getEnabledDebuggingMethods(addinId);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -136,7 +153,16 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
 export async function getRuntimeLoggingPath(): Promise<string | undefined> {
   switch (process.platform) {
     case "win32":
-      return registry.getRuntimeLoggingPath();
+      return devSettingsWindows.getRuntimeLoggingPath();
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.getSourceBundleUrl(addinId);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -145,7 +171,7 @@ export async function getRuntimeLoggingPath(): Promise<string | undefined> {
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":
-      return registry.isDebuggingEnabled(addinId);
+      return devSettingsWindows.isDebuggingEnabled(addinId);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -154,7 +180,20 @@ export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
 export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":
-      return registry.isLiveReloadEnabled(addinId);
+      return devSettingsWindows.isLiveReloadEnabled(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function registerAddIn(manifestPath: string): Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      const manifest = await readManifestFile(manifestPath);
+      const realManifestPath = fs.realpathSync(manifestPath);
+      return devSettingsWindows.registerAddIn(manifest.id || "", realManifestPath);
+    case "darwin":
+      return devSettingsMac.registerAddIn(manifestPath);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -163,7 +202,31 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return registry.setSourceBundleUrl(addinId, components);
+      return devSettingsWindows.setSourceBundleUrl(addinId, components);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function unregisterAddIn(manifestPath: string): Promise<void> {
+  switch (process.platform) {
+    case "darwin":
+      return devSettingsMac.unregisterAddIn(manifestPath);
+    case "win32":
+      const manifest = await readManifestFile(manifestPath);
+      const realManifestPath = fs.realpathSync(manifestPath);
+      return devSettingsWindows.unregisterAddIn(manifest.id || "", realManifestPath);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function unregisterAllAddIns(): Promise<void> {
+  switch (process.platform) {
+    case "darwin":
+      return devSettingsMac.unregisterAllAddIns();
+    case "win32":
+      return devSettingsWindows.unregisterAllAddIns();
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

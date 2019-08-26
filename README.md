@@ -20,6 +20,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   A WebPack plugin which generates the metadata for custom functions.
 
+* [office-addin-cli](packages/office-addin-cli/README.md)
+
+  A command-line interface for Office Add-ins.
+
 * [office-addin-debugging](packages/office-addin-debugging/README.md)
 
   This package provides the orchestration of components related to debugging Office Add-ins. When debugging is started, it will ensure that the dev-server is running, that dev settings are configured for debugging, and will register and sideload the Office Add-in. When debugging is stopped, it will unregister and shutdown components.
@@ -30,7 +34,11 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
 * [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
 
-  This package can be used to configure developer settings for an Office Add-in. 
+  This package can be used to configure developer settings for an Office Add-in.
+
+* [office-addin-lint](packages/office-addin-lint/README.md)
+
+  This package can be used to ensure code quality with lint rules and standardize code formatting.
 
 * [office-addin-manifest](packages/office-addin-manifest/README.md)
 
@@ -38,7 +46,19 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
-  This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application. 
+  This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
+
+* [office-addin-usage-data](packages/office-addin-usage-data/README.md)
+
+  This package allows for sending usage data event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights)
+  
+* [office-addin-test-helpers](packages/office-addin-test-helpers/README.md)
+
+  This package provides tools that make validating your Office Add-in easier. You can use it with the office-addin-test-server package and the Mocha test framework (or another testing framework of your choice).
+
+* [office-addin-test-server](packages/office-addin-test-server/README.md)
+
+  This package provides a framework for testing Office task pane add-ins by allowing add-ins to send results to a test server. The results can then be consumed and used by tests to validate that the add-in is working as expected.
 
 ## Requirements
 

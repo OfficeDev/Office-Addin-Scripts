@@ -1,0 +1,11 @@
+{
+  "name": "office-addin-prettier-config",
+  "version": "1.0.9",
+  "description": "Prettier config for Office-Addins",
+  "main": "prettier.config.js",
+  "scripts": {
+    "test": "echo \"No tests\" "
+  },
+  "author": "OfficeDev",
+  "license": "MIT"
+}

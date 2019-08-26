@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
+import { logErrorMessage } from "office-addin-cli";
 import * as commands from "./commands";
 import { defaultPort } from "./testServer";
-import { logErrorMessage } from "office-addin-cli";
 
 commander.name("office-addin-test-server");
 commander.version(process.env.npm_package_version || "(version not available)");

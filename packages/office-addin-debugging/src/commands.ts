@@ -4,6 +4,7 @@
 import * as commander from "commander";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
+import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseAppType, parseDebuggingMethod, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
 
@@ -66,7 +67,8 @@ function parseDevServerPort(optionValue: any): number | undefined {
 export async function start(manifestPath: string, appType: string | undefined, command: commander.Command) {
     try {
         const appTypeToDebug: AppType | undefined = parseAppType(appType || process.env.npm_package_config_app_type_to_debug || "desktop");
-        const app: string = command.app || process.env.npm_package_config_app_to_debug;
+        const appToDebug: string | undefined = command.app || process.env.npm_package_config_app_to_debug;
+        const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
             command.sourceBundleUrlHost, command.sourceBundleUrlPort,
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
@@ -79,16 +81,13 @@ export async function start(manifestPath: string, appType: string | undefined, c
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
-        const sideload: string | undefined = command.sideload || process.env[`npm_package_scripts_sideload_${app}`] || process.env.npm_package_scripts_sideload;
-        const sideloadCommand: string | undefined = getSideloadCommand(sideload, manifestPathToDebug);
 
         if (appTypeToDebug === undefined) {
             throw new Error("Please specify the application type to debug.");
         }
 
-        await startDebugging(manifestPathToDebug, appTypeToDebug, debuggingMethod, sourceBundleUrlComponents,
-            devServer, devServerPort, packager, packagerHost, packagerPort, sideloadCommand,
-            enableDebugging, enableLiveReload);
+        await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
+            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }
@@ -96,13 +95,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
 
 export async function stop(manifestPath: string, appType: string | undefined, command: commander.Command) {
     try {
-        const app: string = command.app || process.env.npm_package_config_app_to_debug;
-        const appTypeToStopDebug: AppType | undefined = parseAppType(appType || process.env.npm_package_config_app_type_to_debug || "desktop");
-        const manifestPathToStopDebug: string = getManifestPath(manifestPath, appTypeToStopDebug, command.prod);
-        const unload: string | undefined = command.unload || process.env[`npm_package_scripts_unload_${app}`] || process.env.npm_package_scripts_unload;
-        const unloadCommand: string | undefined = getUnloadCommand(unload, manifestPathToStopDebug);
-
-        await stopDebugging(manifestPathToStopDebug, unloadCommand);
+        await stopDebugging(manifestPath);
     } catch (err) {
         logErrorMessage(`Unable to stop debugging.\n${err}`);
     }

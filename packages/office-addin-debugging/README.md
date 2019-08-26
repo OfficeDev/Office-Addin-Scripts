@@ -1,6 +1,6 @@
 # Office-Addin-Debugging
 
-Provides the ability to start and stop debugging Office Add-ins.
+  This package provides the orchestration of components related to debugging Office Add-ins. When debugging is started, it will ensure that the dev-server is running, that dev settings are configured for debugging, and will register and sideload the Office Add-in. When debugging is stopped, it will unregister and shutdown components.
 
 ## Command-Line Interface
 * [start](#start)
