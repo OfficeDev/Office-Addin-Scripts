@@ -67,7 +67,7 @@ export async function start(manifestPath: string, appType: string | undefined, c
         if (manifestPath === "manifestPath") {
             manifestPath = determineManifestPath(manifestPath, !command.prod);
         }
-        await startDebugging(manifest, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
+        await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
             devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
