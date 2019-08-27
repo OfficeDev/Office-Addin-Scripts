@@ -35,15 +35,6 @@ export async function isDevServerRunning(port: number): Promise<boolean> {
     return isRunning;
 }
 
-export async function isUrlAvailable(url: string): Promise<boolean> {
-    try {
-        await fetch.default(url);
-        return true;
-    } catch {
-        return false;
-    }
-}
-
 export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const statusRunningResponse = `packager-status:running`;
 
@@ -54,6 +45,15 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
         console.log(`packager: ${text}`);
         return (statusRunningResponse === text);
     } catch (err) {
+        return false;
+    }
+}
+
+export async function isUrlAvailable(url: string): Promise<boolean> {
+    try {
+        await fetch.default(url);
+        return true;
+    } catch {
         return false;
     }
 }
@@ -111,15 +111,15 @@ export async function runDevServer(commandLine: string, port?: number, manifestP
                 }
             }
 
-            if (manifestPath !== undefined) {
+            if (manifestPath) {
                 const manifestInfo: any = await readManifestFile(manifestPath);
                 const sourceUrl: string = manifestInfo.defaultSettings.sourceLocation;
                 const isAvailable: boolean = await waitUntilUrlIsAvailable(sourceUrl);
 
                 if (isAvailable) {
-                    console.log(`Url is available: ${sourceUrl}`);
+                    console.log(`The add-in is available from the dev server: ${sourceUrl}`);
                 } else {
-                    throw new Error(`The source location is not available from the dev server: ${sourceUrl}`);
+                    throw new Error(`The add-in is not available from the dev server: ${sourceUrl}. `);
                 }
             }
         }
@@ -288,14 +288,14 @@ export async function waitUntil(callback: (() => Promise<boolean>), retryCount: 
     return done;
 }
 
-export async function waitUntilUrlIsAvailable(url: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(async () => await isUrlAvailable(url), retryCount, retryDelay);
-}
-
 export async function waitUntilDevServerIsRunning(port: number, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
     return waitUntil(async () => await isDevServerRunning(port), retryCount, retryDelay);
 }
 
 export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
     return waitUntil(async () => await isPackagerRunning(statusUrl), retryCount, retryDelay);
+}
+
+export async function waitUntilUrlIsAvailable(url: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
+    return waitUntil(async () => await isUrlAvailable(url), retryCount, retryDelay);
 }
