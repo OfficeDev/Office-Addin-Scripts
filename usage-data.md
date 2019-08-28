@@ -1,6 +1,6 @@
 # Data usage notice
 
-It is important for us to understand how the Office Add-in CLI tools are used so they can be improved. In order to do so, the tools collect anonymized usage data and sends it to Microsoft.
+It is important for us to understand how the Office Add-in CLI tools are used so they can be improved. In order to do so, the tools collect anonymized usage data and send it to Microsoft.
 
 For more details on how we use this data and under what circumstances it may be shared, please see the Microsoft privacy statement. https://privacy.microsoft.com/en-us/privacystatement
 
