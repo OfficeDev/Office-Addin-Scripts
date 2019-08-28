@@ -126,4 +126,4 @@ Code licensed under the [MIT License](https://github.com/OfficeDev/Office-Addin-
 
 The Office Add-in CLI tools collect anonymized usage data and send it to Microsoft. This allows us to understand how the tools are used and how to improve them.
 
-For more details on what we collect and how to turn it off, see our [Data usage notice](usageData.md)
+For more details on what we collect and how to turn it off, see our [Data usage notice](usage-data.md)
