@@ -150,8 +150,7 @@ describe("Test office-addin-usage data-package", function() {
       compareError.name = "TestData";
       compareError.message = "this error contains a file path:C:index.js";
       // may throw error if change any part of the top of the test file
-      compareError.stack = `TestData: this error contains a file path:C:index.js
-    at Object.<anonymous> (test.ts:11:13)`;
+      compareError.stack = "TestData: this error contains a file path:C:index.js";
       addInUsageData.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);
