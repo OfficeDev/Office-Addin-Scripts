@@ -1,3 +1,8 @@
+#!/usr/bin/env node
+
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as commands from "./command";
