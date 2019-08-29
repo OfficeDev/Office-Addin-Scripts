@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-certs",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -17,7 +17,17 @@
     "office-addin-dev-certs": "./cli.js"
   },
   "keywords": [
-    "Office"
+    "Office",
+    "add-in",
+    "localhost",
+    "SSL",
+    "https",
+    "certificates",
+    "keys",
+    "cert",
+    "development",
+    "secure",
+    "server"
   ],
   "dependencies": {
     "child_process": "^1.0.2",
