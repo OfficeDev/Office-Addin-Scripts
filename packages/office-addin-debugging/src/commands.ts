@@ -5,7 +5,7 @@ import * as commander from "commander";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
-import { AppType, parseAppType, parseDebuggingMethod, startDebugging } from "./start";
+import { AppType, parseAppType, parseDebuggingMethod, startDebugging, parseAppPlatform, AppPlaform } from "./start";
 import { stopDebugging } from "./stop";
 
 function parseDevServerPort(optionValue: any): number | undefined {
@@ -23,8 +23,9 @@ function parseDevServerPort(optionValue: any): number | undefined {
     return devServerPort;
 }
 
-export async function start(manifestPath: string, appType: string | undefined, command: commander.Command) {
+export async function start(manifestPath: string, appType: string | undefined, appPlatform: string | undefined, command: commander.Command) {
     try {
+        const appPlatformToDebug: AppPlaform | undefined = parseAppPlatform(appPlatform || process.env.npm_package_config_app_plaform_to_debug || "win32");
         const appTypeToDebug: AppType | undefined = parseAppType(appType || process.env.npm_package_config_app_type_to_debug || "desktop");
         const appToDebug: string | undefined = command.app || process.env.npm_package_config_app_to_debug;
         const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;

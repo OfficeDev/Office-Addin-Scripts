@@ -11,6 +11,11 @@ import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess  } from "./process";
 
+export enum AppPlaform {
+    iOS = "iOS",
+    Win32 = "win32"
+}
+
 export enum AppType {
     Desktop = "desktop",
     Web = "web",
@@ -55,6 +60,17 @@ export function parseAppType(text: string): AppType | undefined {
             return AppType.Desktop;
         case "web":
             return AppType.Web;
+        default:
+            return undefined;
+    }
+}
+
+export function parseAppPlatform(text: string): AppPlaform | undefined {
+    switch (text) {
+        case "win32":
+            return AppPlaform.Win32;
+        case "iOS":
+            return AppPlaform.iOS;
         default:
             return undefined;
     }
