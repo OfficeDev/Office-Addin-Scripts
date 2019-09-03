@@ -12,7 +12,9 @@ commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
   .command("generate <source-file> <metadata-file>")
-  .description("Generate the metadata for the custom functions from the source code.")
+  .description(
+    "Generate the metadata for the custom functions from the source code."
+  )
   .action(commands.generate);
 
 // if the command is not known, display an error
@@ -23,7 +25,7 @@ commander.on("command:*", function() {
 });
 
 if (process.argv.length > 2) {
-    commander.parse(process.argv);
+  commander.parse(process.argv);
 } else {
-    commander.help();
+  commander.help();
 }

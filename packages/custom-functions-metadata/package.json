@@ -5,6 +5,9 @@
   "main": "./lib/main.js",
   "scripts": {
     "cli": "node lib/cli.js",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
@@ -40,6 +43,7 @@
     "@types/xregexp": "^3.0.29",
     "concurrently": "^3.6.1",
     "mocha": "^5.2.0",
+    "office-addin-lint": "^1.0.13",
     "rimraf": "^2.6.2",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
