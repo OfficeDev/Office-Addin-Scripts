@@ -8,14 +8,10 @@ import * as generateMetadata from "./generate";
 export async function generate(inputFile: string, outputFile: string) {
   try {
     if (!inputFile) {
-      throw new Error(
-        "You need to provide the path to the source file for custom functions."
-      );
+      throw new Error("You need to provide the path to the source file for custom functions.");
     }
     if (!outputFile) {
-      throw new Error(
-        "You need to provide the path to the output file for the custom functions metadata."
-      );
+      throw new Error("You need to provide the path to the output file for the custom functions metadata.");
     }
     const results = await generateMetadata.generate(inputFile, outputFile);
     if (results.errors.length > 0) {

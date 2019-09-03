@@ -166,17 +166,11 @@ export async function generate(
   if (fs.existsSync(inputFile)) {
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
-    parseTreeResult.extras.forEach(extra =>
-      extra.errors.forEach(err => errors.push(err))
-    );
+    parseTreeResult.extras.forEach(extra => extra.errors.forEach(err => errors.push(err)));
     generateResults.associate = [...parseTreeResult.associate];
 
     if (errors.length === 0) {
-      const json = JSON.stringify(
-        { functions: parseTreeResult.functions },
-        null,
-        4
-      );
+      const json = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
 
       try {
         fs.writeFileSync(outputFileName, json);
@@ -206,11 +200,7 @@ export async function generate(
  * @param sourceFileName source code file name or path
  * @param parseTreeOptions options to enable or disable
  */
-export function parseTree(
-  sourceCode: string,
-  sourceFileName: string,
-  parseTreeOptions?: IOptions
-): IParseTreeResult {
+export function parseTree(sourceCode: string, sourceFileName: string, parseTreeOptions?: IOptions): IParseTreeResult {
   const associate: IAssociate[] = [];
   const functions: IFunction[] = [];
   const extras: IFunctionExtras[] = [];
@@ -219,12 +209,7 @@ export function parseTree(
   const metadataFunctionNames: string[] = [];
   const ids: string[] = [];
 
-  const sourceFile = ts.createSourceFile(
-    sourceFileName,
-    sourceCode,
-    ts.ScriptTarget.Latest,
-    true
-  );
+  const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
   buildEnums(sourceFile);
   visit(sourceFile);
@@ -248,9 +233,7 @@ export function parseTree(
         const functionDeclaration = node as ts.FunctionDeclaration;
         const position = getPosition(functionDeclaration);
         const functionErrors: string[] = [];
-        const functionName = functionDeclaration.name
-          ? functionDeclaration.name.text
-          : "";
+        const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
 
         if (checkForDuplicate(functionNames, functionName)) {
           const errorString = `Duplicate function name: ${functionName}`;
@@ -268,34 +251,17 @@ export function parseTree(
           const idNameArray = idName.split(" ");
           const jsDocParamInfo = getJSDocParams(functionDeclaration);
           const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
-          const jsDocParamOptionalInfo = getJSDocParamsOptionalType(
-            functionDeclaration
-          );
+          const jsDocParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
           const [lastParameter] = functionDeclaration.parameters.slice(-1);
-          const isStreamingFunction = hasStreamingInvocationParameter(
-            lastParameter,
-            jsDocParamTypeInfo
-          );
-          const isCancelableFunction = hasCancelableInvocationParameter(
-            lastParameter,
-            jsDocParamTypeInfo
-          );
-          const isInvocationFunction = hasInvocationParameter(
-            lastParameter,
-            jsDocParamTypeInfo
-          );
+          const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
+          const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
+          const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
 
           const parametersToParse =
             isStreamingFunction || isCancelableFunction || isInvocationFunction
-              ? functionDeclaration.parameters.slice(
-                  0,
-                  functionDeclaration.parameters.length - 1
-                )
-              : functionDeclaration.parameters.slice(
-                  0,
-                  functionDeclaration.parameters.length
-                );
+              ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
+              : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
           const parameterItems: IGetParametersArguments = {
             enumList,
@@ -308,9 +274,7 @@ export function parseTree(
           const parameters = getParameters(parameterItems);
 
           const description = getDescription(functionDeclaration);
-          const helpUrl = normalizeLineEndings(
-            getTagComment(functionDeclaration, HELPURL_PARAM)
-          );
+          const helpUrl = normalizeLineEndings(getTagComment(functionDeclaration, HELPURL_PARAM));
 
           const result = getResults(
             functionDeclaration,
@@ -329,9 +293,7 @@ export function parseTree(
             extra
           );
 
-          const funcName: string = functionDeclaration.name
-            ? functionDeclaration.name.text
-            : "";
+          const funcName: string = functionDeclaration.name ? functionDeclaration.name.text : "";
           const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
           const name = idNameArray[1] || id;
 
@@ -363,12 +325,7 @@ export function parseTree(
             result
           };
 
-          if (
-            !options.cancelable &&
-            !options.requiresAddress &&
-            !options.stream &&
-            !options.volatile
-          ) {
+          if (!options.cancelable && !options.requiresAddress && !options.stream && !options.volatile) {
             delete functionMetadata.options;
           } else {
             if (!options.cancelable) {
@@ -432,17 +389,9 @@ function checkForDuplicate(list: string[], item: string): boolean {
  * @param second Second string
  * @param ignoreCase Ignore the case of the string
  */
-function areStringsEqual(
-  first: string,
-  second: string,
-  ignoreCase = true
-): boolean {
+function areStringsEqual(first: string, second: string, ignoreCase = true): boolean {
   return typeof first === "string" && typeof second === "string"
-    ? first.localeCompare(
-        second,
-        undefined,
-        ignoreCase ? { sensitivity: "accent" } : undefined
-      ) === 0
+    ? first.localeCompare(second, undefined, ignoreCase ? { sensitivity: "accent" } : undefined) === 0
     : first === second;
 }
 
@@ -466,11 +415,7 @@ function getPosition(
  * Verifies if the id is valid and logs error if not.
  * @param id Id of the function
  */
-function validateId(
-  id: string,
-  position: ts.LineAndCharacter | null,
-  extra: IFunctionExtras
-): void {
+function validateId(id: string, position: ts.LineAndCharacter | null, extra: IFunctionExtras): void {
   const idRegExString: string = "^[a-zA-Z0-9._]*$";
   const idRegEx = new RegExp(idRegExString);
   if (!idRegEx.test(id)) {
@@ -490,11 +435,7 @@ function validateId(
  * Verifies if the name is valid and logs error if not.
  * @param name Name of the function
  */
-function validateName(
-  name: string,
-  position: ts.LineAndCharacter | null,
-  extra: IFunctionExtras
-): void {
+function validateName(name: string, position: ts.LineAndCharacter | null, extra: IFunctionExtras): void {
   const startsWithLetterRegEx = XRegExp("^[\\pL]");
   const validNameRegEx = XRegExp("^[\\pL][\\pL0-9._]*$");
   let errorString: string;
@@ -545,11 +486,7 @@ function getOptions(
   };
 
   if (optionsItem.requiresAddress) {
-    if (
-      !isStreamingFunction &&
-      !isCancelableFunction &&
-      !isInvocationFunction
-    ) {
+    if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString =
         "Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :";
@@ -609,10 +546,7 @@ function getResults(
 
       return paramResultItem;
     }
-    if (
-      !lastParameterType.typeArguments ||
-      lastParameterType.typeArguments.length !== 1
-    ) {
+    if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
       const errorString =
         "The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >') :";
       extra.errors.push(logError(errorString, lastParameterPosition));
@@ -624,11 +558,7 @@ function getResults(
       extra.errors.push(logError(errorString, lastParameterPosition));
       return defaultResultItem;
     }
-    resultType = getParamType(
-      lastParameterType.typeArguments[0],
-      extra,
-      enumList
-    );
+    resultType = getParamType(lastParameterType.typeArguments[0], extra, enumList);
     resultDim = getParamDim(lastParameterType.typeArguments[0]);
   } else if (func.type) {
     if (
@@ -667,8 +597,7 @@ function getResults(
     }
     if (
       returnTypeFromJSDoc.kind === ts.SyntaxKind.TypeReference &&
-      (returnTypeFromJSDoc as ts.TypeReferenceNode).typeName.getText() ===
-        "Promise" &&
+      (returnTypeFromJSDoc as ts.TypeReferenceNode).typeName.getText() === "Promise" &&
       (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments &&
       // @ts-ignore
       (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments.length === 1
@@ -712,9 +641,7 @@ function getResults(
  * @param jsDocParamTypeInfo - jsDocs parameter type info
  * @param jsDocParamInfo = jsDocs parameter info
  */
-function getParameters(
-  parameterItem: IGetParametersArguments
-): IFunctionParameter[] {
+function getParameters(parameterItem: IGetParametersArguments): IFunctionParameter[] {
   const parameterMetadata: IFunctionParameter[] = [];
   const parameters = parameterItem.parametersToParse
     .map((p: ts.ParameterDeclaration) => {
@@ -726,24 +653,16 @@ function getParameters(
       const parameterJSDocTypeNode = ts.getJSDocType(p);
       if (parameterJSDocTypeNode && typeNode) {
         if (parameterJSDocTypeNode.kind !== typeNode.kind) {
-          const errorString = `Type {${
-            ts.SyntaxKind[parameterJSDocTypeNode.kind]
-          }:${
+          const errorString = `Type {${ts.SyntaxKind[parameterJSDocTypeNode.kind]}:${
             ts.SyntaxKind[typeNode.kind]
           }} doesn't match for parameter : ${name}`;
-          parameterItem.extra.errors.push(
-            logError(errorString, parameterPosition)
-          );
+          parameterItem.extra.errors.push(logError(errorString, parameterPosition));
         }
       }
       if (!typeNode && parameterJSDocTypeNode) {
         typeNode = parameterJSDocTypeNode;
       }
-      const ptype = getParamType(
-        typeNode,
-        parameterItem.extra,
-        parameterItem.enumList
-      );
+      const ptype = getParamType(typeNode, parameterItem.extra, parameterItem.enumList);
 
       const pMetadataItem: IFunctionParameter = {
         description: parameterItem.jsDocParamInfo[name],
@@ -826,9 +745,7 @@ function getDescription(node: ts.Node): string {
  * @returns the tag if found; undefined otherwise.
  */
 function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
-  return ts
-    .getJSDocTags(node)
-    .find((tag: ts.JSDocTag) => containsTag(tag, tagName));
+  return ts.getJSDocTags(node).find((tag: ts.JSDocTag) => containsTag(tag, tagName));
 }
 
 /**
@@ -923,25 +840,17 @@ function getReturnType(node: ts.Node): string {
 function getJSDocParams(node: ts.Node): { [key: string]: string } {
   const jsDocParamInfo = {};
 
-  ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
-    (tag: ts.JSDocTag) => {
-      if (tag.comment) {
-        const comment = (tag.comment.startsWith("-")
-          ? tag.comment.slice(1)
-          : tag.comment
-        ).trim();
-        // @ts-ignore
-        jsDocParamInfo[
-          (tag as ts.JSDocPropertyLikeTag).name.getFullText()
-        ] = comment;
-      } else {
-        // Description is missing so add empty string
-        // @ts-ignore
-        jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] =
-          "";
-      }
+  ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach((tag: ts.JSDocTag) => {
+    if (tag.comment) {
+      const comment = (tag.comment.startsWith("-") ? tag.comment.slice(1) : tag.comment).trim();
+      // @ts-ignore
+      jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = comment;
+    } else {
+      // Description is missing so add empty string
+      // @ts-ignore
+      jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "";
     }
-  );
+  });
 
   return jsDocParamInfo;
 }
@@ -958,19 +867,13 @@ function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
     (tag: ts.JSDocParameterTag) => {
       if (tag.typeExpression) {
         // Should be in the form {string}, so removing the {} around type
-        const paramType = tag.typeExpression
-          .getFullText()
-          .slice(1, tag.typeExpression.getFullText().length - 1);
+        const paramType = tag.typeExpression.getFullText().slice(1, tag.typeExpression.getFullText().length - 1);
         // @ts-ignore
-        jsDocParamTypeInfo[
-          (tag as ts.JSDocPropertyLikeTag).name.getFullText()
-        ] = paramType;
+        jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = paramType;
       } else {
         // Set as any
         // @ts-ignore
-        jsDocParamTypeInfo[
-          (tag as ts.JSDocPropertyLikeTag).name.getFullText()
-        ] = "any";
+        jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "any";
       }
     }
   );
@@ -989,9 +892,7 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
     // @ts-ignore
     (tag: ts.JSDocParameterTag) => {
       // @ts-ignore
-      jsDocParamOptionalTypeInfo[
-        (tag as ts.JSDocPropertyLikeTag).name.getFullText()
-      ] = tag.isBracketed;
+      jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = tag.isBracketed;
     }
   );
 
@@ -1006,8 +907,7 @@ function hasStreamingInvocationParameter(
   param: ts.ParameterDeclaration,
   jsDocParamTypeInfo: { [key: string]: string }
 ): boolean {
-  const isTypeReferenceNode =
-    param && param.type && ts.isTypeReferenceNode(param.type);
+  const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
   if (param) {
     const name = (param.name as ts.Identifier).text;
@@ -1047,8 +947,7 @@ function hasCancelableInvocationParameter(
   param: ts.ParameterDeclaration,
   jsDocParamTypeInfo: { [key: string]: string }
 ): boolean {
-  const isTypeReferenceNode =
-    param && param.type && ts.isTypeReferenceNode(param.type);
+  const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
   if (param) {
     const name = (param.name as ts.Identifier).text;
@@ -1072,10 +971,7 @@ function hasCancelableInvocationParameter(
 
   const typeRef = param.type as ts.TypeReferenceNode;
   const typeName = typeRef.typeName.getText();
-  return (
-    typeName === "CustomFunctions.CancelableHandler" ||
-    typeName === "CustomFunctions.CancelableInvocation"
-  );
+  return typeName === "CustomFunctions.CancelableHandler" || typeName === "CustomFunctions.CancelableInvocation";
 }
 
 /**
@@ -1087,8 +983,7 @@ function hasInvocationParameter(
   param: ts.ParameterDeclaration,
   jsDocParamTypeInfo: { [key: string]: string }
 ): boolean {
-  const isTypeReferenceNode =
-    param && param.type && ts.isTypeReferenceNode(param.type);
+  const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
   if (param) {
     const name = (param.name as ts.Identifier).text;
@@ -1115,11 +1010,7 @@ function hasInvocationParameter(
  * Gets the parameter type of the node
  * @param t TypeNode
  */
-function getParamType(
-  t: ts.TypeNode,
-  extra: IFunctionExtras,
-  enumList: string[]
-): string {
+function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]): string {
   let type = "any";
   // Only get type for typescript files.  js files will return any for all types
   if (t) {
@@ -1137,9 +1028,7 @@ function getParamType(
           return type;
         }
         if (array.typeName.getText() !== "Array") {
-          extra.errors.push(
-            logError("Invalid type: " + array.typeName.getText(), typePosition)
-          );
+          extra.errors.push(logError("Invalid type: " + array.typeName.getText(), typePosition));
           return type;
         }
       }
@@ -1167,9 +1056,7 @@ function getArrayDimensionalityAndType(node: ts.TypeNode): IArrayType {
   if (ts.isArrayTypeNode(node)) {
     array = getArrayDimensionalityAndTypeForArrayTypeNode(node);
   } else if (ts.isTypeReferenceNode(node)) {
-    array = getArrayDimensionalityAndTypeForReferenceNode(
-      node as ts.TypeReferenceNode
-    );
+    array = getArrayDimensionalityAndTypeForReferenceNode(node as ts.TypeReferenceNode);
   }
   return array;
 }
@@ -1178,9 +1065,7 @@ function getArrayDimensionalityAndType(node: ts.TypeNode): IArrayType {
  * Returns the dimensionality and type of array for TypeNode
  * @param node TypeNode
  */
-function getArrayDimensionalityAndTypeForArrayTypeNode(
-  node: ts.TypeNode
-): IArrayType {
+function getArrayDimensionalityAndTypeForArrayTypeNode(node: ts.TypeNode): IArrayType {
   const array: IArrayType = {
     dimensionality: 1,
     type: ts.SyntaxKind.AnyKeyword
@@ -1201,9 +1086,7 @@ function getArrayDimensionalityAndTypeForArrayTypeNode(
  * Returns the dimensionality and type of array for ReferenceNode
  * @param node TypeReferenceNode
  */
-function getArrayDimensionalityAndTypeForReferenceNode(
-  node: ts.TypeReferenceNode
-): IArrayType {
+function getArrayDimensionalityAndTypeForReferenceNode(node: ts.TypeReferenceNode): IArrayType {
   const array: IArrayType = {
     dimensionality: 0,
     type: ts.SyntaxKind.AnyKeyword
@@ -1244,16 +1127,10 @@ function getParamDim(t: ts.TypeNode): string {
   return dimensionality;
 }
 
-function getParamOptional(
-  p: ts.ParameterDeclaration,
-  jsDocParamOptionalInfo: { [key: string]: string }
-): boolean {
+function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { [key: string]: string }): boolean {
   let optional = false;
   const name = (p.name as ts.Identifier).text;
-  const isOptional =
-    p.questionToken != null ||
-    p.initializer != null ||
-    p.dotDotDotToken != null;
+  const isOptional = p.questionToken != null || p.initializer != null || p.dotDotDotToken != null;
   // If parameter is found to be optional in ts
   if (isOptional) {
     optional = true;
@@ -1270,21 +1147,14 @@ function getParamOptional(
  * @param a - TypeReferenceNode
  */
 function validateArray(a: ts.TypeReferenceNode) {
-  return (
-    a.typeName.getText() === "Array" &&
-    a.typeArguments &&
-    a.typeArguments.length === 1
-  );
+  return a.typeName.getText() === "Array" && a.typeArguments && a.typeArguments.length === 1;
 }
 
 /**
  * Log containing all the errors found while parsing
  * @param error Error string to add to the log
  */
-export function logError(
-  error: string,
-  position?: ts.LineAndCharacter | null
-): string {
+export function logError(error: string, position?: ts.LineAndCharacter | null): string {
   if (position) {
     error = `${error} (${position.line + 1},${position.character + 1})`;
   }

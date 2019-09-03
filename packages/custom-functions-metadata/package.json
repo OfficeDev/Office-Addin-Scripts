@@ -55,5 +55,8 @@
   },
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  },
+  "prettier": {
+    "printWidth": 120
   }
 }
