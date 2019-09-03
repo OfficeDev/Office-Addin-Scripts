@@ -59,11 +59,12 @@ Host name of the packager. Default: `localhost`.
 
 ` --packager-port <port>`
 
-Specifies that debugging session is for production mode. Default is dev mode.
+
+Port number of the packager. Default: `8081`.
 
 ` --prod`
 
-Port number of the packager. Default: `8081`.
+Specifies that debugging session is for production mode. Default is dev mode.
 
 ` --sideload <command>`
 
@@ -102,9 +103,9 @@ Syntax:
 
 Options:
 
-Specifies if in production mode. Default is dev mode.
-
 ` --prod`
+
+Specifies that debugging session is for production mode. Default is dev mode.
 
 #
 

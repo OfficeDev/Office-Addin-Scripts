@@ -21,7 +21,7 @@ commander
     .option("--packager <command>", "Run the packager.")
     .option("--packager-host <host>")
     .option("--packager-port <port>")
-    .option("--prod", "Specifies production mode.")
+    .option("--prod", "Specifies that debugging session is for production mode. Default is dev mode.")
     .option("--sideload <command>")
     .option("--source-bundle-url-host <host>")
     .option("--source-bundle-url-port <port>")
