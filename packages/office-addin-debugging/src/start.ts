@@ -11,9 +11,13 @@ import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess  } from "./process";
 
-export enum AppPlaform {
-    iOS = "iOS",
-    Win32 = "win32"
+export enum AppPlatform {
+    Android = "android",
+    Desktop = "desktop",
+    iOS = "ios",
+    MacOS = "macos",
+    Win32 = "win32",
+    Web = "web",
 }
 
 export enum AppType {
@@ -57,20 +61,32 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
 export function parseAppType(text: string): AppType | undefined {
     switch (text) {
         case "desktop":
+        case "macos":
+        case "win32":
             return AppType.Desktop;
         case "web":
             return AppType.Web;
+        case "ios":
+        case "android":
+            throw new Error(`Platform type ${text} not currently supported for debugging`);
         default:
             return undefined;
     }
 }
 
-export function parseAppPlatform(text: string): AppPlaform | undefined {
+export function parseAppPlatform(text: string): AppPlatform | undefined {
     switch (text) {
+        case "desktop":
+            return process.platform === "win32" ? AppPlatform.Win32 : AppPlatform.MacOS;
+        case "macos":
+            return AppPlatform.MacOS;
+        case "web":
+            return AppPlatform.Web;
         case "win32":
-            return AppPlaform.Win32;
-        case "iOS":
-            return AppPlaform.iOS;
+            return AppPlatform.Win32;
+        case "ios":
+        case "android":
+            throw new Error(`Platform type ${text} not currently supported for debugging`);
         default:
             return undefined;
     }

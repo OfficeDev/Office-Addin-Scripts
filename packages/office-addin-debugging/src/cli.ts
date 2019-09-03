@@ -11,7 +11,7 @@ commander.name("office-addin-debugging");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
-    .command("start <manifest-path> [app-type]")
+    .command("start <manifest-path> [platform]")
     .option("--app <app>", "Specify which Office app to use.")
     .option("--debug-method <method>", "The debug method to use.")
     .option("--dev-server <command>", "Run the dev server.")
@@ -21,6 +21,7 @@ commander
     .option("--packager <command>", "Run the packager.")
     .option("--packager-host <host>")
     .option("--packager-port <port>")
+    .option("--prod", "Specifies production mode.")
     .option("--sideload <command>")
     .option("--source-bundle-url-host <host>")
     .option("--source-bundle-url-port <port>")
@@ -29,8 +30,8 @@ commander
     .action(commands.start);
 
 commander
-    .command("stop <manifest-path>")
-    .option("--unload <command>")
+    .command("stop <manifest-path> [platform]")
+    .option("--prod", "Specifies production mode.")
     .action(commands.stop);
 
 // if the command is not known, display an error
