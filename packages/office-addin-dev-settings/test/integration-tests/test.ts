@@ -12,20 +12,20 @@ import * as commands from "../../src/commands";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 
 if (process.platform === "win32") { // only windows is supported
-  describe("Appcontainer edgewebview tests", async function() {
+  describe("Appcontainer edgewebview tests", async function () {
     const appcontainerName = "edgewebview";
     let sandbox: sinon.SinonSandbox;
-    const command: commander.Command = new commander.Command();
-    command.loopback = true;
 
-    beforeEach(function() {
+    beforeEach(function () {
       sandbox = sinon.createSandbox();
     });
-    afterEach(function() {
+    afterEach(function () {
       sandbox.restore();
     });
-    it("loopback already enabled", async function() {
+    it("loopback already enabled", async function () {
+      const command: commander.Command = new commander.Command();
       command.loopback = true;
+      command.yes = true;
       const appcontaineId = await appcontainer.getAppcontainerNameFromManifestPath(appcontainerName);
       await appcontainer.addLoopbackExemptionForAppcontainer(appcontaineId);
       const addLoopbackExemptionForAppcontainer = sandbox.spy(appcontainer, "addLoopbackExemptionForAppcontainer");
@@ -33,16 +33,20 @@ if (process.platform === "win32") { // only windows is supported
       assert.strictEqual(addLoopbackExemptionForAppcontainer.callCount, 0);
       await appcontainer.removeLoopbackExemptionForAppcontainer("Microsoft.win32webviewhost_cw5n1h2txyewy");
     });
-    it("loopback not enabled, user doesn't gives consent", async function() {
-      sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: false});
+    it("loopback not enabled, user doesn't gives consent", async function () {
+      const command: commander.Command = new commander.Command();
+      command.loopback = true;
+      sandbox.stub(inquirer, "prompt").resolves({ didUserConfirm: false });
       const exec = sandbox.spy(childProcess, "exec");
       await commands.appcontainer(appcontainerName, command);
       assert.strictEqual(exec.callCount, 1); // because one query to check if loopback status
     });
-    it("loopback not enabled, user gives consent", async function() {
+    it("loopback not enabled, user gives consent", async function () {
+      const command: commander.Command = new commander.Command();
+      command.loopback = true;
       const appcontaineId = await appcontainer.getAppcontainerNameFromManifestPath(appcontainerName);
       await appcontainer.removeLoopbackExemptionForAppcontainer(appcontaineId);
-      sandbox.stub(inquirer, "prompt").resolves({didUserConfirm: true});
+      sandbox.stub(inquirer, "prompt").resolves({ didUserConfirm: true });
       const exec = sandbox.spy(childProcess, "exec");
       await commands.appcontainer(appcontainerName, command);
       assert.strictEqual(exec.callCount, 2);
