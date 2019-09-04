@@ -6,11 +6,12 @@ import * as fs from "fs";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
-import { AppPlatform, AppType, parseAppPlatform, parseAppType, parseDebuggingMethod, startDebugging } from "./start";
+import { AppType, parseAppType, parsePlatform, parseDebuggingMethod, Platform, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
 
-function determineManifestPath(platform: AppPlatform, dev: boolean): string {
+function determineManifestPath(platform: Platform, dev: boolean): string {
     let manifestPath = "";
+
     if (process.env.npm_package_config_manifest_location) {
         const manifestPathToDebug = process.env.npm_package_config_manifest_location;
         manifestPath = manifestPathToDebug.replace("${flavor}", dev ? "dev" : "prod");
@@ -20,6 +21,7 @@ function determineManifestPath(platform: AppPlatform, dev: boolean): string {
     if (manifestPath === "" || !fs.existsSync(manifestPath)) {
         throw new Error(`manifest path ${manifestPath} is not valid.`);
     }
+
     return manifestPath;
 }
 
@@ -40,7 +42,7 @@ function parseDevServerPort(optionValue: any): number | undefined {
 
 export async function start(manifestPath: string, platform: string | undefined, command: commander.Command) {
     try {
-        const appPlatformToDebug: AppPlatform | undefined = parseAppPlatform(platform || process.env.npm_package_config_app_platform_to_debug || AppPlatform.Win32);
+        const appPlatformToDebug: Platform | undefined = parsePlatform(platform || process.env.npm_package_config_app_platform_to_debug || AppPlatform.Win32);
         const appTypeToDebug: AppType | undefined = parseAppType(appPlatformToDebug || process.env.npm_package_config_app_type_to_debug || AppType.Desktop);
         const appToDebug: string | undefined = command.app || process.env.npm_package_config_app_to_debug;
         const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;
@@ -65,6 +67,10 @@ export async function start(manifestPath: string, platform: string | undefined, 
             throw new Error("Please specify the application type to debug.");
         }
 
+        if (appPlatformToDebug === Platform.Android || appPlatformToDebug === Platform.iOS) {
+            throw new Error(`Platform type ${appPlatformToDebug} not currently supported for debugging`);
+        }
+
         if (manifestPath === "") {
             manifestPath = determineManifestPath(appPlatformToDebug, devBuild);
         }
@@ -78,7 +84,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
 
 export async function stop(manifestPath: string, platform: string | undefined, command: commander.Command) {
     try {
-        const appPlatformToDebug: AppPlatform | undefined = parseAppPlatform(platform || process.env.npm_package_config_app_plaform_to_debug || AppPlatform.Win32);
+        const appPlatformToDebug: Platform | undefined = parsePlatform(platform || process.env.npm_package_config_app_plaform_to_debug || AppPlatform.Win32);
         const devBuild: boolean = command.prod ? false : true;
 
         if (appPlatformToDebug === undefined) {
