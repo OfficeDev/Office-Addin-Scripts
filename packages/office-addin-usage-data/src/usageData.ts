@@ -108,15 +108,14 @@ export class OfficeAddinUsageData {
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       const usageDataEvent = new appInsights.Contracts.EventData();
-      usageDataEvent.name = eventName;
+      usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
       try {
         for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          usageDataEvent.properties[key] = value;
+          usageDataEvent.properties[key] = value; 
           usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-        if (!this.options.isForTesting) {
-          this.usageDataClient.trackEvent(usageDataEvent);
-        }
+        
+        this.usageDataClient.trackEvent(usageDataEvent);
         this.eventsSent++;
       } catch (err) {
         this.reportError("sendUsageDataEvents", err);
@@ -143,11 +142,9 @@ export class OfficeAddinUsageData {
    */
   public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      err.name = errorName;
-    if (!this.options.isForTesting) {
+      err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
       this.usageDataClient.trackException({ exception: this.maskFilePaths(err) });
-    }
-    this.exceptionsSent++;
+      this.exceptionsSent++;
     }
   }
 /**
