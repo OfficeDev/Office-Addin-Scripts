@@ -16,6 +16,15 @@ export enum AppType {
     Web = "web",
 }
 
+export enum Platform {
+    Android = "android",
+    Desktop = "desktop",
+    iOS = "ios",
+    MacOS = "macos",
+    Win32 = "win32",
+    Web = "web",
+}
+
 function defaultDebuggingMethod(): DebuggingMethod {
     return DebuggingMethod.Direct;
 }
@@ -61,6 +70,10 @@ export async function isUrlAvailable(url: string): Promise<boolean> {
 export function parseAppType(text: string): AppType | undefined {
     switch (text) {
         case "desktop":
+        case "macos":
+        case "win32":
+        case "ios":
+        case "android":
             return AppType.Desktop;
         case "web":
             return AppType.Web;
@@ -77,6 +90,29 @@ export function parseDebuggingMethod(text: string): DebuggingMethod | undefined 
             return DebuggingMethod.Proxy;
         default:
             return undefined;
+    }
+}
+
+export function parsePlatform(text: string): Platform | undefined {
+    if (text === AppType.Desktop) {
+        text = process.platform;
+    }
+    
+    switch (text) {
+        case "android":
+            return Platform.Android;
+        case "darwin":
+            return Platform.MacOS;
+        case "ios":
+            return Platform.iOS;
+        case "macos":
+            return Platform.MacOS;
+        case "web":
+            return Platform.Web;
+        case "win32":
+            return Platform.Win32;
+        default:
+            throw new Error(`The current platform is not supported: ${process.platform}`);
     }
 }
 
