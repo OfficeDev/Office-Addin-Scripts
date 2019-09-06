@@ -61,6 +61,10 @@ Host name of the packager. Default: `localhost`.
 
 Port number of the packager. Default: `8081`.
 
+` --prod`
+
+Specifies that debugging session is for production mode. Default is development mode.
+
 ` --sideload <command>`
 
 Load the add-in using the specified command.
@@ -98,9 +102,9 @@ Syntax:
 
 Options:
 
-`--unload <command>`
+` --prod`
 
-Unregister the Office Add-in using the specified command. For example: `office-toolbox remove -m <manifest> -a <app>`.
- 
+Specifies that debugging session is for production mode. Default is development mode.
+
 #
 
