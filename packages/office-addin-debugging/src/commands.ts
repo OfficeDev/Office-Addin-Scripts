@@ -10,18 +10,18 @@ import { AppType, parseAppType, parseDebuggingMethod, parsePlatform, Platform, s
 import { stopDebugging } from "./stop";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {
-    let manifestPath = "";
+    let manifestPath = process.env.npm_package_config_manifest_location || "";
 
-    if (process.env.npm_package_config_manifest_location) {
-        const manifestPathToDebug = process.env.npm_package_config_manifest_location;
-        manifestPath = manifestPathToDebug.replace("${flavor}", dev ? "dev" : "prod");
-        manifestPath = manifestPath.replace("${platform}", platform);
+    manifestPath.replace("${flavor}", dev ? "dev" : "prod").replace("${platform}", platform);
+    
+    if (!manifestPath) {
+      throw new Error(`The manifest path was not provided.`);
     }
-
-    if (manifestPath === "" || !fs.existsSync(manifestPath)) {
-        throw new Error(`manifest path ${manifestPath} is not valid.`);
+    
+    if (!fs.existsSync(manifestPath)) {
+      throw new Error(`The manifest path does not exist: ${manifestPath}.`);
     }
-
+    
     return manifestPath;
 }
 
@@ -46,7 +46,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         const appTypeToDebug: AppType | undefined = parseAppType(appPlatformToDebug || process.env.npm_package_config_app_type_to_debug || AppType.Desktop);
         const appToDebug: string | undefined = command.app || process.env.npm_package_config_app_to_debug;
         const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;
-        const devBuild: boolean = command.prod ? false : true;
+        const dev: boolean = command.prod ? false : true;
         const debuggingMethod = parseDebuggingMethod(command.debugMethod);
         const devServer: string | undefined = command.devServer || process.env.npm_package_scripts_dev_server;
         const devServerPort = parseDevServerPort(command.devServerPort || process.env.npm_package_config_dev_server_port);
@@ -60,7 +60,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
 
         if (appPlatformToDebug === undefined) {
-            throw new Error("Please specify the application platform to debug.");
+            throw new Error("Please specify the platform to debug.");
         }
 
         if (appTypeToDebug === undefined) {
@@ -71,8 +71,8 @@ export async function start(manifestPath: string, platform: string | undefined, 
             throw new Error(`Platform type ${appPlatformToDebug} not currently supported for debugging`);
         }
 
-        if (manifestPath === "") {
-            manifestPath = determineManifestPath(appPlatformToDebug, devBuild);
+        if (!manifestPath) {
+            manifestPath = determineManifestPath(appPlatformToDebug, dev);
         }
 
         await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
@@ -85,11 +85,12 @@ export async function start(manifestPath: string, platform: string | undefined, 
 export async function stop(manifestPath: string, platform: string | undefined, command: commander.Command) {
     try {
         const appPlatformToDebug: Platform | undefined = parsePlatform(platform || process.env.npm_package_config_app_plaform_to_debug || Platform.Win32);
-        const devBuild: boolean = command.prod ? false : true;
+        const dev: boolean = command.prod ? false : true;
 
         if (manifestPath === "" && appPlatformToDebug !== undefined) {
-            manifestPath = determineManifestPath(appPlatformToDebug, devBuild);
+            manifestPath = determineManifestPath(appPlatformToDebug, dev);
         }
+
         await stopDebugging(manifestPath);
     } catch (err) {
         logErrorMessage(`Unable to stop debugging.\n${err}`);
