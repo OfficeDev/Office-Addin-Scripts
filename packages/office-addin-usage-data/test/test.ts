@@ -16,7 +16,7 @@ let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
   projectName: "Test-Project",
-  instrumentationKey: defaults.instrumentationKey,
+  instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for usage data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
   usageDataLevel: officeAddinUsageData.UsageDataLevel.on,
@@ -150,7 +150,7 @@ describe("Test office-addin-usage data-package", function() {
       compareError.name = "TestData-test";
       compareError.message = "this error contains a file path:C:index.js";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "Error: this error contains a file path:C:index.js";
+      compareError.stack = "this error contains a file path:C:index.js";
       addInUsageData.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);

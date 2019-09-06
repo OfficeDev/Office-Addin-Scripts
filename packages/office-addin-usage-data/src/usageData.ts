@@ -111,7 +111,7 @@ export class OfficeAddinUsageData {
       usageDataEvent.name = `${eventName}${this.options.isForTesting ? "-test" : ""}`;
       try {
         for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          usageDataEvent.properties[key] = value;
+          usageDataEvent.properties[key] = `${value}${this.options.isForTesting ? "-test" : ""}`;
           usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
         
