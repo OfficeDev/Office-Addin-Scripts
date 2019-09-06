@@ -11,17 +11,15 @@ import { stopDebugging } from "./stop";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {
     let manifestPath = process.env.npm_package_config_manifest_location || "";
+    manifestPath = manifestPath.replace("${flavor}", dev ? "dev" : "prod").replace("${platform}", platform);
 
-    manifestPath.replace("${flavor}", dev ? "dev" : "prod").replace("${platform}", platform);
-    
     if (!manifestPath) {
       throw new Error(`The manifest path was not provided.`);
     }
-    
     if (!fs.existsSync(manifestPath)) {
       throw new Error(`The manifest path does not exist: ${manifestPath}.`);
     }
-    
+
     return manifestPath;
 }
 
