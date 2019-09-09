@@ -7,5 +7,4 @@
  * @param {number} num1 - testing add
  * @return {number} - return number
  */
-function testadd(num1){
-}
+function testadd(num1) {}

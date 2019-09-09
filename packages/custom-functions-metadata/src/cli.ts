@@ -23,7 +23,7 @@ commander.on("command:*", function() {
 });
 
 if (process.argv.length > 2) {
-    commander.parse(process.argv);
+  commander.parse(process.argv);
 } else {
-    commander.help();
+  commander.help();
 }
