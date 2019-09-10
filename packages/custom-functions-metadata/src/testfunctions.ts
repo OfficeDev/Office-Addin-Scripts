@@ -11,7 +11,7 @@
  * @return {returntypetest}
  */
 function add(first: number, second: number, optional?: number): number {
-    return first + second;
+  return first + second;
 }
 
 /**
@@ -21,25 +21,24 @@ function add(first: number, second: number, optional?: number): number {
  */
 // tslint:disable-next-line:array-type
 function bad(one: string[][], x: Array<Array<number>>): string[][] {
-    // @ts-ignore
-    return [""][""];
+  // @ts-ignore
+  return [""][""];
 }
 
 // tslint:disable-next-line:no-empty
-function notadded() {
-}
+function notadded() {}
 
 /**
  * Testing boolean
  * @CustomFunction
  */
 function testbool(abc: boolean): string {
-    return "";
+  return "";
 }
 
 /**
  * @CustomFunction
  */
 function testdatetime(d?: number): string {
-    return "";
+  return "";
 }

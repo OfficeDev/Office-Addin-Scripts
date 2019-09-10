@@ -1,6 +1,6 @@
 {
   "name": "office-addin-usage-data",
-  "version": "0.0.1",
+  "version": "1.0.3",
   "description": "Provides infrastructure to send usage data events and exceptions.",
   "main": "./lib/main.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-usage-data": "./lib/cli.js"
+    "office-addin-usage-data": "./cli.js"
   },
   "keywords": [
     "Office",
@@ -30,7 +30,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.6.8",
     "concurrently": "^4.1.1",
-    "mocha": "^6.2.0",
+    "mocha": "^5.2.0",
     "rimraf": "^2.6.3",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",

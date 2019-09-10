@@ -54,3 +54,26 @@ Specify the files to fix. Default: `src/**/*.{ts,tsx,js,jsx}`
  
 #
 
+## Package installation
+Steps to follow when installing the package and configuring for use.
+
+Install the following packages:
+
+`npm install -D office-addin-lint`
+
+`npm install -D office-addin-prettier-config`
+
+#
+
+Add the following to package.json:
+
+    Under scripts add the following to enable the 3 actions:
+
+        "lint": "office-addin-lint check",
+        "lint:fix": "office-addin-lint fix",
+        "prettier": "office-addin-lint prettier"`
+
+    At top level add the following to enable the prettier config:
+
+        "prettier": "office-addin-prettier-config"
+#
