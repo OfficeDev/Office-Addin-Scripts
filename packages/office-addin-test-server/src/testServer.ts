@@ -3,41 +3,50 @@
 
 import * as cors from "cors";
 import * as express from "express";
+import * as http from "http";
 import * as https from "https";
 import * as devCerts from "office-addin-dev-certs";
-
-export const defaultPort: number = 4201;
+import * as defaults from "./defaults";
 
 export class TestServer {
     private jsonData: any;
-    private port: number;
+    private httpPort: number;
+    private httpsPort: number;
     private testServerStarted: boolean;
     private app: express.Express;
     private resultsPromise: Promise<JSON>;
-    private server: https.Server;
+    private httpServer: http.Server;
+    private httpsServer: https.Server;
 
-    constructor(port: number) {
+    /**
+     * Creates the test server object and initializes member variables
+     * @param port Specifies port the test server will run on
+     */
+    constructor(httpsPort: number = defaults.httpsPort, httpPort: number = defaults.httpPort) {
         this.app = express();
         this.jsonData = {};
-        this.port = port;
+        this.httpsPort = httpsPort;
+        this.httpPort = httpPort;
         this.resultsPromise = undefined;
         this.testServerStarted = false;
     }
 
-    public async startTestServer(mochaTest: boolean = false): Promise<boolean> {
+    /**
+     * Start the test server
+     * @param mochaTest param is deprecated but keeping for backwards compatability
+     */
+    public async startTestServer(mochaTest = false): Promise<boolean> {
         try {
-            if (mochaTest) {
-                process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-            }
-
             // create express server instance
             const options = await devCerts.getHttpsServerOptions();
             this.app.use(cors());
-            this.server = https.createServer(options, this.app);
+            this.app.use(express.json());
+            this.httpServer = http.createServer(this.app);
+            this.httpsServer = https.createServer(options, this.app);
 
             // listen for 'ping'
             const platformName = this.getPlatformName();
-            this.app.get("/ping", function(req: any, res: any, next: any) {
+            this.app.get("/ping", function (req: any, res: any, next: any) {
                 res.send(platformName);
             });
 
@@ -45,7 +54,7 @@ export class TestServer {
             this.resultsPromise = new Promise<JSON>(async (resolveResults) => {
                 this.app.post("/results", async (req: any, res: any) => {
                     res.send("200");
-                    this.jsonData = JSON.parse(req.query.data);
+                    this.jsonData = req.body;
                     resolveResults(this.jsonData);
                 });
             });
@@ -58,11 +67,15 @@ export class TestServer {
         }
     }
 
+    /**
+     * Stop the test server if it's started
+     */
     public async stopTestServer(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             if (this.testServerStarted) {
                 try {
-                    this.server.close();
+                    this.httpServer.close();
+                    this.httpsServer.close();
                     this.testServerStarted = false;
                     resolve(true);
                 } catch (err) {
@@ -74,19 +87,37 @@ export class TestServer {
             }
         });
     }
-
+    /**
+     * Returns the test results sent to the test server
+     */
     public async getTestResults(): Promise<JSON> {
         return this.resultsPromise;
     }
 
+    /**
+     * Returns whether the server is started or stopped
+     */
     public getTestServerState(): boolean {
         return this.testServerStarted;
     }
 
-    public getTestServerPort(): number {
-        return this.port;
+    /**
+     * Returns the https port for the test server
+     */
+    public getTestHttpsServerPort(): number {
+        return this.httpsPort;
     }
 
+    /**
+     * Returns the http port for the test server
+     */
+    public getTestHttpServerPort(): number {
+        return this.httpPort;
+    }
+
+    /**
+     * Returns the OS platform the test server is running on
+     */
     public getPlatformName(): string {
         switch (process.platform) {
             case "win32":
@@ -101,10 +132,12 @@ export class TestServer {
     private async startListening(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             try {
-                // set server to listen on specified port
-                this.server.listen(this.port, () => {
-                    this.testServerStarted = true;
-                    resolve(true);
+                // set server to listen on specified ports
+                this.httpsServer.listen(this.httpsPort, () => {
+                    this.httpServer.listen(this.httpPort, () => {
+                        this.testServerStarted = true;
+                        resolve(true);
+                    });
                 });
 
             } catch (err) {
