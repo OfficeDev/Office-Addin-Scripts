@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as https from "https";
 import * as fetch from "node-fetch";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
@@ -60,7 +61,17 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
 
 export async function isUrlAvailable(url: string): Promise<boolean> {
     try {
-        await fetch.default(url);
+        const serverOptions = await devCerts.getHttpsServerOptions();
+        const options: any = {
+            cert: serverOptions.cert,
+            key: serverOptions.key,
+            method: "GET",
+        };
+        options.agent = new https.Agent(options);
+        const request = https.request(url, options);
+        request.on("error", () => {
+            return false;
+        });
         return true;
     } catch {
         return false;
@@ -97,7 +108,7 @@ export function parsePlatform(text: string): Platform | undefined {
     if (text === AppType.Desktop) {
         text = process.platform;
     }
-    
+
     switch (text) {
         case "android":
             return Platform.Android;
