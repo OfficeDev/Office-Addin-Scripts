@@ -62,16 +62,13 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
 export async function isUrlAvailable(url: string): Promise<boolean> {
     try {
         const serverOptions = await devCerts.getHttpsServerOptions();
-        const options: any = {
+        const agent = new https.Agent({
+            ca: serverOptions.ca,
             cert: serverOptions.cert,
             key: serverOptions.key,
-            method: "GET",
-        };
-        options.agent = new https.Agent(options);
-        const request = https.request(url, options);
-        request.on("error", () => {
-            return false;
+            rejectUnauthorized: false,
         });
+        await fetch.default(url, { agent });
         return true;
     } catch {
         return false;
