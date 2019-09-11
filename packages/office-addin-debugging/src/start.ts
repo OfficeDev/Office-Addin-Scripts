@@ -66,7 +66,6 @@ export async function isUrlAvailable(url: string): Promise<boolean> {
             ca: serverOptions.ca,
             cert: serverOptions.cert,
             key: serverOptions.key,
-            rejectUnauthorized: false,
         });
         await fetch.default(url, { agent });
         return true;
