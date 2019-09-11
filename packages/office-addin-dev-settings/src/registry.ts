@@ -90,19 +90,20 @@ export async function deleteKey(key: RegistryKey): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        // it's not an error if the key does not exist
-        if (err instanceof Error && err.message.match("unable to find the specified registry key")) {
-          resolve();
-        } else {
-          reject(new Error(`Unable to delete registry key "${key.path}".\n${err}`));
-        }
+        reject(new Error(`Unable to delete registry key "${key.path}".\n${err}`));
       } else {
         resolve();
       }
     };
 
     try {
-      key.winreg.destroy(onError);
+      key.winreg.keyExists((keyExistsError, exists) => {
+        if (exists) {
+          key.winreg.destroy(onError);
+        } else {
+          onError(keyExistsError);
+        }
+      });
     } catch (err) {
       onError(err);
     }
@@ -113,19 +114,20 @@ export async function deleteValue(key: RegistryKey, value: string): Promise<void
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        // it's not an error if the key or value does not exist
-        if (err instanceof Error && err.message.match("unable to find the specified registry key or value")) {
-          resolve();
-        } else {
-          reject(new Error(`Unable to delete registry value "${value}" in key "${key.path}".\n${err}`));
-        }
+        reject(new Error(`Unable to delete registry value "${value}" in key "${key.path}".\n${err}`));
       } else {
         resolve();
       }
     };
 
     try {
-      key.winreg.remove(value, onError);
+      key.winreg.valueExists(value, (valueExistsError, exists) => {
+        if (exists) {
+          key.winreg.remove(value, onError);
+        } else {
+          onError(valueExistsError);
+        }
+      });
     } catch (err) {
       onError(err);
     }
