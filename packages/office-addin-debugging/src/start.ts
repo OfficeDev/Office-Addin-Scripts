@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as https from "https";
 import * as fetch from "node-fetch";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
@@ -59,21 +58,6 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     }
 }
 
-export async function isUrlAvailable(url: string): Promise<boolean> {
-    try {
-        const serverOptions = await devCerts.getHttpsServerOptions();
-        const agent = new https.Agent({
-            ca: serverOptions.ca,
-            cert: serverOptions.cert,
-            key: serverOptions.key,
-        });
-        await fetch.default(url, { agent });
-        return true;
-    } catch {
-        return false;
-    }
-}
-
 export function parseAppType(text: string): AppType | undefined {
     switch (text) {
         case "desktop":
@@ -123,7 +107,7 @@ export function parsePlatform(text: string): Platform | undefined {
     }
 }
 
-export async function runDevServer(commandLine: string, port?: number, manifestPath?: string): Promise<void> {
+export async function runDevServer(commandLine: string, port?: number): Promise<void> {
     if (commandLine) {
         // if the dev server is running
         if ((port !== undefined) && await isDevServerRunning(port)) {
@@ -151,18 +135,6 @@ export async function runDevServer(commandLine: string, port?: number, manifestP
                     console.log(`The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`);
                 } else {
                     throw new Error(`The dev server is not running on port ${port}.`);
-                }
-            }
-
-            if (manifestPath) {
-                const manifestInfo: any = await readManifestFile(manifestPath);
-                const sourceUrl: string = manifestInfo.defaultSettings.sourceLocation;
-                const isAvailable: boolean = await waitUntilUrlIsAvailable(sourceUrl);
-
-                if (isAvailable) {
-                    console.log(`The add-in is available from the dev server: ${sourceUrl}`);
-                } else {
-                    throw new Error(`The add-in is not available from the dev server: ${sourceUrl}. `);
                 }
             }
         }
@@ -278,7 +250,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     }
 
     if (devServerCommandLine) {
-        devServerPromise = runDevServer(devServerCommandLine, devServerPort, manifestPath);
+        devServerPromise = runDevServer(devServerCommandLine, devServerPort);
     }
 
     if (packagerPromise !== undefined) {
@@ -337,8 +309,4 @@ export async function waitUntilDevServerIsRunning(port: number, retryCount: numb
 
 export async function waitUntilPackagerIsRunning(statusUrl: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
     return waitUntil(async () => await isPackagerRunning(statusUrl), retryCount, retryDelay);
-}
-
-export async function waitUntilUrlIsAvailable(url: string, retryCount: number = 30, retryDelay: number = 1000): Promise<boolean> {
-    return waitUntil(async () => await isUrlAvailable(url), retryCount, retryDelay);
 }
