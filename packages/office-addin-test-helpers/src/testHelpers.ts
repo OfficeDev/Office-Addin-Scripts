@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 import * as defaults from "./defaults";
-import * as fetch from "isomorphic-fetch";
+import * as fetch from "node-fetch";
 
 /**
  * Ping the test server
@@ -13,7 +13,7 @@ export async function pingTestServer(port: number = defaults.httpsPort, useHttps
         const serverResponse: any = {};
         try {
             const protocol = useHttps ? "https" : "http";
-            const pingUrl: string = `${protocol}://localhost:${port}/ping`
+            const pingUrl: string = `${protocol}://localhost:${port}/ping`;
             const response = await fetch(pingUrl);
             serverResponse["status"] = response.status;
             const text = await response.text();

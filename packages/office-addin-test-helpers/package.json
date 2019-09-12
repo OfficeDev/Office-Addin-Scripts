@@ -15,8 +15,7 @@
         "Office Add-in"
     ],
     "dependencies": {
-        "es6-promise": "^4.2.6",
-        "isomorphic-fetch": "^2.2.1"
+        "es6-promise": "^4.2.6"
     },
     "devDependencies": {
         "@types/es6-collections": "^0.5.31",
