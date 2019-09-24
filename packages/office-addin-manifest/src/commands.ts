@@ -104,7 +104,7 @@ function logManifestValidationSupportedProducts(products: ManifestValidationProd
       for (const productTitle of productTitles) {
         console.log(`  - ${productTitle}`);
       }
-      console.log(`Important: This analysis is based on the requirements specified in your manifest and does not account for any runtime JavaScript calls within your add-in. For information about which API sets and features are supported on each platform, see Office Add-in host and platform availability. (https://dev.office.com/add-in-availability).\n`);
+      console.log(`Important: This analysis is based on the requirements specified in your manifest and does not account for any runtime JavaScript calls within your add-in. For information about which API sets and features are supported on each platform, see Office Add-in host and platform availability. (https://docs.microsoft.com/office/dev/add-ins/overview/office-add-in-availability).\n`);
       console.log(`*This does not include mobile apps. You can opt-in to support mobile apps when you submit your add-in.`);
     }
   }

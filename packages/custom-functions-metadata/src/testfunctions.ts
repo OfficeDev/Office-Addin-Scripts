@@ -3,7 +3,7 @@
  * @param {number} first - the first number
  * @param {number} [second]
  * @param {number} [optional] - an optional number
- * @helpUrl https://dev.office.com
+ * @helpUrl https://docs.microsoft.com/office/dev/add-ins
  * @CustomFunction
  * @notfound test123
  * @volatile

@@ -29,7 +29,7 @@ describe("verify json created in file by typescript", function() {
             assert.strictEqual(j.functions[0].id, "ADD", "id not created properly");
             assert.strictEqual(j.functions[0].name, "ADD", "name not created properly");
             assert.strictEqual(j.functions[0].description, "Test comments", "description not created properly");
-            assert.strictEqual(j.functions[0].helpUrl, "https://dev.office.com", "helpUrl not created properly");
+            assert.strictEqual(j.functions[0].helpUrl, "https://docs.microsoft.com/office/dev/add-ins", "helpUrl not created properly");
             assert.strictEqual(j.functions[0].parameters[0].name, "first", "parameter name not created properly");
             assert.strictEqual(j.functions[0].parameters[0].description, "the first number", "description not created properly");
             assert.strictEqual(j.functions[0].parameters[0].type, "number", "type not created properly");
