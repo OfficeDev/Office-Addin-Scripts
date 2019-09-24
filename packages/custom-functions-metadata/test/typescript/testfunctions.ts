@@ -5,7 +5,7 @@
  * Test comments
  * @param {number} first - the first number
  * @param {number} second 
- * @helpUrl https://dev.office.com
+ * @helpUrl https://docs.microsoft.com/office/dev/add-ins
  * @customfunction
  * @notfound test123
  * @volatile
