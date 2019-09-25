@@ -1,6 +1,6 @@
 {
     "name": "office-addin-test-helpers",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "Provides test helpers for automating validation of Office Add-ins.",
     "main": "./lib/main.js",
     "scripts": {
