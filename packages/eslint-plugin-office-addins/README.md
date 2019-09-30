@@ -4,10 +4,12 @@ eslint plugin for office-addins
 
 ## Installation
 
-You'll first need to install [ESLint](http://eslint.org):
+This plugin is designed to work with the office-addin-lint package. 
+
+Install `office-addin-lint`
 
 ```
-$ npm i eslint --save-dev
+$ npm i office-addin-lint --save-dev
 ```
 
 Next, install `eslint-plugin-office-addins`:
@@ -15,8 +17,6 @@ Next, install `eslint-plugin-office-addins`:
 ```
 $ npm install eslint-plugin-office-addins --save-dev
 ```
-
-**Note:** If you installed ESLint globally (using the `-g` flag) then you must also install `eslint-plugin-office-addins` globally.
 
 ## Usage
 
