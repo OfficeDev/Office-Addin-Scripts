@@ -30,23 +30,15 @@ Add `office-addins` to the plugins section of your `.eslintrc` configuration fil
 }
 ```
 
-Then configure the extends property.
+Then configure the extended property by choosing one of the configurations for the plugin. 
 ```json
 {
     "extended": [
-        "plugin:office-addins/recommended",
-        "plugin:office-addins/react",
-        "plugin:office-addins/reactnative"
+        "plugin:office-addins/recommended"
     ]
 }
-```
 
-Then configure the rules you want to use under the rules section.
-
-```json
-{
-    "rules": {
-        "office-addins/rule-name": 2
-    }
-}
+Other configurations available:
+    "plugin:office-addins/react",
+    "plugin:office-addins/reactnative"
 ```
