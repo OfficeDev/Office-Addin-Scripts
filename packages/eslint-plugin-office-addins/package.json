@@ -1,0 +1,40 @@
+{
+  "name": "eslint-plugin-office-addins",
+  "version": "0.1.0",
+  "description": "eslint plugin for office-addins",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin"
+  ],
+  "author": "OfficeDev",
+  "main": "lib/main.js",
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json",
+    "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "test": "echo \"No tests\""
+  },
+  "dependencies": {
+    "requireindex": "~1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.0",
+    "concurrently": "^3.6.1",
+    "eslint": "^3.9.1",
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react-native": "^3.7.0",
+    "rimraf": "^2.6.2",
+    "typescript": "^3.5.3"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  },
+  "license": "MIT"
+}
