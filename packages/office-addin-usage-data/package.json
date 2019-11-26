@@ -19,8 +19,8 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "applicationinsights": "^1.4.0",
-    "commander": "^2.20.0",
+    "applicationinsights": "^1.6.0",
+    "commander": "^2.20.3",
     "office-addin-cli": "^0.2.8",
     "readline-sync": "^1.4.9"
   },
@@ -28,13 +28,13 @@
     "@types/applicationinsights": "^0.20.0",
     "@types/es6-promise": "3.3.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.6.8",
+    "@types/node": "^12.12.14",
     "concurrently": "^4.1.1",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.3",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "ts-node": "^8.5.2",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
   },
   "repository": {
     "type": "git",
