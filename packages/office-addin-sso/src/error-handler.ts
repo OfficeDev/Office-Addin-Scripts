@@ -6,7 +6,7 @@ export function handleClientSideErrors(error: any): boolean {
     case 13001:
       // No one is signed into Office. If the add-in cannot be effectively used when no one
       // is logged into Office, then the first call of getAccessToken should pass the
-      // `allowSignInPrompt: true` option. Since this sample does that, you should not see this error
+      // `allowSignInPrompt: true` option.
       showMessage(
         "No one is signed into Office. But you can use many of the add-ins functions anyway. If you want to log in, press the Get OneDrive File Names button again."
       );

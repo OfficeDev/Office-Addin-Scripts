@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import * as assert from "assert";
+import * as defaults from "./../src/defaults";
 import * as fs from "fs";
 import * as mocha from "mocha";
 import * as path from 'path';
@@ -26,12 +27,12 @@ describe("Unit Tests", function () {
         const copyFallbackAuthTaskpaneFile: string = path.resolve(`${__dirname}/copy-test-fallbackauthtaskpane`);
         const copyManifestFile: string = path.resolve(`${__dirname}/copy-test-manifest.xml`);
         before("Create copies of original files so we can edit them and then delete the copies at the end of test", function () {
-            fs.copyFileSync(path.resolve(`${__dirname}/test-env`), copyEnvFile);
-            fs.copyFileSync(path.resolve(`${__dirname}/test-fallbackauthtaskpane`), copyFallbackAuthTaskpaneFile);
-            fs.copyFileSync(path.resolve(`${__dirname}/test-manifest.xml`), copyManifestFile);
+            fs.copyFileSync(defaults.testEnvDataFilePath, copyEnvFile);
+            fs.copyFileSync(defaults.testFallbackAuthDialogFilePath, copyFallbackAuthTaskpaneFile);
+            fs.copyFileSync(defaults.testManifestFilePath, copyManifestFile);
         });
         it("Write application id to env, manifest and fallbackauthtaskpane files", async function () {
-            await ssoData.writeApplicationData(appId, port, copyManifestFile, copyEnvFile, copyFallbackAuthTaskpaneFile);
+            await ssoData.writeApplicationData(appId, port, copyManifestFile, copyEnvFile, copyFallbackAuthTaskpaneFile, true /* isTest */);
 
             // Read from updated env copy and ensure it contains the appId
             const envFile = fs.readFileSync(copyEnvFile, 'utf8');

@@ -19,4 +19,6 @@ export const getInstalledAppsPath: string = path.resolve(`${__dirname}/scripts/g
 export const manifestFilePath = path.resolve(`${process.cwd()}/manifest.xml`);
 export const addSecretCommandPath: string = path.resolve(`${__dirname}/scripts/addAppSecret.ps1`);
 export const getSecretCommandPath: string = path.resolve(`${__dirname}/scripts/getAppSecret.ps1`);
-
+export const testEnvDataFilePath = path.resolve(`${process.cwd()}/test/test-env`);
+export const testFallbackAuthDialogFilePath: string = path.resolve(`${process.cwd()}/test/test-fallbackauthtaskpane`);
+export const testManifestFilePath = path.resolve(`${process.cwd()}/test/test-manifest.xml`);
