@@ -24,7 +24,7 @@
         "@types/express": "^4.17.2",
         "@types/isomorphic-fetch": "^0.0.35",
         "@types/mocha": "^5.2.7",
-        "@types/node": "^11.15.3",
+        "@types/node": "^12.12.14",
         "concurrently": "^4.1.2",
         "mocha": "^5.2.0",
         "rimraf": "^2.7.1",

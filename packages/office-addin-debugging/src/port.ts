@@ -105,7 +105,7 @@ export async function randomPortNotInUse(): Promise<number> {
  * Returns a random number between 0 and 65535
  */
 function randomPortNumber(): number {
-   return crypto.randomBytes(2).readUInt16LE(0, false);
+   return crypto.randomBytes(2).readUInt16LE(0);
 }
 
 /**

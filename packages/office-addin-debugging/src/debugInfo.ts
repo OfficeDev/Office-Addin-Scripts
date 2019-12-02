@@ -5,7 +5,6 @@ import * as fs from "fs";
 import { parseNumber } from "office-addin-cli";
 import * as os from "os";
 import * as path from "path";
-import { debug } from "util";
 
 const processIdFile = "office-addin-debugging.json";
 const processIdFilePath = path.join(os.tmpdir(), processIdFile);

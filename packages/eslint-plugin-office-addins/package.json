@@ -21,7 +21,7 @@
     "requireindex": "~1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^10.17.6",
+    "@types/node": "^12.12.14",
     "concurrently": "^3.6.1",
     "rimraf": "^2.6.2",
     "typescript": "^3.7.2"
