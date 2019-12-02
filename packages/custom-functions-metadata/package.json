@@ -34,20 +34,20 @@
     "xregexp": "^4.2.4"
   },
   "devDependencies": {
-    "@types/assert": "^1.4.2",
+    "@types/assert": "^1.4.3",
     "@types/commander": "^2.12.2",
     "@types/es6-promise": "^3.3.0",
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.0",
-    "@types/node-fetch": "^2.1.2",
-    "@types/xregexp": "^3.0.29",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.14",
+    "@types/node-fetch": "^2.5.4",
+    "@types/xregexp": "^3.0.30",
     "concurrently": "^3.6.1",
     "mocha": "^5.2.0",
     "office-addin-lint": "^1.0.15",
     "office-addin-prettier-config": "^1.0.11",
-    "rimraf": "^2.6.2",
-    "ts-node": "^8.3.0",
-    "typescript": "^3.5.3"
+    "rimraf": "^2.7.1",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.7.2"
   },
   "repository": {
     "type": "git",
