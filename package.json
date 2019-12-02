@@ -10,6 +10,6 @@
     "update-latest-dist-tags": "lerna exec --concurrency 1 --no-sort --stream  for /f \"usebackq\" %a in (`npm view . name`) do @for /f \"usebackq\" %b in (`npm view . dist-tags.next`) do @npm dist-tag add %a@%b"
   },
   "devDependencies": {
-    "lerna": "^3.18.3"
+    "lerna": "^3.19.0"
   }
 }
