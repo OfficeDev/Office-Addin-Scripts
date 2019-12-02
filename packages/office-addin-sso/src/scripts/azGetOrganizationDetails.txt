@@ -1,0 +1,1 @@
+az rest -m get -u https://graph.microsoft.com/v1.0/organization --headers "Content-Type=application/json"
