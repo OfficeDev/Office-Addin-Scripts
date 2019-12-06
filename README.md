@@ -48,10 +48,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
 
-* [office-addin-usage-data](packages/office-addin-usage-data/README.md)
+* [office-addin-sso](packages/office-addin-sso/README.md)
 
-  This package allows for sending usage data event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights)
-  
+  This package provides the ability to register an application in Azure Active Directory and infrastructure for implementing single sign-on (SSO) taskpane add-ins.
+
 * [office-addin-test-helpers](packages/office-addin-test-helpers/README.md)
 
   This package provides tools that make validating your Office Add-in easier. You can use it with the office-addin-test-server package and the Mocha test framework (or another testing framework of your choice).
@@ -59,6 +59,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 * [office-addin-test-server](packages/office-addin-test-server/README.md)
 
   This package provides a framework for testing Office task pane add-ins by allowing add-ins to send results to a test server. The results can then be consumed and used by tests to validate that the add-in is working as expected.
+
+* [office-addin-usage-data](packages/office-addin-usage-data/README.md)
+
+  This package allows for sending usage data event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights)
 
 ## Requirements
 
