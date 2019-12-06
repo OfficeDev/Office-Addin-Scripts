@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-certs",
-  "version": "1.4.12",
+  "version": "1.4.13",
   "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -56,5 +56,6 @@
   },
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
-  }
+  },
+  "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }

@@ -1,6 +1,6 @@
 {
   "name": "office-addin-node-debugger",
-  "version": "0.4.22",
+  "version": "0.4.23",
   "description": "Files for enabling office add-in web debugging using Node and VS Code.",
   "main": "./lib/debugger.js",
   "scripts": {
@@ -40,5 +40,6 @@
   },
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
-  }
+  },
+  "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }

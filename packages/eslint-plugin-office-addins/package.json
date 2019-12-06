@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-office-addins",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "eslint plugin for office-addins",
   "keywords": [
     "eslint",
@@ -36,5 +36,6 @@
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }
