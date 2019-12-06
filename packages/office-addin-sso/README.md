@@ -1,4 +1,4 @@
-# Office-Addin-Manifest
+# Office-Addin-SSO
 
 This package provides the ability to register an application in Azure Active Directory and infrastructure for implementing single sign-on (SSO) taskpane add-ins.
 
