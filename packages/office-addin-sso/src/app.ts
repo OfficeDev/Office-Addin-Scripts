@@ -13,7 +13,7 @@ import * as path from 'path';
 import * as cookieParser from 'cookie-parser';
 import * as logger from 'morgan';
 import { AuthRouter } from './authRoute';
-import { MSGraphHelper } from './msgraph-helper';
+import { getGraphData}  from './msgraph-helper';
 
 export class App {
     appInstance: express.Express;
@@ -80,7 +80,7 @@ export class App {
             const graphUrlSegment = process.env.GRAPH_URL_SEGMENT || '/me'
             const graphQueryParamSegment = process.env.QUERY_PARAM_SEGMENT || "";
 
-            const graphData = await MSGraphHelper.getGraphData(graphToken, graphUrlSegment, graphQueryParamSegment);
+            const graphData = await getGraphData(graphToken, graphUrlSegment, graphQueryParamSegment);
 
             // If Microsoft Graph returns an error, such as invalid or expired token,
             // there will be a code property in the returned object set to a HTTP status (e.g. 401).
