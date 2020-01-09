@@ -9,11 +9,14 @@ import * as defaults from './defaults';
 import * as fs from 'fs';
 import { addSecretToCredentialStore, writeApplicationData } from './ssoDataSettings';
 import { ManifestInfo, readManifestFile } from 'office-addin-manifest';
+import * as usageDataHelper from './usagedata-helper';
+let usageDataInfo: Object = {};
 require('dotenv').config();
 
 export async function configureSSOApplication(manifestPath: string, port: string) {
     // Check to see if Azure CLI is installed.  If it isn't installed, then install it
     const cliInstalled = await isAzureCliInstalled();
+
     if(!cliInstalled) {
         console.log(chalk.yellow("Azure CLI is not installed.  Installing now before proceeding"));
         await installAzureCli();
@@ -38,8 +41,10 @@ export async function configureSSOApplication(manifestPath: string, port: string
         await logoutAzure();
 
         console.log(chalk.green(`Application with id ${applicationJson['appId']} successfully registered in Azure.  Go to https://ms.portal.azure.com/#home and search for 'App Registrations' to see your application`));
+        usageDataHelper.sendUsageDataSuccessEvent('configureSSOApplication');
     }
     else {
+        usageDataHelper.sendUsageDataException('configureSSOApplication', 'Login to Azure did not succeed');
         throw new Error(`Login to Azure did not succeed.`);
     }
 }
@@ -75,13 +80,15 @@ async function createNewApplication(ssoAppName: string, port: string, userJson: 
             console.log(chalk.green(`App secret is ${secret}`));
             addSecretToCredentialStore(ssoAppName, secret);
 
+            usageDataHelper.sendUsageDataSuccessEvent('createNewApplication');
             return applicationJson;
         } else {
+            usageDataHelper.sendUsageDataException('createNewApplication', 'application data returned undefined');
             console.log(chalk.red("Failed to register application"));
             return undefined;
         }
-
     } catch (err) {
+        usageDataHelper.sendUsageDataException("createNewApplication", err);
         throw new Error(`Unable to register new application ${ssoAppName}. \n${err}`);
     }
 }
@@ -92,6 +99,7 @@ async function applicationReady(applicationJson: Object): Promise<boolean> {
         const appJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */, true /* expectError */);
         return appJson !== "";
     } catch (err) {
+        usageDataHelper.sendUsageDataException('applicationReady', err);
         throw new Error(`Unable to get application info for ${applicationJson['displayName']}. \n${err}`);
     }
 }
@@ -108,6 +116,7 @@ async function grantAdminContent(applicationJson: Object) {
         }
 
         if (counter > 50) {
+            usageDataHelper.sendUsageDataException('grantAdminConsent', 'application not ready to grant admin consent');
             console.log(chalk.yellow(`Application does not appear to be ready to grant admin consent`));
             return;
         }
@@ -115,25 +124,46 @@ async function grantAdminContent(applicationJson: Object) {
         const azRestCommand: string = `az ad app permission admin-consent --id ${applicationJson['appId']}`;
         await promiseExecuteCommand(azRestCommand);
     } catch (err) {
+        usageDataHelper.sendUsageDataException('grantAdminConsent', err);
         throw new Error(`Unable to set grant admin consent for ${applicationJson['displayName']}. \n${err}`);
     }
 }
 
 export async function isAzureCliInstalled(): Promise<boolean> {
     try {
+        let cliInstalled: boolean = false;
         switch (process.platform) {
             case "win32":
                 const appsInstalledWindowsCommand: string = `powershell -ExecutionPolicy Bypass -File "${defaults.getInstalledAppsPath}"`;
                 const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
-                return appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0
+                cliInstalled = appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0
+                // Send usage data
+                usageDataInfo = {
+                    Method: ['isAzureCliInstalled'],
+                    cliInstalled: [cliInstalled],
+                    Platform: [process.platform]
+                }
+                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+                return cliInstalled;
             case "darwin":
                 const appsInstalledMacCommand = 'brew list';
                 const appsMac: Object | string = await promiseExecuteCommand(appsInstalledMacCommand, false /* returnJson */);
-                return appsMac.toString().includes('azure-cli');
+                cliInstalled = appsMac.toString().includes('azure-cli');
+                // Send usage data
+                usageDataInfo = {
+                    Method: ['isAzureCliInstalled'],
+                    cliInstalled: [cliInstalled],
+                    Platform: [process.platform],
+                    Succeeded: [true]
+                }
+                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+                return cliInstalled;
             default:
+                usageDataHelper.sendUsageDataException('isAzureCliInstalled', `unsupported platform ${process.platform}`);
                 throw new Error(`Platform not supported: ${process.platform}`);
-        }
+        }        
     } catch (err) {
+        usageDataHelper.sendUsageDataException('isAzureCliInstalled', err);
         throw new Error(`Unable to install Azure CLI. \n${err}`);
     }
 }
@@ -151,34 +181,51 @@ async function installAzureCli() {
                 await promiseExecuteCommand(macCliInstallCommand, false /* returnJson */);
                 break;
             default:
+                usageDataHelper.sendUsageDataException('installAzureCli', `unsupported platform ${process.platform}`);
                 throw new Error(`Platform not supported: ${process.platform}`);
         }
+        usageDataHelper.sendUsageDataSuccessEvent('installAzureCli');
     } catch (err) {
+        usageDataHelper.sendUsageDataException('installAzureCli', err);
         throw new Error(`Unable to install Azure CLI. \n${err}`);
     }
 }
 
 async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
-    console.log("Checking if logged-in user is a tenant admin");
-    let azRestCommand: string = fs.readFileSync(defaults.azRestGetTenantRolesPath, 'utf8');
-    const tenantRoles: Object = await promiseExecuteCommand(azRestCommand);
-    let tenantAdminId: string = '';
-    tenantRoles['value'].forEach(item => {
-        if (item.displayName === "Company Administrator") {
-            tenantAdminId = item.id;
-        }
-    });
+    try {
+        console.log("Checking if logged-in user is a tenant admin");
+        let azRestCommand: string = fs.readFileSync(defaults.azRestGetTenantRolesPath, 'utf8');
+        const tenantRoles: Object = await promiseExecuteCommand(azRestCommand);
+        let tenantAdminId: string = '';
+        tenantRoles['value'].forEach(item => {
+            if (item.displayName === "Company Administrator") {
+                tenantAdminId = item.id;
+            }
+        });
 
-    azRestCommand = fs.readFileSync(defaults.azRestGetTenantAdminMembershipCommandPath, 'utf8');
-    azRestCommand = azRestCommand.replace('<TENANT-ADMIN-ID>', tenantAdminId);
-    const tenantAdmins: Object = await promiseExecuteCommand(azRestCommand);
-    let isTenantAdmin: boolean = false;
-    tenantAdmins['value'].forEach(item => {
-        if (item.userPrincipalName === userInfo[0].user.name) {
-            isTenantAdmin = true;
+        azRestCommand = fs.readFileSync(defaults.azRestGetTenantAdminMembershipCommandPath, 'utf8');
+        azRestCommand = azRestCommand.replace('<TENANT-ADMIN-ID>', tenantAdminId);
+        const tenantAdmins: Object = await promiseExecuteCommand(azRestCommand);
+        let isTenantAdmin: boolean = false;
+        tenantAdmins['value'].forEach(item => {
+            if (item.userPrincipalName === userInfo[0].user.name) {
+                isTenantAdmin = true;
+            }
+        });
+
+        usageDataInfo = {
+            Method: ['isUserTenantAdmin'],
+            isUserTenantAdmin: [isTenantAdmin],
+            Platform: [process.platform],
+            Succeeded: [true]
         }
-    });
-    return isTenantAdmin;
+        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+
+        return isTenantAdmin;
+    } catch (err) {
+        usageDataHelper.sendUsageDataException('isUserTenantAdmin', err);
+        throw new Error(`Unable to determine if user is tenant admin. \n${err}`);        
+    }
 }
 
 async function logIntoAzure(): Promise<Object> {
@@ -210,9 +257,11 @@ async function promiseExecuteCommand(cmd: string, returnJson: boolean = true, ex
                 if (results !== '' && returnJson) {
                     results = JSON.parse(results);
                 }
+                usageDataHelper.sendUsageDataSuccessEvent('promiseExecuteCommand');
                 resolve(results);
             });
         } catch (err) {
+            usageDataHelper.sendUsageDataException('promiseExecuteCommand', err);
             reject(err);
         }
     });
@@ -224,8 +273,10 @@ async function setApplicationSecret(applicationJson: Object): Promise<string> {
         let azRestCommand: string = await fs.readFileSync(defaults.azRestAddSecretCommandPath, 'utf8');
         azRestCommand = azRestCommand.replace('<App_Object_ID>', applicationJson['id']);
         const secretJson: Object = await promiseExecuteCommand(azRestCommand);
+        usageDataHelper.sendUsageDataSuccessEvent('setApplicationSecret');
         return secretJson['secretText'];
     } catch (err) {
+        usageDataHelper.sendUsageDataException('setApplicationSecret', err);
         throw new Error(`Unable to set application secret for ${applicationJson['displayName']}. \n${err}`);
     }
 }
@@ -236,7 +287,9 @@ async function setIdentifierUri(applicationJson: Object, port: string) {
         let azRestCommand: string = await fs.readFileSync(defaults.azRestSetIdentifierUriCommmandPath, 'utf8');
         azRestCommand = azRestCommand.replace('<App_Object_ID>', applicationJson['id']).replace('<App_Id>', applicationJson['appId']).replace('{PORT}', port.toString());
         await promiseExecuteCommand(azRestCommand);
+        usageDataHelper.sendUsageDataSuccessEvent('setIdentifierUri');
     } catch (err) {
+        usageDataHelper.sendUsageDataException('setIdentifierUri', err);
         throw new Error(`Unable to set identifierUri for ${applicationJson['displayName']}. \n${err}`);
     }
 }
@@ -247,7 +300,9 @@ async function setSignInAudience(applicationJson: Object) {
         let azRestCommand: string = fs.readFileSync(defaults.azRestSetSigninAudienceCommandPath, 'utf8');
         azRestCommand = azRestCommand.replace('<App_Object_ID>', applicationJson['id']);
         await promiseExecuteCommand(azRestCommand);
+        usageDataHelper.sendUsageDataSuccessEvent('setSignInAudience');
     } catch (err) {
+        usageDataHelper.sendUsageDataException('setSignInAudience', err);
         throw new Error(`Unable to set signInAudience for ${applicationJson['displayName']}. \n${err}`);
     }
 }
@@ -299,7 +354,16 @@ async function setTenantReplyUrls(applicationJson: Object) {
             console.log("SharePoint reply urls already set");
         }
 
+        // Send usage data
+        usageDataInfo = {
+            Method: ['setTenantReplyUrls'],
+            tenantReplyUrlsSet: [setReplyUrls],
+            Platform: [process.platform],
+            Succeeded: [true]
+        }
+        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
     } catch (err) {
+        usageDataHelper.sendUsageDataException('setTenantReplyUrls', err);
         throw new Error(`Unable to set tenant reply urls for ${applicationJson['displayName']}. \n${err}`);
     }
 }

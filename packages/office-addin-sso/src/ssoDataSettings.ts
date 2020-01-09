@@ -8,6 +8,7 @@ import { execSync } from "child_process";
 import * as fs from 'fs';
 import * as os from 'os';
 import { modifyManifestFile } from 'office-addin-manifest';
+import * as usageDataHelper from './usagedata-helper';
 
 export function addSecretToCredentialStore(ssoAppName: string, secret: string, isTest: boolean = false): void {
     try {
@@ -30,9 +31,12 @@ export function addSecretToCredentialStore(ssoAppName: string, secret: string, i
                 }
                 break;
             default:
+                usageDataHelper.sendUsageDataException('addSecretToCredentialStore', `unsupported platform ${process.platform}`);
                 throw new Error(`Platform not supported: ${process.platform}`);
         }
+        usageDataHelper.sendUsageDataSuccessEvent('addSecretToCredentialStore');
     } catch (err) {
+        usageDataHelper.sendUsageDataException('addSecretToCredentialStore', err);
         throw new Error(`Unable to add secret for ${ssoAppName} to Windows Credential Store. \n${err}`);
     }
 }
@@ -49,11 +53,12 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
                 const getSecretFromMacStoreCommand = `${isTest ? "" : "sudo"} security find-generic-password -a ${os.userInfo().username} -s ${ssoAppName} -w`;
                 return execSync(getSecretFromMacStoreCommand, { stdio: "pipe" }).toString();;
             default:
+                usageDataHelper.sendUsageDataException('getSecretFromCredentialStore', `unsupported platform ${process.platform}`);
                 throw new Error(`Platform not supported: ${process.platform}`);
         }
-
     } catch (err) {
-        return '';
+        usageDataHelper.sendUsageDataException('getSecretFromCredentialStore', err);
+        throw new Error(`Unable to get secret from ${ssoAppName} to Windows Credential Store. \n${err}`);
     }
 }
 
@@ -63,7 +68,6 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
         // Update .ENV file
         if (fs.existsSync(envFilePath)) {
             const appDataContent = fs.readFileSync(envFilePath, 'utf8');
-
             // Check to see if the fallbackauthdialog file has already been updated and return if it has.
             if (!appDataContent.includes('{CLIENT_ID}') || !appDataContent.includes('{PORT}')) {
                 console.log(chalk.yellow(`${envFilePath} has already been updated. You will need to update the CLIENT_ID and PORT settings manually`));
@@ -72,10 +76,13 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
 
             const updatedAppDataContent = appDataContent.replace('{CLIENT_ID}', applicationId).replace('{PORT}', port);
             fs.writeFileSync(envFilePath, updatedAppDataContent);
+            usageDataHelper.sendUsageDataSuccessEvent('updateEnvFile');
         } else {
+            usageDataHelper.sendUsageDataException('updateEnvFile', 'env file does not exist');
             throw new Error(`${envFilePath} does not exist`)
         }
     } catch (err) {
+        usageDataHelper.sendUsageDataException('updateEnvFile', err);
         throw new Error(`Unable to write SSO application data to ${envFilePath}. \n${err}`);
     }
 }
@@ -99,9 +106,9 @@ function updateFallBackAuthDialogFile(applicationId: string, port: string, fallb
             if (isTest) {
                 throw new Error(`${defaults.testFallbackAuthDialogFilePath} does not exist`);
             } else {
+                usageDataHelper.sendUsageDataException('updateFallBackAuthDialogFile', `${isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath} does not exist`);
                 throw new Error(`${isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath} does not exist`)
             }
-
         }
 
         // Check to see if the fallbackauthdialog file has already been updated and return if it has.
@@ -114,13 +121,14 @@ function updateFallBackAuthDialogFile(applicationId: string, port: string, fallb
         console.log(`Updating ${fallbackAuthDialogPath} with application ID`);
         const updatedSrcFileContent = srcFileContent.replace('{application GUID here}', applicationId).replace('{PORT}', port);
         fs.writeFileSync(fallbackAuthDialogPath, updatedSrcFileContent);
+        usageDataHelper.sendUsageDataSuccessEvent('updateFallBackAuthDialogFile');
     } catch (err) {
         if (isTest) {
             throw new Error(`Unable to write SSO application data to ${defaults.testFallbackAuthDialogFilePath}. \n${err}`);
         } else {
+            usageDataHelper.sendUsageDataException('updateFallBackAuthDialogFile', err);
             throw new Error(`Unable to write SSO application data to ${isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath}. \n${err}`);
         }
-
     }
 }
 
@@ -143,10 +151,13 @@ async function updateProjectManifest(applicationId: string, port: string, manife
             const updatedManifestContent: string = manifestContent.replace(re, applicationId).replace(rePort, port);
             await fs.writeFileSync(manifestPath, updatedManifestContent);
             await modifyManifestFile(manifestPath, 'random');
+            usageDataHelper.sendUsageDataSuccessEvent('updateProjectManifest');
         } else {
+            usageDataHelper.sendUsageDataException('updateProjectManifest', 'manifest does not exist');
             throw new Error(`${manifestPath} does not exist`)
         }
     } catch (err) {
+        usageDataHelper.sendUsageDataException('updateProjectManifest', err);
         throw new Error(`Unable to update ${manifestPath}. \n${err}`);
     }
 }
