@@ -14,6 +14,9 @@ let usageDataInfo: Object = {};
 require('dotenv').config();
 
 export async function configureSSOApplication(manifestPath: string, port: string) {
+    // Log start time for configuration process
+    const startSsoCongiguration = (new Date()).getTime();
+
     // Check to see if Azure CLI is installed.  If it isn't installed, then install it
     const cliInstalled = await isAzureCliInstalled();
 
@@ -41,7 +44,19 @@ export async function configureSSOApplication(manifestPath: string, port: string
         await logoutAzure();
 
         console.log(chalk.green(`Application with id ${applicationJson['appId']} successfully registered in Azure.  Go to https://ms.portal.azure.com/#home and search for 'App Registrations' to see your application`));
-        usageDataHelper.sendUsageDataSuccessEvent('configureSSOApplication');
+
+        // Log end time for configuration process and compute in seconds
+        const endSsoCongiguration = (new Date()).getTime();
+        const durationSsoConfiguration = (endSsoCongiguration - startSsoCongiguration) /1000
+        
+        // Send usage data
+        usageDataInfo = {
+            Method: ['configureSSOApplication'],
+            configDuration: [durationSsoConfiguration],
+            Platform: [process.platform],
+            Succeeded: [true]
+        }
+        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
     }
     else {
         usageDataHelper.sendUsageDataException('configureSSOApplication', 'Login to Azure did not succeed');
@@ -139,7 +154,8 @@ export async function isAzureCliInstalled(): Promise<boolean> {
                 usageDataInfo = {
                     Method: ['isAzureCliInstalled'],
                     cliInstalled: [cliInstalled],
-                    Platform: [process.platform]
+                    Platform: [process.platform],
+                    Succeeded: [true]
                 }
                 usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
                 return cliInstalled;
