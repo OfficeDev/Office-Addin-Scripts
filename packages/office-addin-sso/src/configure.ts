@@ -71,8 +71,6 @@ async function createNewApplication(ssoAppName: string, port: string, userJson: 
             if (await isUserTenantAdmin(userJson)){
                 await grantAdminContent(applicationJson);
                 await setTenantReplyUrls(applicationJson);
-            } else {
-                console.log(chalk.yellow("You are not a tenant admin so you cannot grant admin consent for your application.  Contact your tenant admin to grant consent"));
             }
 
             // Create an application secret and add to the credential store
