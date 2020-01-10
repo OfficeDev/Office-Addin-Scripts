@@ -44,10 +44,11 @@ export class SSOService {
 
     private async getSecret(isTest: boolean = false): Promise<void> {
         const manifestInfo = await manifest.readManifestFile(this.manifestPath);
-        const appSecret = getSecretFromCredentialStore(manifestInfo.displayName, true /* isTest */);
+        const appSecret = getSecretFromCredentialStore(manifestInfo.displayName, isTest);
         if (appSecret === '') {
-            usageDataHelper.sendUsageDataException('getSecret', 'Call to getSecretFromCredentialStore returned empty string');
-            throw new Error('Call to getSecretFromCredentialStore returned empty string');
+            const errorMessage: string = 'Call to getSecretFromCredentialStore returned empty string';
+            usageDataHelper.sendUsageDataException('getSecret', errorMessage);
+            throw new Error(errorMessage);
         }
         process.env.secret = appSecret;
         usageDataHelper.sendUsageDataSuccessEvent('getSecret');
@@ -65,8 +66,9 @@ export class SSOService {
                 usageDataHelper.sendUsageDataSuccessEvent('startServer');
                 resolve(true);
             } catch (err) {
-                usageDataHelper.sendUsageDataException('startServer', err);
-                reject(`Unable to start test server on port ${port}.\n${err}`)
+                const errorMessage: string = `Unable to start test server on port ${port}: \n${err}`;
+                usageDataHelper.sendUsageDataException('startServer', errorMessage);
+                reject(errorMessage);
             }
         });
     }
@@ -80,8 +82,9 @@ export class SSOService {
                     usageDataHelper.sendUsageDataSuccessEvent('stopServer');
                     resolve(true);
                 } catch (err) {
-                    usageDataHelper.sendUsageDataException('stopServer', err);
-                    reject(new Error(`Unable to stop test server.\n${err}`));
+                    const errorMessage: string = `Unable to stop test server: \n${err}`;
+                    usageDataHelper.sendUsageDataException('stopServer', errorMessage);
+                    reject(new Error(errorMessage));
                 }
             } else {
                 // test server not started
