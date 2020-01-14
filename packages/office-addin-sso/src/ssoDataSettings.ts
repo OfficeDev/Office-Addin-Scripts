@@ -14,12 +14,10 @@ export function addSecretToCredentialStore(ssoAppName: string, secret: string, i
     try {
         switch (process.platform) {
             case "win32":
-                console.log(`Adding application secret for ${ssoAppName} to Windows Credential Store`);
                 const addSecretToWindowsStoreCommand = `powershell -ExecutionPolicy Bypass -File "${defaults.addSecretCommandPath}" "${ssoAppName}" "${os.userInfo().username}" "${secret}"`;
                 execSync(addSecretToWindowsStoreCommand, { stdio: "pipe" });
                 break;
-            case "darwin":
-                console.log(`Adding application secret for ${ssoAppName} to Mac OS Keychain. You will need to provide an admin password to update the Keychain`);
+            case "darwin":                
                 // Check first to see if the secret already exists i the keychain. If it does, delete it and recreate it
                 const existingSecret = getSecretFromCredentialStore(ssoAppName, isTest);
                 if (existingSecret !== '') {
@@ -47,11 +45,9 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
     try {
         switch (process.platform) {
             case "win32":
-                console.log(`Getting application secret for ${ssoAppName} from Windows Credential Store`);
                 const getSecretFromWindowsStoreCommand = `powershell -ExecutionPolicy Bypass -File "${defaults.getSecretCommandPath}" "${ssoAppName}" "${os.userInfo().username}"`;
                 return execSync(getSecretFromWindowsStoreCommand, { stdio: "pipe" }).toString();
             case "darwin":
-                console.log(`Getting application secret for ${ssoAppName} from Mac OS Keychain`);
                 const getSecretFromMacStoreCommand = `${isTest ? "" : "sudo"} security find-generic-password -a ${os.userInfo().username} -s ${ssoAppName} -w`;
                 return execSync(getSecretFromMacStoreCommand, { stdio: "pipe" }).toString();;
             default:
@@ -64,21 +60,20 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
     }
 }
 
-function updateEnvFile(applicationId: string, port: string, envFilePath: string = defaults.envDataFilePath): void {
-    console.log(`Updating ${envFilePath} with application ID and port`);
+function updateEnvFile(applicationId: string, port: string, envFilePath: string = defaults.envDataFilePath): boolean {
     try {
         // Update .ENV file
         if (fs.existsSync(envFilePath)) {
             const appDataContent = fs.readFileSync(envFilePath, 'utf8');
             // Check to see if the fallbackauthdialog file has already been updated and return if it has.
             if (!appDataContent.includes('{CLIENT_ID}') || !appDataContent.includes('{PORT}')) {
-                console.log(chalk.yellow(`${envFilePath} has already been updated. You will need to update the CLIENT_ID and PORT settings manually`));
-                return;
+                  return false;
             }
 
             const updatedAppDataContent = appDataContent.replace('{CLIENT_ID}', applicationId).replace('{PORT}', port);
             fs.writeFileSync(envFilePath, updatedAppDataContent);
             usageDataHelper.sendUsageDataSuccessEvent('updateEnvFile');
+            return true;
         } else {
             usageDataHelper.sendUsageDataException('updateEnvFile', 'env file does not exist');
             throw new Error(`${envFilePath} does not exist`)
@@ -90,7 +85,7 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
     }
 }
 
-function updateFallBackAuthDialogFile(applicationId: string, port: string, fallbackAuthDialogPath: string = defaults.fallbackAuthDialogTypescriptFilePath, isTest: boolean = false): void {
+function updateFallBackAuthDialogFile(applicationId: string, port: string, fallbackAuthDialogPath: string = defaults.fallbackAuthDialogTypescriptFilePath, isTest: boolean = false): boolean {
     let isTypecript: boolean = false;
     try {
         // Update fallbackAuthDialog file
@@ -117,15 +112,14 @@ function updateFallBackAuthDialogFile(applicationId: string, port: string, fallb
 
         // Check to see if the fallbackauthdialog file has already been updated and return if it has.
         if (!srcFileContent.includes('{PORT}')) {
-            console.log(chalk.yellow(`${fallbackAuthDialogPath} has already been updated. You will need to update the 'clientId' and 'redirectUrl' port settings manually`));
-            return;
+              return false;
         }
 
         // Update fallbackauthdialog file
-        console.log(`Updating ${fallbackAuthDialogPath} with application ID`);
         const updatedSrcFileContent = srcFileContent.replace('{application GUID here}', applicationId).replace('{PORT}', port);
         fs.writeFileSync(fallbackAuthDialogPath, updatedSrcFileContent);
         usageDataHelper.sendUsageDataSuccessEvent('updateFallBackAuthDialogFile');
+        return true;
     } catch (err) {
         if (isTest) {
             throw new Error(`Unable to write SSO application data to ${defaults.testFallbackAuthDialogFilePath}. \n${err}`);
@@ -137,8 +131,7 @@ function updateFallBackAuthDialogFile(applicationId: string, port: string, fallb
     }
 }
 
-async function updateProjectManifest(applicationId: string, port: string, manifestPath: string): Promise<void> {
-    console.log(`Updating ${manifestPath} with applicationId and port`);
+async function updateProjectManifest(applicationId: string, port: string, manifestPath: string): Promise<boolean> {
     try {
         if (fs.existsSync(manifestPath)) {
             // Update manifest with application guid and unique manifest id
@@ -146,8 +139,7 @@ async function updateProjectManifest(applicationId: string, port: string, manife
 
             // Check to see if the manifest has already been updated and return if it has
             if (!manifestContent.includes('{PORT}')) {
-                console.log(chalk.yellow(`${manifestPath} has already been updated. You will need to update the 'WebApplicationInfo' and port settings manually`));
-                return;
+                  return false;
             }
 
             // Update manifest file
@@ -157,6 +149,7 @@ async function updateProjectManifest(applicationId: string, port: string, manife
             await fs.writeFileSync(manifestPath, updatedManifestContent);
             await modifyManifestFile(manifestPath, 'random');
             usageDataHelper.sendUsageDataSuccessEvent('updateProjectManifest');
+            return true;
         } else {
             const errorMessage: string = 'Manifest does not exist at specified location';
             usageDataHelper.sendUsageDataException('updateProjectManifest', errorMessage);
@@ -174,8 +167,9 @@ export async function writeApplicationData(applicationId: string,
     manifestPath: string = defaults.manifestFilePath,
     envFilePath: string = defaults.envDataFilePath,
     fallbackAuthDialogPath = defaults.fallbackAuthDialogTypescriptFilePath,
-    isTest: boolean = false) {
-    updateEnvFile(applicationId, port, envFilePath);
-    updateFallBackAuthDialogFile(applicationId, port, fallbackAuthDialogPath, isTest);
-    await updateProjectManifest(applicationId, port, manifestPath)
+    isTest: boolean = false): Promise<boolean> {
+    const envFileUpdated: boolean = updateEnvFile(applicationId, port, envFilePath);
+    const fallbackAuthDialogFileUpdated: boolean = updateFallBackAuthDialogFile(applicationId, port, fallbackAuthDialogPath, isTest);
+    const manifestUpdated: boolean = await updateProjectManifest(applicationId, port, manifestPath)
+    return envFileUpdated && fallbackAuthDialogFileUpdated && manifestUpdated;
 }
