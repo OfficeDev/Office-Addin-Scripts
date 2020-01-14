@@ -70,20 +70,19 @@ export async function configureSSO(manifestPath: string) {
             const secret: string = await configure.setApplicationSecret(applicationJson);
             console.log(chalk.green(`App secret is ${secret}`));
 
+            // Add secret to Credential Store (Windows) or Keychain(Mac)
             if (process.platform === "win32") {
                 console.log(`Adding application secret for ${manifestInfo.displayName} to Windows Credential Store`);
             }
             else {
                 console.log(`Adding application secret for ${manifestInfo.displayName} to Mac OS Keychain. You will need to provide an admin password to update the Keychain`);
             }
-
             addSecretToCredentialStore(manifestInfo.displayName, secret);
-
-            usageDataHelper.sendUsageDataSuccessEvent('createNewApplication');
         } else {
             const errorMessage = 'Failed to register application';
             usageDataHelper.sendUsageDataException('createNewApplication', errorMessage);
             console.log(chalk.red(errorMessage));
+            return;
         }
         // Write application data to project files (manifest.xml, .env, src/taskpane/fallbacktaskpane.ts)
         console.log(`Updating source files with application ID and port`);
@@ -95,7 +94,6 @@ export async function configureSSO(manifestPath: string) {
         // Log out of Azure
         console.log('Logging out of Azure now');
         await configure.logoutAzure();
-
         console.log(chalk.green(`Application with id ${applicationJson['appId']} successfully registered in Azure.  Go to https://ms.portal.azure.com/#home and search for 'App Registrations' to see your application`));
 
         // Log end time for configuration process and compute in seconds
@@ -104,7 +102,7 @@ export async function configureSSO(manifestPath: string) {
 
         // Send usage data
         usageDataInfo = {
-            Method: ['configureSSOApplication'],
+            Method: ['configureSSO'],
             configDuration: [ssoConfigDuration],
             Platform: [process.platform],
             Succeeded: [true]
@@ -113,7 +111,7 @@ export async function configureSSO(manifestPath: string) {
     }
     else {
         const errorMessage: string = 'Login to Azure did not succeed';
-        usageDataHelper.sendUsageDataException('configureSSOApplication', errorMessage);
+        usageDataHelper.sendUsageDataException('configureSSO', errorMessage);
         throw new Error(errorMessage);
     }
 

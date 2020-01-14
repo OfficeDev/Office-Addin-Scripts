@@ -17,6 +17,7 @@ export async function createNewApplication(ssoAppName: string, port: string, use
         const rePort = new RegExp('{PORT}', 'g');
         azRestCommand = azRestCommand.replace(reName, ssoAppName).replace(rePort, port);
         const applicationJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */);
+        usageDataHelper.sendUsageDataSuccessEvent('createNewApplication');
         return applicationJson;
     } catch (err) {
         const errorMessage: string = `Unable to register new application: \n${err}`
