@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import * as appInsights from "applicationinsights";
+import * as appInsightsWeb from '@microsoft/applicationinsights-web';
 import * as readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
 /**
@@ -49,6 +50,7 @@ export interface IUsageDataOptions {
  */
 export class OfficeAddinUsageData {
   private usageDataClient = appInsights.defaultClient;
+  private appInsightsWeb: appInsightsWeb.ApplicationInsights;
   private eventsSent: number = 0;
   private exceptionsSent: number = 0;
   private options: IUsageDataOptions;
@@ -84,6 +86,13 @@ export class OfficeAddinUsageData {
         .start();
       this.usageDataClient = appInsights.defaultClient;
       this.removeApplicationInsightsSensitiveInformation();
+
+      this.appInsightsWeb = new appInsightsWeb.ApplicationInsights({ config: {
+        instrumentationKey: this.options.instrumentationKey,
+        samplingPercentage: this.options.usageDataLevel !== UsageDataLevel.off ? 100 : 0,
+
+      }})
+      this.appInsightsWeb.loadAppInsights();
     } catch (err) {
       throw new Error(err);
     }
@@ -176,13 +185,15 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    */
   public setUsageDataOff() {
     appInsights.defaultClient.config.samplingPercentage = 0;
+    this.appInsightsWeb.config.samplingPercentage = 0;
   }
 
   /**
-   * Starts sending usage data, by default usage data will be on
+   * Starts sending usage data, by default usage data will be on and at 100 percent
    */
-  public setUsageDataOn() {
-    appInsights.defaultClient.config.samplingPercentage = 100;
+  public setUsageDataOn(percent: number = 100) {
+    appInsights.defaultClient.config.samplingPercentage = percent;
+    this.appInsightsWeb.config.samplingPercentage = percent;
   }
 
   /**
@@ -190,7 +201,15 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * @returns Whether usage data is turned on or off
    */
   public isUsageDataOn(): boolean {
-    return appInsights.defaultClient.config.samplingPercentage === 100;
+    return appInsights.defaultClient.config.samplingPercentage > 0;
+  }
+
+  /**
+   * Returns whether the usage data is currently on or off
+   * @returns Whether usage data is turned on or off
+   */
+  public getUsageDataPercentage(): number {
+    return appInsights.defaultClient.config.samplingPercentage;
   }
 
   /**

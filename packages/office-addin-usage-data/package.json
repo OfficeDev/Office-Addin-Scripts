@@ -19,6 +19,7 @@
     "Office Add-in"
   ],
   "dependencies": {
+    "@microsoft/applicationinsights-web": "^2.3.1",
     "applicationinsights": "^1.6.0",
     "commander": "^2.20.3",
     "office-addin-cli": "^0.2.8",
