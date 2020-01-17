@@ -7,7 +7,7 @@ import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 
-export function getUninstallCommand(machine: boolean = false): string {
+function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
          const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
