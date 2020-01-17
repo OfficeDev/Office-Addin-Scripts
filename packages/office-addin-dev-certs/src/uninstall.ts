@@ -7,7 +7,7 @@ import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 
-function getUninstallCommand(machine: boolean = false): string {
+export function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
       case "win32":
          const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
@@ -32,13 +32,24 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
    }
 }
 
-export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
-   if (isCaCertificateInstalled()) {
+export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true, expiredCert = false) {
+   if (expiredCert) {
+      const command = getUninstallCommand(machine);
+
+      try {
+         console.log(`Uninstalling expired CA certificate "Developer CA for Microsoft Office Add-ins"...`);
+         execSync(command, { stdio: "pipe" });
+         console.log(`You no longer have trusted access to https://localhost.`);
+      } catch (error) {
+         throw new Error(`Unable to uninstall expired the CA certificate.\n${error.stderr.toString()}`);
+      }
+
+   } else if (isCaCertificateInstalled()) {
       const command = getUninstallCommand(machine);
 
       try {
          console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
-         execSync(command, {stdio : "pipe" });
+         execSync(command, { stdio: "pipe" });
          console.log(`You no longer have trusted access to https://localhost.`);
       } catch (error) {
          throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
@@ -49,3 +60,4 @@ export async function uninstallCaCertificate(machine: boolean = false, verbose: 
       }
    }
 }
+

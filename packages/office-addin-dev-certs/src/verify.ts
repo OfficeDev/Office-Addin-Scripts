@@ -6,6 +6,7 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import * as defaults from "./defaults";
+import { deleteCertificateFiles, uninstallCaCertificate } from './uninstall'
 
 function getVerifyCommand(): string {
     switch (process.platform) {
@@ -13,7 +14,7 @@ function getVerifyCommand(): string {
           const script = path.resolve(__dirname, "..\\scripts\\verify.ps1");
           return `powershell -ExecutionPolicy Bypass -File "${script}" "${defaults.certificateName}"`;
        case "darwin": // macOS
-          return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
+          return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -noout`;
        default:
           throw new Error(`Platform not supported: ${process.platform}`);
     }
@@ -25,7 +26,18 @@ export function isCaCertificateInstalled(): boolean {
     try {
         const output = execSync(command, {stdio : "pipe" }).toString();
         if (process.platform === "darwin") {
-            return true;
+            // Ceritificate exists. Now check and see if it's expired and remove it if is.
+            try {
+                const command = `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
+                execSync(command, {stdio : "pipe" }).toString();
+                return true;
+            }
+            catch {
+                uninstallCaCertificate(false /* machine */, true /* verbose */, true /* expiredCert */);
+                deleteCertificateFiles(defaults.certificateDirectory);
+                return false;
+            }
+
         } else if (output.length !== 0) {
             return true; // powershell command return empty string if the certificate not-found/expired
         }
