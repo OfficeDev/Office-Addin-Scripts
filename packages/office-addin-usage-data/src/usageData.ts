@@ -85,14 +85,14 @@ export class OfficeAddinUsageData {
         .setAutoCollectExceptions(false)
         .start();
       this.usageDataClient = appInsights.defaultClient;
-      this.removeApplicationInsightsSensitiveInformation();
 
       this.appInsightsWeb = new appInsightsWeb.ApplicationInsights({ config: {
         instrumentationKey: this.options.instrumentationKey,
-        samplingPercentage: this.options.usageDataLevel !== UsageDataLevel.off ? 100 : 0,
-
-      }})
+        disableExceptionTracking: true
+      }});
       this.appInsightsWeb.loadAppInsights();
+      this.removeApplicationInsightsSensitiveInformation();
+
     } catch (err) {
       throw new Error(err);
     }
@@ -114,21 +114,38 @@ export class OfficeAddinUsageData {
    * @param eventName Event name sent to Application Insights
    * @param data Data object sent to Application Insights
    */
-  public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
+  public async reportEventApplicationInsights(eventName: string, data: object, isWeb: boolean = false): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      const usageDataEvent = new appInsights.Contracts.EventData();
-      usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
-      try {
-        for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          usageDataEvent.properties[key] = value; 
-          usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
+      if (isWeb) {
+        const usageDataEventWeb = new appInsightsWeb.Event( 
+          this.appInsightsWeb.core.logger,
+          this.options.isForTesting ? `${eventName}-test` : eventName
+        );
+        try {
+          for (const [key, [value, elapsedTime]] of Object.entries(data)) {
+            usageDataEventWeb.properties[key] = value; 
+            usageDataEventWeb.measurements[key + " durationElapsed"] = elapsedTime;
+          }
+          this.appInsightsWeb.trackEvent(usageDataEventWeb);
+          this.eventsSent++;
+        } catch (err) {
+          this.reportError("sendUsageDataEvents", err);
+          throw new Error(err);
         }
-        
-        this.usageDataClient.trackEvent(usageDataEvent);
-        this.eventsSent++;
-      } catch (err) {
-        this.reportError("sendUsageDataEvents", err);
-        throw new Error(err);
+      } else {
+        const usageDataEvent = new appInsights.Contracts.EventData();
+        usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
+        try {
+          for (const [key, [value, elapsedTime]] of Object.entries(data)) {
+            usageDataEvent.properties[key] = value; 
+            usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
+          }
+          this.usageDataClient.trackEvent(usageDataEvent);
+          this.eventsSent++;
+        } catch (err) {
+          this.reportError("sendUsageDataEvents", err);
+          throw new Error(err);
+        }
       }
     }
   }
@@ -149,10 +166,14 @@ export class OfficeAddinUsageData {
    * @param errorName Error name sent to Application Insights
    * @param err Error sent to Application Insights
    */
-  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
+  public async reportErrorApplicationInsights(errorName: string, err: Error, isWeb: boolean = false): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
-      this.usageDataClient.trackException({ exception: this.maskFilePaths(err) });
+      if (isWeb) {
+        this.appInsightsWeb.trackException(new appInsightsWeb.Exception(this.appInsightsWeb.core.logger, this.maskFilePaths(err)));
+      } else {
+        this.usageDataClient.trackException({ exception: this.maskFilePaths(err) });
+      }
       this.exceptionsSent++;
     }
   }
@@ -192,6 +213,11 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * Starts sending usage data, by default usage data will be on and at 100 percent
    */
   public setUsageDataOn(percent: number = 100) {
+    if (percent <= 0) {
+      throw new RangeError('Please choose a number higher than 0 for the percentage');
+    } else if (percent > 100) {
+      throw new RangeError('Please choose 100 or lower for the percentage');
+    }
     appInsights.defaultClient.config.samplingPercentage = percent;
     this.appInsightsWeb.config.samplingPercentage = percent;
   }
@@ -268,5 +294,10 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.usageDataClient.context.tags["ai.cloud.roleInstance"]; // cloud name
     delete this.usageDataClient.context.tags["ai.device.id"]; // machine name
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
+    delete this.appInsightsWeb.context.device.id;
+    delete this.appInsightsWeb.context.user.accountId;
+    delete this.appInsightsWeb.context.location.ip;
+    delete this.appInsightsWeb.context.user.config.accountId;
+    //TODO: find equivalent to ai.cloud.roleInstance in appInsightsWeb, and delete it as well
   }
 }
