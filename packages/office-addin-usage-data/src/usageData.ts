@@ -215,6 +215,7 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
 
   /**
    * Starts sending usage data, by default usage data will be on and at 100 percent
+   * @param percent The percentage of usage data being sent up. Optional.
    */
   public setUsageDataOn(percent: number = 100) {
     if (percent <= 0) {
@@ -302,6 +303,5 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.appInsightsWeb.context.user.accountId;
     delete this.appInsightsWeb.context.location.ip;
     delete this.appInsightsWeb.context.user.config.accountId;
-    //TODO: find equivalent to ai.cloud.roleInstance in appInsightsWeb, and delete it as well
   }
 }
