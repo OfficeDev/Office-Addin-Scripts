@@ -102,10 +102,11 @@ export class OfficeAddinUsageData {
    * Reports custom event object to usage data structure
    * @param eventName Event name sent to usage data structure
    * @param data Data object sent to usage data structure
+   * @param isWeb Event reported as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
-  public async reportEvent(eventName: string, data: object): Promise<void> {
+  public async reportEvent(eventName: string, data: object, isWeb: boolean = false): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      this.reportEventApplicationInsights(eventName, data);
+      this.reportEventApplicationInsights(eventName, data, isWeb);
     }
   }
 
@@ -113,6 +114,7 @@ export class OfficeAddinUsageData {
    * Reports custom event object to Application Insights
    * @param eventName Event name sent to Application Insights
    * @param data Data object sent to Application Insights
+   * @param isWeb Event reported as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
   public async reportEventApplicationInsights(eventName: string, data: object, isWeb: boolean = false): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
@@ -154,10 +156,11 @@ export class OfficeAddinUsageData {
    * Reports error to usage data structure
    * @param errorName Error name sent to usage data structure
    * @param err Error sent to usage data structure
+   * @param isWeb Error sent as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
-  public async reportError(errorName: string, err: Error): Promise<void> {
+  public async reportError(errorName: string, err: Error, isWeb: boolean = false): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      this.reportErrorApplicationInsights(errorName, err);
+      this.reportErrorApplicationInsights(errorName, err, isWeb);
     }
   }
 
@@ -165,6 +168,7 @@ export class OfficeAddinUsageData {
    * Reports error to Application Insights
    * @param errorName Error name sent to Application Insights
    * @param err Error sent to Application Insights
+   * @param isWeb Error sent as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
   public async reportErrorApplicationInsights(errorName: string, err: Error, isWeb: boolean = false): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
