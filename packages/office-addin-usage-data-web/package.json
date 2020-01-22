@@ -1,0 +1,48 @@
+{
+  "name": "office-addin-usage-data-web",
+  "version": "1.0.7",
+  "description": "Provides infrastructure to send usage data events and exceptions.",
+  "main": "./lib/main.js",
+  "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "cli": "node lib/cli.js",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
+  },
+  "author": "Office Dev",
+  "license": "MIT",
+  "bin": {
+    "office-addin-usage-data": "./cli.js"
+  },
+  "keywords": [
+    "Office",
+    "Office Add-in"
+  ],
+  "dependencies": {
+    "@microsoft/applicationinsights-web": "^2.3.1",
+    "applicationinsights": "^1.6.0",
+    "commander": "^2.20.3",
+    "office-addin-cli": "^0.2.8",
+    "readline-sync": "^1.4.9"
+  },
+  "devDependencies": {
+    "@types/applicationinsights": "^0.20.0",
+    "@types/es6-promise": "3.3.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.14",
+    "concurrently": "^4.1.1",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.5.2",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  },
+  "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
+}
