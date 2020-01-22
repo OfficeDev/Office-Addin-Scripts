@@ -111,7 +111,9 @@ export class OfficeAddinUsageData {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       const usageDataEventWeb = new appInsightsWeb.Event( 
         this.appInsightsWeb.core.logger,
-        this.options.isForTesting ? `${eventName}-test` : eventName
+        this.options.isForTesting ? `${eventName}-test` : eventName,
+        {},
+        {}
       );
       try {
         for (const [key, [value, elapsedTime]] of Object.entries(data)) {
