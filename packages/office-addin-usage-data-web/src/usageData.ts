@@ -109,18 +109,8 @@ export class OfficeAddinUsageData {
    */
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      const usageDataEventWeb = new appInsightsWeb.Event( 
-        this.appInsightsWeb.core.logger,
-        this.options.isForTesting ? `${eventName}-test` : eventName,
-        {},
-        {}
-      );
       try {
-        for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          usageDataEventWeb.properties[key] = value; 
-          usageDataEventWeb.measurements[key + " durationElapsed"] = elapsedTime;
-        }
-        this.appInsightsWeb.trackEvent(usageDataEventWeb);
+        this.appInsightsWeb.trackEvent({name: eventName, properties: data});
         this.eventsSent++;
       } catch (err) {
         this.reportError("sendUsageDataEvents", err);
@@ -146,7 +136,7 @@ export class OfficeAddinUsageData {
    * @param err Error sent to Application Insights
    * @param isWeb Error sent as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
-  public async reportErrorApplicationInsights(errorName: string, err: Error, isWeb: boolean = false): Promise<void> {
+  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
       this.appInsightsWeb.trackException(new appInsightsWeb.Exception(this.appInsightsWeb.core.logger, this.maskFilePaths(err)));
@@ -266,6 +256,7 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * Removes sensitive information fields from ApplicationInsights data
    */
   private removeApplicationInsightsSensitiveInformation() {
+    // TODO: figure out the best way to delete this data
     // delete this.appInsightsWeb.context.device.id;
     // delete this.appInsightsWeb.context.user.accountId;
     // delete this.appInsightsWeb.context.location.ip;
