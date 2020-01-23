@@ -3,4 +3,3 @@
 
 export * from "./defaults";
 export * from "./usageData";
-export * from "./usageDataSettings";

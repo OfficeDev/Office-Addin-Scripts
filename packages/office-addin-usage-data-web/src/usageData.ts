@@ -3,7 +3,6 @@
 
 import * as appInsightsWeb from '@microsoft/applicationinsights-web';
 import * as readLine from "readline-sync";
-import * as jsonData from "./usageDataSettings";
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
@@ -67,16 +66,6 @@ export class OfficeAddinUsageData {
 
       if (this.options.promptQuestion === undefined) {
         this.options.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`;
-      }
-
-      if (jsonData.groupNameExists(this.options.groupName)) {
-        this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
-      }
-
-      if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
-        this.usageDataOptIn();
-      } else {
-        jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
       }
 
       this.appInsightsWeb = new appInsightsWeb.ApplicationInsights({ config: {
@@ -148,25 +137,7 @@ export class OfficeAddinUsageData {
  * @param testData Specifies whether test code is calling this method
  * @param testReponse Specifies test response
  */
-public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
-  try {
-    let response: string = "";
-    if (testData) {
-      response = testResponse;
-    } else {
-      response = readLine.question(`${this.options.promptQuestion}\n`);
-    }
-    if (response.toLowerCase() === "y") {
-      this.options.usageDataLevel = UsageDataLevel.on;
-    } else {
-      this.options.usageDataLevel = UsageDataLevel.off;
-    }
-    jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
-  } catch (err) {
-    this.reportError("UsageDataOptIn", err);
-    throw new Error(err);
-  }
- }
+
   /**
    * Stops usage data from being sent, by default usage data will be on
    */
