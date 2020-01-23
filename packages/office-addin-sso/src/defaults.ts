@@ -6,6 +6,7 @@ import * as usageData from "office-addin-usage-data";
 
 // File path defaults
 export const azCliInstallCommandPath: string = path.resolve(`${__dirname}/scripts/azCliInstallCmd.ps1`);
+export const azRestAddTenantOutlookReplyUrlsCommandPath = path.resolve(`${__dirname}/scripts/azRestAddTenantOutlookReplyUrls.txt`);
 export const azRestAddTenantReplyUrlsCommandPath = path.resolve(`${__dirname}/scripts/azRestAddTenantReplyUrls.txt`);
 export const azRestAddSecretCommandPath = path.resolve(`${__dirname}/scripts/azAddSecretCmd.txt`);
 export const azRestAppCreateCommandPath: string = path.resolve(`${__dirname}/scripts/azRestAppCreateCmd.txt`);
