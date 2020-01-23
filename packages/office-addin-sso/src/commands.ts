@@ -30,7 +30,7 @@ export async function configureSSO(manifestPath: string) {
         console.log(chalk.yellow("Azure CLI is not installed.  Installing now before proceeding - this could take a few minutes."));
         await configure.installAzureCli();
         if (process.platform === "win32") {
-            console.log(chalk.green('Please close your command shell, reopen and run configure-sso again.  This is neccessary to register the path to the Azure CLI'));
+            console.log(chalk.green('Please close your command shell, reopen and run configure-sso again.  This is necessary to register the path to the Azure CLI'));
         }
         return;
     }
