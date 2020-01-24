@@ -66,3 +66,10 @@ export function readUsageDataSettings(groupName = defaults.groupName): object | 
         return undefined;
     }
 }
+
+export function readUsageDataEnabled(groupName = defaults.groupName): boolean {
+    if (groupNameExists(groupName)) {
+        return readUsageDataLevel(groupName) === UsageDataLevel.on;
+    }
+    return false;
+}
