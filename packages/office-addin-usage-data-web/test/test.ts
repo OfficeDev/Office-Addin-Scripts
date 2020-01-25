@@ -8,7 +8,7 @@ import * as mocha from "mocha";
 import * as os from "os";
 import * as defaults from "../src/defaults";
 import * as officeAddinUsageData from "../src/usageData";
-import * as jsonData from "../src/usageDataSettings";
+import * as jsonData from "office-addin-usage-data";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
@@ -84,13 +84,13 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(jsonData.needToPromptForUsageData("test group name"), true);
     });
   });
-  describe("Test usageDataOptIn method", () => {
-    it("Should write out file with groupName set to true to usageDataJsonFilePath", () => {
-      addInUsageData.usageDataOptIn(usageDataObject.isForTesting, "y");
-      const jsonTelemtryData = jsonData.readUsageDataJsonData();
-      assert.equal(jsonTelemtryData.usageDataInstances[usageDataObject.groupName].usageDataLevel, usageDataObject.usageDataLevel);
-    });
-  });
+  // describe("Test usageDataOptIn method", () => {
+  //   it("Should write out file with groupName set to true to usageDataJsonFilePath", () => {
+  //     addInUsageData.usageDataOptIn(usageDataObject.isForTesting, "y");
+  //     const jsonTelemtryData = jsonData.readUsageDataJsonData();
+  //     assert.equal(jsonTelemtryData.usageDataInstances[usageDataObject.groupName].usageDataLevel, usageDataObject.usageDataLevel);
+  //   });
+  // });
   describe("Test setUsageDataOff method", () => {
     it("should change samplingPercentage to 100, turns usage data on", () => {
       addInUsageData.setUsageDataOn();

@@ -23,16 +23,17 @@
     "applicationinsights": "^1.6.0",
     "commander": "^2.20.3",
     "office-addin-cli": "^0.2.8",
-    "readline-sync": "^1.4.9"
+    "readline-sync": "^1.4.9",
+    "tsc": "^1.20150623.0"
   },
   "devDependencies": {
     "@types/applicationinsights": "^0.20.0",
     "@types/es6-promise": "3.3.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.14",
-    "concurrently": "^4.1.1",
+    "concurrently": "^4.1.2",
     "mocha": "^5.2.0",
-    "rimraf": "^2.6.3",
+    "rimraf": "^2.7.1",
     "ts-node": "^8.5.2",
     "tslint": "^5.20.1",
     "typescript": "^3.7.2"

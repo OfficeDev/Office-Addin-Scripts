@@ -64,10 +64,6 @@ export class OfficeAddinUsageData {
         throw new Error("Group Name not defined - cannot create usage data object");
       }
 
-      if (this.options.promptQuestion === undefined) {
-        this.options.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`;
-      }
-
       this.appInsightsWeb = new appInsightsWeb.ApplicationInsights({ config: {
         instrumentationKey: this.options.instrumentationKey,
         disableExceptionTracking: true
