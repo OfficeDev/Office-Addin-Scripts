@@ -95,7 +95,10 @@ export class OfficeAddinUsageData {
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        this.appInsightsWeb.trackEvent({name: eventName, properties: data});
+        this.appInsightsWeb.trackEvent({
+          name: this.options.isForTesting ? `${eventName}-test` : eventName, 
+          properties: data
+        });
         this.eventsSent++;
       } catch (err) {
         this.reportError("sendUsageDataEvents", err);

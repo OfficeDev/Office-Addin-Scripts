@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import * as appInsights from "applicationinsights";
-import * as appInsightsWeb from '@microsoft/applicationinsights-web';
 import * as readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
 /**
@@ -50,7 +49,6 @@ export interface IUsageDataOptions {
  */
 export class OfficeAddinUsageData {
   private usageDataClient = appInsights.defaultClient;
-  private appInsightsWeb: appInsightsWeb.ApplicationInsights;
   private eventsSent: number = 0;
   private exceptionsSent: number = 0;
   private options: IUsageDataOptions;
@@ -85,12 +83,6 @@ export class OfficeAddinUsageData {
         .setAutoCollectExceptions(false)
         .start();
       this.usageDataClient = appInsights.defaultClient;
-
-      this.appInsightsWeb = new appInsightsWeb.ApplicationInsights({ config: {
-        instrumentationKey: this.options.instrumentationKey,
-        disableExceptionTracking: true
-      }});
-      this.appInsightsWeb.loadAppInsights();
       this.removeApplicationInsightsSensitiveInformation();
 
     } catch (err) {
@@ -102,11 +94,10 @@ export class OfficeAddinUsageData {
    * Reports custom event object to usage data structure
    * @param eventName Event name sent to usage data structure
    * @param data Data object sent to usage data structure
-   * @param isWeb Event reported as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
-  public async reportEvent(eventName: string, data: object, isWeb: boolean = false): Promise<void> {
+  public async reportEvent(eventName: string, data: object): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      this.reportEventApplicationInsights(eventName, data, isWeb);
+      this.reportEventApplicationInsights(eventName, data);
     }
   }
 
@@ -114,40 +105,21 @@ export class OfficeAddinUsageData {
    * Reports custom event object to Application Insights
    * @param eventName Event name sent to Application Insights
    * @param data Data object sent to Application Insights
-   * @param isWeb Event reported as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
-  public async reportEventApplicationInsights(eventName: string, data: object, isWeb: boolean = false): Promise<void> {
+  public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      if (isWeb) {
-        const usageDataEventWeb = new appInsightsWeb.Event( 
-          this.appInsightsWeb.core.logger,
-          this.options.isForTesting ? `${eventName}-test` : eventName
-        );
-        try {
-          for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-            usageDataEventWeb.properties[key] = value; 
-            usageDataEventWeb.measurements[key + " durationElapsed"] = elapsedTime;
-          }
-          this.appInsightsWeb.trackEvent(usageDataEventWeb);
-          this.eventsSent++;
-        } catch (err) {
-          this.reportError("sendUsageDataEvents", err);
-          throw new Error(err);
+      const usageDataEvent = new appInsights.Contracts.EventData();
+      usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
+      try {
+        for (const [key, [value, elapsedTime]] of Object.entries(data)) {
+          usageDataEvent.properties[key] = value; 
+          usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-      } else {
-        const usageDataEvent = new appInsights.Contracts.EventData();
-        usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
-        try {
-          for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-            usageDataEvent.properties[key] = value; 
-            usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
-          }
-          this.usageDataClient.trackEvent(usageDataEvent);
-          this.eventsSent++;
-        } catch (err) {
-          this.reportError("sendUsageDataEvents", err);
-          throw new Error(err);
-        }
+        this.usageDataClient.trackEvent(usageDataEvent);
+        this.eventsSent++;
+      } catch (err) {
+        this.reportError("sendUsageDataEvents", err);
+        throw new Error(err);
       }
     }
   }
@@ -156,11 +128,10 @@ export class OfficeAddinUsageData {
    * Reports error to usage data structure
    * @param errorName Error name sent to usage data structure
    * @param err Error sent to usage data structure
-   * @param isWeb Error sent as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
-  public async reportError(errorName: string, err: Error, isWeb: boolean = false): Promise<void> {
+  public async reportError(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      this.reportErrorApplicationInsights(errorName, err, isWeb);
+      this.reportErrorApplicationInsights(errorName, err);
     }
   }
 
@@ -168,49 +139,45 @@ export class OfficeAddinUsageData {
    * Reports error to Application Insights
    * @param errorName Error name sent to Application Insights
    * @param err Error sent to Application Insights
-   * @param isWeb Error sent as part of ApplicationInsights-JS (if true) or as part of ApplicationInsights-node.js (if false)
    */
-  public async reportErrorApplicationInsights(errorName: string, err: Error, isWeb: boolean = false): Promise<void> {
+  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
-      if (isWeb) {
-        this.appInsightsWeb.trackException(new appInsightsWeb.Exception(this.appInsightsWeb.core.logger, this.maskFilePaths(err)));
-      } else {
-        this.usageDataClient.trackException({ exception: this.maskFilePaths(err) });
-      }
+      this.usageDataClient.trackException({ exception: this.maskFilePaths(err) });
       this.exceptionsSent++;
     }
   }
-/**
- * Prompts user for usage data participation once and records response
- * @param testData Specifies whether test code is calling this method
- * @param testReponse Specifies test response
- */
-public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
-  try {
-    let response: string = "";
-    if (testData) {
-      response = testResponse;
-    } else {
-      response = readLine.question(`${this.options.promptQuestion}\n`);
+
+  /**
+   * Prompts user for usage data participation once and records response
+   * @param testData Specifies whether test code is calling this method
+   * @param testReponse Specifies test response
+   */
+  public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
+    try {
+      let response: string = "";
+      if (testData) {
+        response = testResponse;
+      } else {
+        response = readLine.question(`${this.options.promptQuestion}\n`);
+      }
+      if (response.toLowerCase() === "y") {
+        this.options.usageDataLevel = UsageDataLevel.on;
+      } else {
+        this.options.usageDataLevel = UsageDataLevel.off;
+      }
+      jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+    } catch (err) {
+      this.reportError("UsageDataOptIn", err);
+      throw new Error(err);
     }
-    if (response.toLowerCase() === "y") {
-      this.options.usageDataLevel = UsageDataLevel.on;
-    } else {
-      this.options.usageDataLevel = UsageDataLevel.off;
-    }
-    jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
-  } catch (err) {
-    this.reportError("UsageDataOptIn", err);
-    throw new Error(err);
   }
- }
+
   /**
    * Stops usage data from being sent, by default usage data will be on
    */
   public setUsageDataOff() {
     appInsights.defaultClient.config.samplingPercentage = 0;
-    this.appInsightsWeb.config.samplingPercentage = 0;
   }
 
   /**
@@ -224,7 +191,6 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
       throw new RangeError('Please choose 100 or lower for the percentage');
     }
     appInsights.defaultClient.config.samplingPercentage = percent;
-    this.appInsightsWeb.config.samplingPercentage = percent;
   }
 
   /**
@@ -292,6 +258,7 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
       throw new Error(err);
     }
   }
+  
   /**
    * Removes sensitive information fields from ApplicationInsights data
    */
@@ -299,9 +266,5 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.usageDataClient.context.tags["ai.cloud.roleInstance"]; // cloud name
     delete this.usageDataClient.context.tags["ai.device.id"]; // machine name
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
-    // delete this.appInsightsWeb.context.device.id;
-    // delete this.appInsightsWeb.context.user.accountId;
-    // delete this.appInsightsWeb.context.location.ip;
-    // delete this.appInsightsWeb.context.user.config.accountId;
   }
 }
