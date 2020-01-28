@@ -11,6 +11,7 @@ import * as commander from 'commander';
 import { fork } from 'child_process';
 import * as path from "path";
 import WebSocket = require('ws');
+import * as usageDataHelper from './usagedata-helper';
 
 export function run(host: string = "localhost", port: string = "8081", 
   role: string = "debugger", debuggerName: string = "OfficeAddinDebugger") {
@@ -33,17 +34,20 @@ export function run(host: string = "localhost", port: string = "8081",
       worker.on('message', message => {
         ws.send(JSON.stringify(message));
       });
+      usageDataHelper.sendUsageDataSuccessEvent('JS Runtime created');
     }
 
     function shutdownJSRuntime(): void {
       if (worker) {
         worker.kill();
         worker.unref();
+        usageDataHelper.sendUsageDataSuccessEvent('JS Runtime shutdown');
       }
     }
 
     ws.onopen = () => {
       console.log('Web socket opened...');
+      usageDataHelper.sendUsageDataSuccessEvent('Web socket opened...');
     };
     ws.onmessage = message => {
       if (!message.data) {
@@ -70,6 +74,7 @@ export function run(host: string = "localhost", port: string = "8081",
         shutdownJSRuntime();
       } else {
         worker.send(object);
+        usageDataHelper.sendUsageDataSuccessEvent('Message Sent')
       }
     };
     ws.onclose = e => {
@@ -77,10 +82,12 @@ export function run(host: string = "localhost", port: string = "8081",
       if (e.reason) {
         console.log(`Web socket closed because the following reason: ${e.reason}`);
       }
+      usageDataHelper.sendUsageDataSuccessEvent('Debugger close');
       setTimeout(connectToDebuggerProxy, websocketRetryTimeout);
     };
     ws.onerror = event => {
       console.log(`${event.error}`);
+      usageDataHelper.sendUsageDataException('Debugger Error', `${event.error}`);
     };
   }
   connectToDebuggerProxy();

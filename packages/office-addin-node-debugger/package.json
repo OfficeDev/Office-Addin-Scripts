@@ -23,6 +23,7 @@
     "child_process": "^1.0.2",
     "commander": "^2.20.3",
     "node-fetch": "^2.6.0",
+    "office-addin-usage-data": "^1.0.7",
     "ws": "^6.2.1"
   },
   "devDependencies": {
