@@ -8,7 +8,6 @@ import { execSync } from "child_process";
 import * as fs from 'fs';
 import * as os from 'os';
 import { modifyManifestFile } from 'office-addin-manifest';
-import * as usageDataHelper from './usagedata-helper';
 
 export function addSecretToCredentialStore(ssoAppName: string, secret: string, isTest: boolean = false): void {
     try {
@@ -30,13 +29,10 @@ export function addSecretToCredentialStore(ssoAppName: string, secret: string, i
                 break;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                usageDataHelper.sendUsageDataException('addSecretToCredentialStore', errorMessage);
                 throw new Error(errorMessage);
         }
-        usageDataHelper.sendUsageDataSuccessEvent('addSecretToCredentialStore');
     } catch (err) {
         const errorMessage: string = `Unable to add secret to Credential Store: \n${err}`;
-        usageDataHelper.sendUsageDataException('addSecretToCredentialStore', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -52,7 +48,6 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
                 return execSync(getSecretFromMacStoreCommand, { stdio: "pipe" }).toString();;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                usageDataHelper.sendUsageDataException('getSecretFromCredentialStore', errorMessage);
                 throw new Error(errorMessage);
         }
     } catch {
@@ -72,15 +67,12 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
 
             const updatedAppDataContent = appDataContent.replace('{CLIENT_ID}', applicationId).replace('{PORT}', port);
             fs.writeFileSync(envFilePath, updatedAppDataContent);
-            usageDataHelper.sendUsageDataSuccessEvent('updateEnvFile');
             return true;
         } else {
-            usageDataHelper.sendUsageDataException('updateEnvFile', 'env file does not exist');
             throw new Error(`${envFilePath} does not exist`)
         }
     } catch (err) {
         const errorMessage: string = `Unable to write SSO application data to .env file: \n${err}`;
-        usageDataHelper.sendUsageDataException('updateEnvFile', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -105,7 +97,6 @@ function updateFallBackAuthDialogFile(applicationId: string, port: string, fallb
                 throw new Error(`${defaults.testFallbackAuthDialogFilePath} does not exist`);
             } else {
                 const errorMessage: string = `${isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath} does not exist`;
-                usageDataHelper.sendUsageDataException('updateFallBackAuthDialogFile', errorMessage);
                 throw new Error(errorMessage);
             }
         }
@@ -118,14 +109,12 @@ function updateFallBackAuthDialogFile(applicationId: string, port: string, fallb
         // Update fallbackauthdialog file
         const updatedSrcFileContent = srcFileContent.replace('{application GUID here}', applicationId).replace('{PORT}', port);
         fs.writeFileSync(fallbackAuthDialogPath, updatedSrcFileContent);
-        usageDataHelper.sendUsageDataSuccessEvent('updateFallBackAuthDialogFile');
         return true;
     } catch (err) {
         if (isTest) {
             throw new Error(`Unable to write SSO application data to ${defaults.testFallbackAuthDialogFilePath}. \n${err}`);
         } else {
             const errorMessage: string = `Unable to write SSO application data to ${isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath}. \n${err}`;
-            usageDataHelper.sendUsageDataException('updateFallBackAuthDialogFile', errorMessage);
             throw new Error(errorMessage);
         }
     }
@@ -148,16 +137,13 @@ async function updateProjectManifest(applicationId: string, port: string, manife
             const updatedManifestContent: string = manifestContent.replace(re, applicationId).replace(rePort, port);
             await fs.writeFileSync(manifestPath, updatedManifestContent);
             await modifyManifestFile(manifestPath, 'random');
-            usageDataHelper.sendUsageDataSuccessEvent('updateProjectManifest');
             return true;
         } else {
             const errorMessage: string = 'Manifest does not exist at specified location';
-            usageDataHelper.sendUsageDataException('updateProjectManifest', errorMessage);
             throw new Error(errorMessage)
         }
     } catch (err) {
         const errorMessage: string = `Unable to update manifest: \n${err}`
-        usageDataHelper.sendUsageDataException('updateProjectManifest', errorMessage);
         throw new Error(errorMessage);
     }
 }

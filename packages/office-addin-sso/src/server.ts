@@ -47,11 +47,9 @@ export class SSOService {
         const appSecret = getSecretFromCredentialStore(manifestInfo.displayName, isTest);
         if (appSecret === '') {
             const errorMessage: string = 'Call to getSecretFromCredentialStore returned empty string';
-            usageDataHelper.sendUsageDataException('getSecret', errorMessage);
             throw new Error(errorMessage);
         }
         process.env.secret = appSecret;
-        usageDataHelper.sendUsageDataSuccessEvent('getSecret');
     }
 
     public getTestServerState(): boolean {
@@ -63,11 +61,9 @@ export class SSOService {
             try {
                 const options = await devCerts.getHttpsServerOptions();
                 this.server = https.createServer(options, app).listen(port, () => console.log(`Server running on ${port}`));
-                usageDataHelper.sendUsageDataSuccessEvent('startServer');
                 resolve(true);
             } catch (err) {
                 const errorMessage: string = `Unable to start test server on port ${port}: \n${err}`;
-                usageDataHelper.sendUsageDataException('startServer', errorMessage);
                 reject(errorMessage);
             }
         });
@@ -79,11 +75,9 @@ export class SSOService {
                 try {
                     this.server.close();
                     this.ssoServiceStarted = false;
-                    usageDataHelper.sendUsageDataSuccessEvent('stopServer');
                     resolve(true);
                 } catch (err) {
                     const errorMessage: string = `Unable to stop test server: \n${err}`;
-                    usageDataHelper.sendUsageDataException('stopServer', errorMessage);
                     reject(new Error(errorMessage));
                 }
             } else {

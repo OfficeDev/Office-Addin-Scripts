@@ -8,6 +8,7 @@ import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseAppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
+import * as usageDataHelper from "./usagedata-helper";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {
     let manifestPath = process.env.npm_package_config_manifest_location || "";
@@ -74,8 +75,11 @@ export async function start(manifestPath: string, platform: string | undefined, 
         }
 
         await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
-            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
+            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload).then(() => {
+                usageDataHelper.sendUsageDataSuccessEvent("start");
+            });
     } catch (err) {
+        usageDataHelper.sendUsageDataException("stop", `${err}`);
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }
 }
@@ -89,8 +93,11 @@ export async function stop(manifestPath: string, platform: string | undefined, c
             manifestPath = determineManifestPath(appPlatformToDebug, dev);
         }
 
-        await stopDebugging(manifestPath);
+        await stopDebugging(manifestPath).then(() => {
+            usageDataHelper.sendUsageDataSuccessEvent("stop");
+        });
     } catch (err) {
+        usageDataHelper.sendUsageDataException("stop", `${err}`);
         logErrorMessage(`Unable to stop debugging.\n${err}`);
     }
 }
