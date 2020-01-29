@@ -84,13 +84,6 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(jsonData.needToPromptForUsageData("test group name"), true);
     });
   });
-  // describe("Test usageDataOptIn method", () => {
-  //   it("Should write out file with groupName set to true to usageDataJsonFilePath", () => {
-  //     addInUsageData.usageDataOptIn(usageDataObject.isForTesting, "y");
-  //     const jsonTelemtryData = jsonData.readUsageDataJsonData();
-  //     assert.equal(jsonTelemtryData.usageDataInstances[usageDataObject.groupName].usageDataLevel, usageDataObject.usageDataLevel);
-  //   });
-  // });
   describe("Test setUsageDataOff method", () => {
     it("should change samplingPercentage to 100, turns usage data on", () => {
       addInUsageData.setUsageDataOn();

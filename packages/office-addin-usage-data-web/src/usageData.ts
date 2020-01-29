@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import * as appInsightsWeb from '@microsoft/applicationinsights-web';
-import * as readLine from "readline-sync";
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
