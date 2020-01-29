@@ -6,6 +6,7 @@ import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as manifestInfo from "./manifestInfo";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
+import * as usageDataHelper from "./usagedata-helper";
 
 function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
@@ -18,7 +19,9 @@ export async function info(manifestPath: string) {
   try {
     const manifest = await manifestInfo.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
+    usageDataHelper.sendUsageDataSuccessEvent("info");
   } catch (err) {
+    usageDataHelper.sendUsageDataException("info", `${err}`);
     logErrorMessage(err);
   }
 }
@@ -118,7 +121,9 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
     const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
+    usageDataHelper.sendUsageDataSuccessEvent("modify");
   } catch (err) {
+    usageDataHelper.sendUsageDataException("modify", `${err}`);
     logErrorMessage(err);
   }
 }
@@ -145,7 +150,9 @@ export async function validate(manifestPath: string, command: commander.Command)
         }
       }
     }
+    usageDataHelper.sendUsageDataSuccessEvent("validate");
   } catch (err) {
+    usageDataHelper.sendUsageDataException("validate", `${err}`);
     logErrorMessage(err);
   }
 }
