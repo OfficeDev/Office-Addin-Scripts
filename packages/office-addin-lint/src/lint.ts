@@ -12,12 +12,8 @@ const prettierFilePath = path.resolve(prettierPath, "../bin-prettier.js");
 const esLintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
 
 function execCommand(command: string) {
-  try {
-    const execSync = require("child_process").execSync;
-    const child = execSync(command, { stdio: "inherit" });
-  } catch (err) {
-    throw err;
-  } 
+  const execSync = require("child_process").execSync;
+  const child = execSync(command, { stdio: "inherit" });
 }
 
 function getEsLintBaseCommand(): string {
@@ -34,9 +30,9 @@ export function performLintCheck(files: string) {
   try {
     const command = getLintCheckCommand(files);
     execCommand(command);
-    usageDataHelper.sendUsageDataSuccessEvent("check");
+    usageDataHelper.sendUsageDataSuccessEvent("performLintCheck");
   } catch (err) {
-    usageDataHelper.sendUsageDataException("check", `${err}`);
+    usageDataHelper.sendUsageDataException("performLintCheck", err.message);
     throw err;
   }
 }
@@ -50,9 +46,9 @@ export function performLintFix(files: string) {
   try{
     const command = getLintFixCommand(files);
     execCommand(command);
-    usageDataHelper.sendUsageDataSuccessEvent("fix");
+    usageDataHelper.sendUsageDataSuccessEvent("performLintFix");
   } catch (err) {
-    usageDataHelper.sendUsageDataException("fix", `${err}`);
+    usageDataHelper.sendUsageDataException("performLintFix", err.message);
     throw err;
   }
 }
@@ -66,9 +62,9 @@ export function makeFilesPrettier(files: string) {
   try{
     const command = getPrettierCommand(files);
     execCommand(command);
-    usageDataHelper.sendUsageDataSuccessEvent("prettier");
+    usageDataHelper.sendUsageDataSuccessEvent("makeFilesPrettier");
   } catch (err) {
-    usageDataHelper.sendUsageDataException("prettier", `${err}`);
+    usageDataHelper.sendUsageDataException("makeFilesPrettier", err.message);
     throw err;
   }
 }
