@@ -5,7 +5,6 @@ import * as cors from "cors";
 import * as express from "express";
 import * as https from "https";
 import * as devCerts from "office-addin-dev-certs";
-import * as usageDataHelper from './usagedata-helper';
 
 export const defaultPort: number = 4201;
 
@@ -50,13 +49,11 @@ export class TestServer {
                     resolveResults(this.jsonData);
                 });
             });
-            usageDataHelper.sendUsageDataSuccessEvent('startTestServer');
 
             // start listening on specified port
             return await this.startListening();
 
         } catch (err) {
-            usageDataHelper.sendUsageDataException('startTestServer', `${err}`);
             throw new Error(`Unable to start test server.\n${err}`);
         }
     }
@@ -67,10 +64,8 @@ export class TestServer {
                 try {
                     this.server.close();
                     this.testServerStarted = false;
-                    usageDataHelper.sendUsageDataSuccessEvent('stopTestServer')
                     resolve(true);
                 } catch (err) {
-                    usageDataHelper.sendUsageDataException('stopTestServer', `${err}`);
                     reject(new Error(`Unable to stop test server.\n${err}`));
                 }
             } else {
@@ -111,10 +106,8 @@ export class TestServer {
                     this.testServerStarted = true;
                     resolve(true);
                 });
-                usageDataHelper.sendUsageDataSuccessEvent('startListening');
 
             } catch (err) {
-                usageDataHelper.sendUsageDataException('startListening', `${err}`);
                 reject(new Error(`Unable to start test server.\n${err}`));
             }
         });
