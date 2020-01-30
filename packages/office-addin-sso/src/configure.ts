@@ -6,6 +6,8 @@
 import * as childProcess from 'child_process';
 import * as defaults from './defaults';
 import * as fs from 'fs';
+import * as usageDataHelper from './usagedata-helper';
+let usageDataInfo: Object = {};
 require('dotenv').config();
 
 export async function createNewApplication(ssoAppName: string, port: string, userJson: Object): Promise<Object> {
@@ -63,12 +65,28 @@ export async function isAzureCliInstalled(): Promise<boolean> {
             case "win32":
                 const appsInstalledWindowsCommand: string = `powershell -ExecutionPolicy Bypass -File "${defaults.getInstalledAppsPath}"`;
                 const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
-                cliInstalled = appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0
+                cliInstalled = appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0;
+                // Send usage data
+                usageDataInfo = {
+                    Method: ['isAzureCliInstalled'],
+                    cliInstalled: [cliInstalled],
+                    Platform: [process.platform],
+                    Succeeded: [true]
+                }
+                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
                 return cliInstalled;
             case "darwin":
                 const appsInstalledMacCommand = 'brew list';
                 const appsMac: Object | string = await promiseExecuteCommand(appsInstalledMacCommand, false /* returnJson */);
                 cliInstalled = appsMac.toString().includes('azure-cli');
+                // Send usage data
+                usageDataInfo = {
+                    Method: ['isAzureCliInstalled'],
+                    cliInstalled: [cliInstalled],
+                    Platform: [process.platform],
+                    Succeeded: [true]
+                }
+                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
                 return cliInstalled;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
@@ -121,6 +139,15 @@ export async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
                 isTenantAdmin = true;
             }
         });
+
+        // Send usage data
+        usageDataInfo = {
+            Method: ['isUserTenantAdmin'],
+            isUserTenantAdmin: [isTenantAdmin],
+            Platform: [process.platform],
+            Succeeded: [true]
+        }
+        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
 
         return isTenantAdmin;
     } catch (err) {
@@ -240,6 +267,14 @@ export async function setTenantReplyUrls(): Promise<boolean> {
             await promiseExecuteCommand(azRestCommand);
         }
 
+        // Send usage data
+        usageDataInfo = {
+            Method: ['setTenantReplyUrls'],
+            isUserTenantAdmin: [setReplyUrls],
+            Platform: [process.platform],
+            Succeeded: [true]
+        }
+        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
