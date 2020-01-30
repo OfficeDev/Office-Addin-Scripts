@@ -7,6 +7,7 @@ import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
 import { isCaCertificateInstalled, verifyCertificates } from "./verify";
+import * as usageDataHelper from "./usagedata-helper";
 
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
    switch (process.platform) {
@@ -21,15 +22,20 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
 }
 
 export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires, machine: boolean = false) {
-   const areCertificatesValid = verifyCertificates();
-
-   if (areCertificatesValid) {
-      console.log(`You already have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
-   } else {
-      await uninstallCaCertificate(false, false);
-      await deleteCertificateFiles(defaults.certificateDirectory);
-      await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
-      await installCaCertificate(defaults.caCertificatePath, machine);
+   try {
+      const areCertificatesValid = verifyCertificates();
+   
+      if (areCertificatesValid) {
+         console.log(`You already have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`);
+      } else {
+         await uninstallCaCertificate(false, false);
+         deleteCertificateFiles(defaults.certificateDirectory);
+         await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
+         await installCaCertificate(defaults.caCertificatePath, machine);
+      }
+      usageDataHelper.sendUsageDataSuccessEvent("ensureCertificatesAreInstalled");
+   } catch(err) {
+      usageDataHelper.sendUsageDataException("ensureCertificatesAreInstalled", err.message);
    }
 }
 

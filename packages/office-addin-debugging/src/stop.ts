@@ -27,7 +27,7 @@ export async function stopDebugging(manifestPath: string) {
         try {
             await unregisterAddIn(manifestPath);
         } catch (err) {
-            console.log(`Unable to unregister the Office Add-in. ${err}`); //Do we want to throw or have separate telemetry here?
+            console.log(`Unable to unregister the Office Add-in. ${err}`);
         }
     
         const processId = debugInfo.readDevServerProcessId();

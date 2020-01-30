@@ -260,7 +260,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
             try {
                 await packagerPromise;
             } catch (err) {
-                console.log(`Unable to start the packager. ${err}`); //Do we want to throw or have separate telemetry here?
+                console.log(`Unable to start the packager. ${err}`);
             }
         }
     
@@ -268,7 +268,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
             try {
                 await devServerPromise;
             } catch (err) {
-                console.log(`Unable to start the dev server. ${err}`); //Do we want to throw or have separate telemetry here?
+                console.log(`Unable to start the dev server. ${err}`);
             }
         }
     
@@ -276,7 +276,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
             try {
                 await runNodeDebugger();
             } catch (err) {
-                console.log(`Unable to start the node debugger. ${err}`); //Do we want to throw or have separate telemetry here?
+                console.log(`Unable to start the node debugger. ${err}`);
             }
         }
     
