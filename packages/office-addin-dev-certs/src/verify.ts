@@ -81,5 +81,6 @@ export function verifyCertificates(certificatePath: string = defaults.localhostC
         return output;
     } catch (err) {
         usageDataHelper.sendUsageDataException("verifyCertificates", err.message);
+        throw err;
     }
 }

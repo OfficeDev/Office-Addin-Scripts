@@ -6,6 +6,7 @@ import * as util from "util";
 import * as uuid from "uuid";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
+import * as usageDataHelper from "./usagedata-helper";
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 type Xml = xmlMethods.Xml;
@@ -79,9 +80,17 @@ export async function modifyManifestFile(manifestPath: string, guid?: string, di
     if (guid === undefined && displayName === undefined) {
       throw new Error("You need to specify something to change in the manifest.");
     } else {
-      manifestData = await modifyManifestXml(manifestPath, guid, displayName);
-      await writeManifestData(manifestPath, manifestData);
-      return await readManifestFile(manifestPath);
+      try {
+        manifestData = await modifyManifestXml(manifestPath, guid, displayName);
+        await writeManifestData(manifestPath, manifestData);
+        let output = await readManifestFile(manifestPath);
+        usageDataHelper.sendUsageDataSuccessEvent("modifyManifestFile");
+        return output;
+        
+      } catch(err) {
+        usageDataHelper.sendUsageDataException("modifyManifestFile", err.message);
+        throw err;
+      }
     }
   } else {
     throw new Error(`Please provide the path to the manifest file.`);

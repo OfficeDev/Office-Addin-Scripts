@@ -36,6 +36,7 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
       usageDataHelper.sendUsageDataSuccessEvent("ensureCertificatesAreInstalled");
    } catch(err) {
       usageDataHelper.sendUsageDataException("ensureCertificatesAreInstalled", err.message);
+      throw err;
    }
 }
 

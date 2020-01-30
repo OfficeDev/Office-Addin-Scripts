@@ -17,7 +17,7 @@ function getCommandOptionString(option: string | boolean, defaultValue?: string)
 
 export async function info(manifestPath: string) {
   try {
-    const manifest = await manifestInfo.readManifestFile(manifestPath);
+    const manifest = await manifestInfo.readManifestFile(manifestPath); //Keep tele here, since the main function is only in commands, or in readManifestFile?
     logManifestInfo(manifestPath, manifest);
     usageDataHelper.sendUsageDataSuccessEvent("info");
   } catch (err) {
@@ -121,9 +121,7 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
     const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
-    usageDataHelper.sendUsageDataSuccessEvent("modify");
   } catch (err) {
-    usageDataHelper.sendUsageDataException("modify", `${err}`);
     logErrorMessage(err);
   }
 }
@@ -150,9 +148,7 @@ export async function validate(manifestPath: string, command: commander.Command)
         }
       }
     }
-    usageDataHelper.sendUsageDataSuccessEvent("validate");
   } catch (err) {
-    usageDataHelper.sendUsageDataException("validate", `${err}`);
     logErrorMessage(err);
   }
 }
