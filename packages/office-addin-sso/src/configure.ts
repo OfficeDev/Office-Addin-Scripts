@@ -224,7 +224,7 @@ export async function setSignInAudience(applicationJson: Object):Promise<void> {
     }
 }
 
-export async function setTenantReplyUrls(): Promise<boolean> {
+export async function setSharePointTenantReplyUrls(): Promise<boolean> {
     try {
         let servicePrinicipaObjectlId = "";
         let setReplyUrls: boolean = true;
@@ -278,6 +278,58 @@ export async function setTenantReplyUrls(): Promise<boolean> {
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
+        throw new Error(errorMessage);
+    }
+}
+
+export async function setOutlookTenantReplyUrl(): Promise<boolean> {
+    try {
+        let servicePrinicipaObjectlId = "";
+        let setReplyUrls: boolean = true;
+        const outlookReplyUrl: string = "https://outlook.office.com/owa/extSSO.aspx"
+        const outlookServiceId = "bc59ab01-8403-45c6-8796-ac3ef710b3e3";
+
+        // Get service principals for tenant
+        let azRestCommand: string = 'az ad sp list --all';
+        const servicePrincipals: any = await promiseExecuteCommand(azRestCommand);
+
+        // Check if Outlook redirects are set for Outlook principal
+        for (let item of servicePrincipals) {
+            if (item.appId === outlookServiceId) {
+                servicePrinicipaObjectlId = item.objectId;
+                if (item.replyUrls.length === 0) {
+                    break;
+                    // if there are reply urls set, then we need to see if the Outlook SSO reply urls are already set
+                } else {
+                    for (let url of item.replyUrls) {
+                        if (url === outlookReplyUrl) {
+                            setReplyUrls = false;
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        if (setReplyUrls) {
+            azRestCommand = fs.readFileSync(defaults.azRestAddTenantOutlookReplyUrlsCommandPath, 'utf8');
+            azRestCommand = azRestCommand.replace('<SP-OBJECTID>', servicePrinicipaObjectlId);
+            await promiseExecuteCommand(azRestCommand);
+        }
+
+        // Send usage data
+        usageDataInfo = {
+            Method: ['setOutlookTenantReplyUrls'],
+            tenantReplyUrlsSet: [setReplyUrls],
+            Platform: [process.platform],
+            Succeeded: [true]
+        }
+        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        return setReplyUrls;
+    } catch (err) {
+        const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
+        usageDataHelper.sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
         throw new Error(errorMessage);
     }
 }
