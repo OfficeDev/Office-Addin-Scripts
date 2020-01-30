@@ -28,7 +28,8 @@
     "office-addin-dev-certs": "^1.4.14",
     "office-addin-dev-settings": "^1.7.19",
     "office-addin-manifest": "^1.4.16",
-    "office-addin-node-debugger": "^0.4.24"
+    "office-addin-node-debugger": "^0.4.24",
+    "office-addin-usage-data": "^1.0.7"
   },
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
