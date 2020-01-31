@@ -251,19 +251,23 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
   }
 
-  public sendUsageDataSuccessEvent(method: string, data?: object): Promise<void> {
-    return;
+  public sendUsageDataSuccessEvent(method: string, ...data: object[]) {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      let eventTelemetryObj: appInsights.Contracts.EventTelemetry = { name: method };
+      data.forEach((datum) => { this.assignProperties(eventTelemetryObj, datum); });
+      this.usageDataClient.trackEvent(eventTelemetryObj);
+      this.exceptionsSent++;
+    }
   }
 
-  public sendUsageDataException(method: string, err: Error | string, data?: object) {
+  public sendUsageDataException(method: string, err: Error | string, ...data: object[]) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       let error = (err instanceof Error) ? err : new Error(`${method} error: ${err}`);
       error.name = this.options.isForTesting ? `${method}-test` : method;
       let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
         exception: this.maskFilePaths(error)
       };
-      this.assignProperties(exceptionTelemetryObj, data);
-
+      data.forEach((datum) => { this.assignProperties(exceptionTelemetryObj, datum); });
       this.usageDataClient.trackException(exceptionTelemetryObj);
       this.exceptionsSent++;
     }
