@@ -250,4 +250,30 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.usageDataClient.context.tags["ai.device.id"]; // machine name
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
   }
+
+  public sendUsageDataSuccessEvent(method: string, data?: object): Promise<void> {
+    return;
+  }
+
+  public sendUsageDataException(method: string, err: Error | string, data?: object) {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      let error = (err instanceof Error) ? err : new Error(`${method} error: ${err}`);
+      error.name = this.options.isForTesting ? `${method}-test` : method;
+      let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
+        exception: this.maskFilePaths(error)
+      };
+      this.assignProperties(exceptionTelemetryObj, data);
+
+      this.usageDataClient.trackException(exceptionTelemetryObj);
+      this.exceptionsSent++;
+    }
+
+  }
+
+  private assignProperties(teleObj: appInsights.Contracts.Telemetry, data: object): void {
+    Object.entries(data).forEach((entry) => {
+      teleObj.properties[entry[0]] = entry[1].toString();
+    })
+  }
+
 }
