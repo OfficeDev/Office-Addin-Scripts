@@ -251,33 +251,47 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
   }
 
-  public sendUsageDataSuccessEvent(method: string, ...data: object[]) {
+  public sendUsageDataSuccessEvent(projectName: string, ...data: object[]) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      let eventTelemetryObj: appInsights.Contracts.EventTelemetry = { name: method };
-      data.forEach((datum) => { this.assignProperties(eventTelemetryObj, datum); });
-      this.usageDataClient.trackEvent(eventTelemetryObj);
-      this.exceptionsSent++;
+      try {
+        let eventTelemetryObj= new appInsights.Contracts.EventData();
+        eventTelemetryObj.name = projectName;
+        this.assignProperties(eventTelemetryObj, data);
+        this.usageDataClient.trackEvent(eventTelemetryObj);
+        this.eventsSent++;
+      } catch (e) {
+        this.reportError("sendUsageDataSuccessEvent", e);
+      }
     }
   }
 
-  public sendUsageDataException(method: string, err: Error | string, ...data: object[]) {
+  public sendUsageDataException(projectName: string, err: Error | string, ...data: object[]) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      let error = (err instanceof Error) ? err : new Error(`${method} error: ${err}`);
-      error.name = this.options.isForTesting ? `${method}-test` : method;
-      let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
-        exception: this.maskFilePaths(error)
-      };
-      data.forEach((datum) => { this.assignProperties(exceptionTelemetryObj, datum); });
-      this.usageDataClient.trackException(exceptionTelemetryObj);
-      this.exceptionsSent++;
+      try {
+        let error = (err instanceof Error) ? err : new Error(`${projectName} error: ${err}`);
+        error.name = this.options.isForTesting ? `${projectName}-test` : projectName;
+        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
+          exception: this.maskFilePaths(error)
+        };
+        this.assignProperties(exceptionTelemetryObj, data);
+        this.usageDataClient.trackException(exceptionTelemetryObj);
+        this.exceptionsSent++;
+      } catch (e) {
+        this.reportError("sendUsageDataException", e);
+        throw e;
+      }
     }
-
   }
 
-  private assignProperties(teleObj: appInsights.Contracts.Telemetry, data: object): void {
-    Object.entries(data).forEach((entry) => {
-      teleObj.properties[entry[0]] = entry[1].toString();
-    })
+  private assignProperties(teleObj: appInsights.Contracts.Telemetry | appInsights.Contracts.EventData, data: any[]): void {
+    data.forEach((datum) => {
+      Object.entries(datum).forEach((entry) => {
+        if (teleObj instanceof appInsights.Contracts.EventData) {
+          teleObj.properties[entry[0]] = entry[1];
+        } else {
+          teleObj.properties[entry[0]] = entry[1].toString();
+        }
+      });
+    });
   }
-
 }
