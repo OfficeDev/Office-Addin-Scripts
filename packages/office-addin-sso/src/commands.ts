@@ -4,7 +4,8 @@
 import * as chalk from 'chalk';
 import { parseNumber } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from 'office-addin-manifest';
-import * as usageDataHelper from './usagedata-helper';
+import { sendUsageDataException, sendUsageDataCustomEvent } from './defaults';
+//import * as usageDataHelper from './usagedata-helper';
 import * as configure from './configure';
 import { SSOService } from './server';
 import { addSecretToCredentialStore, writeApplicationData } from './ssoDataSettings';
@@ -86,7 +87,7 @@ export async function configureSSO(manifestPath: string) {
             addSecretToCredentialStore(manifestInfo.displayName, secret);
         } else {
             const errorMessage = 'Failed to register application';
-            usageDataHelper.sendUsageDataException('createNewApplication', errorMessage);
+            sendUsageDataException('createNewApplication', errorMessage);
             console.log(chalk.red(errorMessage));
             return;
         }
@@ -113,11 +114,11 @@ export async function configureSSO(manifestPath: string) {
             Platform: [process.platform],
             Succeeded: [true]
         }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        sendUsageDataCustomEvent(usageDataInfo);
     }
     else {
         const errorMessage: string = 'Login to Azure did not succeed';
-        usageDataHelper.sendUsageDataException('configureSSO', errorMessage);
+        sendUsageDataException('configureSSO', errorMessage);
         throw new Error(errorMessage);
     }
 

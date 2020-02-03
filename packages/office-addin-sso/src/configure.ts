@@ -6,7 +6,7 @@
 import * as childProcess from 'child_process';
 import * as defaults from './defaults';
 import * as fs from 'fs';
-import * as usageDataHelper from './usagedata-helper';
+import { sendUsageDataException, sendUsageDataCustomEvent } from './defaults';
 let usageDataInfo: Object = {};
 require('dotenv').config();
 
@@ -73,7 +73,7 @@ export async function isAzureCliInstalled(): Promise<boolean> {
                     Platform: [process.platform],
                     Succeeded: [true]
                 }
-                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+                sendUsageDataCustomEvent(usageDataInfo);
                 return cliInstalled;
             case "darwin":
                 const appsInstalledMacCommand = 'brew list';
@@ -86,7 +86,7 @@ export async function isAzureCliInstalled(): Promise<boolean> {
                     Platform: [process.platform],
                     Succeeded: [true]
                 }
-                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+                sendUsageDataCustomEvent(usageDataInfo);
                 return cliInstalled;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
@@ -147,7 +147,7 @@ export async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
             Platform: [process.platform],
             Succeeded: [true]
         }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        sendUsageDataCustomEvent(usageDataInfo);
 
         return isTenantAdmin;
     } catch (err) {
@@ -274,7 +274,7 @@ export async function setSharePointTenantReplyUrls(): Promise<boolean> {
             Platform: [process.platform],
             Succeeded: [true]
         }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        sendUsageDataCustomEvent(usageDataInfo);
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
@@ -325,11 +325,11 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
             Platform: [process.platform],
             Succeeded: [true]
         }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        sendUsageDataCustomEvent(usageDataInfo);
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
-        usageDataHelper.sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
+        sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
         throw new Error(errorMessage);
     }
 }

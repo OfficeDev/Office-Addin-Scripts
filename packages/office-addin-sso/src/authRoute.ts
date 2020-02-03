@@ -7,7 +7,7 @@
 import * as express from 'express';
 import * as fetch from 'node-fetch';
 import * as form from 'form-urlencoded';
-import * as usageDataHelper from './usagedata-helper';
+import { sendUsageDataException, sendUsageDataCustomEvent } from './defaults';
 
 export class AuthRouter {
     public router: express.Router;
@@ -55,11 +55,11 @@ export class AuthRouter {
                         Platform: [process.platform],
                         Succeeded: [true]
                     }
-                    usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+                    sendUsageDataCustomEvent(usageDataInfo);
                 }
                 catch (error) {
                     res.status(500).send(error);
-                    usageDataHelper.sendUsageDataException('authRouter', error);
+                    sendUsageDataException('authRouter', error);
                 }
             }
         });
