@@ -251,7 +251,12 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
   }
 
-  public sendUsageDataSuccessEvent(projectName: string, ...data: object[]) {
+  /**
+   * Reports custom success event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public sendUsageDataEvent(projectName: string, ...data: object[]) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let eventTelemetryObj= new appInsights.Contracts.EventData();
@@ -265,6 +270,12 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     }
   }
 
+  /**
+   * Reports custom exception event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param err Error or message about error sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
   public sendUsageDataException(projectName: string, err: Error | string, ...data: object[]) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
@@ -283,6 +294,11 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     }
   }
 
+  /**
+   * Assigns properties from an array of data objects to a Telemetry or EventData object
+   * @param teleObj Telemetry or EventData object getting values assigned to it
+   * @param data The collection of data objects getting their values assigned to teleObj
+   */
   private assignProperties(teleObj: appInsights.Contracts.Telemetry | appInsights.Contracts.EventData, data: any[]): void {
     data.forEach((datum) => {
       Object.entries(datum).forEach((entry) => {
