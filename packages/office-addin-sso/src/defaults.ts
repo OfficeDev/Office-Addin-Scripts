@@ -38,24 +38,14 @@ export const usageDataOptions: usageData.IUsageDataOptions = {
     promptQuestion: "",
     usageDataLevel: sendUsageData ? usageData.UsageDataLevel.on : usageData.UsageDataLevel.off,
     method: usageData.UsageDataReportingMethod.applicationInsights,
-    isForTesting: false
+    isForTesting: true
 };
 const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData(usageDataOptions);
 export function sendUsageDataSuccessEvent(method: string, ...data: object[]) {
-    usageDataObject.sendUsageDataEvent(usageDataProjectName, {
-        Platform: [process.platform],
-        NodeVersion: [process.version],
-        Succeeded: [true],
-        Method: method
-    }, data);
+    usageDataObject.sendUsageDataSuccessEvent(usageDataProjectName, data.concat({Method: method}));
 };
 export function sendUsageDataException(method: string, error: Error | string, ...data: Object[]) {
-    usageDataObject.sendUsageDataException(usageDataProjectName, error, {
-        Platform: [process.platform],
-        NodeVersion: [process.version],
-        Succeeded: [false],
-        Method: method
-    }, data);
+    usageDataObject.sendUsageDataException(usageDataProjectName, error, data.concat({Method: method}));
 }
 export function sendUsageDataCustomEvent(usageDataInfo: Object) {
     usageDataObject.sendUsageDataEvent(usageDataProjectName, usageDataInfo);

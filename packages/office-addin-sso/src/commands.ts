@@ -4,7 +4,7 @@
 import * as chalk from 'chalk';
 import { parseNumber } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from 'office-addin-manifest';
-import { sendUsageDataException, sendUsageDataCustomEvent } from './defaults';
+import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
 //import * as usageDataHelper from './usagedata-helper';
 import * as configure from './configure';
 import { SSOService } from './server';
@@ -114,7 +114,7 @@ export async function configureSSO(manifestPath: string) {
             Platform: [process.platform],
             Succeeded: [true]
         }
-        sendUsageDataCustomEvent(usageDataInfo);
+        sendUsageDataSuccessEvent('configureSSO', {configDuration: ssoConfigDuration});
     }
     else {
         const errorMessage: string = 'Login to Azure did not succeed';

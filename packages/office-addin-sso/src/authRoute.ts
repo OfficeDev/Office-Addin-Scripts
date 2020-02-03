@@ -7,7 +7,7 @@
 import * as express from 'express';
 import * as fetch from 'node-fetch';
 import * as form from 'form-urlencoded';
-import { sendUsageDataException, sendUsageDataCustomEvent } from './defaults';
+import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
 
 export class AuthRouter {
     public router: express.Router;
@@ -49,13 +49,7 @@ export class AuthRouter {
                     res.send(json);
 
                     // Send usage data
-                    const usageDataInfo: Object = {
-                        Method: ['authRouter'],
-                        scope: [scopeName],
-                        Platform: [process.platform],
-                        Succeeded: [true]
-                    }
-                    sendUsageDataCustomEvent(usageDataInfo);
+                    sendUsageDataSuccessEvent('authRouter', {scope: scopeName});
                 }
                 catch (error) {
                     res.status(500).send(error);
