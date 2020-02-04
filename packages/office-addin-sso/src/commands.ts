@@ -108,12 +108,6 @@ export async function configureSSO(manifestPath: string) {
         const ssoConfigDuration = (ssoConfigEndTime - ssoConfigStartTime) / 1000
 
         // Send usage data
-        usageDataInfo = {
-            Method: ['configureSSO'],
-            configDuration: [ssoConfigDuration],
-            Platform: [process.platform],
-            Succeeded: [true]
-        }
         sendUsageDataSuccessEvent('configureSSO', {configDuration: ssoConfigDuration});
     }
     else {

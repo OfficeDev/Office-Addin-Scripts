@@ -247,6 +247,7 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
       throw new Error(err);
     }
   }
+
   /**
    * Removes sensitive information fields from ApplicationInsights data
    */
@@ -257,22 +258,20 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
   }
 
   /**
+   * Makes any non-array input as an array. Leaves arrays alone.
+   * @param input 
+   */
+  private arrayify(input: any[] | any) {
+    return (!(input instanceof Array)) ? [input] : input;
+  }
+
+  /**
    * Reports custom success event object to Application Insights
    * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public sendUsageDataSuccessEvent(projectName: string, ...data: Object[]) {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      try {
-        let eventTelemetryObj= new appInsights.Contracts.EventData();
-        eventTelemetryObj.name = this.options.isForTesting ? `${projectName}-test` : projectName;
-        this.assignProperties(eventTelemetryObj, data.concat(defaultData).concat({Succeeded: true}));
-        this.usageDataClient.trackEvent(eventTelemetryObj);
-        this.eventsSent++;
-      } catch (e) {
-        this.reportError("sendUsageDataSuccessEvent", e);
-      }
-    }
+  public sendUsageDataSuccessEvent(projectName: string, data: Object[] | Object) {
+    this.sendUsageDataEvent(projectName, this.arrayify(data).concat({Succeeded: true}));
   }
 
   /**
@@ -280,16 +279,16 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public sendUsageDataEvent(projectName: string, ...data: Object[]) {
+  public sendUsageDataEvent(projectName: string, data: Object[] | Object) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let eventTelemetryObj= new appInsights.Contracts.EventData();
         eventTelemetryObj.name = this.options.isForTesting ? `${projectName}-test` : projectName;
-        this.assignProperties(eventTelemetryObj, data.concat(defaultData));
+        this.assignProperties(eventTelemetryObj, this.arrayify(data).concat(defaultData));
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;
       } catch (e) {
-        this.reportError("sendUsageDataSuccessEvent", e);
+        this.reportError("sendUsageDataEvent", e);
       }
     }
   }
@@ -300,7 +299,7 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public sendUsageDataException(projectName: string, err: Error | string, ...data: Object[]) {
+  public sendUsageDataException(projectName: string, err: Error | string, data: Object[] | Object) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let error = (err instanceof Error) ? err : new Error(`${projectName} error: ${err}`);
@@ -308,7 +307,7 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error)
         };
-        this.assignProperties(exceptionTelemetryObj, data.concat(defaultData).concat({Succeeded: false}));
+        this.assignProperties(exceptionTelemetryObj, this.arrayify(data).concat(defaultData).concat({Succeeded: false}));
         this.usageDataClient.trackException(exceptionTelemetryObj);
         this.exceptionsSent++;
       } catch (e) {
