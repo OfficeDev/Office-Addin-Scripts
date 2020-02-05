@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as path from "path";
-import { sendUsageDataSuccessEvent, sendUsageDataException} from "./defaults"
+import { usageDataObject } from "./defaults"
 
 const esLintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
@@ -30,9 +30,9 @@ export function performLintCheck(files: string) {
   try {
     const command = getLintCheckCommand(files);
     execCommand(command);
-    sendUsageDataSuccessEvent("performLintCheck");
+    usageDataObject.sendUsageDataSuccessEvent("performLintCheck");
   } catch (err) {
-    sendUsageDataException("performLintCheck", err);
+    usageDataObject.sendUsageDataException("performLintCheck", err);
     throw err;
   }
 }
@@ -46,9 +46,9 @@ export function performLintFix(files: string) {
   try{
     const command = getLintFixCommand(files);
     execCommand(command);
-    sendUsageDataSuccessEvent("performLintFix");
+    usageDataObject.sendUsageDataSuccessEvent("performLintFix");
   } catch (err) {
-    sendUsageDataException("performLintFix", err);
+    usageDataObject.sendUsageDataException("performLintFix", err);
     throw err;
   }
 }
@@ -62,9 +62,9 @@ export function makeFilesPrettier(files: string) {
   try{
     const command = getPrettierCommand(files);
     execCommand(command);
-    sendUsageDataSuccessEvent("makeFilesPrettier");
+    usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier");
   } catch (err) {
-    sendUsageDataException("makeFilesPrettier", err);
+    usageDataObject.sendUsageDataException("makeFilesPrettier", err);
     throw err;
   }
 }

@@ -7,7 +7,7 @@
 import * as express from 'express';
 import * as fetch from 'node-fetch';
 import * as form from 'form-urlencoded';
-import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
+import { usageDataObject } from './defaults';
 
 export class AuthRouter {
     public router: express.Router;
@@ -49,11 +49,11 @@ export class AuthRouter {
                     res.send(json);
 
                     // Send usage data
-                    sendUsageDataSuccessEvent('authRouter', {scope: scopeName});
+                    usageDataObject.sendUsageDataSuccessEvent('authRouter', {scope: scopeName});
                 }
                 catch (error) {
                     res.status(500).send(error);
-                    sendUsageDataException('authRouter', error);
+                    usageDataObject.sendUsageDataException('authRouter', error);
                 }
             }
         });

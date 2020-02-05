@@ -7,7 +7,7 @@ import * as devCerts from 'office-addin-dev-certs';
 import * as manifest from 'office-addin-manifest';
 import { App } from './app';
 import { getSecretFromCredentialStore } from './ssoDataSettings';
-import { sendUsageDataSuccessEvent, sendUsageDataException } from './defaults';
+import { usageDataObject } from './defaults';
 require('dotenv').config();
 
 export class SSOService {
@@ -33,10 +33,10 @@ export class SSOService {
                 await this.getSecret(isTest);
                 await this.startServer(this.app.appInstance, this.port);
                 this.ssoServiceStarted = true;
-                sendUsageDataSuccessEvent('startSsoService');
+                usageDataObject.sendUsageDataSuccessEvent('startSsoService');
                 resolve(true);
             } catch(err) {
-                sendUsageDataException('startSsoService', err);
+                usageDataObject.sendUsageDataException('startSsoService', err);
                 reject(false);
             }
         });

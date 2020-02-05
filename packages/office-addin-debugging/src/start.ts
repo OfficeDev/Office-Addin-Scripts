@@ -10,7 +10,7 @@ import * as nodeDebugger from "office-addin-node-debugger";
 import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess  } from "./process";
-import { sendUsageDataSuccessEvent, sendUsageDataException } from './defaults';
+import { usageDataObject } from './defaults';
 
 export enum AppType {
     Desktop = "desktop",
@@ -293,9 +293,9 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
             ? "Debugging started."
             : "Started.");
 
-        sendUsageDataSuccessEvent("startDebugging");
+        usageDataObject.sendUsageDataSuccessEvent("startDebugging");
     } catch(err) {
-        sendUsageDataException("startDebugging", err);
+        usageDataObject.sendUsageDataException("startDebugging", err);
         throw err;
     }
 }

@@ -6,7 +6,7 @@
 import * as childProcess from 'child_process';
 import * as defaults from './defaults';
 import * as fs from 'fs';
-import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
+import { usageDataObject } from './defaults';
 require('dotenv').config();
 
 export async function createNewApplication(ssoAppName: string, port: string, userJson: Object): Promise<Object> {
@@ -66,14 +66,14 @@ export async function isAzureCliInstalled(): Promise<boolean> {
                 const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
                 cliInstalled = appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0;
                 // Send usage data
-                sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
+                usageDataObject.sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
                 return cliInstalled;
             case "darwin":
                 const appsInstalledMacCommand = 'brew list';
                 const appsMac: Object | string = await promiseExecuteCommand(appsInstalledMacCommand, false /* returnJson */);
                 cliInstalled = appsMac.toString().includes('azure-cli');
                 // Send usage data
-                sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
+                usageDataObject.sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
                 return cliInstalled;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
@@ -128,7 +128,7 @@ export async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
         });
 
         // Send usage data
-        sendUsageDataSuccessEvent('isUserTenantAdmin', {isUserTenantAdmin: isTenantAdmin});
+        usageDataObject.sendUsageDataSuccessEvent('isUserTenantAdmin', {isUserTenantAdmin: isTenantAdmin});
 
         return isTenantAdmin;
     } catch (err) {
@@ -249,7 +249,7 @@ export async function setSharePointTenantReplyUrls(): Promise<boolean> {
         }
 
         // Send usage data
-        sendUsageDataSuccessEvent('setTenantReplyUrls', {isUserTenantAdmin: setReplyUrls});
+        usageDataObject.sendUsageDataSuccessEvent('setTenantReplyUrls', {isUserTenantAdmin: setReplyUrls});
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
@@ -294,11 +294,11 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
         }
 
         // Send usage data
-        sendUsageDataSuccessEvent('setOutlookTenantReplyUrls', {tenantReplyUrlsSet: setReplyUrls});
+        usageDataObject.sendUsageDataSuccessEvent('setOutlookTenantReplyUrls', {tenantReplyUrlsSet: setReplyUrls});
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
-        sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
+        usageDataObject.sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
         throw new Error(errorMessage);
     }
 }

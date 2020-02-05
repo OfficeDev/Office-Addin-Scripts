@@ -6,7 +6,7 @@ import * as util from "util";
 import * as uuid from "uuid";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
-import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
+import { usageDataObject } from './defaults';
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 type Xml = xmlMethods.Xml;
@@ -84,11 +84,11 @@ export async function modifyManifestFile(manifestPath: string, guid?: string, di
         manifestData = await modifyManifestXml(manifestPath, guid, displayName);
         await writeManifestData(manifestPath, manifestData);
         let output = await readManifestFile(manifestPath);
-        sendUsageDataSuccessEvent("modifyManifestFile");
+        usageDataObject.sendUsageDataSuccessEvent("modifyManifestFile");
         return output;
         
       } catch(err) {
-        sendUsageDataException("modifyManifestFile", err);
+        usageDataObject.sendUsageDataException("modifyManifestFile", err);
         throw err;
       }
     }
