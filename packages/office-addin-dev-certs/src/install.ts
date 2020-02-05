@@ -7,7 +7,7 @@ import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
 import { isCaCertificateInstalled, verifyCertificates } from "./verify";
-import { usageDataObject} from "./defaults"
+import { usageDataObject } from "./defaults"
 
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
    switch (process.platform) {

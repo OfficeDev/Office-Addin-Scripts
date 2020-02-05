@@ -6,7 +6,7 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import * as defaults from "./defaults";
-import { sendUsageDataSuccessEvent, sendUsageDataException} from "./defaults"
+import { usageDataObject } from "./defaults"
 
 function getVerifyCommand(): string {
     switch (process.platform) {
@@ -77,10 +77,10 @@ export function verifyCertificates(certificatePath: string = defaults.localhostC
             isCertificateValid = false;
         }
         let output = isCertificateValid && isCaCertificateInstalled();
-        sendUsageDataSuccessEvent("verifyCertificates");
+        usageDataObject.sendUsageDataSuccessEvent("verifyCertificates");
         return output;
     } catch (err) {
-        sendUsageDataException("verifyCertificates", err);
+        usageDataObject.sendUsageDataException("verifyCertificates", err);
         throw err;
     }
 }

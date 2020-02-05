@@ -6,7 +6,7 @@ import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
-import { usageDataObject} from "./defaults"
+import { usageDataObject } from "./defaults"
 
 function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {

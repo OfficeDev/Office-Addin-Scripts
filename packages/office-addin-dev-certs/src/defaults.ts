@@ -24,16 +24,7 @@ export const locality = "Redmond";
 export const state = "WA";
 
 // Usage data defaults
-export const usageDataProjectName: string = "office-addin-dev-certs";
-export const sendUsageData: boolean = usageData.groupNameExists(usageData.groupName) && usageData.readUsageDataLevel(usageData.groupName) === usageData.UsageDataLevel.on;
-export const usageDataOptions: usageData.IUsageDataOptions = {
-    groupName: usageData.groupName,
-    projectName: usageDataProjectName,
-    raisePrompt: false,
-    instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
-    promptQuestion: "",
-    usageDataLevel: sendUsageData ? usageData.UsageDataLevel.on : usageData.UsageDataLevel.off,
-    method: usageData.UsageDataReportingMethod.applicationInsights,
-    isForTesting: false
-};
-export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData(usageDataOptions);
+export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData({
+    projectName: "office-addin-dev-certs",
+    raisePrompt: false
+});
