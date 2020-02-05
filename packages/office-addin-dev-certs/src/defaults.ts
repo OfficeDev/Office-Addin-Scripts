@@ -36,13 +36,4 @@ export const usageDataOptions: usageData.IUsageDataOptions = {
     method: usageData.UsageDataReportingMethod.applicationInsights,
     isForTesting: false
 };
-const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData(usageDataOptions);
-export function sendUsageDataSuccessEvent(method: string, ...data: object[]) {
-    usageDataObject.sendUsageDataSuccessEvent(usageDataProjectName, data.concat({Method: method}));
-};
-export function sendUsageDataException(method: string, error: Error | string, ...data: Object[]) {
-    usageDataObject.sendUsageDataException(usageDataProjectName, error, data.concat({Method: method}));
-};
-export function sendUsageDataCustomEvent(usageDataInfo: Object) {
-    usageDataObject.sendUsageDataEvent(usageDataProjectName, usageDataInfo);
-};
+export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData(usageDataOptions);

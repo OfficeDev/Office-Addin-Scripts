@@ -15,7 +15,7 @@ const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppDat
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
-  projectName: "Test-Project",
+  projectName: "office-addin-usage-data",
   instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for usage data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
@@ -54,7 +54,7 @@ describe("Test office-addin-usage data-package", function() {
         Test1: [true, 100],
         ScriptType: ["JavaScript", 1],
       };
-      addInUsageData.reportEvent("usageData", testEvent);
+      addInUsageData.reportEvent("office-addin-usage-data", testEvent);
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
@@ -128,7 +128,7 @@ describe("Test office-addin-usage data-package", function() {
         Test1: [true, 100],
         ScriptType: ["Java", 1],
       };
-      addInUsageData.reportEvent("TestData", testEvent);
+      addInUsageData.reportEvent("office-addin-usage-data", testEvent);
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
@@ -252,43 +252,31 @@ describe("Test office-addin-usage data-package", function() {
   });
   describe("Test sendUsageDataSuccessEvent", () => {
     it("should send success events successfully", () => {
-      addInUsageData.sendUsageDataSuccessEvent("usageData", {TestVal: 42, OtherTestVal: "testing"});
+      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent", {TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
-    it("should send success events successfully, even when it's in an array", () => {
-      addInUsageData.sendUsageDataSuccessEvent("usageData", [{TestVal: 42, OtherTestVal: "testing"}, {NewTestVal: true}]);
-      assert.equal(addInUsageData.getEventsSent(), 1);
-    });
-    it("should send success events successfully, even when there's no data", () => {
-      addInUsageData.sendUsageDataSuccessEvent("usageData", []);
+    it("should send success events successfully, even when there's no additional data", () => {
+      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent");
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
   describe("Test sendUsageDataEvent", () => {
     it("should send events successfully", () => {
-      addInUsageData.sendUsageDataEvent("usageData", {TestVal: 42, OtherTestVal: "testing"});
-      assert.equal(addInUsageData.getEventsSent(), 1);
-    });
-    it("should send events successfully, even when it's in an array", () => {
-      addInUsageData.sendUsageDataEvent("usageData", [{TestVal: 42, OtherTestVal: "testing"}, {NewTestVal: true}]);
+      addInUsageData.sendUsageDataEvent({TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
     it("should send events successfully, even when there's no data", () => {
-      addInUsageData.sendUsageDataEvent("usageData", []);
+      addInUsageData.sendUsageDataEvent();
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
   describe("Test sendUsageDataException", () => {
     it("should send exceptions successfully", () => {
-      addInUsageData.sendUsageDataException("usageData", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
-      assert.equal(addInUsageData.getExceptionsSent(), 1);
-    });
-    it("should send exceptions successfully, even when data is in an array", () => {
-      addInUsageData.sendUsageDataException("usageData", new Error("Test"), [{TestVal: 42, OtherTestVal: "testing"}, {NewTestVal: true}]);
+      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
     it("should send exceptions successfully, even when there's no data", () => {
-      addInUsageData.sendUsageDataException("usageData", new Error("Test"), []);
+      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"));
       assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
   });

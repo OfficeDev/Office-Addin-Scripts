@@ -152,30 +152,32 @@ export class OfficeAddinUsageData {
       this.exceptionsSent++;
     }
   }
-/**
- * Prompts user for usage data participation once and records response
- * @param testData Specifies whether test code is calling this method
- * @param testReponse Specifies test response
- */
-public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
-  try {
-    let response: string = "";
-    if (testData) {
-      response = testResponse;
-    } else {
-      response = readLine.question(`${this.options.promptQuestion}\n`);
+
+  /**
+   * Prompts user for usage data participation once and records response
+   * @param testData Specifies whether test code is calling this method
+   * @param testReponse Specifies test response
+   */
+  public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
+    try {
+      let response: string = "";
+      if (testData) {
+        response = testResponse;
+      } else {
+        response = readLine.question(`${this.options.promptQuestion}\n`);
+      }
+      if (response.toLowerCase() === "y") {
+        this.options.usageDataLevel = UsageDataLevel.on;
+      } else {
+        this.options.usageDataLevel = UsageDataLevel.off;
+      }
+      jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+    } catch (err) {
+      this.reportError("UsageDataOptIn", err);
+      throw new Error(err);
     }
-    if (response.toLowerCase() === "y") {
-      this.options.usageDataLevel = UsageDataLevel.on;
-    } else {
-      this.options.usageDataLevel = UsageDataLevel.off;
-    }
-    jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
-  } catch (err) {
-    this.reportError("UsageDataOptIn", err);
-    throw new Error(err);
   }
- }
+
   /**
    * Stops usage data from being sent, by default usage data will be on
    */
@@ -258,20 +260,12 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
   }
 
   /**
-   * Makes any non-array input as an array. Leaves arrays alone.
-   * @param input 
-   */
-  private arrayify(input: any[] | any) {
-    return (!(input instanceof Array)) ? [input] : input;
-  }
-
-  /**
    * Reports custom success event object to Application Insights
    * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public sendUsageDataSuccessEvent(projectName: string, data: Object[] | Object) {
-    this.sendUsageDataEvent(projectName, this.arrayify(data).concat({Succeeded: true}));
+  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
+    this.sendUsageDataEvent(this.overwriteProps({Succeeded: true, Method: method}, data));
   }
 
   /**
@@ -279,12 +273,12 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public sendUsageDataEvent(projectName: string, data: Object[] | Object) {
+  public sendUsageDataEvent(data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let eventTelemetryObj= new appInsights.Contracts.EventData();
-        eventTelemetryObj.name = this.options.isForTesting ? `${projectName}-test` : projectName;
-        this.assignProperties(eventTelemetryObj, this.arrayify(data).concat(defaultData));
+        eventTelemetryObj.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+        this.assignProps(eventTelemetryObj, this.overwriteProps(defaultData, data));
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;
       } catch (e) {
@@ -299,16 +293,16 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public sendUsageDataException(projectName: string, err: Error | string, data: Object[] | Object) {
+  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        let error = (err instanceof Error) ? err : new Error(`${projectName} error: ${err}`);
-        error.name = this.options.isForTesting ? `${projectName}-test` : projectName;
+        let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+        error.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
           properties: {}
         };
-        this.assignProperties(exceptionTelemetryObj, this.arrayify(data).concat(defaultData).concat({Succeeded: false}));
+        this.assignProps(exceptionTelemetryObj, this.overwriteProps(this.overwriteProps({Succeeded: false, Method: method}, defaultData), data));
         this.usageDataClient.trackException(exceptionTelemetryObj);
         this.exceptionsSent++;
       } catch (e) {
@@ -323,15 +317,26 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
    * @param teleObj Telemetry or EventData object getting values assigned to it
    * @param data The collection of data objects getting their values assigned to teleObj
    */
-  private assignProperties(teleObj: appInsights.Contracts.Telemetry | appInsights.Contracts.EventData, data: any[]): void {
-    data.forEach((datum) => {
-      Object.entries(datum).forEach((entry) => {
+  private assignProps(teleObj: appInsights.Contracts.Telemetry | appInsights.Contracts.EventData, data: object): void {
+      Object.entries(data).forEach((entry) => {
         if (teleObj instanceof appInsights.Contracts.EventData) {
           teleObj.properties[entry[0]] = entry[1];
         } else {
           teleObj.properties[entry[0]] = entry[1].toString();
         }
       });
+  }
+
+  /**
+   * Overwrites properties from a source data object to a target data object
+   * @param targetData The object getting its properties overwritten
+   * @param sourceData The object getting properties written over it
+   * @returns targetData after the overwriting
+   */
+  private overwriteProps(targetData: object, sourceData: object): object {
+    Object.entries(sourceData).forEach((entry) => {
+      targetData[entry[0]] = entry[1];
     });
+    return targetData
   }
 }
