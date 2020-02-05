@@ -6,7 +6,7 @@ import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
-import * as usageDataHelper from "./usagedata-helper";
+import { sendUsageDataSuccessEvent, sendUsageDataException} from "./defaults"
 
 function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
@@ -41,9 +41,9 @@ export async function uninstallCaCertificate(machine: boolean = false, verbose: 
          console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
          execSync(command, {stdio : "pipe" });
          console.log(`You no longer have trusted access to https://localhost.`);
-         usageDataHelper.sendUsageDataSuccessEvent("uninstallCaCertificate");
+         sendUsageDataSuccessEvent("uninstallCaCertificate");
       } catch (error) {
-         usageDataHelper.sendUsageDataException("uninstallCaCertificate", error.message);
+         sendUsageDataException("uninstallCaCertificate", error);
          throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
       }
    } else {

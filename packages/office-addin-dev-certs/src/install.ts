@@ -7,7 +7,7 @@ import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
 import { isCaCertificateInstalled, verifyCertificates } from "./verify";
-import * as usageDataHelper from "./usagedata-helper";
+import { sendUsageDataSuccessEvent, sendUsageDataException} from "./defaults"
 
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
    switch (process.platform) {
@@ -33,9 +33,9 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
          await generateCertificates(defaults.caCertificatePath, defaults.localhostCertificatePath, defaults.localhostKeyPath, daysUntilCertificateExpires);
          await installCaCertificate(defaults.caCertificatePath, machine);
       }
-      usageDataHelper.sendUsageDataSuccessEvent("ensureCertificatesAreInstalled");
+      sendUsageDataSuccessEvent("ensureCertificatesAreInstalled");
    } catch(err) {
-      usageDataHelper.sendUsageDataException("ensureCertificatesAreInstalled", err.message);
+      sendUsageDataException("ensureCertificatesAreInstalled", err.message);
       throw err;
    }
 }
