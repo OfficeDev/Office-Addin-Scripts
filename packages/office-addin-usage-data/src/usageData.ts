@@ -4,6 +4,7 @@
 import * as appInsights from "applicationinsights";
 import * as readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
+import * as defaults from "./defaults"
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
@@ -28,24 +29,24 @@ const defaultData = {
 
 /**
  * UpdateData options
- * @member groupName Group name for usage data settings
+ * @member groupName Group name for usage data settings (Optional)
  * @member projectName The name of the project that is using the usage data package.
- * @member instrumentationKey Instrumentation key for usage data resource
- * @member promptQuestion Question displayed to user over opt-in for usage data
- * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt)
- * @member usageDataLevel User's response to the prompt for usage data
- * @member method The desired method to use for reporting usage data.
- * @member isForTesting True if the data is just for testing, false for actual data that should be reported.
+ * @member instrumentationKey Instrumentation key for usage data resource (Optional)
+ * @member promptQuestion Question displayed to user over opt-in for usage data (Optional)
+ * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt) (Optional)
+ * @member usageDataLevel User's response to the prompt for usage data (Optional)
+ * @member method The desired method to use for reporting usage data. (Optional)
+ * @member isForTesting True if the data is just for testing, false for actual data that should be reported. (Optional)
  */
 export interface IUsageDataOptions {
-  groupName: string;
+  groupName?: string;
   projectName: string;
-  instrumentationKey: string;
-  promptQuestion: string;
-  raisePrompt: boolean;
-  usageDataLevel: UsageDataLevel;
-  method: UsageDataReportingMethod;
-  isForTesting: boolean;
+  instrumentationKey?: string;
+  promptQuestion?: string;
+  raisePrompt?: boolean;
+  usageDataLevel?: UsageDataLevel;
+  method?: UsageDataReportingMethod;
+  isForTesting?: boolean;
 }
 
 /**
@@ -56,23 +57,20 @@ export class OfficeAddinUsageData {
   private usageDataClient = appInsights.defaultClient;
   private eventsSent: number = 0;
   private exceptionsSent: number = 0;
-  private options: IUsageDataOptions;
+  private options: IUsageDataOptions = {
+    groupName: defaults.groupName,
+    projectName: "ThisShouldBeOverwrittenInTheConstructor",
+    instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
+    promptQuestion: `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`,
+    raisePrompt: true,
+    usageDataLevel: UsageDataLevel.off,
+    method: UsageDataReportingMethod.applicationInsights,
+    isForTesting: false
+  }
 
   constructor(usageDataOptions: IUsageDataOptions) {
     try {
-      this.options = usageDataOptions;
-
-      if (this.options.instrumentationKey === undefined) {
-        throw new Error("Instrumentation Key not defined - cannot create usage data object");
-      }
-
-      if (this.options.groupName === undefined) {
-        throw new Error("Group Name not defined - cannot create usage data object");
-      }
-
-      if (this.options.promptQuestion === undefined) {
-        this.options.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`;
-      }
+      this.overwriteProps(this.options, usageDataOptions);
 
       if (jsonData.groupNameExists(this.options.groupName)) {
         this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
