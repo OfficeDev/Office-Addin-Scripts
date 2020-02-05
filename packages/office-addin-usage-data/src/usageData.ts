@@ -305,7 +305,8 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
         let error = (err instanceof Error) ? err : new Error(`${projectName} error: ${err}`);
         error.name = this.options.isForTesting ? `${projectName}-test` : projectName;
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
-          exception: this.maskFilePaths(error)
+          exception: this.maskFilePaths(error),
+          properties: {}
         };
         this.assignProperties(exceptionTelemetryObj, this.arrayify(data).concat(defaultData).concat({Succeeded: false}));
         this.usageDataClient.trackException(exceptionTelemetryObj);
