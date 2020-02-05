@@ -5,7 +5,6 @@ import * as chalk from 'chalk';
 import { parseNumber } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from 'office-addin-manifest';
 import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
-//import * as usageDataHelper from './usagedata-helper';
 import * as configure from './configure';
 import { SSOService } from './server';
 import { addSecretToCredentialStore, writeApplicationData } from './ssoDataSettings';

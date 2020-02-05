@@ -4,7 +4,7 @@
 import { createReadStream } from "fs";
 import fetch from "node-fetch";
 import { readManifestFile } from "./manifestInfo";
-import * as usageDataHelper from "./usagedata-helper";
+import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
 
 export class ManifestValidationDetails {
     public capabilities?: string[];
@@ -101,12 +101,12 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
             throw new Error("The manifest validation service did not return the expected response.");
         }
 
-        usageDataHelper.sendUsageDataSuccessEvent("validateManifest");
+        sendUsageDataSuccessEvent("validateManifest");
     
         return validation;
 
     } catch (err) {
-        usageDataHelper.sendUsageDataException("validateManifest", err.message);
+        sendUsageDataException("validateManifest", err);
         throw err;
     }
 }

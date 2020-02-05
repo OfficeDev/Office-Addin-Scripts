@@ -7,7 +7,6 @@ import * as childProcess from 'child_process';
 import * as defaults from './defaults';
 import * as fs from 'fs';
 import { sendUsageDataException, sendUsageDataSuccessEvent } from './defaults';
-let usageDataInfo: Object = {};
 require('dotenv').config();
 
 export async function createNewApplication(ssoAppName: string, port: string, userJson: Object): Promise<Object> {

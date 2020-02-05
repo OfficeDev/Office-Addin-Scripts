@@ -5,7 +5,7 @@ import { clearDevSettings, unregisterAddIn } from "office-addin-dev-settings";
 import { readManifestFile } from "office-addin-manifest";
 import * as debugInfo from "./debugInfo";
 import { startProcess, stopProcess } from "./process";
-import * as usageDataHelper from "./usagedata-helper";
+import { sendUsageDataSuccessEvent, sendUsageDataException } from './defaults';
 
 export async function stopDebugging(manifestPath: string) {
     try {
@@ -38,9 +38,9 @@ export async function stopDebugging(manifestPath: string) {
         }
     
         console.log("Debugging has been stopped.");
-        usageDataHelper.sendUsageDataSuccessEvent("stopDebugging");
+        sendUsageDataSuccessEvent("stopDebugging");
     } catch(err) {
-        usageDataHelper.sendUsageDataException("stopDebugging", err.message);
+        sendUsageDataException("stopDebugging", err);
         throw err;
     }
 }
