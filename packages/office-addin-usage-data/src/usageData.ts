@@ -4,7 +4,8 @@
 import * as appInsights from "applicationinsights";
 import * as readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
-import * as defaults from "./defaults"
+import * as defaults from "./defaults";
+
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
@@ -22,16 +23,11 @@ export enum UsageDataLevel {
   on = "on",
 }
 
-const defaultData = {
-  Platform: process.platform,
-  NodeVersion: process.version
-};
-
 /**
  * UpdateData options
  * @member groupName Group name for usage data settings (Optional)
  * @member projectName The name of the project that is using the usage data package.
- * @member instrumentationKey Instrumentation key for usage data resource (Optional)
+ * @member instrumentationKey Instrumentation key for usage data resource
  * @member promptQuestion Question displayed to user over opt-in for usage data (Optional)
  * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt) (Optional)
  * @member usageDataLevel User's response to the prompt for usage data (Optional)
@@ -41,7 +37,7 @@ const defaultData = {
 export interface IUsageDataOptions {
   groupName?: string;
   projectName: string;
-  instrumentationKey?: string;
+  instrumentationKey: string;
   promptQuestion?: string;
   raisePrompt?: boolean;
   usageDataLevel?: UsageDataLevel;
@@ -57,20 +53,31 @@ export class OfficeAddinUsageData {
   private usageDataClient = appInsights.defaultClient;
   private eventsSent: number = 0;
   private exceptionsSent: number = 0;
-  private options: IUsageDataOptions = {
-    groupName: defaults.groupName,
-    projectName: "ThisShouldBeOverwrittenInTheConstructor",
-    instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
-    promptQuestion: `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`,
-    raisePrompt: true,
-    usageDataLevel: UsageDataLevel.off,
-    method: UsageDataReportingMethod.applicationInsights,
-    isForTesting: false
-  }
+  private options: IUsageDataOptions;
+  private defaultData = {
+    Platform: process.platform,
+    NodeVersion: process.version
+  };
 
   constructor(usageDataOptions: IUsageDataOptions) {
     try {
-      this.overwriteProps(this.options, usageDataOptions);
+      this.options = {
+        groupName: defaults.groupName,
+        promptQuestion: "",
+        raisePrompt: true,
+        usageDataLevel: UsageDataLevel.off,
+        method: UsageDataReportingMethod.applicationInsights,
+        isForTesting: false,
+        ...usageDataOptions
+      };
+      
+      if (this.options.instrumentationKey === undefined) {
+        throw new Error("Instrumentation Key not defined - cannot create usage data object");
+      }
+
+      if (this.options.groupName === undefined) {
+        throw new Error("Group Name not defined - cannot create usage data object");
+      }
 
       if (jsonData.groupNameExists(this.options.groupName)) {
         this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
@@ -263,7 +270,11 @@ export class OfficeAddinUsageData {
    * @param data Data object(s) sent to Application Insights
    */
   public sendUsageDataSuccessEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent(this.overwriteProps({Succeeded: true, Method: method}, data));
+    this.sendUsageDataEvent({
+      Succeeded: true, 
+      Method: method, 
+      ...data
+    });
   }
 
   /**
@@ -276,7 +287,10 @@ export class OfficeAddinUsageData {
       try {
         let eventTelemetryObj= new appInsights.Contracts.EventData();
         eventTelemetryObj.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
-        this.assignProps(eventTelemetryObj, this.overwriteProps(defaultData, data));
+        eventTelemetryObj.properties = {
+          ...this.defaultData, 
+          ...data
+        };
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;
       } catch (e) {
@@ -300,7 +314,14 @@ export class OfficeAddinUsageData {
           exception: this.maskFilePaths(error),
           properties: {}
         };
-        this.assignProps(exceptionTelemetryObj, this.overwriteProps(this.overwriteProps({Succeeded: false, Method: method}, defaultData), data));
+        Object.entries({
+          Succeeded: false, 
+          Method: method, 
+          ...this.defaultData, 
+          ...data
+        }).forEach((entry) => {
+          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
+        });
         this.usageDataClient.trackException(exceptionTelemetryObj);
         this.exceptionsSent++;
       } catch (e) {
@@ -308,33 +329,5 @@ export class OfficeAddinUsageData {
         throw e;
       }
     }
-  }
-
-  /**
-   * Assigns properties from an array of data objects to a Telemetry or EventData object
-   * @param teleObj Telemetry or EventData object getting values assigned to it
-   * @param data The collection of data objects getting their values assigned to teleObj
-   */
-  private assignProps(teleObj: appInsights.Contracts.Telemetry | appInsights.Contracts.EventData, data: object): void {
-      Object.entries(data).forEach((entry) => {
-        if (teleObj instanceof appInsights.Contracts.EventData) {
-          teleObj.properties[entry[0]] = entry[1];
-        } else {
-          teleObj.properties[entry[0]] = entry[1].toString();
-        }
-      });
-  }
-
-  /**
-   * Overwrites properties from a source data object to a target data object
-   * @param targetData The object getting its properties overwritten
-   * @param sourceData The object getting properties written over it
-   * @returns targetData after the overwriting
-   */
-  private overwriteProps(targetData: object, sourceData: object): object {
-    Object.entries(sourceData).forEach((entry) => {
-      targetData[entry[0]] = entry[1];
-    });
-    return targetData
   }
 }
