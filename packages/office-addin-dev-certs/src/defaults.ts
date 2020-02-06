@@ -26,5 +26,6 @@ export const state = "WA";
 // Usage data defaults
 export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData({
     projectName: "office-addin-dev-certs",
+    instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
     raisePrompt: false
 });

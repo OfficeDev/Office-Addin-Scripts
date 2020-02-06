@@ -29,5 +29,6 @@ export const testManifestFilePath = path.resolve(`${process.cwd()}/test/test-man
 // Usage data defaults
 export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData({
     projectName: "office-addin-sso",
+    instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
     raisePrompt: false
 });
