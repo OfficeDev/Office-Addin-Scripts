@@ -249,7 +249,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
                 const ret = await verify.isCaCertificateInstalled();
-                assert.strictEqual(execSync.callCount, 1);
+                assert.strictEqual(execSync.callCount, (process.platform === "darwin") ? 2 : 1);
                 assert.strictEqual(ret, true);
             } catch (err) {
                 // not expecting any exception
