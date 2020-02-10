@@ -3,6 +3,7 @@
 
 import * as os from "os";
 import * as path from "path";
+import * as usageData from "office-addin-usage-data";
 
 // Default certificate names
 export const certificateDirectoryName = ".office-addin-dev-certs";
@@ -21,3 +22,10 @@ export const daysUntilCertificateExpires = 30;
 export const domain = ["127.0.0.1", "localhost"];
 export const locality = "Redmond";
 export const state = "WA";
+
+// Usage data defaults
+export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData({
+    projectName: "office-addin-dev-certs",
+    instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
+    raisePrompt: false
+});

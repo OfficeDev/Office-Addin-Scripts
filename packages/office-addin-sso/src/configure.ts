@@ -6,8 +6,7 @@
 import * as childProcess from 'child_process';
 import * as defaults from './defaults';
 import * as fs from 'fs';
-import * as usageDataHelper from './usagedata-helper';
-let usageDataInfo: Object = {};
+import { usageDataObject } from './defaults';
 require('dotenv').config();
 
 export async function createNewApplication(ssoAppName: string, port: string, userJson: Object): Promise<Object> {
@@ -17,11 +16,9 @@ export async function createNewApplication(ssoAppName: string, port: string, use
         const rePort = new RegExp('{PORT}', 'g');
         azRestCommand = azRestCommand.replace(reName, ssoAppName).replace(rePort, port);
         const applicationJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */);
-        usageDataHelper.sendUsageDataSuccessEvent('createNewApplication');
         return applicationJson;
     } catch (err) {
         const errorMessage: string = `Unable to register new application: \n${err}`
-        usageDataHelper.sendUsageDataException("createNewApplication", errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -33,7 +30,6 @@ async function applicationReady(applicationJson: Object): Promise<boolean> {
         return appJson !== "";
     } catch (err) {
         const errorMessage: string = `Unable to get application info: \n${err}`
-        usageDataHelper.sendUsageDataException('applicationReady', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -50,7 +46,6 @@ export async function grantAdminContent(applicationJson: Object): Promise<void> 
 
         if (counter > 50) {
             const warningMessage: string = 'Application does not appear to be ready to grant admin consent';
-            usageDataHelper.sendUsageDataException('grantAdminConsent', warningMessage);
             return;
         }
 
@@ -58,7 +53,6 @@ export async function grantAdminContent(applicationJson: Object): Promise<void> 
         await promiseExecuteCommand(azRestCommand);
     } catch (err) {
         const errorMessage: string = `Unable to set grant admin consent: \n${err}`
-        usageDataHelper.sendUsageDataException('grantAdminConsent', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -70,37 +64,23 @@ export async function isAzureCliInstalled(): Promise<boolean> {
             case "win32":
                 const appsInstalledWindowsCommand: string = `powershell -ExecutionPolicy Bypass -File "${defaults.getInstalledAppsPath}"`;
                 const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
-                cliInstalled = appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0
+                cliInstalled = appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0;
                 // Send usage data
-                usageDataInfo = {
-                    Method: ['isAzureCliInstalled'],
-                    cliInstalled: [cliInstalled],
-                    Platform: [process.platform],
-                    Succeeded: [true]
-                }
-                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+                usageDataObject.sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
                 return cliInstalled;
             case "darwin":
                 const appsInstalledMacCommand = 'brew list';
                 const appsMac: Object | string = await promiseExecuteCommand(appsInstalledMacCommand, false /* returnJson */);
                 cliInstalled = appsMac.toString().includes('azure-cli');
                 // Send usage data
-                usageDataInfo = {
-                    Method: ['isAzureCliInstalled'],
-                    cliInstalled: [cliInstalled],
-                    Platform: [process.platform],
-                    Succeeded: [true]
-                }
-                usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+                usageDataObject.sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
                 return cliInstalled;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                usageDataHelper.sendUsageDataException('isAzureCliInstalled', errorMessage);
                 throw new Error(errorMessage);
         }        
     } catch (err) {
         const errorMessage: string = `Unable to determine if Azure CLI is installed: \n${err}`;
-        usageDataHelper.sendUsageDataException('isAzureCliInstalled', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -118,13 +98,10 @@ export async function installAzureCli(): Promise<void> {
                 break;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                usageDataHelper.sendUsageDataException('installAzureCli', errorMessage);
                 throw new Error(errorMessage);
         }
-        usageDataHelper.sendUsageDataSuccessEvent('installAzureCli');
     } catch (err) {
         const errorMessage: string = `Unable to install Azure CLI: \n${err}`;
-        usageDataHelper.sendUsageDataException('installAzureCli', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -150,18 +127,12 @@ export async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
             }
         });
 
-        usageDataInfo = {
-            Method: ['isUserTenantAdmin'],
-            isUserTenantAdmin: [isTenantAdmin],
-            Platform: [process.platform],
-            Succeeded: [true]
-        }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        // Send usage data
+        usageDataObject.sendUsageDataSuccessEvent('isUserTenantAdmin', {isUserTenantAdmin: isTenantAdmin});
 
         return isTenantAdmin;
     } catch (err) {
         const errorMessage: string = `Unable to determine if user is tenant admin: \n${err}`;
-        usageDataHelper.sendUsageDataException('isUserTenantAdmin', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -192,11 +163,9 @@ async function promiseExecuteCommand(cmd: string, returnJson: boolean = true, ex
                 if (results !== '' && returnJson) {
                     results = JSON.parse(results);
                 }
-                usageDataHelper.sendUsageDataSuccessEvent('promiseExecuteCommand');
                 resolve(results);
             });
         } catch (err) {
-            usageDataHelper.sendUsageDataException('promiseExecuteCommand', err);
             reject(err);
         }
     });
@@ -207,11 +176,9 @@ export async function setApplicationSecret(applicationJson: Object): Promise<str
         let azRestCommand: string = await fs.readFileSync(defaults.azRestAddSecretCommandPath, 'utf8');
         azRestCommand = azRestCommand.replace('<App_Object_ID>', applicationJson['id']);
         const secretJson: Object = await promiseExecuteCommand(azRestCommand);
-        usageDataHelper.sendUsageDataSuccessEvent('setApplicationSecret');
         return secretJson['secretText'];
     } catch (err) {
         const errorMessage: string = `Unable to set application secret: \n${err}`;
-        usageDataHelper.sendUsageDataException('setApplicationSecret', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -221,10 +188,8 @@ export async function setIdentifierUri(applicationJson: Object, port: string): P
         let azRestCommand: string = await fs.readFileSync(defaults.azRestSetIdentifierUriCommmandPath, 'utf8');
         azRestCommand = azRestCommand.replace('<App_Object_ID>', applicationJson['id']).replace('<App_Id>', applicationJson['appId']).replace('{PORT}', port.toString());
         await promiseExecuteCommand(azRestCommand);
-        usageDataHelper.sendUsageDataSuccessEvent('setIdentifierUri');
     } catch (err) {
         const errorMessage: string = `Unable to set identifierUri: \n${err}`;
-        usageDataHelper.sendUsageDataException('setIdentifierUri', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -234,10 +199,8 @@ export async function setSignInAudience(applicationJson: Object):Promise<void> {
         let azRestCommand: string = fs.readFileSync(defaults.azRestSetSigninAudienceCommandPath, 'utf8');
         azRestCommand = azRestCommand.replace('<App_Object_ID>', applicationJson['id']);
         await promiseExecuteCommand(azRestCommand);
-        usageDataHelper.sendUsageDataSuccessEvent('setSignInAudience');
     } catch (err) {
         const errorMessage: string = `Unable to set signInAudience: \n${err}`;
-        usageDataHelper.sendUsageDataException('setSignInAudience', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -286,17 +249,10 @@ export async function setSharePointTenantReplyUrls(): Promise<boolean> {
         }
 
         // Send usage data
-        usageDataInfo = {
-            Method: ['setTenantReplyUrls'],
-            tenantReplyUrlsSet: [setReplyUrls],
-            Platform: [process.platform],
-            Succeeded: [true]
-        }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        usageDataObject.sendUsageDataSuccessEvent('setTenantReplyUrls', {isUserTenantAdmin: setReplyUrls});
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
-        usageDataHelper.sendUsageDataException('setTenantReplyUrls', errorMessage);
         throw new Error(errorMessage);
     }
 }
@@ -338,17 +294,11 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
         }
 
         // Send usage data
-        usageDataInfo = {
-            Method: ['setOutlookTenantReplyUrls'],
-            tenantReplyUrlsSet: [setReplyUrls],
-            Platform: [process.platform],
-            Succeeded: [true]
-        }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        usageDataObject.sendUsageDataSuccessEvent('setOutlookTenantReplyUrls', {tenantReplyUrlsSet: setReplyUrls});
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
-        usageDataHelper.sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
+        usageDataObject.sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
         throw new Error(errorMessage);
     }
 }

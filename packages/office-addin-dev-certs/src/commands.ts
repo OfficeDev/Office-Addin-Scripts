@@ -26,7 +26,7 @@ export async function install(command: commander.Command) {
     try {
         const days = parseDays(command.days);
 
-        await ensureCertificatesAreInstalled(days, command.machine);
+        await ensureCertificatesAreInstalled(days, command.machine)
     } catch (err) {
         logErrorMessage(err);
     }
@@ -47,7 +47,7 @@ export async function verify(command: commander.Command) {
 export async function uninstall(command: commander.Command) {
     try {
         await uninstallCaCertificate(command.machine);
-        await deleteCertificateFiles(defaults.certificateDirectory);
+        deleteCertificateFiles(defaults.certificateDirectory);
     } catch (err) {
         logErrorMessage(err);
     }
