@@ -48,6 +48,19 @@ describe("Test office-addin-usage data-package", function() {
     addInUsageData = new officeAddinUsageData.OfficeAddinUsageData(usageDataObject);
     addInUsageData.setUsageDataOn();
   });
+  describe("Test constructor with minimal options", () => {
+    it("Should successfully construct an OfficeAddInUsageData instance", () => {
+      assert.doesNotThrow(() => {
+        let testAddInUsageData = new officeAddinUsageData.OfficeAddinUsageData({
+          isForTesting: true,
+          usageDataLevel: officeAddinUsageData.UsageDataLevel.off,
+          projectName: "office-addin-usage-data",
+          groupName: "TestGroupName",
+          instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools
+        });
+      });
+    });
+  });
   describe("Test reportEvent method", () => {
     it("should track event of object passed in with a project name", () => {
       const testEvent = {
