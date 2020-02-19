@@ -6,6 +6,7 @@ import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as manifestInfo from "./manifestInfo";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
+import { usageDataObject } from './defaults';
 
 function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
@@ -16,9 +17,11 @@ function getCommandOptionString(option: string | boolean, defaultValue?: string)
 
 export async function info(manifestPath: string) {
   try {
-    const manifest = await manifestInfo.readManifestFile(manifestPath);
+    const manifest = await manifestInfo.readManifestFile(manifestPath); //Keep tele here, since the main function is only in commands, or in readManifestFile?
     logManifestInfo(manifestPath, manifest);
+    usageDataObject.sendUsageDataSuccessEvent("info");
   } catch (err) {
+    usageDataObject.sendUsageDataException("info", err);
     logErrorMessage(err);
   }
 }

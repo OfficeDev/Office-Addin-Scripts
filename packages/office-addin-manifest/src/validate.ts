@@ -4,6 +4,7 @@
 import { createReadStream } from "fs";
 import fetch from "node-fetch";
 import { readManifestFile } from "./manifestInfo";
+import { usageDataObject } from './defaults';
 
 export class ManifestValidationDetails {
     public capabilities?: string[];
@@ -56,48 +57,56 @@ export class ManifestValidation {
 }
 
 export async function validateManifest(manifestPath: string): Promise<ManifestValidation> {
-    const validation: ManifestValidation = new ManifestValidation();
-
-    // read the manifest file
-    // const manifest = await readManifestFile(manifestPath);
-    const stream = await createReadStream(manifestPath);
-    let response;
-
     try {
-        response = await fetch("https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck",
-            {
-                body: stream,
-                headers: {
-                    "Content-Type": "application/xml",
-                },
-                method: "POST",
-            });
-    } catch (err) {
-        throw new Error(`Unable to contact the manifest validation service.\n${err}`);
-    }
-
-    const text = await response.text();
-    const json = JSON.parse(text.trim());
-
-    if (json && json.checkReport) {
-        validation.report = json.checkReport.validationReport;
-        validation.details = json.checkReport.details;
-        validation.status = json.status;
-    }
-
-    if (validation.report) {
-        const result = validation.report.result;
-
-        if (result) {
-            switch (result.toLowerCase()) {
-                case "passed":
-                    validation.isValid = true;
-                    break;
-            }
+        const validation: ManifestValidation = new ManifestValidation();
+    
+        // read the manifest file
+        // const manifest = await readManifestFile(manifestPath);
+        const stream = await createReadStream(manifestPath);
+        let response;
+    
+        try {
+            response = await fetch("https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck",
+                {
+                    body: stream,
+                    headers: {
+                        "Content-Type": "application/xml",
+                    },
+                    method: "POST",
+                });
+        } catch (err) {
+            throw new Error(`Unable to contact the manifest validation service.\n${err}`);
         }
-    } else {
-        throw new Error("The manifest validation service did not return the expected response.");
-    }
+    
+        const text = await response.text();
+        const json = JSON.parse(text.trim());
+    
+        if (json && json.checkReport) {
+            validation.report = json.checkReport.validationReport;
+            validation.details = json.checkReport.details;
+            validation.status = json.status;
+        }
+    
+        if (validation.report) {
+            const result = validation.report.result;
+    
+            if (result) {
+                switch (result.toLowerCase()) {
+                    case "passed":
+                        validation.isValid = true;
+                        break;
+                }
+            }
+        } else {
+            throw new Error("The manifest validation service did not return the expected response.");
+        }
 
-    return validation;
+        usageDataObject.sendUsageDataSuccessEvent("validateManifest");
+    
+        return validation;
+
+    } catch (err) {
+        usageDataObject.sendUsageDataException("validateManifest", err);
+        throw err;
+    }
 }

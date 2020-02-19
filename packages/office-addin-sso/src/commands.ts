@@ -4,7 +4,7 @@
 import * as chalk from 'chalk';
 import { parseNumber } from "office-addin-cli";
 import { ManifestInfo, readManifestFile } from 'office-addin-manifest';
-import * as usageDataHelper from './usagedata-helper';
+import { usageDataObject } from './defaults';
 import * as configure from './configure';
 import { SSOService } from './server';
 import { addSecretToCredentialStore, writeApplicationData } from './ssoDataSettings';
@@ -30,7 +30,7 @@ export async function configureSSO(manifestPath: string) {
         console.log(chalk.yellow("Azure CLI is not installed.  Installing now before proceeding - this could take a few minutes."));
         await configure.installAzureCli();
         if (process.platform === "win32") {
-            console.log(chalk.green('Please close your command shell, reopen and run configure-sso again.  This is neccessary to register the path to the Azure CLI'));
+            console.log(chalk.green('Please close your command shell, reopen and run configure-sso again.  This is necessary to register the path to the Azure CLI'));
         }
         return;
     }
@@ -59,9 +59,15 @@ export async function configureSSO(manifestPath: string) {
             if (await configure.isUserTenantAdmin(userJson)) {
                 console.log('Granting admin consent');
                 await configure.grantAdminContent(applicationJson);
-                const setReplyUrls: boolean = await configure.setTenantReplyUrls();
-                if (setReplyUrls) {
+                // Check to set if SharePoint reply urls are set for tenant. If not, set them
+                const setSharePointReplyUrls: boolean = await configure.setSharePointTenantReplyUrls();
+                if (setSharePointReplyUrls) {
                     console.log('Set SharePoint reply urls for tenant');
+                }
+                // Check to set if Outlook reply url is set for tenant. If not, set them
+                const setOutlookReplyUrl: boolean = await configure.setOutlookTenantReplyUrl();
+                if (setOutlookReplyUrl) {
+                    console.log('Set Outlook reply url for tenant');
                 }
             }
 
@@ -80,7 +86,7 @@ export async function configureSSO(manifestPath: string) {
             addSecretToCredentialStore(manifestInfo.displayName, secret);
         } else {
             const errorMessage = 'Failed to register application';
-            usageDataHelper.sendUsageDataException('createNewApplication', errorMessage);
+            usageDataObject.sendUsageDataException('createNewApplication', errorMessage);
             console.log(chalk.red(errorMessage));
             return;
         }
@@ -101,17 +107,11 @@ export async function configureSSO(manifestPath: string) {
         const ssoConfigDuration = (ssoConfigEndTime - ssoConfigStartTime) / 1000
 
         // Send usage data
-        usageDataInfo = {
-            Method: ['configureSSO'],
-            configDuration: [ssoConfigDuration],
-            Platform: [process.platform],
-            Succeeded: [true]
-        }
-        usageDataHelper.sendUsageDataCustomEvent(usageDataInfo);
+        usageDataObject.sendUsageDataSuccessEvent('configureSSO', {configDuration: ssoConfigDuration});
     }
     else {
         const errorMessage: string = 'Login to Azure did not succeed';
-        usageDataHelper.sendUsageDataException('configureSSO', errorMessage);
+        usageDataObject.sendUsageDataException('configureSSO', errorMessage);
         throw new Error(errorMessage);
     }
 

@@ -15,7 +15,7 @@ const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppDat
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
-  projectName: "Test-Project",
+  projectName: "office-addin-usage-data",
   instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
   promptQuestion: "-----------------------------------------\nDo you want to opt-in for usage data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
@@ -46,6 +46,20 @@ describe("Test office-addin-usage data-package", function() {
       fs.unlinkSync(defaults.usageDataJsonFilePath);
     }
     addInUsageData = new officeAddinUsageData.OfficeAddinUsageData(usageDataObject);
+    addInUsageData.setUsageDataOn();
+  });
+  describe("Test constructor with minimal options", () => {
+    it("Should successfully construct an OfficeAddInUsageData instance", () => {
+      assert.doesNotThrow(() => {
+        let testAddInUsageData = new officeAddinUsageData.OfficeAddinUsageData({
+          isForTesting: true,
+          usageDataLevel: officeAddinUsageData.UsageDataLevel.off,
+          projectName: "office-addin-usage-data",
+          groupName: "TestGroupName",
+          instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools
+        });
+      });
+    });
   });
   describe("Test reportEvent method", () => {
     it("should track event of object passed in with a project name", () => {
@@ -53,7 +67,7 @@ describe("Test office-addin-usage data-package", function() {
         Test1: [true, 100],
         ScriptType: ["JavaScript", 1],
       };
-      addInUsageData.reportEvent("testData", testEvent);
+      addInUsageData.reportEvent("office-addin-usage-data", testEvent);
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
@@ -127,7 +141,7 @@ describe("Test office-addin-usage data-package", function() {
         Test1: [true, 100],
         ScriptType: ["Java", 1],
       };
-      addInUsageData.reportEvent("TestData", testEvent);
+      addInUsageData.reportEvent("office-addin-usage-data", testEvent);
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
@@ -247,6 +261,36 @@ describe("Test office-addin-usage data-package", function() {
       const jsonObject = { usageDataInstances: { [usageDataObject.groupName]: { usageDataLevel } } };
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify((jsonObject)));
       assert.equal(JSON.stringify(jsonObject.usageDataInstances[usageDataObject.groupName]), JSON.stringify(jsonData.readUsageDataSettings(usageDataObject.groupName)));
+    });
+  });
+  describe("Test sendUsageDataSuccessEvent", () => {
+    it("should send success events successfully", () => {
+      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent", {TestVal: 42, OtherTestVal: "testing"});
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+    it("should send success events successfully, even when there's no additional data", () => {
+      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent");
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+  });
+  describe("Test sendUsageDataEvent", () => {
+    it("should send events successfully", () => {
+      addInUsageData.sendUsageDataEvent({TestVal: 42, OtherTestVal: "testing"});
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+    it("should send events successfully, even when there's no data", () => {
+      addInUsageData.sendUsageDataEvent();
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+  });
+  describe("Test sendUsageDataException", () => {
+    it("should send exceptions successfully", () => {
+      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
+      assert.equal(addInUsageData.getExceptionsSent(), 1);
+    });
+    it("should send exceptions successfully, even when there's no data", () => {
+      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"));
+      assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
   });
 });
