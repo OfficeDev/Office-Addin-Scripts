@@ -522,7 +522,7 @@ describe("Unit Tests", function() {
         }
         assert.strictEqual(result, `You need to specify something to change in the manifest.`);
       });
-      it("should handle an invalid manifest file path", async function() {
+      it.skip("should handle an invalid manifest file path", async function() {
         // call  modify, specifying an invalid manifest path with a valid guid and displayName
         const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
         const testGuid = uuid.v1();
