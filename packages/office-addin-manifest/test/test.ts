@@ -522,20 +522,20 @@ describe("Unit Tests", function() {
         }
         assert.strictEqual(result, `You need to specify something to change in the manifest.`);
       });
-      // it("should handle an invalid manifest file path", async function() {
-      //   // call  modify, specifying an invalid manifest path with a valid guid and displayName
-      //   const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
-      //   const testGuid = uuid.v1();
-      //   const testDisplayName = "TestDisplayName";
-      //   let result;
-      //   try {
-      //     await manifestInfo.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
-      //   } catch (err) {
-      //     result = err.message;
-      //   }
+      it.skip("should handle an invalid manifest file path", async function() {
+        // call  modify, specifying an invalid manifest path with a valid guid and displayName
+        const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
+        const testGuid = uuid.v1();
+        const testDisplayName = "TestDisplayName";
+        let result;
+        try {
+          await manifestInfo.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
+        } catch (err) {
+          result = err.message;
+        }
 
-      //   assert.strictEqual(result, `Unable to modify xml data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
-      // });
+        assert.strictEqual(result, `Unable to modify xml data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      });
     });
   });
   describe("validate.ts", function() {
