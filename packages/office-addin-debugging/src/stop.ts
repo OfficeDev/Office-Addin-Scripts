@@ -17,6 +17,15 @@ export async function stopDebugging(manifestPath: string) {
         if (!manifestInfo.id) {
             throw new Error("Manifest does not contain the id for the Office Add-in.");
         }
+
+        // turn off IE debug for win32
+        if (isWindowsPlatform && manifestInfo.officeAppType) {
+            try {
+                await startProcess("REG ADD HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\" + manifestInfo.officeAppType + " /v LegacyRuntimeTest /t REG_DWORD /v 0");
+            } catch (e) {
+                
+            }
+        }
     
         // clear dev settings
         if (isWindowsPlatform) {
