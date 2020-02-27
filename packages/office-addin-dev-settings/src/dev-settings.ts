@@ -16,6 +16,11 @@ export enum DebuggingMethod {
   Web = Proxy,
 }
 
+export enum BrowserType {
+  IE,
+  Spartan
+}
+
 export class RegisteredAddin {
   public id: string;
   public manifestPath: string;
@@ -75,10 +80,10 @@ export async function disableRuntimeLogging(): Promise<void> {
   }
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct, ieDebug: boolean = false): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return devSettingsWindows.enableDebugging(addinId, enable, method);
+      return devSettingsWindows.enableDebugging(addinId, enable, method, ieDebug);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

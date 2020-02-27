@@ -330,13 +330,16 @@ export async function sourceBundleUrl(manifestPath: string, command: commander.C
   }
 }
 
-function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
+function toDebuggingMethod(text?: string): devSettings.DebuggingMethod | boolean {
   switch (text) {
     case "direct":
       return devSettings.DebuggingMethod.Direct;
     case "proxy":
       return devSettings.DebuggingMethod.Proxy;
-    case "":
+    case "ie":
+      return devSettings.; //had to leave work, to be continued
+    case "no-ie":
+      return false;
     case null:
     case undefined:
       // preferred debug method

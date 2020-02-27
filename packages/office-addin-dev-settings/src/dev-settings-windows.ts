@@ -16,6 +16,7 @@ const SourceBundlePort: string = "SourceBundlePort";
 const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
+const LegacyRuntimeTest: string = "LegacyRuntimeTest";
 
 export async function clearDevSettings(addinId: string): Promise<void> {
   return deleteDeveloperSettingsRegistryKey(addinId);
@@ -32,10 +33,11 @@ export async function disableRuntimeLogging() {
   return registry.deleteKey(key);
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy, ieDebug: boolean = false): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
   const useProxyDebugger: boolean = enable && (method === DebuggingMethod.Proxy);
+  ieDebug ? await enableIEDebugging() : await disableIEDebugging();
 
   await registry.addBooleanValue(key, UseDirectDebugger, useDirectDebugger);
   await registry.addBooleanValue(key, UseProxyDebugger, useProxyDebugger);
@@ -193,4 +195,20 @@ export async function unregisterAllAddIns(): Promise<void> {
   for (const value of values) {
     await registry.deleteValue(key, value.name);
   }
+}
+
+export async function enableIEDebugging(): Promise<void> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  await registry.addBooleanValue(key, LegacyRuntimeTest, true);
+}
+
+export async function disableIEDebugging(): Promise<void> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  await registry.addBooleanValue(key, LegacyRuntimeTest, false);
+}
+
+export async function isIEDebuggingEnabled(): Promise<boolean> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  const enabled: boolean = isRegistryValueTrue(await registry.getValue(key, LegacyRuntimeTest));
+  return enabled;
 }
