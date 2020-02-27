@@ -134,13 +134,7 @@ export async function enableDebugging(manifestPath: string, command: commander.C
 
     validateManifestId(manifest);
 
-    if(command.ie) {
-      await enableIEDebugging();
-    } else if (command.edge) {
-      await disableIEDebugging();
-    }
-
-    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
+    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod), command.ie);
 
     console.log("Debugging has been enabled.");
   } catch (err) {
