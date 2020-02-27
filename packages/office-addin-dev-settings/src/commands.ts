@@ -136,7 +136,7 @@ export async function enableDebugging(manifestPath: string, command: commander.C
 
     if(command.ie) {
       await enableIEDebugging();
-    } else if (command.noIe) {
+    } else if (command.edge) {
       await disableIEDebugging();
     }
 
