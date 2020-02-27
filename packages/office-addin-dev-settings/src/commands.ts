@@ -14,6 +14,7 @@ import {
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
+import { enableIEDebugging, disableIEDebugging } from "./dev-settings-windows";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -132,6 +133,12 @@ export async function enableDebugging(manifestPath: string, command: commander.C
     const manifest = await readManifestFile(manifestPath);
 
     validateManifestId(manifest);
+
+    if(command.ie) {
+      await enableIEDebugging();
+    } else if (command.noIe) {
+      await disableIEDebugging();
+    }
 
     await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
 
@@ -330,16 +337,12 @@ export async function sourceBundleUrl(manifestPath: string, command: commander.C
   }
 }
 
-function toDebuggingMethod(text?: string): devSettings.DebuggingMethod | boolean {
+function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
   switch (text) {
     case "direct":
       return devSettings.DebuggingMethod.Direct;
     case "proxy":
       return devSettings.DebuggingMethod.Proxy;
-    case "ie":
-      return devSettings.; //had to leave work, to be continued
-    case "no-ie":
-      return false;
     case null:
     case undefined:
       // preferred debug method

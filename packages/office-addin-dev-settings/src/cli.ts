@@ -28,7 +28,7 @@ commander
     .option("--enable", `Enable debugging for the add-in.`)
     .option("--disable", "Disable debugging for the add-in.")
     .option("--ie", `Enable debugging for the add-in on IE.`)
-    .option("--no-ie", "Disable debugging for the add-in on IE.")
+    .option("--ie-off", "Disable debugging for the add-in on IE.")
     .option("--debug-method <method>", "Specify the debug method: 'direct' or 'proxy'.")
     .description("Configure debugging for the Office Add-in.")
     .action(commands.debugging);

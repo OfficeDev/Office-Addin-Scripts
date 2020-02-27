@@ -9,7 +9,7 @@ import { OfficeApp, readManifestFile } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
 import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
-import { startDetachedProcess, startProcess  } from "./process";
+import { startDetachedProcess  } from "./process";
 import { usageDataObject } from './defaults';
 
 export enum AppType {
@@ -190,8 +190,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    enableDebugging: boolean = true, enableLiveReload: boolean = true,
-    ieRuntime: boolean = false) {
+    enableDebugging: boolean = true, enableLiveReload: boolean = true) {
     
     try {
 
@@ -202,7 +201,6 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
         // live reload can only be enabled for the desktop app type
         // when using proxy debugging and the packager
         const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
-        const isIEAlreadyRunning: boolean = false; // TODO: fetch proper val
         let packagerPromise: Promise<void> | undefined;
         let devServerPromise: Promise<void> | undefined;
     
@@ -226,15 +224,6 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
         //     const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
         //     await devSettings.ensureLoopbackIsEnabled(name);
         // }
-
-        // enable IE testing
-        if (isWindowsPlatform && ieRuntime && !isIEAlreadyRunning && app) {
-            try {
-                await startProcess("REG ADD HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\" + app + " /v LegacyRuntimeTest /t REG_DWORD /v 1");
-            } catch (e) {
-                
-            }
-        }
     
         // enable debugging
         if (isDesktopAppType && isWindowsPlatform) {
