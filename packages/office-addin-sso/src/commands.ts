@@ -60,7 +60,8 @@ export async function configureSSO(manifestPath: string) {
                 console.log('Granting admin consent');
                 await configure.grantAdminContent(applicationJson);
                 // Check to set if SharePoint reply urls are set for tenant. If not, set them
-                const setSharePointReplyUrls: boolean = await configure.setSharePointTenantReplyUrls();
+                const tenantName: string = applicationJson['publisherDomain'].substr(0, applicationJson['publisherDomain'].indexOf('.'));
+                const setSharePointReplyUrls: boolean = await configure.setSharePointTenantReplyUrls(tenantName);
                 if (setSharePointReplyUrls) {
                     console.log('Set SharePoint reply urls for tenant');
                 }
