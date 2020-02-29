@@ -14,7 +14,7 @@ import {
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
-import { enableIEDebugging, disableIEDebugging } from "./dev-settings-windows";
+import { platform } from "os";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -161,6 +161,14 @@ export async function enableRuntimeLogging(path?: string) {
     const logPath = await devSettings.enableRuntimeLogging(path);
 
     console.log(`Runtime logging has been enabled. File: ${logPath}`);
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function switchWebView(webview?: string) {
+  try {
+    devSettings.switchWebView(toWebView(webview))
   } catch (err) {
     logErrorMessage(err);
   }
@@ -337,6 +345,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
       return devSettings.DebuggingMethod.Direct;
     case "proxy":
       return devSettings.DebuggingMethod.Proxy;
+    case "":
     case null:
     case undefined:
       // preferred debug method
@@ -344,6 +353,17 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
     default:
       throw new Error(`Please provide a valid debug method instead of '${text}'.`);
   }
+}
+
+function toWebView(text?: string): devSettings.WebViewType {
+  const newText = text ? text.toLowerCase() : undefined;
+  if (newText === "ie" || newText === "ie11" || newText === "internet explorer") {
+    return devSettings.WebViewType.IE;
+  } else if (newText === "edge" || newText === "spartan") {
+    return devSettings.WebViewType.Edge;
+  } else if (newText === "default" || newText === "" || newText === null || newText === undefined) {
+    return devSettings.WebViewType.Edge;
+  } else throw new Error(`Please provide a valid webview instead of '${newText}'. Options include (ie, edge)`);
 }
 
 export async function unregister(manifestPath: string, command: commander.Command) {

@@ -77,6 +77,11 @@ commander
     .description("Unregister the Office Add-in for development.")
     .action(commands.unregister);
 
+commander
+    .command("webview <webview>")
+    .description("Changes the webview that addins are loaded in.")
+    .action(commands.switchWebView);
+
 // if the command is not known, display an error
 commander.on("command:*", function() {
     logErrorMessage(`The command syntax is not valid.\n`);

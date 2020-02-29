@@ -3,7 +3,7 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
-import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents } from "./dev-settings";
+import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
@@ -33,11 +33,10 @@ export async function disableRuntimeLogging() {
   return registry.deleteKey(key);
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy, ieDebug: boolean = false): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy, webView: WebViewType = WebViewType.Edge): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
   const useProxyDebugger: boolean = enable && (method === DebuggingMethod.Proxy);
-  ieDebug ? await enableIEDebugging() : await disableIEDebugging();
 
   await registry.addBooleanValue(key, UseDirectDebugger, useDirectDebugger);
   await registry.addBooleanValue(key, UseProxyDebugger, useProxyDebugger);
@@ -197,12 +196,12 @@ export async function unregisterAllAddIns(): Promise<void> {
   }
 }
 
-export async function enableIEDebugging(): Promise<void> {
+export async function enableIEWebView(): Promise<void> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
   await registry.addBooleanValue(key, LegacyRuntimeTest, true);
 }
 
-export async function disableIEDebugging(): Promise<void> {
+export async function enableEdgeWebView(): Promise<void> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
   await registry.addBooleanValue(key, LegacyRuntimeTest, false);
 }

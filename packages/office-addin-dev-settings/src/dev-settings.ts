@@ -6,6 +6,7 @@ import { readManifestFile } from "office-addin-manifest";
 import * as fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
+import { platform } from "os";
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
@@ -16,9 +17,9 @@ export enum DebuggingMethod {
   Web = Proxy,
 }
 
-export enum BrowserType {
+export enum WebViewType {
   IE,
-  Spartan
+  Edge
 }
 
 export class RegisteredAddin {
@@ -80,10 +81,10 @@ export async function disableRuntimeLogging(): Promise<void> {
   }
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct, ieDebug: boolean = false): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct, webView: WebViewType = WebViewType.Edge): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return devSettingsWindows.enableDebugging(addinId, enable, method, ieDebug);
+      return devSettingsWindows.enableDebugging(addinId, enable, method, webView);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
@@ -210,6 +211,15 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
       return devSettingsWindows.setSourceBundleUrl(addinId, components);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function switchWebView(webView: WebViewType) {
+  if (process.platform !== "win32") throw new Error("switchWebView only usable on Win32");
+  if (webView === WebViewType.IE) {
+    await devSettingsWindows.enableIEWebView();
+  } else {
+    await devSettingsWindows.enableEdgeWebView();
   }
 }
 
