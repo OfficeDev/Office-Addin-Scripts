@@ -81,10 +81,10 @@ export async function disableRuntimeLogging(): Promise<void> {
   }
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct, webView: WebViewType = WebViewType.Edge): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return devSettingsWindows.enableDebugging(addinId, enable, method, webView);
+      return devSettingsWindows.enableDebugging(addinId, enable, method);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
