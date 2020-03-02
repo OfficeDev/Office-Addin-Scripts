@@ -27,6 +27,7 @@ commander
     .option("--source-bundle-url-port <port>")
     .option("--source-bundle-url-path <path>")
     .option("--source-bundle-url-extension <extension>")
+    .option("--webview <webview>")
     .action(commands.start);
 
 commander

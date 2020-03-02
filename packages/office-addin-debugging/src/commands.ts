@@ -6,7 +6,7 @@ import * as fs from "fs";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
-import { AppType, parseAppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
+import { AppType, parseAppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging, parseWebview } from "./start";
 import { stopDebugging } from "./stop";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {
@@ -56,6 +56,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
             command.sourceBundleUrlHost, command.sourceBundleUrlPort,
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
+        const webview = parseWebview(command.webview) | devSettings.WebViewType.Edge;
 
         if (appPlatformToDebug === undefined) {
             throw new Error("Please specify the platform to debug.");
@@ -74,7 +75,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         }
 
         await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
-            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
+            devServer, devServerPort, packager, packagerHost, packagerPort, webview, enableDebugging, enableLiveReload);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }

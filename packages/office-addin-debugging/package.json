@@ -26,7 +26,7 @@
     "node-fetch": "^2.2.0",
     "office-addin-cli": "^0.2.18",
     "office-addin-dev-certs": "^1.4.15",
-    "office-addin-dev-settings": "^1.7.21",
+    "office-addin-dev-settings": "^1.7.22",
     "office-addin-manifest": "^1.4.18",
     "office-addin-node-debugger": "^0.4.25",
     "office-addin-usage-data": "^1.1.1"
