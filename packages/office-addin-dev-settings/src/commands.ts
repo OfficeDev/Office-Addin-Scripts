@@ -364,7 +364,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
   }
 }
 
-function parseWebView(text?: string): devSettings.WebViewType | undefined {
+export function parseWebView(text?: string): devSettings.WebViewType | undefined {
   const newText = text ? text.toLowerCase() : undefined;
   switch (newText) {
     case "ie":
