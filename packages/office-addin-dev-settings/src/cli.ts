@@ -27,8 +27,6 @@ commander
     .command("debugging <manifest-path>")
     .option("--enable", `Enable debugging for the add-in.`)
     .option("--disable", "Disable debugging for the add-in.")
-    .option("--ie", `Enable debugging for the add-in on IE.`)
-    .option("--edge", "Disable debugging for the add-in on IE.")
     .option("--debug-method <method>", "Specify the debug method: 'direct' or 'proxy'.")
     .description("Configure debugging for the Office Add-in.")
     .action(commands.debugging);
@@ -79,8 +77,20 @@ commander
 
 commander
     .command("webview <webview>")
-    .description("Changes the webview that addins are loaded in.")
-    .action(commands.switchWebView);
+    .description("Changes the webview used for addins on win32.")
+    .action(commands.setWebView)
+    .on("--help", () => {
+        console.log("\nValid options for 'webview <webview>':\n");
+        console.log("\t'edge': Sets webview to be Edge");
+        console.log("\t'ie': Sets webview to be Internet Explorer 11");
+        console.log("\t'clear': Clears any specific webview choice");
+        console.log("\t'default' or undefined: Doesn\'t make any webview changes");
+    });
+
+commander
+    .command("get-webview")
+    .description("Returns the current webview. Only on win32.")
+    .action(commands.getWebView);
 
 // if the command is not known, display an error
 commander.on("command:*", function() {

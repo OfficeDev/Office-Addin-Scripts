@@ -14,7 +14,6 @@ import {
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
-import { platform } from "os";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -134,7 +133,7 @@ export async function enableDebugging(manifestPath: string, command: commander.C
 
     validateManifestId(manifest);
 
-    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod), command.ie);
+    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
 
     console.log("Debugging has been enabled.");
   } catch (err) {
@@ -166,9 +165,19 @@ export async function enableRuntimeLogging(path?: string) {
   }
 }
 
-export async function switchWebView(webview?: string) {
+export async function getWebView() {
   try {
-    devSettings.switchWebView(toWebView(webview))
+    const webview = await devSettings.getWebView();
+    webview ? console.log("The webview has been set to " + webview + ".") : 
+    console.log("A specific webview has not been selected. Edge is used as a default.");
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
+export async function setWebView(webview?: string) {
+  try {
+    devSettings.setWebView(parseWebView(webview));
   } catch (err) {
     logErrorMessage(err);
   }
@@ -355,15 +364,26 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
   }
 }
 
-function toWebView(text?: string): devSettings.WebViewType {
+export function parseWebView(text?: string): devSettings.WebViewType | undefined {
   const newText = text ? text.toLowerCase() : undefined;
-  if (newText === "ie" || newText === "ie11" || newText === "internet explorer") {
-    return devSettings.WebViewType.IE;
-  } else if (newText === "edge" || newText === "spartan") {
-    return devSettings.WebViewType.Edge;
-  } else if (newText === "default" || newText === "" || newText === null || newText === undefined) {
-    return devSettings.WebViewType.Edge;
-  } else throw new Error(`Please provide a valid webview instead of '${newText}'. Options include (ie, edge)`);
+  switch (newText) {
+    case "ie":
+    case "ie11":
+    case "internet explorer":
+      return devSettings.WebViewType.IE;
+    case "edge":
+    case "spartan":
+      return devSettings.WebViewType.Edge;
+    case "clear":
+      return devSettings.WebViewType.Clear;
+    case "default":
+    case "":
+    case null:
+    case undefined:
+      return undefined;
+    default:
+      throw new Error(`Please select a valid webview instead of '${newText}'. Options include (ie, edge, clear)`);
+  }
 }
 
 export async function unregister(manifestPath: string, command: commander.Command) {
