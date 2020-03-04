@@ -4,3 +4,4 @@
 export * from "./appcontainer";
 export * from "./dev-settings";
 export * from "./sideload";
+export { parseWebView } from "./commands";
