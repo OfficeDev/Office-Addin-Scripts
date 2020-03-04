@@ -108,17 +108,6 @@ export function parsePlatform(text: string): Platform | undefined {
     }
 }
 
-export function parseWebview(text?: string): devSettings.WebViewType {
-    const newText = text ? text.toLowerCase() : undefined;
-    if (newText === "ie" || newText === "ie11" || newText === "internet explorer") {
-        return devSettings.WebViewType.IE;
-    } else if (newText === "edge" || newText === "spartan") {
-        return devSettings.WebViewType.Edge;
-    } else if (newText === "default" || newText === "" || newText === null || newText === undefined) {
-        return devSettings.WebViewType.Edge;
-    } else throw new Error(`Please provide a valid webview instead of '${newText}'. Options include (ie, edge)`);
-}
-
 export async function runDevServer(commandLine: string, port?: number): Promise<void> {
     if (commandLine) {
         // if the dev server is running
@@ -201,8 +190,8 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    webview: devSettings.WebViewType = devSettings.WebViewType.Edge,
-    enableDebugging: boolean = true, enableLiveReload: boolean = true) {
+    enableDebugging: boolean = true, enableLiveReload: boolean = true,
+    webview: devSettings.WebViewType | undefined = undefined) {
     
     try {
 
@@ -238,8 +227,8 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
         // }
 
         // switch webview
-        if(isWindowsPlatform && webview) {
-            await devSettings.switchWebView(webview);
+        if (isWindowsPlatform) {
+            await devSettings.setWebView(webview);
         }
     
         // enable debugging
