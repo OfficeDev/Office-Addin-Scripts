@@ -16,7 +16,7 @@ const SourceBundlePort: string = "SourceBundlePort";
 const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
-const LegacyRuntimeTest: string = "LegacyRuntimeTest";
+const WebViewSelection: string = "WebViewSelection";
 
 export async function clearDevSettings(addinId: string): Promise<void> {
   return deleteDeveloperSettingsRegistryKey(addinId);
@@ -100,6 +100,11 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
   return components;
 }
 
+export async function getWebView(): Promise<string | undefined> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  return await registry.getStringValue(key, WebViewSelection);
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
 
@@ -174,6 +179,24 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
+export async function setWebView(webview: WebViewType | undefined): Promise<void> {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  switch (webview){
+    case undefined:
+    default:
+      break;
+    case WebViewType.Clear:
+      await registry.doesValueExist(key, WebViewSelection).then(() => registry.deleteValue(key, WebViewSelection));
+      break;
+    case WebViewType.IE:
+      await registry.addStringValue(key, WebViewSelection, "ie");
+      break;
+    case WebViewType.Edge:
+      await registry.addStringValue(key, WebViewSelection, "edge");
+      break;
+  }
+}
+
 export async function unregisterAddIn(addinId: string, manifestPath: string): Promise<void> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
@@ -194,20 +217,4 @@ export async function unregisterAllAddIns(): Promise<void> {
   for (const value of values) {
     await registry.deleteValue(key, value.name);
   }
-}
-
-export async function enableIEWebView(): Promise<void> {
-  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
-  await registry.addBooleanValue(key, LegacyRuntimeTest, true);
-}
-
-export async function enableEdgeWebView(): Promise<void> {
-  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
-  await registry.addBooleanValue(key, LegacyRuntimeTest, false);
-}
-
-export async function isIEDebuggingEnabled(): Promise<boolean> {
-  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
-  const enabled: boolean = isRegistryValueTrue(await registry.getValue(key, LegacyRuntimeTest));
-  return enabled;
 }

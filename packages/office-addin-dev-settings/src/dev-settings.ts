@@ -19,7 +19,8 @@ export enum DebuggingMethod {
 
 export enum WebViewType {
   IE,
-  Edge
+  Edge,
+  Clear
 }
 
 export class RegisteredAddin {
@@ -214,13 +215,14 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-export async function switchWebView(webView: WebViewType) {
-  if (process.platform !== "win32") throw new Error("switchWebView only usable on Win32");
-  if (webView === WebViewType.IE) {
-    await devSettingsWindows.enableIEWebView();
-  } else {
-    await devSettingsWindows.enableEdgeWebView();
-  }
+export async function getWebView(): Promise<string | undefined> {
+  if (process.platform !== "win32") throw new Error("getWebView only usable on Win32");
+  return devSettingsWindows.getWebView();
+}
+
+export async function setWebView(webView: WebViewType | undefined) {
+  if (process.platform !== "win32") throw new Error("setWebView only usable on Win32");
+  devSettingsWindows.setWebView(webView);
 }
 
 export async function unregisterAddIn(manifestPath: string): Promise<void> {
