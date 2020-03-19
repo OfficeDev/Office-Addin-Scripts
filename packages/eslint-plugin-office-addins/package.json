@@ -15,7 +15,7 @@
     "test": "echo \"No tests\""
   },
   "dependencies": {
-    "eslint": "^3.9.1",
+    "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-native": "^3.8.1",
     "requireindex": "~1.1.0"
