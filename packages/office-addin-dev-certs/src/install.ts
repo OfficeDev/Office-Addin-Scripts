@@ -17,7 +17,7 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
       case "darwin": // macOS
          return `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
       case "linux":
-         return `sudo cp ${caCertificatePath} /usr/local/share/ca-certificates && sudo /usr/sbin/update-ca-certificates`;
+        return `sudo mkdir -p /usr/local/share/ca-certificates/office-addin-dev-certs && sudo cp ${caCertificatePath} /usr/local/share/ca-certificates/office-addin-dev-certs && sudo /usr/sbin/update-ca-certificates`;
       default:
          throw new Error(`Platform not supported: ${process.platform}`);
    }
