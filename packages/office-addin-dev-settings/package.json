@@ -22,7 +22,7 @@
     "child_process": "^1.0.2",
     "commander": "^2.18.0",
     "fs-extra": "^7.0.1",
-    "inquirer": "^6.2.2",
+    "inquirer": "^7.1.0",
     "jszip": "^3.2.2",
     "junk": "^3.1.0",
     "office-addin-cli": "^0.2.18",

@@ -6,7 +6,7 @@ import { getOfficeAppName, OfficeApp } from "office-addin-manifest";
 
 export async function chooseOfficeApp(apps: OfficeApp[]): Promise<OfficeApp> {
   const questionName = "app";
-  const question: inquirer.Question = {
+  const question: inquirer.ListQuestionOptions<inquirer.Answers> = {
     choices: apps.map(app => {
         return { name: getOfficeAppName(app), value: app };
     }).sort((first, second) => first.name.localeCompare(second.name)),
@@ -15,7 +15,7 @@ export async function chooseOfficeApp(apps: OfficeApp[]): Promise<OfficeApp> {
     type: "list",
   };
 
-  const answer = await inquirer.prompt(question);
+  const answer = await inquirer.prompt([question]);
   const choice: OfficeApp = answer[questionName];
   return choice;
 }
