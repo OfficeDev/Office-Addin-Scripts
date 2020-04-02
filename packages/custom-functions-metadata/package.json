@@ -29,7 +29,7 @@
     "assert": "^1.4.1",
     "commander": "^2.19.0",
     "nconf": "^0.10.0",
-    "office-addin-cli": "^0.2.18",
+    "office-addin-cli": "^1.0.7",
     "optimist": "^0.6.1",
     "xregexp": "^4.2.4"
   },
@@ -43,7 +43,7 @@
     "@types/xregexp": "^3.0.30",
     "concurrently": "^3.6.1",
     "mocha": "^5.2.0",
-    "office-addin-lint": "^1.0.20",
+    "office-addin-lint": "^1.0.19",
     "office-addin-prettier-config": "^1.0.12",
     "rimraf": "^2.7.1",
     "ts-node": "^8.5.2",

@@ -24,7 +24,7 @@
     "test": "echo \"No tests.\""
   },
   "dependencies": {
-    "custom-functions-metadata": "^1.0.25",
+    "custom-functions-metadata": "^1.0.24",
     "es6-promise": "^4.2.8",
     "webpack": "^4.42.0"
   },

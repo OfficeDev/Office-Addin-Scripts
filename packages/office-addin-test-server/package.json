@@ -23,8 +23,8 @@
         "cors": "^2.8.5",
         "es6-promise": "^4.2.8",
         "express": "^4.17.1",
-        "office-addin-cli": "^0.2.18",
-        "office-addin-dev-certs": "^1.4.16"
+        "office-addin-cli": "^1.0.7",
+        "office-addin-dev-certs": "^1.4.15"
     },
     "devDependencies": {
         "@types/cors": "^2.8.6",
