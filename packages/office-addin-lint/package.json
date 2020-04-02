@@ -22,30 +22,30 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.9.0",
-    "@typescript-eslint/parser": "^2.9.0",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
     "commander": "^2.20.3",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "office-addin-usage-data": "^1.1.2",
     "prettier": "^1.19.1"
   },
   "devDependencies": {
-    "@types/assert": "^1.4.3",
+    "@types/assert": "^1.4.6",
     "@types/commander": "^2.12.2",
     "@types/es6-promise": "^3.3.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^12.12.14",
-    "@types/node-fetch": "^2.5.4",
+    "@types/node": "^12.12.34",
+    "@types/node-fetch": "^2.5.5",
     "assert": "^1.4.1",
     "concurrently": "^3.6.1",
     "mocha": "^7.1.1",
-    "office-addin-cli": "^0.2.18",
+    "office-addin-cli": "^1.0.8",
     "rimraf": "^2.7.1",
-    "ts-node": "^8.5.4",
+    "ts-node": "^8.8.1",
     "tslint": "^6.1.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.3"
   },
   "repository": {
     "type": "git",

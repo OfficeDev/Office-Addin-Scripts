@@ -16,15 +16,15 @@
   },
   "dependencies": {
     "eslint": "^6.8.0",
-    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-native": "^3.8.1",
     "requireindex": "~1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^12.12.14",
+    "@types/node": "^12.12.34",
     "concurrently": "^3.6.1",
     "rimraf": "^2.6.2",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.3"
   },
   "engines": {
     "node": ">=0.10.0"

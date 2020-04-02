@@ -14,6 +14,12 @@ const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
 
 describe("End-to-end validation of test server", function() {
+    before(function() {
+        // skip tests on Linux -- need to get dev certs working there
+        if (process.platform == "linux") {
+            this.skip();
+        }
+    })
     describe("Setup test server", function() {
         it("Test server should have started", async function() {
             const startTestServer = await promiseStartTestServer;
@@ -31,9 +37,9 @@ describe("End-to-end validation of test server", function() {
         let testServerResponse: any;
         it("Test server should have responded to ping", async function () {
             testServerResponse = await testHelper.pingTestServer(port);
-            assert.equal(testServerResponse != undefined, true);
-            assert.equal(testServerResponse["status"], 200);
-            assert.equal(testServerResponse["platform"], platformName);
+            assert.equal(testServerResponse !== undefined, true);
+            assert.equal(testServerResponse.status, 200);
+            assert.equal(testServerResponse.platform, platformName);
         });
     });
     describe("Send data to server and get results", function () {
