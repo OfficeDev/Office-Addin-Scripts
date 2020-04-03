@@ -85,7 +85,7 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
 }
 
 function logManifestValidationIssue(issue: ManifestValidationIssue) {
-  console.log(`${issue.title}: ${issue.detail} (link: ${issue.link})`);
+  console.log(`${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``));
 
   if (issue.code) {
     console.log(`  - Details: ${issue.code}`);
@@ -140,11 +140,11 @@ export async function validate(manifestPath: string, command: commander.Command)
     if (validation.report) {
       logManifestValidationErrors(validation.report.errors);
       logManifestValidationWarnings(validation.report.warnings);
-      logManifestValidationInfos(validation.report.infos);
+      logManifestValidationInfos(validation.report.notes);
 
       if (validation.isValid) {
-        if (validation.details) {
-          logManifestValidationSupportedProducts(validation.details.supportedProducts);
+        if (validation.report.addInDetails) {
+          logManifestValidationSupportedProducts(validation.report.addInDetails.supportedProducts);
         }
       }
     }
