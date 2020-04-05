@@ -4,7 +4,7 @@
   "scripts": {
     "build": "lerna run build",
     "dist-tags": "lerna exec --concurrency 1 --no-sort --stream npm dist-tag ls",
-    "postinstall": "lerna bootstrap",
+    "postinstall": "lerna exec --concurrency 1 --stream npm install && lerna bootstrap",
     "publish:next": "lerna publish --dist-tag next",
     "test": "lerna run test",
     "update-latest-dist-tags": "lerna exec --concurrency 1 --no-sort --stream  for /f \"usebackq\" %a in (`npm view . name`) do @for /f \"usebackq\" %b in (`npm view . dist-tags.next`) do @npm dist-tag add %a@%b",
