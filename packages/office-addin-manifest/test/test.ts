@@ -552,10 +552,9 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
         assert.strictEqual(validation.report!.errors!.length, 0);
-        assert.strictEqual(validation.report!.infos!.length, 0);
-        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
-        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
       it("Excel", async function() {
         this.timeout(6000);
@@ -563,10 +562,9 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
         assert.strictEqual(validation.report!.errors!.length, 0);
-        assert.strictEqual(validation.report!.infos!.length, 0);
-        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
-        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
       it("OneNote", async function() {
         this.timeout(6000);
@@ -574,10 +572,9 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
         assert.strictEqual(validation.report!.errors!.length, 0);
-        assert.strictEqual(validation.report!.infos!.length, 0);
-        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
-        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
       it("Outlook", async function() {
         this.timeout(6000);
@@ -585,10 +582,9 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
         assert.strictEqual(validation.report!.errors!.length, 0);
-        assert.strictEqual(validation.report!.infos!.length, 0);
-        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
-        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
       it("PowerPoint", async function() {
         this.timeout(6000);
@@ -596,20 +592,18 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
         assert.strictEqual(validation.report!.errors!.length, 0);
-        assert.strictEqual(validation.report!.infos!.length, 0);
-        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
-        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
       // it("Project", async function() {
       //   const validation = await validateManifest("test/manifests/TaskPane.Project.manifest.xml");
       //   assert.strictEqual(validation.isValid, true);
       //   assert.strictEqual(validation.status, 200);
       //   assert.strictEqual(validation.report!.errors!.length, 0);
-      //   assert.strictEqual(validation.report!.infos!.length, 0);
-      //   assert.strictEqual(validation.report!.suggestions!.length, 0);
+      //   assert.strictEqual(validation.report!.notes!.length > 0, true);
       //   assert.strictEqual(validation.report!.warnings!.length, 0);
-      //   assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+      //   assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       // });
       it("Word", async function() {
         this.timeout(6000);
@@ -617,10 +611,9 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
         assert.strictEqual(validation.report!.errors!.length, 0);
-        assert.strictEqual(validation.report!.infos!.length, 0);
-        assert.strictEqual(validation.report!.suggestions!.length, 0);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
-        assert.strictEqual(validation.details!.supportedProducts!.length > 0, true);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
     });
   });
