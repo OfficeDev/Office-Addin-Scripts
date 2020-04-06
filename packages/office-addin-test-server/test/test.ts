@@ -6,12 +6,10 @@ import * as mocha from "mocha";
 import * as testHelper from "../../office-addin-test-helpers"
 import { TestServer } from "../src/testServer";
 const port: number = 4201;
-const testServer = new TestServer(port);
-const platformName = testServer.getPlatformName();
-const promiseStartTestServer = testServer.startTestServer(true /* mochaTest */);
 const testKey: string = "TestString";
 const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
+let testServer: TestServer;
 
 describe("End-to-end validation of test server", function() {
     before(function() {
@@ -20,22 +18,20 @@ describe("End-to-end validation of test server", function() {
             this.skip();
         }
     })
-    describe("Setup test server", function() {
+    describe("Start test server", function() {
         it("Test server should have started", async function() {
-            const startTestServer = await promiseStartTestServer;
-            assert.equal(startTestServer, true);
-        });
-        it(`Test server port should be ${port}`, async function () {
-            assert.equal(testServer.getTestServerPort(), port);
-        });
-        it(`Test server state should be set to true (i.e. started)`, async function () {
-            assert.equal(testServer.getTestServerState(), true);
+            testServer = new TestServer(port);
+            const started: boolean = await testServer.startTestServer(true /* mochaTest */);
+            assert.equal(started, true, "Test server should have started.");
+            assert.equal(testServer.getTestServerPort(), port, `Test server port should be ${port}`);
+            assert.equal(testServer.getTestServerState(), true, "Test server state should true (started).");
         });
     });
 
     describe("Ping server for response", function () {
         let testServerResponse: any;
         it("Test server should have responded to ping", async function () {
+            const platformName = testServer.getPlatformName();
             testServerResponse = await testHelper.pingTestServer(port);
             assert.equal(testServerResponse !== undefined, true);
             assert.equal(testServerResponse.status, 200);
