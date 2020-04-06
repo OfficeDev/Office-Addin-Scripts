@@ -17,7 +17,7 @@ function getCommandOptionString(option: string | boolean, defaultValue?: string)
 
 export async function info(manifestPath: string) {
   try {
-    const manifest = await manifestInfo.readManifestFile(manifestPath); //Keep tele here, since the main function is only in commands, or in readManifestFile?
+    const manifest = await manifestInfo.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.sendUsageDataSuccessEvent("info");
   } catch (err) {
@@ -67,7 +67,7 @@ function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefin
 function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined) {
   if (infos) {
     for (const currentInfo of infos) {
-      console.log(chalk.bold.blue(`  Additional information: `));
+      console.log(chalk.bold.blue(`\nAdditional information: `));
       logManifestValidationIssue(currentInfo);
     }
   }
@@ -77,7 +77,7 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
   if (warnings) {
     let warningNumber = 1;
     for (const currentWarning of warnings) {
-      console.log(chalk.bold.yellow(`  Warning # ${warningNumber}: `));
+      console.log(chalk.bold.yellow(`\nWarning # ${warningNumber}: `));
       logManifestValidationIssue(currentWarning);
       ++warningNumber;
     }
@@ -103,7 +103,7 @@ function logManifestValidationSupportedProducts(products: ManifestValidationProd
     const productTitles = new Set(products.filter(product => product.title).map(product => product.title));
 
     if (productTitles.size > 0) {
-      console.log(`Based on the requirements specified in your manifest, your add-in can run on the following platforms; your add-in will be tested on these platforms when you submit it to the Office Store:`);
+      console.log(`\nBased on the requirements specified in your manifest, your add-in can run on the following platforms; your add-in will be tested on these platforms when you submit it to the Office Store:`);
       for (const productTitle of productTitles) {
         console.log(`  - ${productTitle}`);
       }
