@@ -64,12 +64,12 @@ export class ManifestValidation {
 export async function validateManifest(manifestPath: string): Promise<ManifestValidation> {
     try {
         const validation: ManifestValidation = new ManifestValidation();
-    
+
         // read the manifest file
         // const manifest = await readManifestFile(manifestPath);
         const stream = await createReadStream(manifestPath);
         let response;
-    
+
         try {
             response = await fetch("https://packageacceptance.omex.office.net/api/check",
                 {
@@ -82,18 +82,18 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
         } catch (err) {
             throw new Error(`Unable to contact the manifest validation service.\n${err}`);
         }
-    
+
         const text = await response.text();
         const json = JSON.parse(text.trim());
-    
+
         if (json) {
             validation.report = json;
             validation.status = response.status;
         }
-    
+
         if (validation.report) {
             const result = validation.report.status;
-    
+
             if (result) {
                 switch (result.toLowerCase()) {
                     case "accepted":
@@ -106,7 +106,7 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
         }
 
         usageDataObject.sendUsageDataSuccessEvent("validateManifest");
-    
+
         return validation;
 
     } catch (err) {
