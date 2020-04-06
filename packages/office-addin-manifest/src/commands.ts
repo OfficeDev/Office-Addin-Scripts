@@ -66,9 +66,10 @@ function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefin
 
 function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined) {
   if (infos) {
+    console.log(chalk.bold.blue(`\nAdditional information: `));
     for (const currentInfo of infos) {
-      console.log(chalk.bold.blue(`\nAdditional information: `));
       logManifestValidationIssue(currentInfo);
+      console.log();
     }
   }
 }
