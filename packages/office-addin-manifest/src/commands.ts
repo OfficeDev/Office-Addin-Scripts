@@ -17,7 +17,7 @@ function getCommandOptionString(option: string | boolean, defaultValue?: string)
 
 export async function info(manifestPath: string) {
   try {
-    const manifest = await manifestInfo.readManifestFile(manifestPath); //Keep tele here, since the main function is only in commands, or in readManifestFile?
+    const manifest = await manifestInfo.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.sendUsageDataSuccessEvent("info");
   } catch (err) {
@@ -66,9 +66,10 @@ function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefin
 
 function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined) {
   if (infos) {
+    console.log(chalk.bold.blue(`\nAdditional information: `));
     for (const currentInfo of infos) {
-      console.log(chalk.bold.blue(`  Additional information: `));
       logManifestValidationIssue(currentInfo);
+      console.log();
     }
   }
 }
@@ -77,7 +78,7 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
   if (warnings) {
     let warningNumber = 1;
     for (const currentWarning of warnings) {
-      console.log(chalk.bold.yellow(`  Warning # ${warningNumber}: `));
+      console.log(chalk.bold.yellow(`\nWarning # ${warningNumber}: `));
       logManifestValidationIssue(currentWarning);
       ++warningNumber;
     }
@@ -85,7 +86,7 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
 }
 
 function logManifestValidationIssue(issue: ManifestValidationIssue) {
-  console.log(`${issue.title}: ${issue.detail} (link: ${issue.link})`);
+  console.log(`${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``));
 
   if (issue.code) {
     console.log(`  - Details: ${issue.code}`);
@@ -103,7 +104,7 @@ function logManifestValidationSupportedProducts(products: ManifestValidationProd
     const productTitles = new Set(products.filter(product => product.title).map(product => product.title));
 
     if (productTitles.size > 0) {
-      console.log(`Based on the requirements specified in your manifest, your add-in can run on the following platforms; your add-in will be tested on these platforms when you submit it to the Office Store:`);
+      console.log(`\nBased on the requirements specified in your manifest, your add-in can run on the following platforms; your add-in will be tested on these platforms when you submit it to the Office Store:`);
       for (const productTitle of productTitles) {
         console.log(`  - ${productTitle}`);
       }
@@ -140,11 +141,11 @@ export async function validate(manifestPath: string, command: commander.Command)
     if (validation.report) {
       logManifestValidationErrors(validation.report.errors);
       logManifestValidationWarnings(validation.report.warnings);
-      logManifestValidationInfos(validation.report.infos);
+      logManifestValidationInfos(validation.report.notes);
 
       if (validation.isValid) {
-        if (validation.details) {
-          logManifestValidationSupportedProducts(validation.details.supportedProducts);
+        if (validation.report.addInDetails) {
+          logManifestValidationSupportedProducts(validation.report.addInDetails.supportedProducts);
         }
       }
     }
