@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-office-addins",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Provides an eslint configuration for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -12,10 +12,10 @@
     "eslint"
   ],
   "devDependencies": {
-    "@types/node": "^12.12.14",
+    "@types/node": "^12.12.34",
     "concurrently": "^3.6.1",
     "rimraf": "^2.7.1",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.3"
   },
   "repository": {
     "type": "git",
