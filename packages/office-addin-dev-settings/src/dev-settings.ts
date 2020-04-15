@@ -18,9 +18,11 @@ export enum DebuggingMethod {
 }
 
 export enum WebViewType {
+  Default,
   IE,
   Edge,
-  Clear
+  EdgeChromium,
+  Clear,
 }
 
 export class RegisteredAddin {
@@ -215,14 +217,22 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-export async function getWebView(): Promise<string | undefined> {
-  if (process.platform !== "win32") throw new Error("getWebView only usable on Win32");
-  return devSettingsWindows.getWebView();
+export async function getWebView(addinId: string): Promise<string | undefined> {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.getWebView(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
 }
 
-export async function setWebView(webView: WebViewType | undefined) {
-  if (process.platform !== "win32") throw new Error("setWebView only usable on Win32");
-  devSettingsWindows.setWebView(webView);
+export async function setWebView(addinId: string, webView: WebViewType | undefined) {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.setWebView(addinId, webView);;
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
 }
 
 export async function unregisterAddIn(manifestPath: string): Promise<void> {

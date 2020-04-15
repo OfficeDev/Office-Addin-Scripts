@@ -165,9 +165,13 @@ export async function enableRuntimeLogging(path?: string) {
   }
 }
 
-export async function getWebView() {
+export async function getWebView(manifestPath: string) {
   try {
-    const webview = await devSettings.getWebView();
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    const webview = await devSettings.getWebView(manifest.id!);
     webview ? console.log("The webview has been set to " + webview + ".") : 
     console.log("A specific webview has not been selected. Edge is used as a default.");
   } catch (err) {
@@ -175,9 +179,13 @@ export async function getWebView() {
   }
 }
 
-export async function setWebView(webview?: string) {
+export async function setWebView(manifestPath: string, webview?: string) {
   try {
-    devSettings.setWebView(parseWebView(webview));
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    devSettings.setWebView(manifest.id!, parseWebView(webview));
   } catch (err) {
     logErrorMessage(err);
   }

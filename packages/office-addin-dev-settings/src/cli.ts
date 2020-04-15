@@ -75,6 +75,7 @@ commander
     .description("Unregister the Office Add-in for development.")
     .action(commands.unregister);
 
+//TODO: change the way this works to reflect changes to setWebView
 commander
     .command("webview <webview>")
     .description("Changes the webview used for addins on win32.")
@@ -87,7 +88,8 @@ commander
         console.log("\t'default' or undefined: Doesn\'t make any webview changes");
     });
 
-commander
+//TODO: change the way this works to reflect changes to getWebView
+commander 
     .command("get-webview")
     .description("Returns the current webview. Only on win32.")
     .action(commands.getWebView);
