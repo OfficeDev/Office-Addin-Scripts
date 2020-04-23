@@ -75,22 +75,19 @@ commander
     .description("Unregister the Office Add-in for development.")
     .action(commands.unregister);
 
-//TODO: change the way this works to reflect changes to setWebView
 commander
-    .command("webview <webview>")
+    .command("webview <manifest-path> <webview>")
     .description("Changes the webview used for addins on win32.")
     .action(commands.setWebView)
     .on("--help", () => {
         console.log("\nValid options for 'webview <webview>':\n");
         console.log("\t'edge': Sets webview to be Edge");
         console.log("\t'ie': Sets webview to be Internet Explorer 11");
-        console.log("\t'clear': Clears any specific webview choice");
-        console.log("\t'default' or undefined: Doesn\'t make any webview changes");
+        console.log("\t'clear': Clears any specific webview choice, default webview will run");
     });
 
-//TODO: change the way this works to reflect changes to getWebView
 commander 
-    .command("get-webview")
+    .command("get-webview <manifest-path>")
     .description("Returns the current webview. Only on win32.")
     .action(commands.getWebView);
 

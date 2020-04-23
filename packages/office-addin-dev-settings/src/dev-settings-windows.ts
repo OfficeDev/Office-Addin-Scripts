@@ -179,26 +179,24 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-export async function setWebView(addinId: string, webview: WebViewType | undefined): Promise<void> {
+export async function setWebView(addinId: string, webView: WebViewType | undefined): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
-  switch (webview){
+  switch (webView){
     case undefined:
     default:
       break;
     case WebViewType.Default:
-      await registry.addStringValue(key, WebViewSelection, "default");
+    case WebViewType.Clear:
+      await registry.deleteValue(key, WebViewSelection);
       break;
     case WebViewType.IE:
       await registry.addStringValue(key, WebViewSelection, "ie");
       break;
     case WebViewType.Edge:
-        await registry.addStringValue(key, WebViewSelection, "edge");
-        break;
+      await registry.addStringValue(key, WebViewSelection, "edge");
+      break;
     case WebViewType.EdgeChromium:
       await registry.addStringValue(key, WebViewSelection, "edge chromium");
-      break;
-    case WebViewType.Clear:
-      await registry.doesValueExist(key, WebViewSelection).then(() => registry.deleteValue(key, WebViewSelection));
       break;
   }
 }

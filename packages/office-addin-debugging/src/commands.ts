@@ -6,7 +6,7 @@ import * as fs from "fs";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
-import { AppType, parseAppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging} from "./start";
+import { AppType, parseAppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {

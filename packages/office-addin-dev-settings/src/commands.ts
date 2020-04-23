@@ -172,20 +172,8 @@ export async function getWebView(manifestPath: string) {
     validateManifestId(manifest);
 
     const webview = await devSettings.getWebView(manifest.id!);
-    webview ? console.log("The webview has been set to " + webview + ".") : 
+    webview ? console.log("The webview is set to " + webview + ".") : 
     console.log("A specific webview has not been selected. Edge is used as a default.");
-  } catch (err) {
-    logErrorMessage(err);
-  }
-}
-
-export async function setWebView(manifestPath: string, webview?: string) {
-  try {
-    const manifest = await readManifestFile(manifestPath);
-
-    validateManifestId(manifest);
-
-    devSettings.setWebView(manifest.id!, parseWebView(webview));
   } catch (err) {
     logErrorMessage(err);
   }
@@ -261,6 +249,34 @@ export async function liveReload(manifestPath: string, command: commander.Comman
 
 function parseStringCommandOption(optionValue: any): string | undefined {
   return (typeof(optionValue) === "string") ? optionValue : undefined;
+}
+
+export function parseWebView(webViewText?: string): devSettings.WebViewType | undefined {
+  const parsedWebView = webViewText ? webViewText.toLowerCase() : undefined;
+  switch (parsedWebView) {
+    case "ie":
+    case "ie11":
+    case "internet explorer":
+    case "internetexplorer":
+      return devSettings.WebViewType.IE;
+    case "edge":
+    case "spartan":
+      return devSettings.WebViewType.Edge;
+    case "edge chromium":
+    case "edgechromium":
+    case "anaheim":
+      return devSettings.WebViewType.EdgeChromium;
+    case "clear":
+      return devSettings.WebViewType.Clear;
+    case "default":
+    case "":
+      return devSettings.WebViewType.Default;
+    case null:
+    case undefined:
+      return undefined;
+    default:
+      throw new Error(`Please select a valid webview instead of '${parsedWebView}'. Options include (ie, edge, edge chromium, clear, default)`);
+  }
 }
 
 export async function register(manifestPath: string, command: commander.Command) {
@@ -344,6 +360,18 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
   }
 }
 
+export async function setWebView(manifestPath: string, webview?: string) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    devSettings.setWebView(manifest.id!, parseWebView(webview));
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
     if (command.host !== undefined || command.port !== undefined || command.path !== undefined || command.extension !== undefined) {
@@ -369,28 +397,6 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
       return devSettings.DebuggingMethod.Direct;
     default:
       throw new Error(`Please provide a valid debug method instead of '${text}'.`);
-  }
-}
-
-export function parseWebView(text?: string): devSettings.WebViewType | undefined {
-  const newText = text ? text.toLowerCase() : undefined;
-  switch (newText) {
-    case "ie":
-    case "ie11":
-    case "internet explorer":
-      return devSettings.WebViewType.IE;
-    case "edge":
-    case "spartan":
-      return devSettings.WebViewType.Edge;
-    case "clear":
-      return devSettings.WebViewType.Clear;
-    case "default":
-    case "":
-    case null:
-    case undefined:
-      return undefined;
-    default:
-      throw new Error(`Please select a valid webview instead of '${newText}'. Options include (ie, edge, clear)`);
   }
 }
 

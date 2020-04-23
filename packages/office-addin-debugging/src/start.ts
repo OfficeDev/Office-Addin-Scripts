@@ -191,7 +191,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
     enableDebugging: boolean = true, enableLiveReload: boolean = true,
-    webview: devSettings.WebViewType | undefined = undefined) {
+    webView: devSettings.WebViewType | undefined = undefined) {
     
     try {
 
@@ -228,7 +228,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
 
         // switch webview
         if (isWindowsPlatform) {
-            await devSettings.setWebView(webview);
+            await devSettings.setWebView(manifestInfo.id, webView);
         }
     
         // enable debugging

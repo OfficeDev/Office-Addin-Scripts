@@ -177,6 +177,15 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
   }
 }
 
+export async function getWebView(addinId: string): Promise<string | undefined> {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.getWebView(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":
@@ -212,15 +221,6 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.setSourceBundleUrl(addinId, components);
-    default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
-  }
-}
-
-export async function getWebView(addinId: string): Promise<string | undefined> {
-  switch (process.platform) {
-    case "win32":
-      return devSettingsWindows.getWebView(addinId);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }
