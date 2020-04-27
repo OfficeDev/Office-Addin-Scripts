@@ -91,7 +91,7 @@ export async function getUserConfirmation(name: string): Promise<boolean> {
     name: "didUserConfirm",
     type: "confirm",
   };
-  const answers = await inquirer.prompt(question);
+  const answers = await inquirer.prompt([question]);
   return (answers as any).didUserConfirm;
 }
 

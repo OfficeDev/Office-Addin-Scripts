@@ -4,6 +4,7 @@
 import * as fetch from "node-fetch";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
+import * as os from "os";
 import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
 import { OfficeApp, readManifestFile } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
@@ -218,12 +219,11 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
             throw new Error("Manifest does not contain the id for the Office Add-in.");
         }
     
-        // DISABLE FOR NOW
         // enable loopback for Edge
-        // if (isWindowsPlatform) {
-        //     const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
-        //     await devSettings.ensureLoopbackIsEnabled(name);
-        // }
+        if (isWindowsPlatform && parseInt(os.release()) === 10) {
+            const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
+            await devSettings.ensureLoopbackIsEnabled(name);
+        }
     
         // enable debugging
         if (isDesktopAppType && isWindowsPlatform) {

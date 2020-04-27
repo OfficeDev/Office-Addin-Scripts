@@ -205,7 +205,7 @@ export async function setSignInAudience(applicationJson: Object):Promise<void> {
     }
 }
 
-export async function setSharePointTenantReplyUrls(): Promise<boolean> {
+export async function setSharePointTenantReplyUrls(tenantName: string): Promise<boolean> {
     try {
         let servicePrinicipaObjectlId = "";
         let setReplyUrls: boolean = true;
@@ -213,8 +213,6 @@ export async function setSharePointTenantReplyUrls(): Promise<boolean> {
 
         // Get tenant name and construct SharePoint SSO reply urls with tenant name
         let azRestCommand: string = fs.readFileSync(defaults.azRestGetOrganizationDetailsCommandPath, 'utf8');
-        const tenantDetails: any = await promiseExecuteCommand(azRestCommand);
-        const tenantName: string = tenantDetails.value[0].displayName
         const oneDriveReplyUrl: string = `https://${tenantName}-my.sharepoint.com/_forms/singlesignon.aspx`;
         const sharePointReplyUrl: string = `https://${tenantName}.sharepoint.com/_forms/singlesignon.aspx`;
 

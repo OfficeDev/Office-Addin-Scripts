@@ -1,6 +1,6 @@
 {
   "name": "office-addin-cli",
-  "version": "1.0.7",
+  "version": "1.0.10",
   "description": "A command-line interface for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -24,17 +24,17 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.14",
-    "@types/node-fetch": "^2.5.4",
-    "@types/sinon": "^7.5.1",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.12.34",
+    "@types/node-fetch": "^2.5.5",
+    "@types/sinon": "^7.5.2",
     "concurrently": "^3.5.0",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.1",
     "rimraf": "^2.7.1",
     "sinon": "^7.5.0",
-    "ts-node": "^8.5.2",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.2"
+    "ts-node": "^8.8.1",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
   },
   "repository": {
     "type": "git",
