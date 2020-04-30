@@ -22,7 +22,6 @@ export enum WebViewType {
   IE,
   Edge,
   EdgeChromium,
-  Clear,
 }
 
 export class RegisteredAddin {
@@ -226,10 +225,10 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-export async function setWebView(addinId: string, webView: WebViewType | undefined) {
+export async function setWebView(addinId: string, webViewType: WebViewType | undefined) {
   switch (process.platform) {
     case "win32":
-      return devSettingsWindows.setWebView(addinId, webView);;
+      return devSettingsWindows.setWebView(addinId, webViewType);;
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

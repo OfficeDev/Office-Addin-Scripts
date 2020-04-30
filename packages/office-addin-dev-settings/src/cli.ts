@@ -76,20 +76,16 @@ commander
     .action(commands.unregister);
 
 commander
-    .command("webview <manifest-path> <webview>")
-    .description("Changes the webview used for addins on win32.")
-    .action(commands.setWebView)
+    .command("webview <manifest-path> [web-view-type]")
+    .description("Allows specifying a preference for the type of web view to use when debugging. Windows only")
+    .action(commands.webView)
     .on("--help", () => {
-        console.log("\nValid options for 'webview <webview>':\n");
-        console.log("\t'edge': Sets webview to be Edge");
-        console.log("\t'ie': Sets webview to be Internet Explorer 11");
-        console.log("\t'clear': Clears any specific webview choice, default webview will run");
+        console.log("\nFor [web-view-type], choose one of the following values:\n");
+        console.log("\t'edge' for Microsoft Edge");
+        console.log("\t'ie' for Internet Explorer 11");
+        console.log("\t'default' to remove any preference");
+        console.log("...or leave [web-view-type] blank to return the current setting");
     });
-
-commander 
-    .command("get-webview <manifest-path>")
-    .description("Returns the current webview. Only on win32.")
-    .action(commands.getWebView);
 
 // if the command is not known, display an error
 commander.on("command:*", function() {

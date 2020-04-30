@@ -165,20 +165,6 @@ export async function enableRuntimeLogging(path?: string) {
   }
 }
 
-export async function getWebView(manifestPath: string) {
-  try {
-    const manifest = await readManifestFile(manifestPath);
-
-    validateManifestId(manifest);
-
-    const webview = await devSettings.getWebView(manifest.id!);
-    webview ? console.log("The webview is set to " + webview + ".") : 
-    console.log("A specific webview has not been selected. Edge is used as a default.");
-  } catch (err) {
-    logErrorMessage(err);
-  }
-}
-
 export async function getSourceBundleUrl(manifestPath: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -251,9 +237,8 @@ function parseStringCommandOption(optionValue: any): string | undefined {
   return (typeof(optionValue) === "string") ? optionValue : undefined;
 }
 
-export function parseWebView(webViewText?: string): devSettings.WebViewType | undefined {
-  const parsedWebView = webViewText ? webViewText.toLowerCase() : undefined;
-  switch (parsedWebView) {
+export function parseWebViewType(webViewText?: string): devSettings.WebViewType | undefined {
+  switch (webViewText ? webViewText.toLowerCase() : undefined) {
     case "ie":
     case "ie11":
     case "internet explorer":
@@ -266,8 +251,6 @@ export function parseWebView(webViewText?: string): devSettings.WebViewType | un
     case "edgechromium":
     case "anaheim":
       return devSettings.WebViewType.EdgeChromium;
-    case "clear":
-      return devSettings.WebViewType.Clear;
     case "default":
     case "":
       return devSettings.WebViewType.Default;
@@ -275,7 +258,7 @@ export function parseWebView(webViewText?: string): devSettings.WebViewType | un
     case undefined:
       return undefined;
     default:
-      throw new Error(`Please select a valid webview instead of '${parsedWebView}'. Options include (ie, edge, edge chromium, clear, default)`);
+      throw new Error(`Please select a valid webViewType instead of '${webViewText!.toLowerCase()}'.`);
   }
 }
 
@@ -360,18 +343,6 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
   }
 }
 
-export async function setWebView(manifestPath: string, webview?: string) {
-  try {
-    const manifest = await readManifestFile(manifestPath);
-
-    validateManifestId(manifest);
-
-    devSettings.setWebView(manifest.id!, parseWebView(webview));
-  } catch (err) {
-    logErrorMessage(err);
-  }
-}
-
 export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
     if (command.host !== undefined || command.port !== undefined || command.path !== undefined || command.extension !== undefined) {
@@ -415,5 +386,24 @@ export async function unregister(manifestPath: string, command: commander.Comman
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
     throw new Error(`The manifest file doesn't contain the id of the Office Add-in.`);
+  }
+}
+
+export async function webView(manifestPath: string, webViewType?: string) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    if (webViewType) {
+      devSettings.setWebView(manifest.id!, parseWebViewType(webViewType));
+    } else {
+      const currentWebViewType = await devSettings.getWebView(manifest.id!);
+      currentWebViewType ? console.log("The webViewType is set to " + currentWebViewType + ".") : 
+      console.log("A specific webViewType has not been selected. Edge is used as a default.");
+    }
+
+  } catch (err) {
+    logErrorMessage(err);
   }
 }

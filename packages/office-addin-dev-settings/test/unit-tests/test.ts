@@ -118,10 +118,6 @@ describe("DevSettingsForAddIn", function() {
         const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, undefined);
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("webView can be set to Default", async function() {
-        await devSettings.setWebView(addinId, devSettings.WebViewType.Default);
-        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "default");
-      });
       it("webView can be set to IE", async function() {
         await devSettings.setWebView(addinId, devSettings.WebViewType.IE);
         assert.strictEqual(await devSettingsWindows.getWebView(addinId), "ie");
@@ -135,7 +131,7 @@ describe("DevSettingsForAddIn", function() {
         assert.strictEqual(await devSettingsWindows.getWebView(addinId), "edge chromium");
       });
       it("webView can be cleared", async function() {
-        await devSettings.setWebView(addinId, devSettings.WebViewType.Clear);
+        await devSettings.setWebView(addinId, devSettings.WebViewType.Default);
         assert.strictEqual(await devSettingsWindows.getWebView(addinId), undefined);
       });
     });
