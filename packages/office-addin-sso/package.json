@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\" \"npm run copy\"",
     "cli": "node lib/cli.js",
-    "copy": "copyfiles src/scripts/*.* lib/scripts && copyfiles src/views/*.* lib/views",
+    "copy": "cpx \"src/scripts/**/*.*\" lib/scripts && cpx \"src/views/**/*.*\" lib/views",
     "test": "mocha -r ts-node/register test/**/*.ts"
   },
   "author": "Office Dev",
@@ -41,7 +41,7 @@
     "@types/mocha": "^5.2.7",
     "@types/morgan": "1.7.35",
     "concurrently": "^4.1.2",
-    "copyfiles": "^2.2.0",
+    "cpx": "1.5.0",
     "mocha": "^7.1.1",
     "office-addin-cli": "^1.0.10",
     "office-addin-dev-certs": "^1.5.1",
