@@ -56,7 +56,6 @@ export async function start(manifestPath: string, platform: string | undefined, 
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
             command.sourceBundleUrlHost, command.sourceBundleUrlPort,
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
-        const webview: devSettings.WebViewType | undefined = devSettings.parseWebView(command.webview);
 
         if (appPlatformToDebug === undefined) {
             throw new Error("Please specify the platform to debug.");
@@ -75,7 +74,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         }
 
         await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
-            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload, webview);
+            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }

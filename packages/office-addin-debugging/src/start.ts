@@ -190,8 +190,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    enableDebugging: boolean = true, enableLiveReload: boolean = true,
-    webView: devSettings.WebViewType | undefined = undefined) {
+    enableDebugging: boolean = true, enableLiveReload: boolean = true) {
     
     try {
 
@@ -225,11 +224,6 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
         //     const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
         //     await devSettings.ensureLoopbackIsEnabled(name);
         // }
-
-        // switch webview
-        if (isWindowsPlatform) {
-            await devSettings.setWebView(manifestInfo.id, webView);
-        }
     
         // enable debugging
         if (isDesktopAppType && isWindowsPlatform) {
