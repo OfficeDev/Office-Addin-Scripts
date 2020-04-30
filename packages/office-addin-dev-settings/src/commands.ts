@@ -400,7 +400,7 @@ export async function webView(manifestPath: string, webViewString?: string) {
     } else {
       const currentWebViewString = await devSettings.getWebView(manifest.id!);
       currentWebViewString ? console.log("The webViewType is set to " + currentWebViewString + ".") : 
-      console.log("A specific webViewType has not been selected. Edge is used as a default.");
+      console.log("A specific webViewType override has not been selected.");
     }
 
   } catch (err) {
