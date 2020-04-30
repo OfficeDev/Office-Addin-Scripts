@@ -179,6 +179,21 @@ export async function getSourceBundleUrl(manifestPath: string) {
   }
 }
 
+async function getWebViewType(manifestPath: string) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+
+    const currentWebViewString = await devSettings.getWebView(manifest.id!);
+    currentWebViewString ? console.log("The webViewType is set to " + currentWebViewString + ".") : 
+    console.log("A specific webViewType override has not been selected.");
+
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 export async function isDebuggingEnabled(manifestPath: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -258,7 +273,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case undefined:
       return undefined;
     default:
-      throw new Error(`Please select a valid webViewType instead of '${webViewString!.toLowerCase()}'.`);
+      throw new Error(`Please select a valid webViewType instead of '${webViewString!}'.`);
   }
 }
 
@@ -343,6 +358,18 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
   }
 }
 
+async function setWebViewType(manifestPath: string, webViewString?: string) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+    devSettings.setWebView(manifest.id!, parseWebViewType(webViewString));
+
+  } catch (err) {
+    logErrorMessage(err);
+  }
+}
+
 export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
     if (command.host !== undefined || command.port !== undefined || command.path !== undefined || command.extension !== undefined) {
@@ -389,21 +416,6 @@ function validateManifestId(manifest: ManifestInfo) {
   }
 }
 
-export async function webView(manifestPath: string, webViewString?: string) {
-  try {
-    const manifest = await readManifestFile(manifestPath);
-
-    validateManifestId(manifest);
-
-    if (webViewString) {
-      devSettings.setWebView(manifest.id!, parseWebViewType(webViewString));
-    } else {
-      const currentWebViewString = await devSettings.getWebView(manifest.id!);
-      currentWebViewString ? console.log("The webViewType is set to " + currentWebViewString + ".") : 
-      console.log("A specific webViewType override has not been selected.");
-    }
-
-  } catch (err) {
-    logErrorMessage(err);
-  }
+export async function webViewOverride(manifestPath: string, webViewString?: string) {
+  webViewString ? setWebViewType(manifestPath, webViewString) : getWebViewType(manifestPath);
 }

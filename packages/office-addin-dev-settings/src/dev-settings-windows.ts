@@ -17,9 +17,9 @@ const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
 const WebViewSelection: string = "WebViewSelection";
-const IE: string = "ie";
-const Edge: string = "edge";
-const EdgeChromium: string = "edge chromium";
+const WebViewTypeString_IE: string = "ie";
+const WebViewTypeString_Edge: string = "edge";
+const WebViewTypeString_EdgeChromium: string = "edge chromium";
 
 
 export async function clearDevSettings(addinId: string): Promise<void> {
@@ -193,13 +193,13 @@ export async function setWebView(addinId: string, webViewType: WebViewType | und
       await registry.deleteValue(key, WebViewSelection);
       break;
     case WebViewType.IE:
-      await registry.addStringValue(key, WebViewSelection, IE);
+      await registry.addStringValue(key, WebViewSelection, WebViewTypeString_IE);
       break;
     case WebViewType.Edge:
-      await registry.addStringValue(key, WebViewSelection, Edge);
+      await registry.addStringValue(key, WebViewSelection, WebViewTypeString_Edge);
       break;
     case WebViewType.EdgeChromium:
-      await registry.addStringValue(key, WebViewSelection, EdgeChromium);
+      await registry.addStringValue(key, WebViewSelection, WebViewTypeString_EdgeChromium);
       break;
   }
 }

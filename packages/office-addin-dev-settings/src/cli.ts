@@ -78,13 +78,13 @@ commander
 commander
     .command("webview <manifest-path> [web-view-type]")
     .description("Allows specifying a preference for the type of web view to use when debugging. Windows only")
-    .action(commands.webView)
+    .action(commands.webViewOverride)
     .on("--help", () => {
         console.log("\nFor [web-view-type], choose one of the following values:\n");
         console.log("\t'edge' for Microsoft Edge");
         console.log("\t'ie' for Internet Explorer 11");
         console.log("\t'default' to remove any preference");
-        console.log("...or leave [web-view-type] blank to return the current setting");
+        console.log("\nOmit [web-vew-type] to see the current setting.");
     });
 
 // if the command is not known, display an error
