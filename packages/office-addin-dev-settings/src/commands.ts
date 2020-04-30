@@ -237,8 +237,8 @@ function parseStringCommandOption(optionValue: any): string | undefined {
   return (typeof(optionValue) === "string") ? optionValue : undefined;
 }
 
-export function parseWebViewType(webViewText?: string): devSettings.WebViewType | undefined {
-  switch (webViewText ? webViewText.toLowerCase() : undefined) {
+export function parseWebViewType(webViewString?: string): devSettings.WebViewType | undefined {
+  switch (webViewString ? webViewString.toLowerCase() : undefined) {
     case "ie":
     case "ie11":
     case "internet explorer":
@@ -258,7 +258,7 @@ export function parseWebViewType(webViewText?: string): devSettings.WebViewType 
     case undefined:
       return undefined;
     default:
-      throw new Error(`Please select a valid webViewType instead of '${webViewText!.toLowerCase()}'.`);
+      throw new Error(`Please select a valid webViewType instead of '${webViewString!.toLowerCase()}'.`);
   }
 }
 
@@ -389,17 +389,17 @@ function validateManifestId(manifest: ManifestInfo) {
   }
 }
 
-export async function webView(manifestPath: string, webViewType?: string) {
+export async function webView(manifestPath: string, webViewString?: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
-    if (webViewType) {
-      devSettings.setWebView(manifest.id!, parseWebViewType(webViewType));
+    if (webViewString) {
+      devSettings.setWebView(manifest.id!, parseWebViewType(webViewString));
     } else {
-      const currentWebViewType = await devSettings.getWebView(manifest.id!);
-      currentWebViewType ? console.log("The webViewType is set to " + currentWebViewType + ".") : 
+      const currentWebViewString = await devSettings.getWebView(manifest.id!);
+      currentWebViewString ? console.log("The webViewType is set to " + currentWebViewString + ".") : 
       console.log("A specific webViewType has not been selected. Edge is used as a default.");
     }
 
