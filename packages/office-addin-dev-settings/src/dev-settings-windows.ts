@@ -17,9 +17,9 @@ const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
 const WebViewSelection: string = "WebViewSelection";
-const WebViewTypeString_IE: string = "ie";
-const WebViewTypeString_Edge: string = "edge";
-const WebViewTypeString_EdgeChromium: string = "edge chromium";
+const WebViewTypeString_IE: string = "IE";
+const WebViewTypeString_Edge: string = "Edge";
+const WebViewTypeString_EdgeChromium: string = "Edge Chromium";
 
 
 export async function clearDevSettings(addinId: string): Promise<void> {

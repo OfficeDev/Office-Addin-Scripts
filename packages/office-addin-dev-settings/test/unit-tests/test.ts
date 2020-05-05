@@ -120,15 +120,15 @@ describe("DevSettingsForAddIn", function() {
       });
       it("webView can be set to IE", async function() {
         await devSettings.setWebView(addinId, devSettings.WebViewType.IE);
-        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "ie");
+        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "IE");
       });
       it("webView can be set to Edge", async function() {
         await devSettings.setWebView(addinId, devSettings.WebViewType.Edge);
-        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "edge");
+        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "Edge");
       });
       it("webView can be set to Edge Chromium", async function() {
         await devSettings.setWebView(addinId, devSettings.WebViewType.EdgeChromium);
-        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "edge chromium");
+        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "Edge Chromium");
       });
       it("webView can be cleared", async function() {
         await devSettings.setWebView(addinId, devSettings.WebViewType.Default);

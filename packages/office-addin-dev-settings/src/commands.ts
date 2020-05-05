@@ -185,9 +185,9 @@ async function getWebViewType(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    const currentWebViewString = await devSettings.getWebView(manifest.id!);
-    currentWebViewString ? console.log("The webViewType is set to " + currentWebViewString + ".") : 
-    console.log("A specific webViewType override has not been selected.");
+    const webViewString = await devSettings.getWebView(manifest.id!);
+    webViewString ? console.log(`The webViewType is set to ${webViewString}.`) : 
+    console.log("No webViewType override has been set.");
 
   } catch (err) {
     logErrorMessage(err);
