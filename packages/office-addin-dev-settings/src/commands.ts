@@ -189,6 +189,8 @@ async function getWebViewType(manifestPath: string) {
     webViewString ? console.log(`The webViewType is set to ${webViewString}.`) : 
     console.log("No webViewType override has been set.");
 
+    return parseWebViewType(webViewString);
+
   } catch (err) {
     logErrorMessage(err);
   }
@@ -268,7 +270,6 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
       return devSettings.WebViewType.EdgeChromium;
     case "default":
     case "":
-      return devSettings.WebViewType.Default;
     case null:
     case undefined:
       return undefined;
