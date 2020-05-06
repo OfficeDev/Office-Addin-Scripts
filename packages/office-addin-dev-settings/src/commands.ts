@@ -362,9 +362,16 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
 async function setWebViewType(manifestPath: string, webViewString?: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
+    const webViewType = parseWebViewType(webViewString)
 
     validateManifestId(manifest);
-    devSettings.setWebView(manifest.id!, parseWebViewType(webViewString));
+    devSettings.setWebView(manifest.id!, webViewType).then(() => {
+        webViewType ? console.log(`WebView override set to ${parseWebViewType(webViewString)}`) :
+        console.log("WebView override set back to default");
+      }, (reason) => {
+        console.exception(`Something occured while trying to run this command: ${reason}`);
+      }
+    );
 
   } catch (err) {
     logErrorMessage(err);

@@ -18,10 +18,10 @@ export enum DebuggingMethod {
 }
 
 export enum WebViewType {
-  Default,
-  IE,
-  Edge,
-  EdgeChromium,
+  Default = "Default",
+  IE = "IE",
+  Edge = "Edge",
+  EdgeChromium = "Edge Chromium",
 }
 
 export class RegisteredAddin {
