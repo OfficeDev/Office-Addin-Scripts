@@ -257,7 +257,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case undefined:
       return undefined;
     default:
-      throw new Error(`Please select a valid webViewType instead of '${webViewString!}'.`);
+      throw new Error(`Please select a valid web view type instead of '${webViewString!}'.`);
   }
 }
 
@@ -395,11 +395,11 @@ export async function webView(manifestPath: string, webViewString?: string) {
     validateManifestId(manifest);
     let webViewType: devSettings.WebViewType | undefined;
     
-    if (webViewString) {
+    if (webViewString === undefined) {
+      webViewType = await devSettings.getWebView(manifest.id!);
+    } else {
       webViewType = parseWebViewType(webViewString)
       await devSettings.setWebView(manifest.id!, webViewType);
-    } else {
-      webViewType = await devSettings.getWebView(manifest.id!);
     }
 
     console.log(webViewType
