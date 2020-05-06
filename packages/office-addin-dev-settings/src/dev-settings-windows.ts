@@ -3,7 +3,7 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
-import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents } from "./dev-settings";
+import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
@@ -16,6 +16,8 @@ const SourceBundlePort: string = "SourceBundlePort";
 const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
+const WebViewSelection: string = "WebViewSelection";
+
 
 export async function clearDevSettings(addinId: string): Promise<void> {
   return deleteDeveloperSettingsRegistryKey(addinId);
@@ -99,6 +101,12 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
   return components;
 }
 
+export async function getWebView(addinId: string): Promise<WebViewType | undefined> {
+  const key = getDeveloperSettingsRegistryKey(addinId);
+  const webViewString = await registry.getStringValue(key, WebViewSelection);
+  return toWebViewType(webViewString);
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
 
@@ -170,6 +178,37 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
     } else {
       await registry.deleteValue(key, SourceBundleExtension);
     }
+  }
+}
+
+export async function setWebView(addinId: string, webViewType: WebViewType | undefined): Promise<void> {
+  const key = getDeveloperSettingsRegistryKey(addinId);
+  switch (webViewType){
+    case undefined:
+    case WebViewType.Default:
+      await registry.deleteValue(key, WebViewSelection);
+      break;
+    case WebViewType.IE:
+    case WebViewType.Edge:
+    case WebViewType.EdgeChromium:
+      const webViewString: string = <string> webViewType;
+      await registry.addStringValue(key, WebViewSelection, webViewString);
+      break;
+    default:
+      throw new Error(`The webViewType ${webViewType} is not supported.`);
+  }
+}
+
+function toWebViewType(webViewString?: string): WebViewType | undefined {
+  switch (webViewString ? webViewString.toLowerCase() : undefined) {
+    case "ie":
+      return WebViewType.IE;
+    case "edge":
+      return WebViewType.Edge;
+    case "edge chromium":
+      return WebViewType.EdgeChromium;
+    default:
+      return undefined;
   }
 }
 

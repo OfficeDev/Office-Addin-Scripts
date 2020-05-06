@@ -6,6 +6,7 @@ import { readManifestFile } from "office-addin-manifest";
 import * as fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
+import { platform } from "os";
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
@@ -14,6 +15,13 @@ export enum DebuggingMethod {
   Proxy,
   /** @deprecated use Proxy */
   Web = Proxy,
+}
+
+export enum WebViewType {
+  Default = "Default",
+  IE = "IE",
+  Edge = "Edge",
+  EdgeChromium = "Edge Chromium",
 }
 
 export class RegisteredAddin {
@@ -168,6 +176,15 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
   }
 }
 
+export async function getWebView(addinId: string): Promise<WebViewType | undefined> {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.getWebView(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   switch (process.platform) {
     case "win32":
@@ -203,6 +220,15 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.setSourceBundleUrl(addinId, components);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function setWebView(addinId: string, webViewType: WebViewType | undefined) {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.setWebView(addinId, webViewType);;
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

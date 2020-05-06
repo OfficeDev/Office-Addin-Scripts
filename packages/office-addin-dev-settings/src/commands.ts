@@ -237,6 +237,30 @@ function parseStringCommandOption(optionValue: any): string | undefined {
   return (typeof(optionValue) === "string") ? optionValue : undefined;
 }
 
+export function parseWebViewType(webViewString?: string): devSettings.WebViewType | undefined {
+  switch (webViewString ? webViewString.toLowerCase() : undefined) {
+    case "ie":
+    case "ie11":
+    case "internet explorer":
+    case "internetexplorer":
+      return devSettings.WebViewType.IE;
+    case "edge":
+    case "spartan":
+      return devSettings.WebViewType.Edge;
+    case "edge chromium":
+    case "edgechromium":
+    case "anaheim":
+      return devSettings.WebViewType.EdgeChromium;
+    case "default":
+    case "":
+    case null:
+    case undefined:
+      return undefined;
+    default:
+      throw new Error(`Please select a valid web view type instead of '${webViewString!}'.`);
+  }
+}
+
 export async function register(manifestPath: string, command: commander.Command) {
   try {
     await devSettings.registerAddIn(manifestPath);
@@ -361,5 +385,28 @@ export async function unregister(manifestPath: string, command: commander.Comman
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
     throw new Error(`The manifest file doesn't contain the id of the Office Add-in.`);
+  }
+}
+
+export async function webView(manifestPath: string, webViewString?: string) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+    let webViewType: devSettings.WebViewType | undefined;
+    
+    if (webViewString === undefined) {
+      webViewType = await devSettings.getWebView(manifest.id!);
+    } else {
+      webViewType = parseWebViewType(webViewString)
+      await devSettings.setWebView(manifest.id!, webViewType);
+    }
+
+    console.log(webViewType
+      ? `The web view type is set to ${webViewType}.`
+      : "The web view type has not been set.");
+
+  } catch (err) {
+    logErrorMessage(err);
   }
 }
