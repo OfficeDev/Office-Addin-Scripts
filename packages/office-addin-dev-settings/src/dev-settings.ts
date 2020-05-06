@@ -176,7 +176,7 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
   }
 }
 
-export async function getWebView(addinId: string): Promise<string | undefined> {
+export async function getWebView(addinId: string): Promise<WebViewType | undefined> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.getWebView(addinId);

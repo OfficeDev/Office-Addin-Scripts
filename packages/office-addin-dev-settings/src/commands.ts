@@ -179,23 +179,6 @@ export async function getSourceBundleUrl(manifestPath: string) {
   }
 }
 
-async function getWebViewType(manifestPath: string) {
-  try {
-    const manifest = await readManifestFile(manifestPath);
-
-    validateManifestId(manifest);
-
-    const webViewString = await devSettings.getWebView(manifest.id!);
-    webViewString ? console.log(`The webViewType is set to ${webViewString}.`) : 
-    console.log("No webViewType override has been set.");
-
-    return parseWebViewType(webViewString);
-
-  } catch (err) {
-    logErrorMessage(err);
-  }
-}
-
 export async function isDebuggingEnabled(manifestPath: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -359,23 +342,6 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
   }
 }
 
-async function setWebViewType(manifestPath: string, webViewString?: string) {
-  try {
-    const manifest = await readManifestFile(manifestPath);
-    const webViewType = parseWebViewType(webViewString)
-
-    validateManifestId(manifest);
-    devSettings.setWebView(manifest.id!, webViewType).then(() => {
-        webViewType ? console.log(`WebView override set to ${parseWebViewType(webViewString)}`) :
-        console.log("WebView override set back to default");
-      }
-    );
-
-  } catch (err) {
-    logErrorMessage(err);
-  }
-}
-
 export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
     if (command.host !== undefined || command.port !== undefined || command.path !== undefined || command.extension !== undefined) {
@@ -422,6 +388,25 @@ function validateManifestId(manifest: ManifestInfo) {
   }
 }
 
-export async function webViewOverride(manifestPath: string, webViewString?: string) {
-  webViewString ? setWebViewType(manifestPath, webViewString) : getWebViewType(manifestPath);
+export async function webView(manifestPath: string, webViewString?: string) {
+  try {
+    const manifest = await readManifestFile(manifestPath);
+
+    validateManifestId(manifest);
+    let webViewType: devSettings.WebViewType | undefined;
+    
+    if (webViewString) {
+      webViewType = parseWebViewType(webViewString)
+      await devSettings.setWebView(manifest.id!, webViewType);
+    } else {
+      webViewType = await devSettings.getWebView(manifest.id!);
+    }
+
+    console.log(webViewType
+      ? `The web view type is set to ${webViewType}.`
+      : "The web view type has not been set.");
+
+  } catch (err) {
+    logErrorMessage(err);
+  }
 }

@@ -101,9 +101,10 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
   return components;
 }
 
-export async function getWebView(addinId: string): Promise<string | undefined> {
+export async function getWebView(addinId: string): Promise<WebViewType | undefined> {
   const key = getDeveloperSettingsRegistryKey(addinId);
-  return await registry.getStringValue(key, WebViewSelection);
+  const webViewString = await registry.getStringValue(key, WebViewSelection);
+  return toWebViewType(webViewString);
 }
 
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
@@ -183,8 +184,6 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
 export async function setWebView(addinId: string, webViewType: WebViewType | undefined): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   switch (webViewType){
-    default:
-      break;
     case undefined:
     case WebViewType.Default:
       await registry.deleteValue(key, WebViewSelection);
@@ -192,8 +191,24 @@ export async function setWebView(addinId: string, webViewType: WebViewType | und
     case WebViewType.IE:
     case WebViewType.Edge:
     case WebViewType.EdgeChromium:
-      await registry.addStringValue(key, WebViewSelection, webViewType);
+      const webViewString: string = <string> webViewType;
+      await registry.addStringValue(key, WebViewSelection, webViewString);
       break;
+    default:
+      throw new Error(`The webViewType ${webViewType} is not supported.`);
+  }
+}
+
+function toWebViewType(webViewString?: string): WebViewType | undefined {
+  switch (webViewString ? webViewString.toLowerCase() : undefined) {
+    case "ie":
+      return WebViewType.IE;
+    case "edge":
+      return WebViewType.Edge;
+    case "edge chromium":
+      return WebViewType.EdgeChromium;
+    default:
+      return undefined;
   }
 }
 
