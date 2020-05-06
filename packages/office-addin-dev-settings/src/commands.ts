@@ -368,8 +368,6 @@ async function setWebViewType(manifestPath: string, webViewString?: string) {
     devSettings.setWebView(manifest.id!, webViewType).then(() => {
         webViewType ? console.log(`WebView override set to ${parseWebViewType(webViewString)}`) :
         console.log("WebView override set back to default");
-      }, (reason) => {
-        console.exception(`Something occured while trying to run this command: ${reason}`);
       }
     );
 
