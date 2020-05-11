@@ -70,7 +70,7 @@ export class OfficeAddinUsageData {
         isForTesting: false,
         ...usageDataOptions
       };
-      
+
       if (this.options.instrumentationKey === undefined) {
         throw new Error("Instrumentation Key not defined - cannot create usage data object");
       }
@@ -85,13 +85,13 @@ export class OfficeAddinUsageData {
 
       if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
         this.usageDataOptIn();
-      } else {
-        // Don't write out office-addin-usage-data file for Office-Addin-Scripts packages
-        const isOfficeAddinScriptsPackage = defaults.officeAddinScriptsPackages.includes(this.options.projectName)
-          && this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools
-        if (!isOfficeAddinScriptsPackage){
-          jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
-        }
+      }
+
+      // Generator-office will not raise a prompt because the yeoman generator creates the prompt.  If the projectName
+      // is defaults.generatorOffice and a office-addin-usage-data file hasn't been written yet, write one out.
+      if (this.options.projectName === defaults.generatorOffice && jsonData.needToPromptForUsageData(this.options.groupName)
+        && this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools) {
+        jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
       }
 
       appInsights.setup(this.options.instrumentationKey)
