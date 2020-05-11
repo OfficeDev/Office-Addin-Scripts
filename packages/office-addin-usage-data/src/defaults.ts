@@ -7,3 +7,12 @@ import * as path from "path";
 export const usageDataJsonFilePath: string = path.join(os.homedir(), "/office-addin-usage-data.json");
 export const groupName = "office-addin-usage-data";
 export const instrumentationKeyForOfficeAddinCLITools = "de0d9e7c-1f46-4552-bc21-4e43e489a015";
+// Office-Addin-Scripts packages currently sending usage data
+export const officeAddinScriptsPackages: string[] = [
+    "office-addin-debugging",
+    "office-addin-dev-certs",
+    "office-addin-lint",
+    "office-addin-manifest",
+    "office-addin-sso",
+    "office-addin-usage-data"
+]
