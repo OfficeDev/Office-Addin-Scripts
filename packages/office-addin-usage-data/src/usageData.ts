@@ -83,15 +83,15 @@ export class OfficeAddinUsageData {
         this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
       }
 
-      if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
-        this.usageDataOptIn();
-      }
-
       // Generator-office will not raise a prompt because the yeoman generator creates the prompt.  If the projectName
       // is defaults.generatorOffice and a office-addin-usage-data file hasn't been written yet, write one out.
-      if (this.options.projectName === defaults.generatorOffice && jsonData.needToPromptForUsageData(this.options.groupName)
-        && this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools) {
+      if (this.options.projectName === defaults.generatorOffice && this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools
+        && jsonData.needToPromptForUsageData(this.options.groupName)) {
         jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+      }
+
+      if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
+        this.usageDataOptIn();
       }
 
       appInsights.setup(this.options.instrumentationKey)
