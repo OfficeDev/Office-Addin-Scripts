@@ -70,7 +70,7 @@ export class OfficeAddinUsageData {
         isForTesting: false,
         ...usageDataOptions
       };
-      
+
       if (this.options.instrumentationKey === undefined) {
         throw new Error("Instrumentation Key not defined - cannot create usage data object");
       }
@@ -83,10 +83,15 @@ export class OfficeAddinUsageData {
         this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
       }
 
+      // Generator-office will not raise a prompt because the yeoman generator creates the prompt.  If the projectName
+      // is defaults.generatorOffice and a office-addin-usage-data file hasn't been written yet, write one out.
+      if (this.options.projectName === defaults.generatorOffice && this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools
+        && jsonData.needToPromptForUsageData(this.options.groupName)) {
+        jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+      }
+
       if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
         this.usageDataOptIn();
-      } else {
-        jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
       }
 
       appInsights.setup(this.options.instrumentationKey)
@@ -121,10 +126,10 @@ export class OfficeAddinUsageData {
       usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
       try {
         for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          usageDataEvent.properties[key] = value; 
+          usageDataEvent.properties[key] = value;
           usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-        
+
         this.usageDataClient.trackEvent(usageDataEvent);
         this.eventsSent++;
       } catch (err) {
@@ -271,8 +276,8 @@ export class OfficeAddinUsageData {
    */
   public sendUsageDataSuccessEvent(method: string, data: object = {}) {
     this.sendUsageDataEvent({
-      Succeeded: true, 
-      Method: method, 
+      Succeeded: true,
+      Method: method,
       ...data
     });
   }
@@ -285,10 +290,10 @@ export class OfficeAddinUsageData {
   public sendUsageDataEvent(data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        let eventTelemetryObj= new appInsights.Contracts.EventData();
+        let eventTelemetryObj = new appInsights.Contracts.EventData();
         eventTelemetryObj.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
         eventTelemetryObj.properties = {
-          ...this.defaultData, 
+          ...this.defaultData,
           ...data
         };
         this.usageDataClient.trackEvent(eventTelemetryObj);
@@ -315,9 +320,9 @@ export class OfficeAddinUsageData {
           properties: {}
         };
         Object.entries({
-          Succeeded: false, 
-          Method: method, 
-          ...this.defaultData, 
+          Succeeded: false,
+          Method: method,
+          ...this.defaultData,
           ...data
         }).forEach((entry) => {
           exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
