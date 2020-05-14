@@ -11,6 +11,6 @@
     "update-packages": "lerna exec --concurrency 1 --no-sort --stream npm update --dev"
   },
   "devDependencies": {
-    "lerna": "^3.20.2"
+    "lerna": "^3.21.0"
   }
 }
