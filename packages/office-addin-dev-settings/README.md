@@ -13,6 +13,7 @@ Provides the ability to configure developer settings for Office Add-ins.
 * [sideload](#sideload)
 * [source-bundle-url](#source-bundle-url)
 * [unregister](#unregister)
+* [webview](#webview)
 
 #
 
@@ -178,6 +179,8 @@ Options:
 
 Specify the Office application to load.
 
+#
+
 ### source-bundle-url 
 Configure the url used to obtain the source bundle from the packager for an Office Add-in.
 
@@ -227,5 +230,20 @@ Syntax:
 `office addin-dev-settings register <manifest> [options]`
 
 `manifest`: path to manifest file. 
+
+#
+
+### webview 
+Switches the webview runtime in Office for testing and development scenarios.
+
+> Office must be running on the Beta channel to switch runtimes
+
+Syntax:
+
+`office addin-dev-settings webview <manifest> <runtime>`
+
+`manifest`: path to manifest file. 
+
+`runtime`: Office runtime to load (currently accepts 'ie', 'edge', or 'default'). 
 
 #
