@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us fix issues
 title: ''
 labels: needs triage
 assignees: ''
@@ -9,7 +9,7 @@ assignees: ''
 
 # Prerequisites
 
-Please answer the following questions for yourself before submitting an issue. 
+Please answer the following questions before submitting an issue. 
 **YOU MAY DELETE THE PREREQUISITES SECTION.**
 - [ ] I am running the latest version of Node and the tools
 - [ ] I checked the documentation and found no answer
