@@ -596,15 +596,15 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
-      // it("Project", async function() {
-      //   const validation = await validateManifest("test/manifests/TaskPane.Project.manifest.xml");
-      //   assert.strictEqual(validation.isValid, true);
-      //   assert.strictEqual(validation.status, 200);
-      //   assert.strictEqual(validation.report!.errors!.length, 0);
-      //   assert.strictEqual(validation.report!.notes!.length > 0, true);
-      //   assert.strictEqual(validation.report!.warnings!.length, 0);
-      //   assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
-      // });
+      it("Project", async function() {
+        const validation = await validateManifest("test/manifests/TaskPane.Project.manifest.xml");
+        assert.strictEqual(validation.isValid, true);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 0);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
+      });
       it("Word", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Word.manifest.xml");
