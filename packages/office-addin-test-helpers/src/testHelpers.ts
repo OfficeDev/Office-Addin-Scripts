@@ -19,12 +19,10 @@ export async function pingTestServer(port: number = defaultPort): Promise<object
 }
 
 export async function sendTestResults(data: object, port: number = defaultPort): Promise<boolean> {
-  const json = JSON.stringify(data);
   const url: string = `https://localhost:${port}/results/`;
-  const dataUrl: string = url + "?data=" + encodeURIComponent(json);
 
   try {
-    fetch(dataUrl, {
+    fetch(url, {
       method: "post",
       body: JSON.stringify(data),
       headers: { "Content-Type": "application/json" },
