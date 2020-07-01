@@ -33,6 +33,7 @@ export class TestServer {
             // create express server instance
             const options = await devCerts.getHttpsServerOptions();
             this.app.use(cors());
+            this.app.use(express.json());
             this.server = https.createServer(options, this.app);
 
             // listen for 'ping'
@@ -45,7 +46,7 @@ export class TestServer {
             this.resultsPromise = new Promise<JSON>(async (resolveResults) => {
                 this.app.post("/results", async (req: any, res: any) => {
                     res.send("200");
-                    this.jsonData = JSON.parse(req.query.data);
+                    this.jsonData = req.body;
                     resolveResults(this.jsonData);
                 });
             });
