@@ -15,12 +15,10 @@ import { isCallSignatureDeclaration, isIdentifier } from "typescript";
 // Rule Definition
 //------------------------------------------------------------------------------
 
-
-let excelRunArray: Array<TSESTree.Range> = [];
-
-let excelRunToContextMap: Map<TSESTree.Node, TSESTree.Identifier> = new Map<TSESTree.Node, TSESTree.Identifier>();
-let contextToExcelRunMap: Map<TSESTree.Node, TSESTree.Node> = new Map<TSESTree.Node, TSESTree.Node>();
-let excelRunNodes: Array<TSESTree.MemberExpression> = [];
+// let excelRunToContextMap: Map<TSESTree.Node, TSESTree.Identifier> = new Map<TSESTree.Node, TSESTree.Identifier>();
+// let contextToExcelRunMap: Map<TSESTree.Node, TSESTree.Node> = new Map<TSESTree.Node, TSESTree.Node>();
+let excelRunToContextMap = new Map<TSESTree.Node, TSESTree.Identifier>();
+let contextToExcelRunMap = new Map<TSESTree.Node, TSESTree.Node>();
 
 function isInExcelRun(node: TSESTree.Node): TSESTree.Node | undefined {
     if (excelRunToContextMap.has(node)) {

@@ -8,9 +8,16 @@
     "eslint-plugin"
   ],
   "author": "Artur Tarasenko (artarase)",
-  "main": "lib/index.js",
+  "main": "lib/",
   "scripts": {
-    "test": "mocha tests --recursive"
+    "build": "babel --extensions .js,.ts src --out-dir lib --copy-files",
+    "postbuild": "rimraf lib/__tests__ lib/**/__tests__",
+    "lint": "eslint . --ignore-pattern '!.eslintrc.js' --ext js,ts",
+    "prepack": "yarn build",
+    "prettylint": "prettylint docs/**/*.md README.md package.json",
+    "test": "jest",
+    "tools:generate-rules-table": "ts-node -T tools/generate-rules-table",
+    "typecheck": "tsc -p ."
   },
   "dependencies": {
     "@typescript-eslint/experimental-utils": "~2.32.0",
@@ -22,7 +29,9 @@
     "@typescript-eslint/parser": "~2.32.0",
     "eslint": "~3.9.1",
     "mocha": "^8.0.1",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "jest": "^25.2.0",
+    "jest-runner-eslint": "^0.10.0"
   },
   "engines": {
     "node": ">=0.10.0"
