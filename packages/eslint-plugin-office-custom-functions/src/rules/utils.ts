@@ -5,7 +5,7 @@ import {
   TSESLint,
   TSESTree,
 } from '@typescript-eslint/experimental-utils';
-import { version } from '../../package.json';
+let version = "0.0.8";
 
 const REPO_URL = 'https://github.com/arttarawork/Office-Addin-Scripts';
 
