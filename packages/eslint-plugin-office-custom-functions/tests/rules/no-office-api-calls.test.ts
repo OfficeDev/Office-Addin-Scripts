@@ -36,41 +36,40 @@ ruleTester.run('no-office-api-calls', rule, {
   ],
   // Error cases. `// ERROR: x` marks the spot where the error occurs.
   invalid: [
-    // Deprecated variable with standard and destructuring access
-    // getInvalidTestCase(`
-    // /**
-    //  * Adds two numbers.
-    //  * @customfunction
-    //  * @param first First number
-    //  * @param second Second number
-    //  * @returns The sum of the two numbers.
-    //  */
-    // /* global clearInterval, console, setInterval */
+    getInvalidTestCase(`
+    /**
+     * Adds two numbers.
+     * @customfunction
+     * @param first First number
+     * @param second Second number
+     * @returns The sum of the two numbers.
+     */
+    /* global clearInterval, console, setInterval */
     
-    // export function add(first: number, second: number): number {
-    //   try {
-    //     Excel.run(function (context) { //ERROR Excel.run
-    //       /**
-    //        * Insert your Excel code here
-    //        */
-    //       var sheet = context.workbook.worksheets.getItem("Sheet1");
-    //       const range = sheet.getRange("A1:C3");
+    export function add(first: number, second: number): number {
+      try {
+        Excel.run(function (context) {
+          /**
+           * Insert your Excel code here
+           */
+          var sheet = context.workbook.worksheets.getItem("Sheet1");
+          const range = sheet.getRange("A1:C3");
     
-    //       // Update the fill color
-    //       range.format.fill.color = "yellow"; 
+          // Update the fill color
+          range.format.fill.color = "yellow"; 
     
-    //       return context.sync();
-    //     });
-    //   } catch (error) {
-    //     return 69;
-    //   }
-    //   return first + second;
-    // }
-    // `),
+          return context.sync();                                        // ERROR: context.sync
+        });
+      } catch (error) {
+        return 69;
+      }
+      return first + second;
+    }
+    `),
   ]
 });
 
-function getValidTestCase(code): TSESLint.ValidTestCase<Options> {
+function getValidTestCase(code: string): TSESLint.ValidTestCase<Options> {
   return {
     code,
     filename: 'fixtures/file.ts',

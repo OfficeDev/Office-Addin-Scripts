@@ -5,6 +5,8 @@ import {
   TSESLint,
   TSESTree,
 } from '@typescript-eslint/experimental-utils';
+import { isReassignmentTarget } from 'tsutils';
+import * as ts from 'typescript';
 let version = "0.0.8";
 
 const REPO_URL = 'https://github.com/arttarawork/Office-Addin-Scripts';
@@ -616,10 +618,6 @@ export type FunctionExpression =
   | TSESTree.ArrowFunctionExpression
   | TSESTree.FunctionExpression;
 
-export const isFunction = (node: TSESTree.Node): node is FunctionExpression =>
-  node.type === AST_NODE_TYPES.FunctionExpression ||
-  node.type === AST_NODE_TYPES.ArrowFunctionExpression;
-
 export const isHook = (
   node: TSESTree.CallExpression,
 ): node is JestFunctionCallExpressionWithIdentifierCallee<HookName> =>
@@ -772,6 +770,151 @@ export const isDescendantOf = (descendantNode: TSESTree.Node, ancestorNode: TSES
 }
 
 //Requires more work
-export const isInCustomFunction = (node: TSESTree.Node, context: TSESLint.RuleContext<any,any>) : boolean => {
+export const isCustomFunction = (node: TSESTree.Node, context: TSESLint.RuleContext<any,any>) : boolean => {
     return !!context.getSourceCode().getJSDocComment(node);
+}
+
+type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;
+export type Options = unknown[];
+export type MessageIds = string;
+
+export function getCustomFunction(
+  id: TSESTree.Identifier,
+  services: RequiredParserServices,
+  context: TSESLint.RuleContext<MessageIds, Options>,
+) {
+  const tc = services.program.getTypeChecker();
+  const callExpression = getCallExpression(context, id);
+
+  if (callExpression) {
+    const tsCallExpression = services.esTreeNodeToTSNodeMap.get(
+      callExpression,
+    ) as ts.CallLikeExpression;
+    const signature = tc.getResolvedSignature(tsCallExpression);
+    if (signature) {
+      const deprecation = getJsDocCustomFunction(signature.getJsDocTags());
+      if (deprecation) {
+        return deprecation;
+      }
+    }
+  }
+
+  const symbol = getSymbol(id, services, tc);
+
+  if (!symbol) {
+    return undefined;
+  }
+  if (callExpression && isFunction(symbol)) {
+    return undefined;
+  }
+
+  return getJsDocCustomFunction(symbol.getJsDocTags());
+}
+
+function getSymbol(
+  id: TSESTree.Identifier,
+  services: RequiredParserServices,
+  tc: ts.TypeChecker,
+) {
+  let symbol: ts.Symbol | undefined;
+  const tsId = services.esTreeNodeToTSNodeMap.get(
+    id as TSESTree.Node,
+  ) as ts.Identifier;
+  const parent = tsId.parent;
+
+  if (parent.kind === ts.SyntaxKind.BindingElement) {
+    symbol = tc.getTypeAtLocation(parent.parent).getProperty(tsId.text);
+  } else if (
+    (isPropertyAssignment(parent) && parent.name === tsId) ||
+    (isShorthandPropertyAssignment(parent) &&
+      parent.name === tsId &&
+      isReassignmentTarget(tsId))
+  ) {
+    try {
+      symbol = tc.getPropertySymbolOfDestructuringAssignment(tsId);
+    } catch (e) {
+      // we are in object literal, not destructuring
+      // no obvious easy way to check that in advance
+      symbol = tc.getSymbolAtLocation(tsId);
+    }
+  } else {
+    symbol = tc.getSymbolAtLocation(tsId);
+  }
+
+  if (symbol && (symbol.flags & ts.SymbolFlags.Alias) !== 0) {
+    symbol = tc.getAliasedSymbol(symbol);
+  }
+  return symbol;
+}
+
+function getCallExpression(
+  context: TSESLint.RuleContext<MessageIds, Options>,
+  id: TSESTree.Node,
+): TSESTree.CallExpression | TSESTree.TaggedTemplateExpression | undefined {
+  const ancestors = context.getAncestors();
+  let callee = id;
+  let parent =
+    ancestors.length > 0 ? ancestors[ancestors.length - 1] : undefined;
+
+  if (parent && parent.type === 'MemberExpression' && parent.property === id) {
+    callee = parent;
+    parent = ancestors.length > 1 ? ancestors[ancestors.length - 2] : undefined;
+  }
+
+  if (isCallExpression(parent, callee)) {
+    return parent;
+  }
+}
+
+function isCallExpression(
+  node: TSESTree.Node | undefined,
+  callee: TSESTree.Node,
+): node is TSESTree.CallExpression | TSESTree.TaggedTemplateExpression {
+  if (node) {
+    if (node.type === 'NewExpression' || node.type === 'CallExpression') {
+      return node.callee === callee;
+    } else if (node.type === 'TaggedTemplateExpression') {
+      return node.tag === callee;
+    }
+  }
+  return false;
+}
+
+function getJsDocCustomFunction(tags: ts.JSDocTagInfo[]) {
+  for (const tag of tags) {
+    if (tag.name === 'customFunction') {
+      return { reason: tag.text || '' };
+    }
+  }
+  return undefined;
+}
+
+function isFunction(symbol: ts.Symbol) {
+  const { declarations } = symbol;
+  if (declarations === undefined || declarations.length === 0) {
+    return false;
+  }
+  switch (declarations[0].kind) {
+    case ts.SyntaxKind.MethodDeclaration:
+    case ts.SyntaxKind.FunctionDeclaration:
+    case ts.SyntaxKind.FunctionExpression:
+    case ts.SyntaxKind.MethodSignature:
+      return true;
+    default:
+      return false;
+  }
+}
+
+function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
+  return node.kind === ts.SyntaxKind.PropertyAssignment;
+}
+
+function isShorthandPropertyAssignment(
+  node: ts.Node,
+): node is ts.ShorthandPropertyAssignment {
+  return node.kind === ts.SyntaxKind.ShorthandPropertyAssignment;
+}
+
+function isShortHandProperty(parent: TSESTree.Node | undefined): boolean {
+  return !!parent && parent.type === 'Property' && parent.shorthand;
 }

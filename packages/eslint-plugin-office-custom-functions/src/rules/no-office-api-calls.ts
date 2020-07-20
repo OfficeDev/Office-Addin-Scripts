@@ -1,5 +1,6 @@
 import { TSESTree, ESLintUtils, TSESLint, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
 import { isCallSignatureDeclaration, isIdentifier } from "typescript";
+import { isOfficeBoilerplate, getCustomFunction } from './utils'
 
 /**
  * @fileoverview Prevents office api calls
@@ -52,40 +53,52 @@ export default createRule<Options, MessageIds>({
     defaultOptions: [],
         
     create(ruleContext) {
+        const services = ESLintUtils.getParserServices(ruleContext);
+
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
-                ruleContext.report({
-                    messageId: "contextSync",
-                    loc: node.loc,
-                    node: node
-                });
-                // if(isOfficeBoilerplate(node)) {
-                //     // if(node.arguments[0].type == AST_NODE_TYPES.FunctionExpression
-                //     //     && node.arguments[0].params.length > 0
-                //     //     && node.arguments[0].params[0].type == AST_NODE_TYPES.Identifier) {
-                //     //     excelRunToContextMap.set(node, node.arguments[0].params[0]);
-                //     //     contextToExcelRunMap.set(node.arguments[0].params[0], node);
-                //     // }
-                // }
+                if(isOfficeBoilerplate(node)) {
+                    if(node.arguments[0].type == "FunctionExpression"
+                        && node.arguments[0].params.length > 0
+                        && node.arguments[0].params[0].type == "Identifier") {
+                        excelRunToContextMap.set(node, node.arguments[0].params[0]);
+                        contextToExcelRunMap.set(node.arguments[0].params[0], node);
+                    }
+                }
             },
 
             Identifier: function(node: TSESTree.Identifier) {
-                // let excelRunNode = isInExcelRun(node);
-                // let originalContext: TSESTree.Identifier | undefined;
+                let excelRunNode = isInExcelRun(node);
+                let originalContext: TSESTree.Identifier | undefined;
 
-                // if (!!excelRunNode && excelRunToContextMap.has(excelRunNode)) {
-                //     originalContext = excelRunToContextMap.get(excelRunNode);
-                //     if(originalContext?.name == node.name) {
-                //         contextToExcelRunMap.set(node, excelRunNode);
-                //         console.log(excelRunToContextMap);
-                //         console.log(contextToExcelRunMap);
-                //     }
-                // }
-                ruleContext.report({
-                    messageId: "contextSync",
-                    loc: node.loc,
-                    node: node
-                });
+                if (!!excelRunNode && excelRunToContextMap.has(excelRunNode)) {
+
+                    originalContext = excelRunToContextMap.get(excelRunNode);
+                    if(originalContext?.name == node.name) {
+                        contextToExcelRunMap.set(node, excelRunNode);
+                        if (node.parent
+                            && node.parent.type == "MemberExpression"
+                            && node.parent.property.type == "Identifier"
+                            && node.parent.property.name == "sync") {
+                                
+                                ruleContext.report({
+                                    messageId: "contextSync",
+                                    loc: node.parent.loc,
+                                    node: node.parent
+                                });
+
+                                // const customFunction = getCustomFunction(node, services, ruleContext);
+
+                                // if (customFunction) {
+                                //     ruleContext.report({
+                                //         messageId: "contextSync",
+                                //         loc: node.parent.loc,
+                                //         node: node.parent
+                                //     });
+                                // }
+                        }
+                    }
+                }
             },
 
             // "Identifier:exit": function(node: TSESTree.Identifier) {
