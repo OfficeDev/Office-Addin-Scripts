@@ -5,7 +5,7 @@ import {
   TSESLint,
   TSESTree,
 } from '@typescript-eslint/experimental-utils';
-import { isReassignmentTarget } from 'tsutils';
+import { isReassignmentTarget, getJsDoc } from 'tsutils';
 import * as ts from 'typescript';
 let version = "0.0.8";
 
@@ -778,143 +778,59 @@ type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;
 export type Options = unknown[];
 export type MessageIds = string;
 
-export function getCustomFunction(
-  id: TSESTree.Identifier,
+export function getCustomFunction2(
   services: RequiredParserServices,
   context: TSESLint.RuleContext<MessageIds, Options>,
 ) {
-  const tc = services.program.getTypeChecker();
-  const callExpression = getCallExpression(context, id);
-
-  if (callExpression) {
-    const tsCallExpression = services.esTreeNodeToTSNodeMap.get(
-      callExpression,
-    ) as ts.CallLikeExpression;
-    const signature = tc.getResolvedSignature(tsCallExpression);
-    if (signature) {
-      const deprecation = getJsDocCustomFunction(signature.getJsDocTags());
-      if (deprecation) {
-        return deprecation;
+  const functionStarts = getFunctionStarts(context);
+  for (let i = 0; i < functionStarts.length; i ++) {
+    const tsNode = getTsNode(functionStarts[i], services);
+    if (tsNode) {
+      const JSDocTags = ts.getJSDocTags(tsNode);
+      const customFunction = getJsDocCustomFunction(JSDocTags);
+      if (customFunction) {
+        return customFunction;
       }
     }
   }
 
-  const symbol = getSymbol(id, services, tc);
-
-  if (!symbol) {
-    return undefined;
-  }
-  if (callExpression && isFunction(symbol)) {
-    return undefined;
-  }
-
-  return getJsDocCustomFunction(symbol.getJsDocTags());
-}
-
-function getSymbol(
-  id: TSESTree.Identifier,
-  services: RequiredParserServices,
-  tc: ts.TypeChecker,
-) {
-  let symbol: ts.Symbol | undefined;
-  const tsId = services.esTreeNodeToTSNodeMap.get(
-    id as TSESTree.Node,
-  ) as ts.Identifier;
-  const parent = tsId.parent;
-
-  if (parent.kind === ts.SyntaxKind.BindingElement) {
-    symbol = tc.getTypeAtLocation(parent.parent).getProperty(tsId.text);
-  } else if (
-    (isPropertyAssignment(parent) && parent.name === tsId) ||
-    (isShorthandPropertyAssignment(parent) &&
-      parent.name === tsId &&
-      isReassignmentTarget(tsId))
-  ) {
-    try {
-      symbol = tc.getPropertySymbolOfDestructuringAssignment(tsId);
-    } catch (e) {
-      // we are in object literal, not destructuring
-      // no obvious easy way to check that in advance
-      symbol = tc.getSymbolAtLocation(tsId);
-    }
-  } else {
-    symbol = tc.getSymbolAtLocation(tsId);
-  }
-
-  if (symbol && (symbol.flags & ts.SymbolFlags.Alias) !== 0) {
-    symbol = tc.getAliasedSymbol(symbol);
-  }
-  return symbol;
-}
-
-function getCallExpression(
-  context: TSESLint.RuleContext<MessageIds, Options>,
-  id: TSESTree.Node,
-): TSESTree.CallExpression | TSESTree.TaggedTemplateExpression | undefined {
-  const ancestors = context.getAncestors();
-  let callee = id;
-  let parent =
-    ancestors.length > 0 ? ancestors[ancestors.length - 1] : undefined;
-
-  if (parent && parent.type === 'MemberExpression' && parent.property === id) {
-    callee = parent;
-    parent = ancestors.length > 1 ? ancestors[ancestors.length - 2] : undefined;
-  }
-
-  if (isCallExpression(parent, callee)) {
-    return parent;
-  }
-}
-
-function isCallExpression(
-  node: TSESTree.Node | undefined,
-  callee: TSESTree.Node,
-): node is TSESTree.CallExpression | TSESTree.TaggedTemplateExpression {
-  if (node) {
-    if (node.type === 'NewExpression' || node.type === 'CallExpression') {
-      return node.callee === callee;
-    } else if (node.type === 'TaggedTemplateExpression') {
-      return node.tag === callee;
-    }
-  }
-  return false;
-}
-
-function getJsDocCustomFunction(tags: ts.JSDocTagInfo[]) {
-  for (const tag of tags) {
-    if (tag.name === 'customFunction') {
-      return { reason: tag.text || '' };
-    }
-  }
   return undefined;
 }
 
-function isFunction(symbol: ts.Symbol) {
-  const { declarations } = symbol;
-  if (declarations === undefined || declarations.length === 0) {
-    return false;
+function getFunctionStarts(
+  context: TSESLint.RuleContext<MessageIds, Options>,
+): Array<TSESTree.Node> {
+  let outputArray: Array<TSESTree.Node> = [];
+  const ancestors = context.getAncestors();
+  for (let i = 0; i < ancestors.length; i++) {
+    if (ancestors[i].type == "ExportNamedDeclaration"
+      && (i + 1) < ancestors.length 
+      && ancestors[i + 1].type == "FunctionDeclaration") {
+        outputArray.push(ancestors[i]);
+        i++;
+    } else if (ancestors[i].type == "FunctionDeclaration") {
+      outputArray.push(ancestors[i]);
+    }
   }
-  switch (declarations[0].kind) {
-    case ts.SyntaxKind.MethodDeclaration:
-    case ts.SyntaxKind.FunctionDeclaration:
-    case ts.SyntaxKind.FunctionExpression:
-    case ts.SyntaxKind.MethodSignature:
-      return true;
-    default:
-      return false;
+  return outputArray;
+}
+
+function getTsNode(
+  node: TSESTree.Node,
+  services: RequiredParserServices,
+) {
+  const tsNode = services.esTreeNodeToTSNodeMap.get(
+    node as TSESTree.Node,
+  ) as ts.Node;
+  return tsNode
+
+}
+
+function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]) {
+  for (const tag of tags) {
+    if (tag.tagName.escapedText === 'customfunction') {
+      return { reason: tag.tagName.escapedText || '' };
+    }
   }
-}
-
-function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
-  return node.kind === ts.SyntaxKind.PropertyAssignment;
-}
-
-function isShorthandPropertyAssignment(
-  node: ts.Node,
-): node is ts.ShorthandPropertyAssignment {
-  return node.kind === ts.SyntaxKind.ShorthandPropertyAssignment;
-}
-
-function isShortHandProperty(parent: TSESTree.Node | undefined): boolean {
-  return !!parent && parent.type === 'Property' && parent.shorthand;
+  return undefined;
 }

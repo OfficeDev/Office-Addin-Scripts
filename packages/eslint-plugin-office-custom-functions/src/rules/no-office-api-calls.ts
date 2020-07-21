@@ -1,6 +1,6 @@
 import { TSESTree, ESLintUtils, TSESLint, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
 import { isCallSignatureDeclaration, isIdentifier } from "typescript";
-import { isOfficeBoilerplate, getCustomFunction } from './utils'
+import { isOfficeBoilerplate, getCustomFunction2 } from './utils'
 
 /**
  * @fileoverview Prevents office api calls
@@ -81,21 +81,21 @@ export default createRule<Options, MessageIds>({
                             && node.parent.property.type == "Identifier"
                             && node.parent.property.name == "sync") {
                                 
-                                ruleContext.report({
-                                    messageId: "contextSync",
-                                    loc: node.parent.loc,
-                                    node: node.parent
-                                });
+                                // ruleContext.report({
+                                //     messageId: "contextSync",
+                                //     loc: node.parent.loc,
+                                //     node: node.parent
+                                // });
 
-                                // const customFunction = getCustomFunction(node, services, ruleContext);
+                                const customFunction = getCustomFunction2(services, ruleContext);
 
-                                // if (customFunction) {
-                                //     ruleContext.report({
-                                //         messageId: "contextSync",
-                                //         loc: node.parent.loc,
-                                //         node: node.parent
-                                //     });
-                                // }
+                                if (customFunction) {
+                                    ruleContext.report({
+                                        messageId: "contextSync",
+                                        loc: node.parent.loc,
+                                        node: node.parent
+                                    });
+                                }
                         }
                     }
                 }
