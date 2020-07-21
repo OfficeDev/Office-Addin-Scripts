@@ -94,7 +94,7 @@ export class OfficeAddinUsageData {
         this.usageDataOptIn();
       }
 
-      if (this.options.usageDataLevel === "on") {
+      if (this.options.usageDataLevel === UsageDataLevel.on) {
         appInsights.setup(this.options.instrumentationKey)
           .setAutoCollectExceptions(false)
           .start();
