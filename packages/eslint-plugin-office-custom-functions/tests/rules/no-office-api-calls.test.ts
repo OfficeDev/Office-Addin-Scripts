@@ -56,7 +56,7 @@ ruleTester.run('no-office-api-calls', rule, {
           const range = sheet.getRange("A1:C3");
     
           // Update the fill color
-          range.format.fill.color = "yellow"; 
+          range.format.fill.color = "yellow";                           // ERROR: range.format.fill.color = "yellow"
     
           return context.sync();                                        // ERROR: context.sync
         });

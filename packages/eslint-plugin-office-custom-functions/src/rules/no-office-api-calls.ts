@@ -1,6 +1,6 @@
 import { TSESTree, ESLintUtils, TSESLint, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
 import { isCallSignatureDeclaration, isIdentifier } from "typescript";
-import { isOfficeBoilerplate, getCustomFunction2 } from './utils'
+import { isOfficeBoilerplate, getCustomFunction2, isOfficeObject } from './utils'
 
 /**
  * @fileoverview Prevents office api calls
@@ -17,8 +17,6 @@ const createRule = ESLintUtils.RuleCreator(
 // Rule Definition
 //------------------------------------------------------------------------------
 
-// let excelRunToContextMap: Map<TSESTree.Node, TSESTree.Identifier> = new Map<TSESTree.Node, TSESTree.Identifier>();
-// let contextToExcelRunMap: Map<TSESTree.Node, TSESTree.Node> = new Map<TSESTree.Node, TSESTree.Node>();
 let excelRunToContextMap = new Map<TSESTree.Node, TSESTree.Identifier>();
 let contextToExcelRunMap = new Map<TSESTree.Node, TSESTree.Node>();
 
@@ -74,19 +72,12 @@ export default createRule<Options, MessageIds>({
                 if (!!excelRunNode && excelRunToContextMap.has(excelRunNode)) {
 
                     originalContext = excelRunToContextMap.get(excelRunNode);
-                    if(originalContext?.name == node.name) {
+                    if (originalContext?.name == node.name) {
                         contextToExcelRunMap.set(node, excelRunNode);
                         if (node.parent
                             && node.parent.type == "MemberExpression"
                             && node.parent.property.type == "Identifier"
                             && node.parent.property.name == "sync") {
-                                
-                                // ruleContext.report({
-                                //     messageId: "contextSync",
-                                //     loc: node.parent.loc,
-                                //     node: node.parent
-                                // });
-
                                 const customFunction = getCustomFunction2(services, ruleContext);
 
                                 if (customFunction) {
@@ -101,18 +92,19 @@ export default createRule<Options, MessageIds>({
                 }
             },
 
-            // "Identifier:exit": function(node: TSESTree.Identifier) {
-            //     if (contextToExcelRunMap.has(node)
-            //         && node.parent && node.parent.type == AST_NODE_TYPES.MemberExpression 
-            //         && (<TSESTree.MemberExpression>(node.parent)).property.type == AST_NODE_TYPES.Identifier
-            //         && (<TSESTree.Identifier>(<TSESTree.MemberExpression>(node.parent)).property).name == "sync") {
-            //             ruleContext.report({
-            //                 messageId: "contextSync",
-            //                 loc: node.parent.loc,
-            //                 node: node.parent
-            //             });
-            //     }
-            // }
+            AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
+                if (isInExcelRun(node) || isOfficeObject(node)) {
+                    const customFunction = getCustomFunction2(services, ruleContext);
+
+                    if (customFunction) {
+                        ruleContext.report({
+                            messageId: "contextSync",
+                            loc: node.loc,
+                            node: node
+                        });
+                    }
+                }
+            }
         };
     }
 })

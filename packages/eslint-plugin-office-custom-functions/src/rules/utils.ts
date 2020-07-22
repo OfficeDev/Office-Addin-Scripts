@@ -834,3 +834,7 @@ function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]) {
   }
   return undefined;
 }
+
+export function isOfficeObject(node: TSESTree.Node) {
+  return false;
+}
