@@ -1,6 +1,6 @@
 {
   "name": "office-addin-debugging",
-  "version": "3.0.32",
+  "version": "3.0.33",
   "description": "For debugging Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -24,12 +24,12 @@
     "child_process": "^1.0.2",
     "commander": "^2.20.3",
     "node-fetch": "^2.2.0",
-    "office-addin-cli": "^1.0.11",
-    "office-addin-dev-certs": "^1.5.3",
-    "office-addin-dev-settings": "^1.8.4",
-    "office-addin-manifest": "^1.5.5",
-    "office-addin-node-debugger": "^0.4.30",
-    "office-addin-usage-data": "^1.1.5"
+    "office-addin-cli": "^1.0.12",
+    "office-addin-dev-certs": "^1.5.4",
+    "office-addin-dev-settings": "^1.8.5",
+    "office-addin-manifest": "^1.5.6",
+    "office-addin-node-debugger": "^0.4.31",
+    "office-addin-usage-data": "^1.1.6"
   },
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
