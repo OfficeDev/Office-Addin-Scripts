@@ -8,7 +8,8 @@ import {
 import { isReassignmentTarget, getJsDoc } from 'tsutils';
 import * as ts from 'typescript';
 import { Scope } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
-import * as metadata from "../data/metadata.json";
+// import * as metadata from "../data/metadata.json";
+const metadata: {[key: string]: {comment: Array<string>, attributes: any, properties: Array<any>, methods: Array<any>} } = require("../data/metadata.json");
 let version = "0.0.8";
 
 const REPO_URL = 'https://github.com/arttarawork/Office-Addin-Scripts';
@@ -137,9 +138,25 @@ export function isOfficeObject(node: TSESTree.Node | null, map?: Map<TSESTree.No
   return false;
 }
 
-enum OfficeCalls {
+export enum OfficeCalls {
   WRITE = "WRITE",
   READ = "READ"
+}
+
+export class OfficeFunctionReturns {
+  public name: string;
+  public returnType: string;
+  public callType: OfficeCalls;
+
+  constructor(
+    funcName: string,
+    funcReturnType: string,
+    funcCallType: OfficeCalls
+  ) {
+    this.name = funcName;
+    this.returnType = funcReturnType;
+    this.callType = funcCallType;
+  }
 }
 
 export function isOfficeFunctionCall(node: TSESTree.CallExpression): OfficeCalls | undefined {
@@ -166,40 +183,87 @@ export function checkOfficeCall(node: TSESTree.CallExpression): OfficeCalls | un
   return undefined;
 }
 
+export function getOfficeObject(type: string) : {comment: Array<string>, attributes: any, properties: Array<any>, methods: Array<any>} | undefined {
+  return metadata[type];
+}
 
-// let officeObjectTracker: Array<Map<TSESTree.Node, any>> = [];
+function officePropertiesFunctionChecker(properties: any[], func: string, isItSetter: boolean): boolean {
+  return properties.some(
+    (property) =>
+    {
+      return property && property.name 
+        && property.name == func.slice(3) 
+        && (isItSetter ? property.set : property.get);
+    }
+  );
+}
 
-// export function addToOfficeDictionary (
-//   node: TSESTree.Node, 
-//   officeObjectTracker: Map<Scope.Scope, Map<TSESTree.Node, any>>, 
-//   ruleContext: TSESLint.RuleContext<string, unknown[]>
-// ): void {
-//   const scope = ruleContext.getScope();
-//   if (officeObjectTracker && officeObjectTracker.has(scope)) {
-//     let innerMap = officeObjectTracker.get(scope);
-//     if (innerMap) {
-//       officeObjectTracker.set(scope, innerMap.set(node, "OFFICE"))
-//     }
-//   } else {
-//     officeObjectTracker.set(scope, new Map<TSESTree.Node, any>().set(node, "OFFICE"));
-//   }
+function officeMethodFunctionChecker(methods: any[], func: string): OfficeCalls | undefined {
+  methods.forEach((method) => {
+    if (method && method.name && method.name == func) {
+      if (method.type && method.type == "void") {
+        return OfficeCalls.WRITE;
+      }
+      if (<string>(method.name).startsWith("set")) {
+        return OfficeCalls.WRITE;
+      }
+      return OfficeCalls.READ;
+    }
+  })
+  return undefined;
+}
 
-// }
+export function isFuncInOfficeType(type: string, func: string): OfficeCalls | undefined {
+  const typeObject = getOfficeObject(type);
+  if (typeObject) {
+
+    if (func.startsWith("set") && officePropertiesFunctionChecker(typeObject.properties, func, true)) {
+      return OfficeCalls.WRITE;
+    }
+
+    const methodFunc = officeMethodFunctionChecker(typeObject.methods, func);
+
+    if (methodFunc) {
+      return methodFunc;
+    }
+
+    if (func.startsWith("get") && officePropertiesFunctionChecker(typeObject.properties, func, false)) {
+      return OfficeCalls.READ;
+    }
+  }
+  return undefined;
+}
+
+export function getOfficeFuncReturnType(type: string, func: string): string | undefined {
+  const typeObject = getOfficeObject(type);
+  if (typeObject) {
+    if (typeObject.methods) {
+      typeObject.methods.forEach((method) => {
+        if (method && method.name && method.name == func && method.type) {
+          return <string>(method.type)
+        }
+      });
+    }
+  }
+  //add prop method check
+  return undefined;
+}
 
 export function addToOfficeDictionary (
   node: TSESTree.Node, 
   officeObjectTracker: Map<Scope.Scope, Map<string, string>>, 
   ruleContext: TSESLint.RuleContext<string, unknown[]>,
   services: RequiredParserServices = ESLintUtils.getParserServices(ruleContext),
+  type: string = "OFFICE",
 ): void {
   const scope = ruleContext.getScope();
   if (officeObjectTracker && officeObjectTracker.has(scope)) {
     let innerMap = officeObjectTracker.get(scope);
     if (innerMap) {
-      officeObjectTracker.set(scope, innerMap.set(getTsNode(node, services).getText(), "OFFICE"));
+      officeObjectTracker.set(scope, innerMap.set(getTsNode(node, services).getText(), type));
     }
   } else {
-    officeObjectTracker.set(scope, new Map<string, string>().set(getTsNode(node, services).getText(), "OFFICE"));
+    officeObjectTracker.set(scope, new Map<string, string>().set(getTsNode(node, services).getText(), type));
   }
 }
 
@@ -224,7 +288,7 @@ export function getFromOfficeDictionary (
   officeObjectTracker: Map<Scope.Scope, Map<string, string>>, 
   ruleContext: TSESLint.RuleContext<string, unknown[]>,
   services: RequiredParserServices = ESLintUtils.getParserServices(ruleContext),
-): any {
+): string | undefined {
   let currentScope: Scope.Scope | null = ruleContext.getScope();
   while (currentScope) {
     let possibleOutput = officeObjectTracker.get(currentScope)?.get(getTsNode(node, services).getText());

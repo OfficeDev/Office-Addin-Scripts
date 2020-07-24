@@ -1,5 +1,5 @@
 import { TSESTree, ESLintUtils, TSESLint, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
-import * as sm from "@typescript-eslint/scope-manager";
+//import * as sm from "@typescript-eslint/scope-manager";
 import { isCallSignatureDeclaration, isIdentifier } from "typescript";
 import { isOfficeBoilerplate, getCustomFunction, isOfficeObject } from './utils'
 
