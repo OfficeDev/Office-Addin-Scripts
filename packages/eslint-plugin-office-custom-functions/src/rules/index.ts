@@ -1,2 +1,2 @@
-import noOfficeApiCalls from './no-office-api-calls';
-export { noOfficeApiCalls };
+import noOfficeWriteCalls from './no-office-write-calls';
+export { noOfficeWriteCalls };

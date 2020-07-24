@@ -1,5 +1,5 @@
 import { TSESLint, ESLintUtils } from '@typescript-eslint/experimental-utils';
-import rule, { MessageIds, Options } from '../../src/rules/no-office-api-calls';
+import rule, { MessageIds, Options } from '../../src/rules/no-office-read-calls';
 import * as path from 'path';
 
 const ruleTester = new ESLintUtils.RuleTester({
@@ -12,7 +12,7 @@ const ruleTester = new ESLintUtils.RuleTester({
   },
 });
 
-ruleTester.run('no-office-api-calls', rule, {
+ruleTester.run('no-office-read-calls', rule, {
   // Don't warn at the spot where the deprecated thing is declared
   valid: [
     // Variables (var/const/let are the same from ESTree perspective)
@@ -34,7 +34,7 @@ ruleTester.run('no-office-api-calls', rule, {
       }
       `),
   ],
-  // Error cases. `// ERROR: x` marks the spot where the error occurs.
+  // Error cases. `// WARN: x` marks the spot where the warning occurs.
   invalid: [
     getInvalidTestCase(`
     /**
@@ -48,7 +48,7 @@ ruleTester.run('no-office-api-calls', rule, {
     
     export function add(first: number, second: number): number {
       try {
-        Excel.run(function (context) {
+        Excel.run(function (context) {                                         // WARN: Excel.run
           /**
            * Insert your Excel code here
            */
@@ -56,9 +56,9 @@ ruleTester.run('no-office-api-calls', rule, {
           const range = sheet.getRange("A1:C3");
     
           // Update the fill color
-          range.format.fill.color = "yellow";                           // ERROR: range.format.fill.color = "yellow"
+          range.format.fill.color = "yellow";
     
-          return context.sync();                                        // ERROR: context.sync
+          return context.sync();
         });
       } catch (error) {
         return 69;
@@ -87,19 +87,19 @@ function getInvalidTestCase(
   const errors = [] as TSESLint.TestCaseError<MessageIds>[];
 
   lines.forEach((line, i) => {
-    const errorInfo = /ERROR: (\w+)/.exec(line);
+    const errorInfo = /WARN: (\w+)/.exec(line);
     if (errorInfo) {
       errors.push({
         line: i + 1,
         column: line.indexOf(errorInfo[1]) + 1,
-        messageId: 'contextSync',
+        messageId: 'officeReadCall',
       });
     }
   });
 
   if (!errors.length) {
     throw new Error(
-      'No ERROR: indications found in supposedly invalid code:\n' + code,
+      'No WARN: indications found in supposedly invalid code:\n' + code,
     );
   }
 
