@@ -11,8 +11,10 @@ import { Scope } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 // import * as metadata from "../data/metadata.json";
 const metadata: {[key: string]: {comment: Array<string>, attributes: any, properties: Array<any>, methods: Array<any>} } = require("../data/metadata.json");
 let version = "0.0.8";
+// import * as office from "@microsoft/office-js"
 
 const REPO_URL = 'https://github.com/arttarawork/Office-Addin-Scripts';
+
 
 export const createRule = ESLintUtils.RuleCreator(name => {
   const ruleName = parsePath(name).name;
@@ -265,6 +267,14 @@ export function addToOfficeDictionary (
   } else {
     officeObjectTracker.set(scope, new Map<string, string>().set(getTsNode(node, services).getText(), type));
   }
+}
+
+export function testboi (
+  node: TSESTree.Node,
+  services: RequiredParserServices
+): ts.Type {
+  let typechecker = services.program.getTypeChecker();
+  return typechecker.getTypeAtLocation(getTsNode(node, services));
 }
 
 export function hasInOfficeDictionary (

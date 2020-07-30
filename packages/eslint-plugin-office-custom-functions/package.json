@@ -17,6 +17,8 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
+    "@microsoft/office-js": "^1.1.43",
+    "@types/office-js": "^1.0.118",
     "@typescript-eslint/experimental-utils": "^2.19.2 || ^3.0.0",
     "tslib": "^1.10.0",
     "tsutils": "^3.0.0"

@@ -1,7 +1,7 @@
 import { TSESTree, ESLintUtils, TSESLint, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
 //import * as sm from "@typescript-eslint/scope-manager";
 import { isCallSignatureDeclaration, isIdentifier } from "typescript";
-import { isOfficeBoilerplate, getCustomFunction, isOfficeObject } from './utils'
+import { isOfficeBoilerplate, getCustomFunction, isOfficeObject, testboi } from './utils'
 
 /**
  * @fileoverview Prevents office api calls
@@ -55,6 +55,8 @@ export default createRule<Options, MessageIds>({
 
         const services = ESLintUtils.getParserServices(ruleContext);
 
+        const typeChecker = services.program.getTypeChecker();
+
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
                 if(isOfficeObject(node)) {
@@ -71,18 +73,16 @@ export default createRule<Options, MessageIds>({
                 }
             },
 
-            // Identifier: function(node: TSESTree.Identifier) {
-            //     let excelRunNode = isInExcelRun(node);
-            //     let originalContext: TSESTree.Identifier | undefined;
+            Identifier: function(node: TSESTree.Identifier) {
+                // let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+                let symbol = typeChecker.getSymbolAtLocation(services.esTreeNodeToTSNodeMap.get(node));
 
-            //     if (!!excelRunNode && excelRunToContextMap.has(excelRunNode)) {
+                if (symbol) {
+                    console.log(symbol.name);
 
-            //         originalContext = excelRunToContextMap.get(excelRunNode);
-            //         if (originalContext?.name == node.name) {
-            //             contextToExcelRunMap.set(node, excelRunNode);
-            //         }
-            //     }
-            // },
+                    console.log(typeChecker.typeToString(typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node))));
+                }
+            },
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
                 if (isOfficeObject(node.right)) {
