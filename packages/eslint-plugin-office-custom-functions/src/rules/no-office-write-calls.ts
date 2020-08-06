@@ -60,7 +60,7 @@ export default createRule<Options, MessageIds>({
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
 
-                if(isOfficeObject(node)) {
+                if(isOfficeObject(node, typeChecker, services)) {
                     
                     const customFunction = getCustomFunction(services, ruleContext);
 
@@ -74,14 +74,8 @@ export default createRule<Options, MessageIds>({
                 }
             },
 
-            Identifier: function(node: TSESTree.Identifier) {
-                printboi(node, typeChecker, services);
-
-
-            },
-
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-                if (isOfficeObject(node.right)) {
+                if (isOfficeObject(node.right, typeChecker, services)) {
                     
                     const customFunction = getCustomFunction(services, ruleContext);
 
@@ -96,7 +90,7 @@ export default createRule<Options, MessageIds>({
             },
 
             VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
-                if (isOfficeObject(node.init)) {
+                if (node.init && isOfficeObject(node.init, typeChecker, services)) {
                     
                     const customFunction = getCustomFunction(services, ruleContext);
 

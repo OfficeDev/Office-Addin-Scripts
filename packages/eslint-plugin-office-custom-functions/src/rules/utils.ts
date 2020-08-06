@@ -126,19 +126,19 @@ function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]) {
   return undefined;
 }
 
-export function isOfficeObject(node: TSESTree.Node | null, map?: Map<TSESTree.Node, any>) {
-  if (!!node) {
-    if (node.type == "CallExpression" || node.type == "MemberExpression") {
-      const isOfficeNamespace = isOfficeMemberOrCallExpression(node);
-      if (isOfficeNamespace) {
-        return true;
-      }
-    } if (map && map.has(node)) {
-      return true;
-    }
-  }
-  return false;
-}
+// export function isOfficeObject(node: TSESTree.Node | null, map?: Map<TSESTree.Node, any>) {
+//   if (!!node) {
+//     if (node.type == "CallExpression" || node.type == "MemberExpression") {
+//       const isOfficeNamespace = isOfficeMemberOrCallExpression(node);
+//       if (isOfficeNamespace) {
+//         return true;
+//       }
+//     } if (map && map.has(node)) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }
 
 export enum OfficeCalls {
   WRITE = "WRITE",
@@ -169,21 +169,21 @@ export function isOfficeFunctionCall(node: TSESTree.CallExpression): OfficeCalls
 //   if ()
 // }
 
-export function checkOfficeCall(node: TSESTree.CallExpression): OfficeCalls | undefined {
-  if (node.callee.type == "MemberExpression") {
-    if (isOfficeObject(node.callee.object)) {
-      if (node.callee.property.type == "Identifier") {
-        if (node.callee.property.name.startsWith("set")) {
-          return OfficeCalls.WRITE;
-        } else if (node.callee.property.name.startsWith("get")) {
-          return OfficeCalls.READ;
-        }
-      }
-    }
-  }
+// export function checkOfficeCall(node: TSESTree.CallExpression): OfficeCalls | undefined {
+//   if (node.callee.type == "MemberExpression") {
+//     if (isOfficeObject(node.callee.object)) {
+//       if (node.callee.property.type == "Identifier") {
+//         if (node.callee.property.name.startsWith("set")) {
+//           return OfficeCalls.WRITE;
+//         } else if (node.callee.property.name.startsWith("get")) {
+//           return OfficeCalls.READ;
+//         }
+//       }
+//     }
+//   }
 
-  return undefined;
-}
+//   return undefined;
+// }
 
 export function getOfficeObject(type: string) : {comment: Array<string>, attributes: any, properties: Array<any>, methods: Array<any>} | undefined {
   return metadata[type];
@@ -241,11 +241,40 @@ interface ExposedSymbol extends ts.Symbol {
   parent: ts.Symbol;
 }
 
+function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.Declaration[]): boolean {
+  const nodeText = node.getText();
+  if (
+    nodeText.startsWith("declare namespace Office")
+    || nodeText.startsWith("declare namespace OfficeCore")
+    || nodeText.startsWith("declare namespace Excel")
+    || nodeText.startsWith("declare namespace Word")
+    || nodeText.startsWith("declare namespace OneNote")
+    || nodeText.startsWith("declare namespace Visio")
+    || nodeText.startsWith("declare namespace PowerPoint")
+  ) {
+    return true;
+  } else {
+    return node.parent ? isParentNodeOfficeNamespace(node.parent, index, decArray) : false;
+  }
+}
+
+export function isOfficeObject(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices): boolean {
+  let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+  let symbol = type.getSymbol();
+  return (symbol && symbol.declarations) ? symbol.declarations.some(isParentNodeOfficeNamespace) : false;
+}
+
 export function printboi(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices) {
-  let symbol = typeChecker.getSymbolAtLocation(services.esTreeNodeToTSNodeMap.get(node));
 
   let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+  let symbol = type.getSymbol();
 
+  let textArray: Array<string> = [];
+  
+  let officeBool = (symbol && symbol.declarations) ? symbol.declarations.some(isParentNodeOfficeNamespace) : false;
+  symbol?.declarations.forEach((declaration) => {
+    textArray.push(declaration.parent.getText())
+  })
   let typeSymbol = type && (type.symbol as ExposedSymbol);
 
   let namespace = 
@@ -253,12 +282,12 @@ export function printboi(node: TSESTree.Node, typeChecker: ts.TypeChecker, servi
       ? (typeSymbol.parent as ExposedSymbol).parent.escapedName.toString()
       : undefined;
 
-  
   if (symbol) {
 
       console.log("name = " + symbol?.name
       + "\ntype = " + typeChecker.typeToString(type)
-      + "\ntypesymbol = " + typeSymbol?.name
+      + "\ntypesymbol = " + officeBool
+      + "\ntypesymbol = " + textArray
       + "\nnamespace = " + namespace);
   }
 }

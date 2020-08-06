@@ -53,9 +53,11 @@ export default createRule<Options, MessageIds>({
     create(ruleContext) {
         const services = ESLintUtils.getParserServices(ruleContext);
 
+        const typeChecker = services.program.getTypeChecker();
+
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
-                if (isOfficeObject(node)) {
+                if (isOfficeObject(node, typeChecker, services)) {
                     const customFunction = getCustomFunction(services, ruleContext);
 
                     if (customFunction) {
@@ -81,7 +83,7 @@ export default createRule<Options, MessageIds>({
             //     }
             // },
             MemberExpression: function(node: TSESTree.MemberExpression) {
-                if (isOfficeObject(node)) {
+                if (isOfficeObject(node, typeChecker, services)) {
                     const customFunction = getCustomFunction(services, ruleContext);
 
                     if (customFunction) {
