@@ -16,24 +16,25 @@ ruleTester.run('no-office-write-calls', rule, {
   // Don't warn at the spot where the deprecated thing is declared
   valid: [
     // Variables (var/const/let are the same from ESTree perspective)
-    getValidTestCase( `
-      /**
-       * Displays the current time once a second.
-       * @customfunction
-       * @param invocation Custom function handler
-       */
-      export function clock(invocation: CustomFunctions.StreamingInvocation<string>): void {
-      const timer = setInterval(() => {
-          const time = currentTime();
-          invocation.setResult(time);
-      }, 1000);
+    // getValidTestCase( `
+    //   /**
+    //    * Displays the current time once a second.
+    //    * @customfunction
+    //    * @param invocation Custom function handler
+    //    */
+    //   export function clock(invocation: CustomFunctions.StreamingInvocation<string>): void {
+    //   const timer = setInterval(() => {
+    //       const time = currentTime();
+    //       invocation.setResult(time);
+    //   }, 1000);
       
-      invocation.onCanceled = () => {
-          clearInterval(timer);
-      };
-      }
-      `),
+    //   invocation.onCanceled = () => {
+    //       clearInterval(timer);
+    //   };
+    //   }
+    //   `),
       getValidTestCase(`
+
       /**
        * Adds two numbers.
        * @customfunction
@@ -52,15 +53,16 @@ ruleTester.run('no-office-write-calls', rule, {
             var sheet = context.workbook.worksheets.getItem("Sheet1");
             const range = sheet.getRange("A1:C3");
         
-            arty.wow = Excel.huh.omg.gr8();
-
+      
             let myExcel = Excel;
       
             // Update the fill color
             range.format.fill.color = "yellow";                           // ERROR: range.format.fill.color = "yellow"
       
+            let wow = myExcel.Range.length;
+            
+            console.log(wow);
             return context.sync();
-            let wow = myExcel.huh.omg.gr8();
           });
         } catch (error) {
           return 69;

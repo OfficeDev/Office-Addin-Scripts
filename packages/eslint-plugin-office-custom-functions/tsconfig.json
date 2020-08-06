@@ -12,7 +12,8 @@
     "target": "ES5",
     "lib": ["ES2015"],
     "types": ["node", "jest"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
   },
-  "include": ["src", "tests"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "typings/*.d.ts", "node_modules/@types/**/*.d.ts"]
 }

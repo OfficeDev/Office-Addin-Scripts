@@ -236,6 +236,33 @@ export function isFuncInOfficeType(type: string, func: string): OfficeCalls | un
   return undefined;
 }
 
+interface ExposedSymbol extends ts.Symbol {
+  id: number;
+  parent: ts.Symbol;
+}
+
+export function printboi(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices) {
+  let symbol = typeChecker.getSymbolAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+
+  let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+
+  let typeSymbol = type && (type.symbol as ExposedSymbol);
+
+  let namespace = 
+    typeSymbol && typeSymbol.parent && (typeSymbol.parent as ExposedSymbol).parent 
+      ? (typeSymbol.parent as ExposedSymbol).parent.escapedName.toString()
+      : undefined;
+
+  
+  if (symbol) {
+
+      console.log("name = " + symbol?.name
+      + "\ntype = " + typeChecker.typeToString(type)
+      + "\ntypesymbol = " + typeSymbol?.name
+      + "\nnamespace = " + namespace);
+  }
+}
+
 export function getOfficeFuncReturnType(type: string, func: string): string | undefined {
   const typeObject = getOfficeObject(type);
   if (typeObject) {

@@ -1,7 +1,7 @@
 import { TSESTree, ESLintUtils, TSESLint, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
 //import * as sm from "@typescript-eslint/scope-manager";
 import { isCallSignatureDeclaration, isIdentifier } from "typescript";
-import { isOfficeBoilerplate, getCustomFunction, isOfficeObject, testboi } from './utils'
+import { isOfficeBoilerplate, getCustomFunction, isOfficeObject, testboi, printboi } from './utils'
 
 /**
  * @fileoverview Prevents office api calls
@@ -59,6 +59,7 @@ export default createRule<Options, MessageIds>({
 
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
+
                 if(isOfficeObject(node)) {
                     
                     const customFunction = getCustomFunction(services, ruleContext);
@@ -74,14 +75,9 @@ export default createRule<Options, MessageIds>({
             },
 
             Identifier: function(node: TSESTree.Identifier) {
-                // let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
-                let symbol = typeChecker.getSymbolAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+                printboi(node, typeChecker, services);
 
-                if (symbol) {
-                    console.log(symbol.name);
 
-                    console.log(typeChecker.typeToString(typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node))));
-                }
             },
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
