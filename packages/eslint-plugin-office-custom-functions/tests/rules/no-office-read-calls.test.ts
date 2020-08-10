@@ -52,6 +52,7 @@ ruleTester.run('no-office-read-calls', rule, {
           /**
            * Insert your Excel code here
            */
+          context.workbook.worksheets.add();
           var sheet = context.workbook.worksheets.getItem("Sheet1");
           const range = sheet.getRange("A1:C3");
     

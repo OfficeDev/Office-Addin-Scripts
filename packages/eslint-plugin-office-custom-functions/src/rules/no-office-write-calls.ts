@@ -1,7 +1,7 @@
 import { TSESTree, ESLintUtils, TSESLint, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
 //import * as sm from "@typescript-eslint/scope-manager";
 import { isCallSignatureDeclaration, isIdentifier } from "typescript";
-import { isOfficeBoilerplate, getCustomFunction, isOfficeObject, testboi, printboi } from './utils'
+import { isOfficeBoilerplate, getCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls } from './utils'
 
 /**
  * @fileoverview Prevents office api calls
@@ -61,48 +61,51 @@ export default createRule<Options, MessageIds>({
             CallExpression: function(node: TSESTree.CallExpression) {
 
                 if(isOfficeObject(node, typeChecker, services)) {
-                    
-                    const customFunction = getCustomFunction(services, ruleContext);
 
-                    if (customFunction) {
-                        ruleContext.report({
-                            messageId: "officeWriteCall",
-                            loc: node.loc,
-                            node: node
-                        });
+                    if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.WRITE) {
+                        const customFunction = getCustomFunction(services, ruleContext);
+
+                        if (customFunction) {
+                            ruleContext.report({
+                                messageId: "officeWriteCall",
+                                loc: node.loc,
+                                node: node
+                            });
+                        }
+
                     }
                 }
             },
 
-            AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-                if (isOfficeObject(node.right, typeChecker, services)) {
+            // AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
+            //     if (isOfficeObject(node.right, typeChecker, services)) {
                     
-                    const customFunction = getCustomFunction(services, ruleContext);
+            //         const customFunction = getCustomFunction(services, ruleContext);
 
-                    if (customFunction) {
-                        ruleContext.report({
-                            messageId: "officeWriteCall",
-                            loc: node.loc,
-                            node: node
-                        });
-                    }
-                }
-            },
+            //         if (customFunction) {
+            //             ruleContext.report({
+            //                 messageId: "officeWriteCall",
+            //                 loc: node.loc,
+            //                 node: node
+            //             });
+            //         }
+            //     }
+            // },
 
-            VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
-                if (node.init && isOfficeObject(node.init, typeChecker, services)) {
+            // VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
+            //     if (node.init && isOfficeObject(node.init, typeChecker, services)) {
                     
-                    const customFunction = getCustomFunction(services, ruleContext);
+            //         const customFunction = getCustomFunction(services, ruleContext);
 
-                    if (customFunction) {
-                        ruleContext.report({
-                            messageId: "officeWriteCall",
-                            loc: node.loc,
-                            node: node
-                        });
-                    }
-                }
-            }
+            //         if (customFunction) {
+            //             ruleContext.report({
+            //                 messageId: "officeWriteCall",
+            //                 loc: node.loc,
+            //                 node: node
+            //             });
+            //         }
+            //     }
+            // }
         };
     }
 })

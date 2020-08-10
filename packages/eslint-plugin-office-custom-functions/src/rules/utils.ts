@@ -222,6 +222,7 @@ export function isFuncInOfficeType(type: string, func: string): OfficeCalls | un
     if (func.startsWith("set") && officePropertiesFunctionChecker(typeObject.properties, func, true)) {
       return OfficeCalls.WRITE;
     }
+    //add, delete, clear
 
     const methodFunc = officeMethodFunctionChecker(typeObject.methods, func);
 
@@ -236,9 +237,29 @@ export function isFuncInOfficeType(type: string, func: string): OfficeCalls | un
   return undefined;
 }
 
-interface ExposedSymbol extends ts.Symbol {
-  id: number;
-  parent: ts.Symbol;
+export function isOfficeFuncWriteOrRead(node: TSESTree.CallExpression, typeChecker: ts.TypeChecker, services: RequiredParserServices): OfficeCalls | undefined {
+  if (isOfficeObject(node.callee, typeChecker, services)) {
+    
+    let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node.callee));
+    let symbol = type.getSymbol();
+    let symbolText = symbol ? typeChecker.symbolToString(symbol) : undefined;
+    if (symbolText && 
+      ( symbolText.toLowerCase().startsWith("set")
+        || symbolText.toLowerCase().startsWith("add")
+        || symbolText.toLowerCase().startsWith("clear")
+        || symbolText.toLowerCase().startsWith("delete")
+      )
+    ) {
+      return OfficeCalls.WRITE;
+    }
+
+    let callSignatures = type.getCallSignatures();
+
+    return callSignatures.some((callSignature) => {
+      return (1 << 14 === ((1 << 14) & callSignature.getReturnType().flags.valueOf())); //bit-wise check to see if void is included in flags (See TypeFlags documentation in Typescript)
+    }) ? OfficeCalls.WRITE : OfficeCalls.READ;
+  }
+  return undefined;
 }
 
 function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.Declaration[]): boolean {
@@ -251,6 +272,7 @@ function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.
     || nodeText.startsWith("declare namespace OneNote")
     || nodeText.startsWith("declare namespace Visio")
     || nodeText.startsWith("declare namespace PowerPoint")
+    || nodeText.startsWith("declare namespace Project")
   ) {
     return true;
   } else {
@@ -262,34 +284,6 @@ export function isOfficeObject(node: TSESTree.Node, typeChecker: ts.TypeChecker,
   let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
   let symbol = type.getSymbol();
   return (symbol && symbol.declarations) ? symbol.declarations.some(isParentNodeOfficeNamespace) : false;
-}
-
-export function printboi(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices) {
-
-  let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
-  let symbol = type.getSymbol();
-
-  let textArray: Array<string> = [];
-  
-  let officeBool = (symbol && symbol.declarations) ? symbol.declarations.some(isParentNodeOfficeNamespace) : false;
-  symbol?.declarations.forEach((declaration) => {
-    textArray.push(declaration.parent.getText())
-  })
-  let typeSymbol = type && (type.symbol as ExposedSymbol);
-
-  let namespace = 
-    typeSymbol && typeSymbol.parent && (typeSymbol.parent as ExposedSymbol).parent 
-      ? (typeSymbol.parent as ExposedSymbol).parent.escapedName.toString()
-      : undefined;
-
-  if (symbol) {
-
-      console.log("name = " + symbol?.name
-      + "\ntype = " + typeChecker.typeToString(type)
-      + "\ntypesymbol = " + officeBool
-      + "\ntypesymbol = " + textArray
-      + "\nnamespace = " + namespace);
-  }
 }
 
 export function getOfficeFuncReturnType(type: string, func: string): string | undefined {
@@ -304,64 +298,5 @@ export function getOfficeFuncReturnType(type: string, func: string): string | un
     }
   }
   //add prop method check
-  return undefined;
-}
-
-export function addToOfficeDictionary (
-  node: TSESTree.Node, 
-  officeObjectTracker: Map<Scope.Scope, Map<string, string>>, 
-  ruleContext: TSESLint.RuleContext<string, unknown[]>,
-  services: RequiredParserServices = ESLintUtils.getParserServices(ruleContext),
-  type: string = "OFFICE",
-): void {
-  const scope = ruleContext.getScope();
-  if (officeObjectTracker && officeObjectTracker.has(scope)) {
-    let innerMap = officeObjectTracker.get(scope);
-    if (innerMap) {
-      officeObjectTracker.set(scope, innerMap.set(getTsNode(node, services).getText(), type));
-    }
-  } else {
-    officeObjectTracker.set(scope, new Map<string, string>().set(getTsNode(node, services).getText(), type));
-  }
-}
-
-export function testboi (
-  node: TSESTree.Node,
-  services: RequiredParserServices
-): ts.Type {
-  let typechecker = services.program.getTypeChecker();
-  return typechecker.getTypeAtLocation(getTsNode(node, services));
-}
-
-export function hasInOfficeDictionary (
-  node: TSESTree.Node, 
-  officeObjectTracker: Map<Scope.Scope, Map<string, string>>, 
-  ruleContext: TSESLint.RuleContext<string, unknown[]>,
-  services: RequiredParserServices = ESLintUtils.getParserServices(ruleContext),
-): boolean {
-  let currentScope: Scope.Scope | null = ruleContext.getScope();
-  while (currentScope) {
-    if (officeObjectTracker.get(currentScope)?.has(getTsNode(node, services).getText())) {
-      return true;
-    }
-    currentScope = currentScope.upper;
-  }
-  return false;
-}
-
-export function getFromOfficeDictionary (
-  node: TSESTree.Node, 
-  officeObjectTracker: Map<Scope.Scope, Map<string, string>>, 
-  ruleContext: TSESLint.RuleContext<string, unknown[]>,
-  services: RequiredParserServices = ESLintUtils.getParserServices(ruleContext),
-): string | undefined {
-  let currentScope: Scope.Scope | null = ruleContext.getScope();
-  while (currentScope) {
-    let possibleOutput = officeObjectTracker.get(currentScope)?.get(getTsNode(node, services).getText());
-    if (possibleOutput) {
-      return possibleOutput;
-    }
-    currentScope = currentScope.upper;
-  }
   return undefined;
 }

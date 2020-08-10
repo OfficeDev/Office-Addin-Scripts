@@ -14,7 +14,11 @@
 //       /**
 //        * Insert your Excel code here
 //        */
-//       var sheet = context.workbook.worksheets.getItem("Sheet1");
+
+//       context.workbook.worksheets.add();
+//       var bigboi = context.workbook.worksheets.getItem;
+//       var sheet = bigboi("Sheet1");
+//       sheet.showOutlineLevels(1,1);
 //       const range = sheet.getRange("A1:C3");
   
 
