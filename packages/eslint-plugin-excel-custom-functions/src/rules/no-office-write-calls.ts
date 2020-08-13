@@ -12,21 +12,9 @@ const createRule = ESLintUtils.RuleCreator(
   () => 'https://github.com/OfficeDev/Office-Addin-Scripts',
 );
 
-
 //------------------------------------------------------------------------------
 // Rule Definition
 //------------------------------------------------------------------------------
-
-let excelRunToContextMap = new Map<TSESTree.Node, TSESTree.Identifier>();
-let contextToExcelRunMap = new Map<TSESTree.Node, TSESTree.Node>();
-
-function isInExcelRun(node: TSESTree.Node): TSESTree.Node | undefined {
-    if (excelRunToContextMap.has(node)) {
-        return node;
-    } else {
-        return node.parent ? isInExcelRun(node.parent) : undefined;
-    }
-}
 
 export type Options = unknown[];
 export type MessageIds = 'officeWriteCall';
@@ -77,7 +65,7 @@ export default createRule<Options, MessageIds>({
             },
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-                if (isOfficeObject(node.right, typeChecker, services)) {
+                if (isOfficeObject(node.left, typeChecker, services)) {
                     
                     const customFunction = getCustomFunction(services, ruleContext);
 

@@ -12,21 +12,9 @@ const createRule = ESLintUtils.RuleCreator(
   () => 'https://github.com/OfficeDev/Office-Addin-Scripts',
 );
 
-
 //------------------------------------------------------------------------------
 // Rule Definition
 //------------------------------------------------------------------------------
-
-let excelRunToContextMap = new Map<TSESTree.Node, TSESTree.Identifier>();
-let contextToExcelRunMap = new Map<TSESTree.Node, TSESTree.Node>();
-
-function isInExcelRun(node: TSESTree.Node): TSESTree.Node | undefined {
-    if (excelRunToContextMap.has(node)) {
-        return node;
-    } else {
-        return node.parent ? isInExcelRun(node.parent) : undefined;
-    }
-}
 
 export type Options = unknown[];
 export type MessageIds = 'officeReadCall';
@@ -74,6 +62,35 @@ export default createRule<Options, MessageIds>({
                 }
             },
 
+            AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
+                if (isOfficeObject(node.right, typeChecker, services)) {
+                    const customFunction = getCustomFunction(services, ruleContext);
+
+                    if (customFunction) {
+                        ruleContext.report({
+                            messageId: "officeReadCall",
+                            loc: node.loc,
+                            node: node
+                        });
+                    }
+                }
+            },
+
+            VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
+                if (node.init && isOfficeObject(node.init, typeChecker, services)) {
+                    
+                    const customFunction = getCustomFunction(services, ruleContext);
+
+                    if (customFunction) {
+                        ruleContext.report({
+                            messageId: "officeReadCall",
+                            loc: node.loc,
+                            node: node
+                        });
+                    }
+                }
+            }
+
             // Identifier: function(node: TSESTree.Identifier) {
             //     let excelRunNode = isInExcelRun(node);
             //     let originalContext: TSESTree.Identifier | undefined;
@@ -119,12 +136,6 @@ export default createRule<Options, MessageIds>({
             //         }
             //     }
             // },
-
-            // VariableDeclaration: function(node: TSESTree.VariableDeclaration) {
-            //     for (let i = 0; i < node.declarations.length; i++) {
-            //         if (node.declarations[i].)
-            //     }
-            // }
         };
     }
 })

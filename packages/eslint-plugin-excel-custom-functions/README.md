@@ -1,4 +1,4 @@
-# eslint-plugin-office-shared-app
+# eslint-plugin-excel-custom-functions
 
 eslint plugin to check against Office.js api calls within the shared app
 
@@ -10,22 +10,22 @@ You'll first need to install [ESLint](http://eslint.org):
 $ npm i eslint --save-dev
 ```
 
-Next, install `eslint-plugin-office-shared-app`:
+Next, install `eslint-plugin-excel-custom-functions`:
 
 ```
-$ npm install eslint-plugin-office-shared-app --save-dev
+$ npm install eslint-plugin-excel-custom-functions --save-dev
 ```
 
-**Note:** If you installed ESLint globally (using the `-g` flag) then you must also install `eslint-plugin-office-shared-app` globally.
+**Note:** If you installed ESLint globally (using the `-g` flag) then you must also install `eslint-plugin-excel-custom-functions` globally.
 
 ## Usage
 
-Add `office-shared-app` to the plugins section of your `.eslintrc` configuration file. You can omit the `eslint-plugin-` prefix:
+Add `excel-custom-functions` to the plugins section of your `.eslintrc` configuration file. You can omit the `eslint-plugin-` prefix:
 
 ```json
 {
     "plugins": [
-        "office-shared-app"
+        "excel-custom-functions"
     ]
 }
 ```
@@ -36,7 +36,7 @@ Then configure the rules you want to use under the rules section.
 ```json
 {
     "rules": {
-        "office-shared-app/rule-name": 2
+        "excel-custom-functions/rule-name": 2
     }
 }
 ```

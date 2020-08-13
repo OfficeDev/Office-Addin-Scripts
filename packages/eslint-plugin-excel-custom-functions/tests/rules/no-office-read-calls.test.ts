@@ -53,11 +53,14 @@ ruleTester.run('no-office-read-calls', rule, {
            * Insert your Excel code here
            */
           context.workbook.worksheets.add();
+
+          var color;
           var sheet = context.workbook.worksheets.getItem("Sheet1");
           const range = sheet.getRange("A1:C3");
     
           // Update the fill color
           range.format.fill.color = "yellow";
+          color = range.format.fill.color;
     
           return context.sync();
         });
