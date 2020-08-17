@@ -77,21 +77,6 @@ export default createRule<Options, MessageIds>({
                         });
                     }
                 }
-            },
-
-            VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
-                if (node.init && isOfficeObject(node.init, typeChecker, services)) {
-                    
-                    const customFunction = getCustomFunction(services, ruleContext);
-
-                    if (customFunction) {
-                        ruleContext.report({
-                            messageId: "officeWriteCall",
-                            loc: node.loc,
-                            node: node
-                        });
-                    }
-                }
             }
         };
     }

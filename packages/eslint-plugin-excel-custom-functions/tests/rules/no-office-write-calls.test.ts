@@ -16,25 +16,67 @@ ruleTester.run('no-office-write-calls', rule, {
   // Don't warn at the spot where the deprecated thing is declared
   valid: [
     // Variables (var/const/let are the same from ESTree perspective)
-    // getValidTestCase( `
-    //   /**
-    //    * Displays the current time once a second.
-    //    * @customfunction
-    //    * @param invocation Custom function handler
-    //    */
-    //   export function clock(invocation: CustomFunctions.StreamingInvocation<string>): void {
-    //   const timer = setInterval(() => {
-    //       const time = currentTime();
-    //       invocation.setResult(time);
-    //   }, 1000);
+    getValidTestCase( `
+      /**
+       * Displays the current time once a second.
+       * @customfunction
+       * @param invocation Custom function handler
+       */
+      export function clock(invocation: CustomFunctions.StreamingInvocation<string>): void {
+      const timer = setInterval(() => {
+          const time = currentTime();
+          invocation.setResult(time);
+      }, 1000);
       
-    //   invocation.onCanceled = () => {
-    //       clearInterval(timer);
-    //   };
-    //   }
-    //   `),
+      invocation.onCanceled = () => {
+          clearInterval(timer);
+      };
+      }
+      `),
       getValidTestCase(`
-
+        /**
+         * Adds two numbers.
+         * @customfunction
+         * @param first First number
+         * @param second Second number
+         * @returns The sum of the two numbers.
+         */
+        /* global clearInterval, console, setInterval */
+        
+        export function add(first: number, second: number): number {
+          try {
+            Excel.run(function (context) {
+              /**
+               * Insert your Excel code here
+               */
+              context.workbook.worksheets.add();                              // ERROR: context.workbook.worksheets.add()
+              var sheetFunc = context.workbook.worksheets.getItem;
+              var sheet = sheetFunc("Sheet1");                                // ERROR: sheet.showOutlineLevels(1,1)
+              sheet.showOutlineLevels(1,1);
+              var sheet2 = sheetFunc("Sheet2");
+              const range = sheet.getRange("A1:C3");
+          
+        
+              let myExcel = Excel;
+        
+              // Update the fill color
+              range.format.fill.color = "yellow";                             // ERROR: range.format.fill.color = "yellow"
+        
+              let wow = myExcel.Range.length;
+              
+              console.log(wow);
+              return context.sync();
+            });
+          } catch (error) {
+            return 12;
+          }
+          return first + second;
+        }
+      `)
+  ],
+  // Error cases. `// ERROR: x` marks the spot where the error occurs.
+  invalid: [
+    getInvalidTestCase(`
       /**
        * Adds two numbers.
        * @customfunction
@@ -50,18 +92,18 @@ ruleTester.run('no-office-write-calls', rule, {
             /**
              * Insert your Excel code here
              */
-            context.workbook.worksheets.add();
-            var bigboi = context.workbook.worksheets.getItem;
-            var sheet = bigboi("Sheet1");
+            context.workbook.worksheets.add();                              // ERROR: context.workbook.worksheets.add()
+            var sheetFunc = context.workbook.worksheets.getItem;
+            var sheet = sheetFunc("Sheet1");                                // ERROR: sheet.showOutlineLevels(1,1)
             sheet.showOutlineLevels(1,1);
-            var sheet2 = bigboi("Sheet2");
+            var sheet2 = sheetFunc("Sheet2");
             const range = sheet.getRange("A1:C3");
         
       
             let myExcel = Excel;
       
             // Update the fill color
-            range.format.fill.color = "yellow";                           // ERROR: range.format.fill.color = "yellow"
+            range.format.fill.color = "yellow";                             // ERROR: range.format.fill.color = "yellow"
       
             let wow = myExcel.Range.length;
             
@@ -69,44 +111,11 @@ ruleTester.run('no-office-write-calls', rule, {
             return context.sync();
           });
         } catch (error) {
-          return 69;
+          return 12;
         }
         return first + second;
       }
-      `),
-  ],
-  // Error cases. `// ERROR: x` marks the spot where the error occurs.
-  invalid: [
-    // getInvalidTestCase(`
-    // /**
-    //  * Adds two numbers.
-    //  * @customfunction
-    //  * @param first First number
-    //  * @param second Second number
-    //  * @returns The sum of the two numbers.
-    //  */
-    // /* global clearInterval, console, setInterval */
-    
-    // export function add(first: number, second: number): number {
-    //   try {
-    //     Excel.run(function (context) {
-    //       /**
-    //        * Insert your Excel code here
-    //        */
-    //       var sheet = context.workbook.worksheets.getItem("Sheet1");
-    //       const range = sheet.getRange("A1:C3");
-    
-    //       // Update the fill color
-    //       range.format.fill.color = "yellow";                           // ERROR: range.format.fill.color = "yellow"
-    
-    //       return context.sync();
-    //     });
-    //   } catch (error) {
-    //     return 69;
-    //   }
-    //   return first + second;
-    // }
-    // `),
+    `),
   ]
 });
 

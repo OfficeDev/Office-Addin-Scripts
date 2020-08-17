@@ -90,52 +90,6 @@ export default createRule<Options, MessageIds>({
                     }
                 }
             }
-
-            // Identifier: function(node: TSESTree.Identifier) {
-            //     let excelRunNode = isInExcelRun(node);
-            //     let originalContext: TSESTree.Identifier | undefined;
-
-            //     if (!!excelRunNode && excelRunToContextMap.has(excelRunNode)) {
-
-            //         originalContext = excelRunToContextMap.get(excelRunNode);
-            //         if (originalContext?.name == node.name) {
-            //             contextToExcelRunMap.set(node, excelRunNode);
-            //         }
-            //     }
-            // },
-            // MemberExpression: function(node: TSESTree.MemberExpression) {
-            //     if (isOfficeObject(node, typeChecker, services)) {
-            //         const customFunction = getCustomFunction(services, ruleContext);
-
-            //         if (customFunction) {
-            //             ruleContext.report({
-            //                 messageId: "officeReadCall",
-            //                 loc: node.loc,
-            //                 node: node
-            //             });
-            //         }
-            //     }
-            // },
-
-            // AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-            //     if (node.right.type == "ArrayExpression") {
-            //         for (let i = 0; i < node.right.elements.length; i++) {
-            //             if(isOfficeMemberOrCallExpression(node.right.elements))
-            //         }
-            //     }
-            //     else if (isOfficeMemberOrCallExpression(node.right))
-            //     if (isInExcelRun(node) || isOfficeObject(node)) {
-            //         const customFunction = getCustomFunction(services, ruleContext);
-
-            //         if (customFunction) {
-            //             ruleContext.report({
-            //                 messageId: "officeReadCall",
-            //                 loc: node.loc,
-            //                 node: node
-            //             });
-            //         }
-            //     }
-            // },
         };
     }
 })

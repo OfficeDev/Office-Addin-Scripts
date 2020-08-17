@@ -109,8 +109,15 @@ export function isOfficeFuncWriteOrRead(node: TSESTree.CallExpression, typeCheck
 // Code to check if node is office object below:
 
 export function isOfficeObject(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices): boolean {
-  let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+  if (node.type == AST_NODE_TYPES.CallExpression) {
+    node = (<TSESTree.CallExpression>node).callee;
+  }
+  let tsNode = services.esTreeNodeToTSNodeMap.get(node);
+  let type = typeChecker.getTypeAtLocation(tsNode);
   let symbol = type.getSymbol();
+  if (!symbol) {
+    symbol = typeChecker.getSymbolAtLocation(tsNode);
+  }
   return (symbol && symbol.declarations) ? symbol.declarations.some(isParentNodeOfficeNamespace) : false;
 }
 
