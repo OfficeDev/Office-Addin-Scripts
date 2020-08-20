@@ -1,2 +1,6 @@
 import noOfficeWriteCalls from './no-office-write-calls';
-export { noOfficeWriteCalls };
+import noOfficeReadCalls from './no-office-read-calls';
+export default { 
+    "noOfficeWriteCalls": noOfficeWriteCalls,
+    "noOfficeReadCalls": noOfficeReadCalls 
+};

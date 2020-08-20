@@ -127,11 +127,6 @@ function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.
     nodeText.startsWith("declare namespace Office")
     || nodeText.startsWith("declare namespace OfficeCore")
     || nodeText.startsWith("declare namespace Excel")
-    || nodeText.startsWith("declare namespace Word")
-    || nodeText.startsWith("declare namespace OneNote")
-    || nodeText.startsWith("declare namespace Visio")
-    || nodeText.startsWith("declare namespace PowerPoint")
-    || nodeText.startsWith("declare namespace Project")
   ) {
     return true;
   } else {

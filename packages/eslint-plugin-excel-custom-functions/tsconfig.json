@@ -13,7 +13,8 @@
     "lib": ["ES2015"],
     "types": ["node", "jest"],
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "esModuleInterop": true
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "typings/*.d.ts", "node_modules/@types/**/*.d.ts"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "node_modules/@types/**/*.d.ts"]
 }

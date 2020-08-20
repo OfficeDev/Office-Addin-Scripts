@@ -1,6 +1,9 @@
 import { TSESLint, ESLintUtils } from '@typescript-eslint/experimental-utils';
-import rule, { MessageIds, Options } from '../../src/rules/no-office-write-calls';
+import rule from '../../src/rules/no-office-write-calls';
 import * as path from 'path';
+
+type Options = unknown[];
+type MessageIds = 'officeWriteCall';
 
 const ruleTester = new ESLintUtils.RuleTester({
   parser: '@typescript-eslint/parser',
