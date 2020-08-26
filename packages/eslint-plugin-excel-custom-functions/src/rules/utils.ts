@@ -92,6 +92,8 @@ export function isOfficeFuncWriteOrRead(node: TSESTree.CallExpression, typeCheck
         || symbolText.toLowerCase().startsWith("clear")
         || symbolText.toLowerCase().startsWith("delete")
         || symbolText.toLowerCase().startsWith("remove")
+        || symbolText.toLowerCase().startsWith("insert")
+        || symbolText.toLowerCase().startsWith("copy")
       )
     ) {
       return OfficeCalls.WRITE;
