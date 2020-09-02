@@ -1,0 +1,20 @@
+{
+    "functions": [
+        {
+            "description": "Test the requiresParameterAddresses tag",
+            "id": "REQUIRESPARAMETERADDRESSESTEST",
+            "name": "REQUIRESPARAMETERADDRESSESTEST",
+            "options": {
+                "requiresParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

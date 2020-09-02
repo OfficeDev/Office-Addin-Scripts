@@ -24,6 +24,7 @@ export interface IFunctionOptions {
   requiresAddress: boolean;
   stream: boolean;
   volatile: boolean;
+  requiresParameterAddresses: boolean;
 }
 
 export interface IFunctionParameter {
@@ -91,6 +92,7 @@ const STREAMING = "streaming";
 const RETURN = "return";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
+const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 
 const TYPE_MAPPINGS_SIMPLE = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -325,7 +327,7 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
             result
           };
 
-          if (!options.cancelable && !options.requiresAddress && !options.stream && !options.volatile) {
+          if (!options.cancelable && !options.requiresAddress && !options.stream && !options.volatile && !options.requiresParameterAddresses) {
             delete functionMetadata.options;
           } else {
             if (!options.cancelable) {
@@ -342,6 +344,10 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
 
             if (!options.volatile) {
               delete options.volatile;
+            }
+
+            if (!options.requiresParameterAddresses) {
+              delete options.requiresParameterAddresses;
             }
           }
 
@@ -482,20 +488,23 @@ function getOptions(
     cancelable: isCancelableTag(func, isCancelableFunction),
     requiresAddress: isAddressRequired(func),
     stream: isStreaming(func, isStreamingFunction),
-    volatile: isVolatile(func)
+    volatile: isVolatile(func),
+    requiresParameterAddresses: isRequiresParameterAddresses(func)
   };
 
-  if (optionsItem.requiresAddress) {
+  if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
+    let errorParam:string = optionsItem.requiresAddress? "@requiresAddress":"@requiresParameterAddresses";
+
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString =
-        "Since @requiresAddress is present, the last function parameter should be of type CustomFunctions.Invocation :";
+      `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
 
     if (isStreamingFunction) {
       const functionPosition = getPosition(func);
-      const errorString = "@requiresAddress cannot be used with @streaming.";
+      const errorString = `${errorParam} cannot be used with @streaming.`;
       extra.errors.push(logError(errorString, functionPosition));
     }
   }
@@ -787,6 +796,14 @@ function isVolatile(node: ts.Node): boolean {
  */
 function isAddressRequired(node: ts.Node): boolean {
   return hasTag(node, REQUIRESADDRESS);
+}
+
+/**
+ * Returns true if RequiresParameterAddresses tag found in comments
+ * @param node jsDocs node
+ */
+function isRequiresParameterAddresses(node: ts.Node): boolean {
+  return hasTag(node, REQUIRESPARAMETERADDRESSES);
 }
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
