@@ -15,6 +15,44 @@
                 }
             ],
             "result": {}
+        },
+        {
+            "description": "Test the requiresParameterAddresses tag with multiple parameters",
+            "id": "REQUIRESPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
+            "name": "REQUIRESPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
+            "options": {
+                "requiresParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                },
+                {
+                    "description": "string",
+                    "name": "y",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test having both requireAddress and requiresParameterAddresses tag",
+            "id": "REQUIRESBOTHADDRESSESANDPARAMETERADDRESSESTEST",
+            "name": "REQUIRESBOTHADDRESSESANDPARAMETERADDRESSESTEST",
+            "options": {
+                "requiresAddress": true,
+                "requiresParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
         }
     ]
 }
