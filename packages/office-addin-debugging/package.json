@@ -23,7 +23,7 @@
   "dependencies": {
     "child_process": "^1.0.2",
     "commander": "^2.20.3",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.1",
     "office-addin-cli": "^1.0.12",
     "office-addin-dev-certs": "^1.5.4",
     "office-addin-dev-settings": "^1.8.5",
