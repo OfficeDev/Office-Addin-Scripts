@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "commander": "^2.20.3",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",

@@ -21,7 +21,7 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "commander": "^2.20.3",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "office-addin-cli": "^1.0.12",
     "office-addin-usage-data": "^1.1.6",
     "path": "^0.12.7",
