@@ -50,6 +50,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         const devServerPort = parseDevServerPort(command.devServerPort || process.env.npm_package_config_dev_server_port);
         const enableDebugging: boolean = command.debug;
         const enableLiveReload: boolean = (command.liveReload === true);
+        const openDevTools: boolean = (command.devTools === true);
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
@@ -74,7 +75,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         }
 
         await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
-            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload);
+            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload, openDevTools);
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }

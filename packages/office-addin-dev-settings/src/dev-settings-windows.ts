@@ -8,6 +8,7 @@ import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
 
+const OpenDevTools: string = "OpenDevTools";
 const RuntimeLogging: string = "RuntimeLogging";
 const SourceBundleExtension: string = "SourceBundleExtension";
 const SourceBundleHost: string = "SourceBundleHost";
@@ -34,13 +35,19 @@ export async function disableRuntimeLogging() {
   return registry.deleteKey(key);
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy, openDevTools: boolean = false): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
   const useProxyDebugger: boolean = enable && (method === DebuggingMethod.Proxy);
 
   await registry.addBooleanValue(key, UseDirectDebugger, useDirectDebugger);
   await registry.addBooleanValue(key, UseProxyDebugger, useProxyDebugger);
+
+  if (enable && (openDevTools === true)) {
+    await registry.addBooleanValue(key, OpenDevTools, true);
+  } else {
+    await registry.deleteValue(key, OpenDevTools);
+  }
 }
 
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
@@ -191,7 +198,7 @@ export async function setWebView(addinId: string, webViewType: WebViewType | und
     case WebViewType.IE:
     case WebViewType.Edge:
     case WebViewType.EdgeChromium:
-      const webViewString: string = <string> webViewType;
+      const webViewString: string = webViewType as string;
       await registry.addStringValue(key, WebViewSelection, webViewString);
       break;
     default:
