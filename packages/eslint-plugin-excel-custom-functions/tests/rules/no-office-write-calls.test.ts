@@ -30,6 +30,10 @@ ruleTester.run('no-office-write-calls', rule, {
     function abc() {
       def();
     }
+  
+    function ghi() {
+      xyz();
+    }
       
     function createTable() {
       Excel.run(function (context) {
@@ -62,31 +66,12 @@ ruleTester.run('no-office-write-calls', rule, {
     }
   
     function def() {
-      xyz();
+      ghi();
     }
   
     function xyz() {
       createTable();
     }
-    
-  /**
-   * Adds two numbers.
-   * @customfunction
-   * @param first First number
-   * @param second Second number
-   * @returns The sum of the two numbers.
-   */
-  /* global clearInterval, console, setInterval */
-  
-  
-  export async function add(first: number, second: number): Promise<number> {​
-    await Excel.run(async ctx => {​
-      ctx.application.calculationMode = "Manual";
-    }​);
-  
-  
-    return first + second;
-  }​
       `)
   ],
   // Error cases. `// ERROR: x` marks the spot where the error occurs.

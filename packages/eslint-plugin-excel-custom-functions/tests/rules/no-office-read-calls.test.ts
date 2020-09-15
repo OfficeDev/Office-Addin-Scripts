@@ -62,31 +62,12 @@ ruleTester.run('no-office-read-calls', rule, {
     }
   
     function def() {
-      xyz();
+      ghi();
     }
   
     function xyz() {
       createTable();
     }
-    
-  /**
-   * Adds two numbers.
-   * @customfunction
-   * @param first First number
-   * @param second Second number
-   * @returns The sum of the two numbers.
-   */
-  /* global clearInterval, console, setInterval */
-  
-  
-  export async function add(first: number, second: number): Promise<number> {​
-    await Excel.run(async ctx => {​
-      ctx.application.calculationMode = "Manual";
-    }​);
-  
-  
-    return first + second;
-  }​
       `)
   ],
   // Error cases. `// WARN: x` marks the spot where the warning occurs.

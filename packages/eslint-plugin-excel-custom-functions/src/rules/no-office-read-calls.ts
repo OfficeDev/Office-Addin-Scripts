@@ -61,7 +61,6 @@ export = {
 
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
-                let thisTSNodeText = services.esTreeNodeToTSNodeMap.get(node).getText();
                 if (isOfficeObject(node, typeChecker, services)) {
                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
 
@@ -125,7 +124,6 @@ export = {
                         }
                         
                         functionStarts.forEach((functionStart) => {
-                            let funcDecText = functionDeclarations[0].getText();
                             let newHelperFuncSet = helperFuncToHelperFuncMap.get(functionDeclarations[0]);
                             if (!newHelperFuncSet) {
                                 newHelperFuncSet = new Set<ts.Node>([]);
