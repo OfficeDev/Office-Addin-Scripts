@@ -15,7 +15,8 @@ let version = "0.0.8";
 
 export enum OfficeCalls {
   WRITE = "WRITE",
-  READ = "READ"
+  READ = "READ",
+  NOTOFFICE = "NOTOFFICE"
 }
 
 type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;
@@ -69,6 +70,78 @@ function getFunctionStarts(
   return outputArray;
 }
 
+export function superNodeMe(
+  nodeArray: Array<ts.Node>,
+  helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>
+): void {
+  nodeArray.forEach((node, index) => {
+    let currentVal = helperFuncToHelperFuncMap.get(node);
+    if (!currentVal) {
+      currentVal = new Set<ts.Node>([]);
+    }
+    for (let i = 0; i < nodeArray.length; i++) {
+      if (i != index) {
+        currentVal.add(nodeArray[i]);
+      }
+    }
+    helperFuncToHelperFuncMap.set(
+      node,
+      currentVal
+    );
+  })
+}
+
+export function getFunctionStarts2(node: TSESTree.Node, services: RequiredParserServices) {
+  let tsNode: ts.Node = services.esTreeNodeToTSNodeMap.get(node);
+  let outputArray: Array<ts.Node> = [];
+  while (tsNode && tsNode.kind && !(tsNode.kind == ts.SyntaxKind.SourceFile)) {
+    if (tsNode.kind == ts.SyntaxKind.CallSignature
+      || tsNode.kind == ts.SyntaxKind.ConstructSignature
+      || tsNode.kind == ts.SyntaxKind.MethodSignature
+      || tsNode.kind == ts.SyntaxKind.IndexSignature
+      || tsNode.kind == ts.SyntaxKind.FunctionType
+      || tsNode.kind == ts.SyntaxKind.ConstructorType
+      || tsNode.kind == ts.SyntaxKind.JSDocFunctionType
+      || tsNode.kind == ts.SyntaxKind.FunctionDeclaration
+      || tsNode.kind == ts.SyntaxKind.MethodDeclaration
+      || tsNode.kind == ts.SyntaxKind.Constructor
+      || tsNode.kind == ts.SyntaxKind.GetAccessor
+      || tsNode.kind == ts.SyntaxKind.SetAccessor
+      || tsNode.kind == ts.SyntaxKind.FunctionExpression
+      || tsNode.kind == ts.SyntaxKind.ArrowFunction) {
+        outputArray.push(tsNode);
+      }
+    tsNode = tsNode.parent;
+  }
+  return outputArray;
+}
+
+export function ancestorTextChain(node: TSESTree.Node, services: RequiredParserServices): Array<string> {
+  let tsNode: ts.Node = services.esTreeNodeToTSNodeMap.get(node);
+
+  let textArray: Array<string> = new Array<string>();
+
+  while (tsNode) {
+    textArray.push(tsNode.getText());
+    tsNode = tsNode.parent;
+  }
+  
+  return textArray;
+}
+
+export function ancestorChain(node: TSESTree.Node, services: RequiredParserServices): Array<ts.Node> {
+  let tsNode: ts.Node = services.esTreeNodeToTSNodeMap.get(node);
+
+  let textArray: Array<ts.Node> = new Array<ts.Node>();
+
+  while (tsNode) {
+    textArray.push(tsNode);
+    tsNode = tsNode.parent;
+  }
+  
+  return textArray;
+}
+
 function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]) {
   for (const tag of tags) {
     if (tag.tagName.escapedText === 'customfunction') {
@@ -111,16 +184,13 @@ export function isOfficeFuncWriteOrRead(node: TSESTree.CallExpression, typeCheck
 // Code to check if node is office object below:
 
 export function isOfficeObject(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices): boolean {
-  if (node.type == AST_NODE_TYPES.CallExpression) {
-    node = (<TSESTree.CallExpression>node).callee;
+  let earlierMember: boolean = false;
+  if (node.type == AST_NODE_TYPES.MemberExpression) {
+    earlierMember = isOfficeObject(node.object, typeChecker, services);
   }
-  let tsNode = services.esTreeNodeToTSNodeMap.get(node);
-  let type = typeChecker.getTypeAtLocation(tsNode);
-  let symbol = type.getSymbol();
-  if (!symbol) {
-    symbol = typeChecker.getSymbolAtLocation(tsNode);
-  }
-  return (symbol && symbol.declarations) ? symbol.declarations.some(isParentNodeOfficeNamespace) : false;
+  const officeDeclarations = getFunctionDeclarations(node, typeChecker, services);
+  const officeDecTextArray = officeDeclarations?.map((node) => {return node.getText();});
+  return earlierMember || (officeDeclarations ? officeDeclarations.some(isParentNodeOfficeNamespace) : false);
 }
 
 function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.Declaration[]): boolean {
@@ -136,4 +206,51 @@ function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.
   }
 }
 
-// Code to check if node is office object above ^
+// Code to get the function declaration some node is held within
+// This will have to accomodate multiple func declarations
+export function getFunctionDeclarations(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices) {
+  if (node.type == AST_NODE_TYPES.CallExpression) {
+    node = (<TSESTree.CallExpression>node).callee;
+  }
+  let tsNode = services.esTreeNodeToTSNodeMap.get(node);
+  let type = typeChecker.getTypeAtLocation(tsNode);
+  let symbol = type.getSymbol();
+  if (!symbol) {
+    symbol = typeChecker.getSymbolAtLocation(tsNode);
+  }
+  return symbol ? symbol.declarations : undefined;
+}
+
+export function isHelperFunc(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices): boolean {
+  const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
+  let output = functionDeclarations ? functionDeclarations.some(
+    (declaration) => {
+      let sourceFile = declaration.getSourceFile();
+      return !services.program.isSourceFileFromExternalLibrary(sourceFile);
+    }
+  ) : false;
+
+  return output;
+}
+
+export function bubbleUpNewCallingFuncs(node: ts.Node, helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>): Set<ts.Node> {
+  let outputSet = new Set<ts.Node>([node]);
+  let examiningSet = helperFuncToHelperFuncMap.get(node);
+  if (examiningSet) {
+    examiningSet.forEach((nodeToExamine) => {
+      let addingSet = helperFuncToHelperFuncMap.get(nodeToExamine);
+      if (addingSet) {
+        addingSet.forEach((nodeToAdd) => {
+          if (!outputSet.has(nodeToAdd)) {
+            examiningSet?.add(nodeToAdd);
+          }
+        });
+      }
+      outputSet.add(nodeToExamine)
+      examiningSet?.delete(nodeToExamine);
+    })
+  }
+  
+
+  return outputSet;
+}
