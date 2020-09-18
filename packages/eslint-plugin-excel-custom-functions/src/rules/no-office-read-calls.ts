@@ -1,5 +1,5 @@
 import { TSESTree, ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { getCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, isHelperFunc, bubbleUpNewCallingFuncs, getFunctionDeclarations, superNodeMe } from './utils'
+import { isCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, isHelperFunc, bubbleUpNewCallingFuncs, getFunctionDeclarations, superNodeMe } from './utils'
 import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import ts from 'typescript';
 
@@ -8,10 +8,6 @@ import ts from 'typescript';
  * @author Artur Tarasenko (artarase)
  */
 "use strict";
-
-const createRule = ESLintUtils.RuleCreator(
-  () => 'https://github.com/OfficeDev/Office-Addin-Scripts',
-);
 
 //------------------------------------------------------------------------------
 // Rule Definition
@@ -43,28 +39,24 @@ export = {
         AssignmentExpression: (node: TSESTree.AssignmentExpression) => void;
         VariableDeclarator: (node: TSESTree.VariableDeclarator) => void;
     } {
-        
-
         const services = ESLintUtils.getParserServices(ruleContext);
-
         const typeChecker = services.program.getTypeChecker();
 
-        //Registry of all functions that use Office API calls (regardless if CF or not)
+        // Registry of all functions that use Office API calls (regardless if CF or not)
         let officeCallingFuncs = new Set<ts.Node>(); 
 
-        //Registry of all times user-created helper functions are used in CF (regardless if they call Office API calls or not)
+        // Registry of all times user-created helper functions are used in CF (regardless if they call Office API calls or not)
         let helperFuncToMentionsMap = new Map<ts.Node, Array<{messageId: MessageIds, loc: TSESTree.SourceLocation, node: TSESTree.Node}>>(); 
 
-        //Mapping of all helper funcs to the functions they get called within
+        // Mapping of all helper funcs to the functions they get called within
         let helperFuncToHelperFuncMap = new Map<ts.Node, Set<ts.Node>>();
-
 
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
                 if (isOfficeObject(node, typeChecker, services)) {
                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
 
-                        if (getCustomFunction(services, ruleContext)) {
+                        if (isCustomFunction(services, ruleContext)) {
                             ruleContext.report({
                                 messageId: "officeReadCall",
                                 loc: node.loc,
@@ -72,7 +64,8 @@ export = {
                             });
                         }
 
-                        const functionStarts = getFunctionStarts2(node, services);
+                        // isCalledFromCustomFunction() ? Adam recommends
+                        const functionStarts = getFunctionStarts2(node, services); // Maybe just get one layer? 
                         functionStarts.forEach((functionStart) => {
                             const bubbledUp = bubbleUpNewCallingFuncs(functionStart, helperFuncToHelperFuncMap);
                             bubbledUp.forEach((newEntry) => {
@@ -88,7 +81,7 @@ export = {
                     isHelperFunc(node, typeChecker, services)
                     ) {
 
-                    const customFunction = getCustomFunction(services, ruleContext);
+                    const customFunction = isCustomFunction(services, ruleContext);
                     const functionStarts = getFunctionStarts2(node, services);
                     const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
                     if (functionDeclarations) {
@@ -145,34 +138,26 @@ export = {
             },
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-                if (isOfficeObject(node.right, typeChecker, services)) {
-                    const customFunction = getCustomFunction(services, ruleContext);
-
-                    if (customFunction) {
-                        ruleContext.report({
-                            messageId: "officeReadCall",
-                            loc: node.loc,
-                            node: node
-                        });
-                    }
+                if (isOfficeObject(node.right, typeChecker, services) 
+                    && isCustomFunction(services, ruleContext)) {
+                    ruleContext.report({
+                        messageId: "officeReadCall",
+                        loc: node.loc,
+                        node: node
+                    });
                 }
             },
 
             VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
-                if (node.init && isOfficeObject(node.init, typeChecker, services)) {
-                    
-                    const customFunction = getCustomFunction(services, ruleContext);
-
-                    if (customFunction) {
-                        ruleContext.report({
-                            messageId: "officeReadCall",
-                            loc: node.loc,
-                            node: node
-                        });
-                    }
+                if (node.init && isOfficeObject(node.init, typeChecker, services) 
+                    && isCustomFunction(services, ruleContext)) {
+                    ruleContext.report({
+                        messageId: "officeReadCall",
+                        loc: node.loc,
+                        node: node
+                    });
                 }
             }
         };
     }
-
 }

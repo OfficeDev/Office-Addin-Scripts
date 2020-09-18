@@ -34,22 +34,19 @@ export const createRule = ESLintUtils.RuleCreator(name => {
 
 //Code to determine if function has @customfunction tag
 
-export function getCustomFunction(
-  services: RequiredParserServices,
-  context: TSESLint.RuleContext<MessageIds, Options>,
-) {
+export function isCustomFunction(services: RequiredParserServices, 
+  context: TSESLint.RuleContext<MessageIds, Options>): boolean {
   const functionStarts = getFunctionStarts(context);
   for (let i = 0; i < functionStarts.length; i ++) {
     if (services.esTreeNodeToTSNodeMap.get(functionStarts[i])) {
       const JSDocTags = ts.getJSDocTags(services.esTreeNodeToTSNodeMap.get(functionStarts[i]));
-      const customFunction = getJsDocCustomFunction(JSDocTags);
-      if (customFunction) {
-        return customFunction;
+      if (getJsDocCustomFunction(JSDocTags)) {
+        return true;
       }
     }
   }
 
-  return undefined;
+  return false;
 }
 
 function getFunctionStarts(
@@ -188,18 +185,18 @@ export function isOfficeObject(node: TSESTree.Node, typeChecker: ts.TypeChecker,
   if (node.type == AST_NODE_TYPES.MemberExpression) {
     earlierMember = isOfficeObject(node.object, typeChecker, services);
   }
+  if (earlierMember) {
+    return true;
+  }
   const officeDeclarations = getFunctionDeclarations(node, typeChecker, services);
-  const officeDecTextArray = officeDeclarations?.map((node) => {return node.getText();});
-  return earlierMember || (officeDeclarations ? officeDeclarations.some(isParentNodeOfficeNamespace) : false);
+  return officeDeclarations ? officeDeclarations.some(isParentNodeOfficeNamespace) : false;
 }
 
 function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.Declaration[]): boolean {
   const nodeText = node.getText();
-  if (
-    nodeText.startsWith("declare namespace Office")
+  if (nodeText.startsWith("declare namespace Office")
     || nodeText.startsWith("declare namespace OfficeCore")
-    || nodeText.startsWith("declare namespace Excel")
-  ) {
+    || nodeText.startsWith("declare namespace Excel")) {
     return true;
   } else {
     return node.parent ? isParentNodeOfficeNamespace(node.parent, index, decArray) : false;

@@ -20,6 +20,8 @@ ruleTester.run('no-office-write-calls', rule, {
   valid: [
     // Variables (var/const/let are the same from ESTree perspective)
     getValidTestCase( `
+    import blak from {wherever.ts}
+
     /**
      * Adds two numbers.
      * @customfunction
