@@ -1,5 +1,5 @@
 import { TSESTree, ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { getCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, ancestorChain, ancestorTextChain } from './utils'
+import { isCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, ancestorChain, ancestorTextChain } from './utils'
 import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 
 /**
@@ -55,7 +55,7 @@ export = {
 
                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
 
-                        const customFunction = getCustomFunction(services, ruleContext);
+                        const customFunction = isCustomFunction(services, ruleContext);
     
                         if (customFunction) {
                             ruleContext.report({
@@ -71,7 +71,7 @@ export = {
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
                 if (isOfficeObject(node.right, typeChecker, services)) {
-                    const customFunction = getCustomFunction(services, ruleContext);
+                    const customFunction = isCustomFunction(services, ruleContext);
 
                     if (customFunction) {
                         ruleContext.report({
@@ -86,7 +86,7 @@ export = {
             VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
                 if (node.init && isOfficeObject(node.init, typeChecker, services)) {
                     
-                    const customFunction = getCustomFunction(services, ruleContext);
+                    const customFunction = isCustomFunction(services, ruleContext);
 
                     if (customFunction) {
                         ruleContext.report({
@@ -142,7 +142,7 @@ export = {
 //                 if (isOfficeObject(node, typeChecker, services)) {
 
 //                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
-//                         const customFunction = getCustomFunction(services, ruleContext);
+//                         const customFunction = isCustomFunction(services, ruleContext);
     
 //                         if (customFunction) {
 //                             ruleContext.report({
@@ -158,7 +158,7 @@ export = {
 
 //             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
 //                 if (isOfficeObject(node.right, typeChecker, services)) {
-//                     const customFunction = getCustomFunction(services, ruleContext);
+//                     const customFunction = isCustomFunction(services, ruleContext);
 
 //                     if (customFunction) {
 //                         ruleContext.report({
@@ -173,7 +173,7 @@ export = {
 //             VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
 //                 if (node.init && isOfficeObject(node.init, typeChecker, services)) {
                     
-//                     const customFunction = getCustomFunction(services, ruleContext);
+//                     const customFunction = isCustomFunction(services, ruleContext);
 
 //                     if (customFunction) {
 //                         ruleContext.report({

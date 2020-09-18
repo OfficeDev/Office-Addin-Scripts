@@ -1,5 +1,5 @@
 import { TSESTree, ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { getCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, isHelperFunc, bubbleUpNewCallingFuncs, getFunctionDeclarations, superNodeMe } from './utils'
+import { isCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, isHelperFunc, bubbleUpNewCallingFuncs, getFunctionDeclarations, superNodeMe } from './utils'
 import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import ts from 'typescript';
 
@@ -64,7 +64,7 @@ export = {
                 if (isOfficeObject(node, typeChecker, services)) {
                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
 
-                        if (getCustomFunction(services, ruleContext)) {
+                        if (isCustomFunction(services, ruleContext)) {
                             ruleContext.report({
                                 messageId: "officeReadCall",
                                 loc: node.loc,
@@ -86,7 +86,7 @@ export = {
                     }
                 } else if (isHelperFunc(node, typeChecker, services)) {
 
-                    const customFunction = getCustomFunction(services, ruleContext);
+                    const customFunction = isCustomFunction(services, ruleContext);
                     const functionStarts = getFunctionStarts2(node, services);
                     const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
                     if (functionDeclarations) {
@@ -126,7 +126,7 @@ export = {
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
                 if (isOfficeObject(node.right, typeChecker, services)) {
-                    const customFunction = getCustomFunction(services, ruleContext);
+                    const customFunction = isCustomFunction(services, ruleContext);
 
                     if (customFunction) {
                         ruleContext.report({
@@ -141,7 +141,7 @@ export = {
             VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
                 if (node.init && isOfficeObject(node.init, typeChecker, services)) {
                     
-                    const customFunction = getCustomFunction(services, ruleContext);
+                    const customFunction = isCustomFunction(services, ruleContext);
 
                     if (customFunction) {
                         ruleContext.report({
@@ -154,94 +154,4 @@ export = {
             }
         };
     }
-
 }
-
-// const createRule = ESLintUtils.RuleCreator(
-//   () => 'https://github.com/OfficeDev/Office-Addin-Scripts',
-// );
-
-// //------------------------------------------------------------------------------
-// // Rule Definition
-// //------------------------------------------------------------------------------
-
-// type Options = unknown[];
-// type MessageIds = 'officeReadCall';
-
-// export = createRule<Options, MessageIds>({
-//     name: 'no-office-read-calls',
-
-//     meta: {
-//         docs: {
-//             description: "Prevents office api calls",
-//             category: "Best Practices",
-//             recommended: "warn",
-//             requiresTypeChecking: true
-//         },
-//         type: "problem",
-//         messages: {
-//             officeReadCall: "No Office API read calls within Custom Functions"
-//         },
-//         schema: []
-//     },
-
-//     defaultOptions: [],
-        
-//     create(ruleContext) {
-//         const services = ESLintUtils.getParserServices(ruleContext);
-
-//         const typeChecker = services.program.getTypeChecker();
-
-//         return {
-//             CallExpression: function(node: TSESTree.CallExpression) {
-//                 if (isOfficeObject(node, typeChecker, services)) {
-
-//                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
-//                         const customFunction = getCustomFunction(services, ruleContext);
-    
-//                         if (customFunction) {
-//                             ruleContext.report({
-//                                 messageId: "officeReadCall",
-//                                 loc: node.loc,
-//                                 node: node
-//                             });
-//                         }
-
-//                     }
-//                 }
-//             },
-
-//             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-//                 if (isOfficeObject(node.right, typeChecker, services)) {
-//                     const customFunction = getCustomFunction(services, ruleContext);
-
-//                     if (customFunction) {
-//                         ruleContext.report({
-//                             messageId: "officeReadCall",
-//                             loc: node.loc,
-//                             node: node
-//                         });
-//                     }
-//                 }
-//             },
-
-//             VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
-//                 if (node.init && isOfficeObject(node.init, typeChecker, services)) {
-                    
-//                     const customFunction = getCustomFunction(services, ruleContext);
-
-//                     if (customFunction) {
-//                         ruleContext.report({
-//                             messageId: "officeReadCall",
-//                             loc: node.loc,
-//                             node: node
-//                         });
-//                     }
-//                 }
-//             }
-//         };
-//     }
-// })
-
-
-

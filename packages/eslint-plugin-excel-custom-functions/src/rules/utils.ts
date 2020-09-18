@@ -5,9 +5,7 @@ import {
   TSESLint,
   TSESTree,
 } from '@typescript-eslint/experimental-utils';
-import { isReassignmentTarget, getJsDoc } from 'tsutils';
 import * as ts from 'typescript';
-import { Scope } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 // import * as metadata from "../data/metadata.json";
 // const metadata: {[key: string]: {comment: Array<string>, attributes: any, properties: Array<any>, methods: Array<any>} } = require("../data/metadata.json");
 let version = "0.0.8";

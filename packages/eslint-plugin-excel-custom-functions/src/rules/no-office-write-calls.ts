@@ -1,6 +1,5 @@
 import { TSESTree, ESLintUtils } from "@typescript-eslint/experimental-utils";
-//import * as sm from "@typescript-eslint/scope-manager";
-import { getCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, isHelperFunc, bubbleUpNewCallingFuncs, getFunctionDeclarations, superNodeMe } from './utils'
+import { isCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, isHelperFunc, bubbleUpNewCallingFuncs, getFunctionDeclarations, superNodeMe } from './utils'
 import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import ts from 'typescript';
 
@@ -9,10 +8,6 @@ import ts from 'typescript';
  * @author Artur Tarasenko (artarase)
  */
 "use strict";
-
-const createRule = ESLintUtils.RuleCreator(
-  () => 'https://github.com/OfficeDev/Office-Addin-Scripts',
-);
 
 //------------------------------------------------------------------------------
 // Rule Definition
@@ -43,9 +38,7 @@ export = {
         CallExpression: (node: TSESTree.CallExpression) => void;
         AssignmentExpression: (node: TSESTree.AssignmentExpression) => void;
     } {
-
         const services = ESLintUtils.getParserServices(ruleContext);
-
         const typeChecker = services.program.getTypeChecker();
 
         //Registry of all functions that use Office API calls (regardless if CF or not)
@@ -62,7 +55,7 @@ export = {
                 if (isOfficeObject(node, typeChecker, services)) {
                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
 
-                        if (getCustomFunction(services, ruleContext)) {
+                        if (isCustomFunction(services, ruleContext)) {
                             ruleContext.report({
                                 messageId: "officeWriteCall",
                                 loc: node.loc,
@@ -86,7 +79,7 @@ export = {
                     isHelperFunc(node, typeChecker, services)
                     ) {
 
-                    const customFunction = getCustomFunction(services, ruleContext);
+                    const customFunction = isCustomFunction(services, ruleContext);
                     const functionStarts = getFunctionStarts2(node, services);
                     const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
                     if (functionDeclarations) {
@@ -143,20 +136,15 @@ export = {
             },
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-                if (isOfficeObject(node.left, typeChecker, services)) {
-                    
-                    const customFunction = getCustomFunction(services, ruleContext);
-
-                    if (customFunction) {
-                        ruleContext.report({
-                            messageId: "officeWriteCall",
-                            loc: node.loc,
-                            node: node
-                        });
-                    }
+                if (isOfficeObject(node.left, typeChecker, services)
+                && isCustomFunction(services, ruleContext)) {
+                    ruleContext.report({
+                        messageId: "officeWriteCall",
+                        loc: node.loc,
+                        node: node
+                    });
                 }
             }
         };
     }
-
 }

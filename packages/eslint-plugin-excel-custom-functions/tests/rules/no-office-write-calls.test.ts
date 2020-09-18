@@ -18,9 +18,9 @@ const ruleTester = new ESLintUtils.RuleTester({
 ruleTester.run('no-office-write-calls', rule, {
   // Don't warn at the spot where the deprecated thing is declared
   valid: [
-    // Variables (var/const/let are the same from ESTree perspective)
+    // Multi-file scenarios are not supported
     getValidTestCase( `
-    import blak from {wherever.ts}
+    import { writeOperations } from '../fixtures/secondFile';
 
     /**
      * Adds two numbers.
@@ -30,9 +30,90 @@ ruleTester.run('no-office-write-calls', rule, {
      * @returns The sum of the two numbers.
      */
     function abc() {
+      writeOperations();
+    }
+      `),
+
+    // Functions that pass in an unused context object should be ok
+    //This throws an error
+    getValidTestCase( `
+    /**
+     * Adds two numbers.
+     * @customfunction
+     * @param first First number
+     * @param second Second number
+     * @returns The sum of the two numbers.
+     */
+    function abc() {
+      let context = new Excel.RequestContext();
+      writeOperations(context);                                                       //ERROR writeOperations
+    }
+
+    function writeOperations(context: Excel.RequestContext) {
+      console.log("hello world!");
+    }
+      `),
+
+    // Functions that pass in an unused context object should be ok
+    //This throws an error
+    getValidTestCase( `
+    /**
+     * Adds two numbers.
+     * @customfunction
+     * @param first First number
+     * @param second Second number
+     * @returns The sum of the two numbers.
+     */
+    function abc() {
+      writeOperations("helloWorld");                                                       //ERROR writeOperations
+    }
+    
+    function writeOperations(text: string) {
+      console.log(text);
+    
+      let context = new Excel.RequestContext()
+    
+      context.sync()
+    }
+      `),
+
+    // Functions that pass in an unused context object should be ok
+    //This throws an error
+    getValidTestCase( `
+    /**
+     * Adds two numbers.
+     * @customfunction
+     * @param first First number
+     * @param second Second number
+     * @returns The sum of the two numbers.
+     */
+    function abc() {
+      writeOperations("helloWorld");                                                       //ERROR writeOperations
+    }
+    
+    function writeOperations(text: string) {
+      console.log(text);
+    
+      let context = new Excel.RequestContext()
+    
+      context.sync()
+    }
+      `),
+
+    // Functions that pass in an unused context object should be ok
+    //This throws an error
+    getValidTestCase( `
+    /**
+    * Adds two numbers.
+    * @customfunction
+    * @param first First number
+    * @param second Second number
+    * @returns The sum of the two numbers.
+    */
+    function abc() {
       def();
     }
-  
+    
     function ghi() {
       xyz();
     }
@@ -53,7 +134,7 @@ ruleTester.run('no-office-write-calls', rule, {
             ["1/15/2017", "Trey Research", "Other", "135"],
             ["1/15/2017", "Best For You Organics Company", "Groceries", "97.88"]
         ]);
-  
+    
       expensesTable.columns.getItemAt(3).getRange().numberFormat = [['\u20AC#,##0.00']];
       expensesTable.getRange().format.autofitColumns();
       expensesTable.getRange().format.autofitRows();
@@ -66,18 +147,39 @@ ruleTester.run('no-office-write-calls', rule, {
         }
       });
     }
-  
+    
     function def() {
       ghi();
     }
-  
+    
     function xyz() {
       createTable();
     }
-      `)
+      `),
   ],
   // Error cases. `// ERROR: x` marks the spot where the error occurs.
   invalid: [
+    // Testing passing in a context object
+    getInvalidTestCase( `
+    /**
+     * Adds two numbers.
+     * @customfunction
+     * @param first First number
+     * @param second Second number
+     * @returns The sum of the two numbers.
+     */
+    function abc() {
+      let context = new Excel.RequestContext();
+      writeOperations(context);                                     //ERROR: writeOperations                  
+    }
+
+    function writeOperations(context: Excel.RequestContext) {
+      var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+      var expensesTable = currentWorksheet.tables.add("A1:D1", true /*hasHeaders*/);
+      expensesTable.name = "ExpensesTable";
+      return context.sync();
+    }
+      `),
   ]
 });
 
