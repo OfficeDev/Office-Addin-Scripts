@@ -121,9 +121,13 @@ export async function deleteValue(key: RegistryKey, value: string): Promise<void
     };
 
     try {
-      key.winreg.valueExists(value, (valueExistsError, exists) => {
+      key.winreg.valueExists(value, (_, exists) => {
         if (exists) {
           key.winreg.remove(value, onError);
+        }
+        else
+        {
+          resolve();
         }
       });
     } catch (err) {

@@ -83,7 +83,7 @@ export async function disableRuntimeLogging(): Promise<void> {
   }
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct, openDevTools?: boolean): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct, openDevTools = false): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.enableDebugging(addinId, enable, method, openDevTools);
@@ -153,6 +153,15 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.getEnabledDebuggingMethods(addinId);
+    default:
+      throw new Error(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function getOpenDevTools(addinId: string): Promise<boolean> {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.getOpenDevTools(addinId);
     default:
       throw new Error(`Platform not supported: ${process.platform}.`);
   }

@@ -43,7 +43,7 @@ export async function enableDebugging(addinId: string, enable: boolean = true, m
   await registry.addBooleanValue(key, UseDirectDebugger, useDirectDebugger);
   await registry.addBooleanValue(key, UseProxyDebugger, useProxyDebugger);
 
-  if (enable && (openDevTools === true)) {
+  if (enable && openDevTools) {
     await registry.addBooleanValue(key, OpenDevTools, true);
   } else {
     await registry.deleteValue(key, OpenDevTools);
@@ -80,6 +80,13 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
   }
 
   return methods;
+}
+
+export async function getOpenDevTools(addinId: string): Promise<boolean> {
+  const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
+  const methods: DebuggingMethod[] = [];
+
+  return isRegistryValueTrue(await registry.getValue(key, OpenDevTools));
 }
 
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
