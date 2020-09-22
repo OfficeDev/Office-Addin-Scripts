@@ -197,21 +197,23 @@ describe("DevSettingsForAddIn", function() {
 });
 
 describe("can specify to open dev tools", function() {
-  before("debugging should be disabled", async function() {
-    await devSettings.disableDebugging(addinId);
-    const open = await devSettings.getOpenDevTools(addinId);
-    assert.strictEqual(open, false);
-  }),
-  it("specify to open dev tools when debugging is enabled", async function() {
-    await devSettings.enableDebugging(addinId, true, undefined, true);
-    const open = await devSettings.getOpenDevTools(addinId);
-    assert.strictEqual(open, true);
-  });
-  it("do not open dev tools by default when debugging is enabled", async function() {
-    await devSettings.disableDebugging(addinId);
-    const open = await devSettings.getOpenDevTools(addinId);
-    assert.strictEqual(open, false);
-  })
+  if (isWindows) {
+    before("debugging should be disabled", async function() {
+      await devSettings.disableDebugging(addinId);
+      const open = await devSettings.getOpenDevTools(addinId);
+      assert.strictEqual(open, false);
+    }),
+    it("specify to open dev tools when debugging is enabled", async function() {
+      await devSettings.enableDebugging(addinId, true, undefined, true);
+      const open = await devSettings.getOpenDevTools(addinId);
+      assert.strictEqual(open, true);
+    });
+    it("do not open dev tools by default when debugging is enabled", async function() {
+      await devSettings.disableDebugging(addinId);
+      const open = await devSettings.getOpenDevTools(addinId);
+      assert.strictEqual(open, false);
+    })
+  }
 });
 
 describe("Appcontainer", async function() {
