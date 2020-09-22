@@ -158,12 +158,12 @@ describe("DevSettingsForAddIn", function() {
         const methods = await devSettings.getEnabledDebuggingMethods(addinId);
         assert.strictEqual(methods.length, 0);
       }),
-        it("direct debugging can be enabled", async function() {
-          await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
-          const methods = await devSettings.getEnabledDebuggingMethods(addinId);
-          assert.strictEqual(methods.length, 1);
-          assert.strictEqual(methods[0], devSettings.DebuggingMethod.Direct);
-        });
+      it("direct debugging can be enabled", async function() {
+        await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Direct);
+        const methods = await devSettings.getEnabledDebuggingMethods(addinId);
+        assert.strictEqual(methods.length, 1);
+        assert.strictEqual(methods[0], devSettings.DebuggingMethod.Direct);
+      });
       it("web debugging can be enabled, and turns off direct debugging", async function() {
         await devSettings.enableDebugging(addinId, true, devSettings.DebuggingMethod.Web);
         const methods = await devSettings.getEnabledDebuggingMethods(addinId);
@@ -193,6 +193,26 @@ describe("DevSettingsForAddIn", function() {
         assert.strictEqual(await devSettings.isLiveReloadEnabled(addinId), true);
       });
     });
+  }
+});
+
+describe("can specify to open dev tools", function() {
+  if (isWindows) {
+    before("debugging should be disabled", async function() {
+      await devSettings.disableDebugging(addinId);
+      const open = await devSettings.getOpenDevTools(addinId);
+      assert.strictEqual(open, false);
+    }),
+    it("specify to open dev tools when debugging is enabled", async function() {
+      await devSettings.enableDebugging(addinId, true, undefined, true);
+      const open = await devSettings.getOpenDevTools(addinId);
+      assert.strictEqual(open, true);
+    });
+    it("do not open dev tools by default when debugging is enabled", async function() {
+      await devSettings.disableDebugging(addinId);
+      const open = await devSettings.getOpenDevTools(addinId);
+      assert.strictEqual(open, false);
+    })
   }
 });
 
