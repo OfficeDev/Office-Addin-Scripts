@@ -16,62 +16,152 @@ const ruleTester = new ESLintUtils.RuleTester({
 });
 
 ruleTester.run('no-office-read-calls', rule, {
-  // Don't warn at the spot where the deprecated thing is declared
   valid: [
-    // Variables (var/const/let are the same from ESTree perspective)
+    // Multi-file scenarios are not supported
+    getValidTestCase( `
+    import { readOperations } from '../fixtures/secondFile';
+
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      readOperations();
+    }
+    `),
+
+    // Should not throw a read error on write operations
     getValidTestCase( `
     /**
-     * Adds two numbers.
+     * Custom Function for Testing
      * @customfunction
-     * @param first First number
-     * @param second Second number
-     * @returns The sum of the two numbers.
      */
-    function abc() {
-      def();
+    function myCustomFunction() {
+      Excel.createWorkbook(undefined);
     }
-      
-    function createTable() {
+    `),
+
+    // Should not throw a read error when Office calls aren't used in a custom function
+    getValidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      console.log("Hello World!");
+    }
+
+    function readOperations() {
       Excel.run(function (context) {
-        var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
-        var expensesTable = currentWorksheet.tables.add("A1:D1", true /*hasHeaders*/);
-        expensesTable.name = "ExpensesTable";
-        expensesTable.getHeaderRowRange().values =
-        [["Date", "Merchant", "Category", "Amount"]];
-        expensesTable.rows.add(undefined /*add at the end*/, [
-            ["1/1/2017", "The Phone Company", "Communications", "120"],
-            ["1/2/2017", "Northwind Electric Cars", "Transportation", "142.33"],
-            ["1/5/2017", "Best For You Organics Company", "Groceries", "27.9"],
-            ["1/10/2017", "Coho Vineyard", "Restaurant", "33"],
-            ["1/11/2017", "Bellows College", "Education", "350.1"],
-            ["1/15/2017", "Trey Research", "Other", "135"],
-            ["1/15/2017", "Best For You Organics Company", "Groceries", "97.88"]
-        ]);
-  
-      expensesTable.columns.getItemAt(3).getRange().numberFormat = [['\u20AC#,##0.00']];
-      expensesTable.getRange().format.autofitColumns();
-      expensesTable.getRange().format.autofitRows();
-        return context.sync();
-      })
-      .catch(function (error) {
-        console.log("Error: " + error);
-        if (error instanceof OfficeExtension.Error) {
-            console.log("Debug info: " + JSON.stringify(error.debugInfo));
-        }
+          var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+          var expensesTable = currentWorksheet.tables.getItemAt(0);
+          var expenseValues = expensesTable.getHeaderRowRange().values;
+          return context.sync();
       });
     }
-  
-    function def() {
-      ghi();
-    }
-  
-    function xyz() {
-      createTable();
-    }
-      `)
+    `),
   ],
-  // Error cases. `// WARN: x` marks the spot where the warning occurs.
+  // Warning cases. `// WARN: x` marks the spot where the error occurs.
   invalid: [
+    // Testing passing in a context object
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      let context = new Excel.RequestContext();                                            //WARN: context = new Excel.RequestContext()
+      readOperations(context);                                                             //WARN: readOperations                  
+    }
+
+    function readOperations(context: Excel.RequestContext) {
+      var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+      var expensesTable = currentWorksheet.tables.getItemAt(0);
+      var expenseValues = expensesTable.getHeaderRowRange().values;
+      return context.sync();
+    }
+    `),
+
+    // Testing helper functions
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      helper1();                                                                            //WARN: helper1
+    }
+    
+    function helper2() {
+      helper3();
+    }
+
+    function readOperations() {
+      Excel.run(function (context) {
+          var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+          var expensesTable = currentWorksheet.tables.getItemAt(0);
+          var expenseValues = expensesTable.getHeaderRowRange().values;
+          return context.sync();
+      });
+    }
+    
+    function helper1() {
+      helper2();
+    }
+    
+    function helper3() {
+      readOperations();
+    }
+    `),
+
+    // Testing helper functions in different order
+    getInvalidTestCase( `
+    function helper2() {
+      helper3();
+    }
+
+    function readOperations() {
+      Excel.run(function (context) {
+          var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+          var expensesTable = currentWorksheet.tables.getItemAt(0);
+          var expenseValues = expensesTable.getHeaderRowRange().values;
+          return context.sync();
+      });
+    }
+    
+    function helper1() {
+      helper2();
+    }
+
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      helper1();                                                                            //WARN: helper1
+    }
+    
+    function helper3() {
+      readOperations();
+    }
+    `),
+
+    // testing creating context object in helper func
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      readOperations("helloWorld");                                                          //WARN: readOperations
+    }
+    
+    function readOperations(text: string) {
+      console.log(text);
+      let context = new Excel.RequestContext()
+      context.sync()
+    }
+      `),
   ]
 });
 

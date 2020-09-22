@@ -3,13 +3,10 @@ import {
   AST_NODE_TYPES,
   ESLintUtils,
   TSESLint,
-  TSESTree,
+  TSESTree
 } from '@typescript-eslint/experimental-utils';
 import * as ts from 'typescript';
-// import * as metadata from "../data/metadata.json";
-// const metadata: {[key: string]: {comment: Array<string>, attributes: any, properties: Array<any>, methods: Array<any>} } = require("../data/metadata.json");
 let version = "0.0.8";
-// import * as office from "@microsoft/office-js"
 
 export enum OfficeCalls {
   WRITE = "WRITE",
@@ -21,54 +18,31 @@ type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;
 export type Options = unknown[];
 export type MessageIds = string;
 
-const REPO_URL = 'https://github.com/arttarawork/Office-Addin-Scripts';
+export const REPO_URL = 'https://github.com/arttarawork/Office-Addin-Scripts/packages/eslint-plugin-office-custom-functions';
 
 
 export const createRule = ESLintUtils.RuleCreator(name => {
   const ruleName = parsePath(name).name;
 
-  return `${REPO_URL}/packages/eslint-plugin-office-custom-functions/blob/v${version}/docs/rules/${ruleName}.md`;
+  return `${REPO_URL}/blob/v${version}/docs/rules/${ruleName}.md`;
 });
 
-//Code to determine if function has @customfunction tag
+// Code to determine if function has @customfunction tag
 
-export function isCustomFunction(services: RequiredParserServices, 
-  context: TSESLint.RuleContext<MessageIds, Options>): boolean {
-  const functionStarts = getFunctionStarts(context);
+export function isCustomFunction(node: TSESTree.Node, services: RequiredParserServices): boolean {
+  const functionStarts = getAllFunctionStarts(node, services);
   for (let i = 0; i < functionStarts.length; i ++) {
-    if (services.esTreeNodeToTSNodeMap.get(functionStarts[i])) {
-      const JSDocTags = ts.getJSDocTags(services.esTreeNodeToTSNodeMap.get(functionStarts[i]));
-      if (getJsDocCustomFunction(JSDocTags)) {
-        return true;
-      }
+    if (getJsDocCustomFunction(ts.getJSDocTags(functionStarts[i]))) {
+      return true;
     }
   }
 
   return false;
 }
 
-function getFunctionStarts(
-  context: TSESLint.RuleContext<MessageIds, Options>,
-): Array<TSESTree.Node> {
-  let outputArray: Array<TSESTree.Node> = [];
-  const ancestors = context.getAncestors();
-  for (let i = 0; i < ancestors.length; i++) {
-    if (ancestors[i].type == "ExportNamedDeclaration"
-      && (i + 1) < ancestors.length 
-      && ancestors[i + 1].type == "FunctionDeclaration") {
-        outputArray.push(ancestors[i]);
-        i++;
-    } else if (ancestors[i].type == "FunctionDeclaration") {
-      outputArray.push(ancestors[i]);
-    }
-  }
-  return outputArray;
-}
-
-export function superNodeMe(
-  nodeArray: Array<ts.Node>,
-  helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>
-): void {
+// Maps all nodes in nodeArray to each other within helperFuncToHelperFuncMap
+// Basically turns all nodes in NodeArray to this: https://en.wikipedia.org/wiki/Complete_graph
+export function superNodeMe(nodeArray: Array<ts.Node>, helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>): void {
   nodeArray.forEach((node, index) => {
     let currentVal = helperFuncToHelperFuncMap.get(node);
     if (!currentVal) {
@@ -86,55 +60,47 @@ export function superNodeMe(
   })
 }
 
-export function getFunctionStarts2(node: TSESTree.Node, services: RequiredParserServices) {
+// Walks up the parent chain fron the current node to return all function declaration-like nodes that contain that initial node
+export function getAllFunctionStarts(node: TSESTree.Node, services: RequiredParserServices): Array<ts.Node> {
   let tsNode: ts.Node = services.esTreeNodeToTSNodeMap.get(node);
   let outputArray: Array<ts.Node> = [];
   while (tsNode && tsNode.kind && !(tsNode.kind == ts.SyntaxKind.SourceFile)) {
-    if (tsNode.kind == ts.SyntaxKind.CallSignature
-      || tsNode.kind == ts.SyntaxKind.ConstructSignature
-      || tsNode.kind == ts.SyntaxKind.MethodSignature
-      || tsNode.kind == ts.SyntaxKind.IndexSignature
-      || tsNode.kind == ts.SyntaxKind.FunctionType
-      || tsNode.kind == ts.SyntaxKind.ConstructorType
-      || tsNode.kind == ts.SyntaxKind.JSDocFunctionType
-      || tsNode.kind == ts.SyntaxKind.FunctionDeclaration
-      || tsNode.kind == ts.SyntaxKind.MethodDeclaration
-      || tsNode.kind == ts.SyntaxKind.Constructor
-      || tsNode.kind == ts.SyntaxKind.GetAccessor
-      || tsNode.kind == ts.SyntaxKind.SetAccessor
-      || tsNode.kind == ts.SyntaxKind.FunctionExpression
-      || tsNode.kind == ts.SyntaxKind.ArrowFunction) {
-        outputArray.push(tsNode);
-      }
+    if (isFunctionDeclarationLike(tsNode)) {
+      outputArray.push(tsNode);
+    }
     tsNode = tsNode.parent;
   }
   return outputArray;
 }
 
-export function ancestorTextChain(node: TSESTree.Node, services: RequiredParserServices): Array<string> {
+// Walks up the parent chain fron the current node to return the earliest function declaration-like node that contains that initial node
+export function getStartOfFunction(node: TSESTree.Node, services: RequiredParserServices): ts.Node | undefined {
   let tsNode: ts.Node = services.esTreeNodeToTSNodeMap.get(node);
-
-  let textArray: Array<string> = new Array<string>();
-
-  while (tsNode) {
-    textArray.push(tsNode.getText());
+  while (tsNode && tsNode.kind && !(tsNode.kind == ts.SyntaxKind.SourceFile)) {
+    if (isFunctionDeclarationLike(tsNode)) {
+      return tsNode;
+    }
     tsNode = tsNode.parent;
   }
-  
-  return textArray;
+  return undefined;
 }
 
-export function ancestorChain(node: TSESTree.Node, services: RequiredParserServices): Array<ts.Node> {
-  let tsNode: ts.Node = services.esTreeNodeToTSNodeMap.get(node);
-
-  let textArray: Array<ts.Node> = new Array<ts.Node>();
-
-  while (tsNode) {
-    textArray.push(tsNode);
-    tsNode = tsNode.parent;
-  }
-  
-  return textArray;
+function isFunctionDeclarationLike(tsNode: ts.Node): boolean {
+  return !!(tsNode && tsNode.kind 
+    && (tsNode.kind == ts.SyntaxKind.CallSignature
+    || tsNode.kind == ts.SyntaxKind.ConstructSignature
+    || tsNode.kind == ts.SyntaxKind.MethodSignature
+    || tsNode.kind == ts.SyntaxKind.IndexSignature
+    || tsNode.kind == ts.SyntaxKind.FunctionType
+    || tsNode.kind == ts.SyntaxKind.ConstructorType
+    || tsNode.kind == ts.SyntaxKind.JSDocFunctionType
+    || tsNode.kind == ts.SyntaxKind.FunctionDeclaration
+    || tsNode.kind == ts.SyntaxKind.MethodDeclaration
+    || tsNode.kind == ts.SyntaxKind.Constructor
+    || tsNode.kind == ts.SyntaxKind.GetAccessor
+    || tsNode.kind == ts.SyntaxKind.SetAccessor
+    || tsNode.kind == ts.SyntaxKind.FunctionExpression
+    || tsNode.kind == ts.SyntaxKind.ArrowFunction));
 }
 
 function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]) {
@@ -150,7 +116,6 @@ function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]) {
 
 export function isOfficeFuncWriteOrRead(node: TSESTree.CallExpression, typeChecker: ts.TypeChecker, services: RequiredParserServices): OfficeCalls | undefined {
   if (isOfficeObject(node.callee, typeChecker, services)) {
-    
     let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node.callee));
     let symbol = type.getSymbol();
     let symbolText = symbol ? typeChecker.symbolToString(symbol) : undefined;
@@ -162,6 +127,7 @@ export function isOfficeFuncWriteOrRead(node: TSESTree.CallExpression, typeCheck
         || symbolText.toLowerCase().startsWith("remove")
         || symbolText.toLowerCase().startsWith("insert")
         || symbolText.toLowerCase().startsWith("copy")
+        || symbolText.toLowerCase().startsWith("create")
       )
     ) {
       return OfficeCalls.WRITE;
@@ -203,7 +169,7 @@ function isParentNodeOfficeNamespace(node: ts.Node, index: number, decArray: ts.
 
 // Code to get the function declaration some node is held within
 // This will have to accomodate multiple func declarations
-export function getFunctionDeclarations(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices) {
+export function getFunctionDeclarations(node: TSESTree.Node, typeChecker: ts.TypeChecker, services: RequiredParserServices): ts.Declaration[] | undefined {
   if (node.type == AST_NODE_TYPES.CallExpression) {
     node = (<TSESTree.CallExpression>node).callee;
   }
@@ -245,7 +211,21 @@ export function bubbleUpNewCallingFuncs(node: ts.Node, helperFuncToHelperFuncMap
       examiningSet?.delete(nodeToExamine);
     })
   }
-  
-
   return outputSet;
+}
+
+export function reportIfCalledFromCustomFunction(nodeToBubbleUpFrom: ts.Node,
+  ruleContext: TSESLint.RuleContext<MessageIds, Options>, 
+  helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>, 
+  helperFuncToMentionsMap: Map<ts.Node, Array<{messageId: MessageIds, loc: TSESTree.SourceLocation, node: TSESTree.Node}>>,
+  officeCallingFuncs?: Set<ts.Node>): void {
+  bubbleUpNewCallingFuncs(nodeToBubbleUpFrom, helperFuncToHelperFuncMap).forEach((bubbledUp) => {
+    if (officeCallingFuncs) {
+      officeCallingFuncs.add(bubbledUp);
+    }
+    helperFuncToMentionsMap.get(bubbledUp)?.forEach((mention) => {
+        ruleContext.report(mention);
+    });
+    helperFuncToMentionsMap.delete(bubbledUp);
+  });
 }

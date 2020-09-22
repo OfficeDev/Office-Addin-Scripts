@@ -16,161 +16,40 @@ const ruleTester = new ESLintUtils.RuleTester({
 });
 
 ruleTester.run('no-office-write-calls', rule, {
-  // Don't warn at the spot where the deprecated thing is declared
   valid: [
     // Multi-file scenarios are not supported
     getValidTestCase( `
     import { writeOperations } from '../fixtures/secondFile';
 
     /**
-     * Adds two numbers.
+     * Custom Function for Testing
      * @customfunction
-     * @param first First number
-     * @param second Second number
-     * @returns The sum of the two numbers.
      */
-    function abc() {
+    function myCustomFunction() {
       writeOperations();
     }
-      `),
+    `),
 
-    // Functions that pass in an unused context object should be ok
-    //This throws an error
+    // Should not throw a write error on read operations
     getValidTestCase( `
     /**
-     * Adds two numbers.
+     * Custom Function for Testing
      * @customfunction
-     * @param first First number
-     * @param second Second number
-     * @returns The sum of the two numbers.
      */
-    function abc() {
+    function myCustomFunction() {
       let context = new Excel.RequestContext();
-      writeOperations(context);                                                       //ERROR writeOperations
+      context.workbook.worksheets.getActiveWorksheet();
     }
+    `),
 
-    function writeOperations(context: Excel.RequestContext) {
-      console.log("hello world!");
-    }
-      `),
-
-    // Functions that pass in an unused context object should be ok
-    //This throws an error
+    // Should not throw a write error when Office calls aren't used in a custom function
     getValidTestCase( `
     /**
-     * Adds two numbers.
+     * Custom Function for Testing
      * @customfunction
-     * @param first First number
-     * @param second Second number
-     * @returns The sum of the two numbers.
      */
-    function abc() {
-      writeOperations("helloWorld");                                                       //ERROR writeOperations
-    }
-    
-    function writeOperations(text: string) {
-      console.log(text);
-    
-      let context = new Excel.RequestContext()
-    
-      context.sync()
-    }
-      `),
-
-    // Functions that pass in an unused context object should be ok
-    //This throws an error
-    getValidTestCase( `
-    /**
-     * Adds two numbers.
-     * @customfunction
-     * @param first First number
-     * @param second Second number
-     * @returns The sum of the two numbers.
-     */
-    function abc() {
-      writeOperations("helloWorld");                                                       //ERROR writeOperations
-    }
-    
-    function writeOperations(text: string) {
-      console.log(text);
-    
-      let context = new Excel.RequestContext()
-    
-      context.sync()
-    }
-      `),
-
-    // Functions that pass in an unused context object should be ok
-    //This throws an error
-    getValidTestCase( `
-    /**
-    * Adds two numbers.
-    * @customfunction
-    * @param first First number
-    * @param second Second number
-    * @returns The sum of the two numbers.
-    */
-    function abc() {
-      def();
-    }
-    
-    function ghi() {
-      xyz();
-    }
-      
-    function createTable() {
-      Excel.run(function (context) {
-        var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
-        var expensesTable = currentWorksheet.tables.add("A1:D1", true /*hasHeaders*/);
-        expensesTable.name = "ExpensesTable";
-        expensesTable.getHeaderRowRange().values =
-        [["Date", "Merchant", "Category", "Amount"]];
-        expensesTable.rows.add(undefined /*add at the end*/, [
-            ["1/1/2017", "The Phone Company", "Communications", "120"],
-            ["1/2/2017", "Northwind Electric Cars", "Transportation", "142.33"],
-            ["1/5/2017", "Best For You Organics Company", "Groceries", "27.9"],
-            ["1/10/2017", "Coho Vineyard", "Restaurant", "33"],
-            ["1/11/2017", "Bellows College", "Education", "350.1"],
-            ["1/15/2017", "Trey Research", "Other", "135"],
-            ["1/15/2017", "Best For You Organics Company", "Groceries", "97.88"]
-        ]);
-    
-      expensesTable.columns.getItemAt(3).getRange().numberFormat = [['\u20AC#,##0.00']];
-      expensesTable.getRange().format.autofitColumns();
-      expensesTable.getRange().format.autofitRows();
-        return context.sync();
-      })
-      .catch(function (error) {
-        console.log("Error: " + error);
-        if (error instanceof OfficeExtension.Error) {
-            console.log("Debug info: " + JSON.stringify(error.debugInfo));
-        }
-      });
-    }
-    
-    function def() {
-      ghi();
-    }
-    
-    function xyz() {
-      createTable();
-    }
-      `),
-  ],
-  // Error cases. `// ERROR: x` marks the spot where the error occurs.
-  invalid: [
-    // Testing passing in a context object
-    getInvalidTestCase( `
-    /**
-     * Adds two numbers.
-     * @customfunction
-     * @param first First number
-     * @param second Second number
-     * @returns The sum of the two numbers.
-     */
-    function abc() {
-      let context = new Excel.RequestContext();
-      writeOperations(context);                                     //ERROR: writeOperations                  
+    function myCustomFunction() {
+      console.log("Hello World!");
     }
 
     function writeOperations(context: Excel.RequestContext) {
@@ -178,6 +57,106 @@ ruleTester.run('no-office-write-calls', rule, {
       var expensesTable = currentWorksheet.tables.add("A1:D1", true /*hasHeaders*/);
       expensesTable.name = "ExpensesTable";
       return context.sync();
+    }
+    `),
+  ],
+  // Error cases. `// ERROR: x` marks the spot where the error occurs.
+  invalid: [
+    // Testing write operations erroring out with a test sample that has no read operations
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      Excel.createWorkbook(undefined);                                                      //ERROR: Excel.createWorkbook(undefined)
+    }
+    `),
+    // Testing passing in a context object
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      let context = new Excel.RequestContext();
+      writeOperations(context);                                                             //ERROR: writeOperations                  
+    }
+
+    function writeOperations(context: Excel.RequestContext) {
+      var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+      var expensesTable = currentWorksheet.tables.add("A1:D1", true /*hasHeaders*/);
+      expensesTable.name = "ExpensesTable";
+      return context.sync();
+    }
+      `),
+
+    // Functions that pass in an unused context object should be ok
+    //This throws an error
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      helper1();                                                                            //ERROR: helper1
+    }
+    
+    function helper2() {
+      helper3();
+    }
+    
+    function writeOperations() {
+      Excel.run((context) => {
+        var currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+        var expensesTable = currentWorksheet.tables.add("A1:D1", true /*hasHeaders*/);
+        expensesTable.name = "ExpensesTable";
+        return context.sync();
+      });
+    }
+    
+    function helper1() {
+      helper2();
+    }
+    
+    function helper3() {
+      writeOperations();
+    }
+      `),
+
+    // Functions that pass in an unused context object should be ok
+    //This throws an error
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      writeOperations("helloWorld");                                                          //ERROR: writeOperations
+    }
+    
+    function writeOperations(text: string) {
+      console.log(text);
+      let context = new Excel.RequestContext()
+      context.sync()
+    }
+      `),
+
+    // Functions that pass in an unused context object should be ok
+    //This throws an error
+    getInvalidTestCase( `
+    /**
+     * Custom Function for Testing
+     * @customfunction
+     */
+    function myCustomFunction() {
+      let context = new Excel.RequestContext();
+      context.workbook.worksheets.getActiveWorksheet();
+      writeOperations(context);                                                              //ERROR: writeOperations
+    }
+
+    function writeOperations(context: Excel.RequestContext) {
+      console.log("hello world!");
     }
       `),
   ]

@@ -1,5 +1,5 @@
 import { TSESTree, ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { isCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, getFunctionStarts2, isHelperFunc, bubbleUpNewCallingFuncs, getFunctionDeclarations, superNodeMe } from './utils'
+import { REPO_URL, isCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, isHelperFunc, getStartOfFunction, getFunctionDeclarations, superNodeMe, reportIfCalledFromCustomFunction} from './utils'
 import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import ts from 'typescript';
 
@@ -21,11 +21,11 @@ export = {
 
     meta: {
         docs: {
-            description: "Prevents office api calls",
+            description: "Prevents office read api calls",
             category: <RuleMetaDataDocs["category"]>"Best Practices",
             recommended: <RuleMetaDataDocs["recommended"]>"warn",
             requiresTypeChecking: true,
-            url: 'https://github.com/OfficeDev/Office-Addin-Scripts'
+            url: REPO_URL
         },
         type: <RuleMetaData<MessageIds>["type"]> "problem",
         messages: <Record<MessageIds, string>> {
@@ -55,8 +55,7 @@ export = {
             CallExpression: function(node: TSESTree.CallExpression) {
                 if (isOfficeObject(node, typeChecker, services)) {
                     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.READ) {
-
-                        if (isCustomFunction(services, ruleContext)) {
+                        if (isCustomFunction(node, services)) {
                             ruleContext.report({
                                 messageId: "officeReadCall",
                                 loc: node.loc,
@@ -64,32 +63,23 @@ export = {
                             });
                         }
 
-                        // isCalledFromCustomFunction() ? Adam recommends
-                        const functionStarts = getFunctionStarts2(node, services); // Maybe just get one layer? 
-                        functionStarts.forEach((functionStart) => {
-                            const bubbledUp = bubbleUpNewCallingFuncs(functionStart, helperFuncToHelperFuncMap);
-                            bubbledUp.forEach((newEntry) => {
-                                officeCallingFuncs.add(newEntry);
-                                helperFuncToMentionsMap.get(newEntry)?.forEach((mention) => {
-                                    ruleContext.report(mention);
-                                });
-                                helperFuncToMentionsMap.delete(newEntry);
-                            });
-                        });
+                        const functionStart = getStartOfFunction(node, services);
+                        if (functionStart) {
+                            reportIfCalledFromCustomFunction(functionStart, 
+                                ruleContext, 
+                                helperFuncToHelperFuncMap, 
+                                helperFuncToMentionsMap, 
+                                officeCallingFuncs
+                            );
+                        }
                     }
-                } else if (
-                    isHelperFunc(node, typeChecker, services)
-                    ) {
-
-                    const customFunction = isCustomFunction(services, ruleContext);
-                    const functionStarts = getFunctionStarts2(node, services);
+                } else if (isHelperFunc(node, typeChecker, services)) {
                     const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
-                    if (functionDeclarations) {
-                        superNodeMe(functionDeclarations, helperFuncToHelperFuncMap);
-                    }
 
                     if (functionDeclarations && functionDeclarations.length > 0) {
-                        if(customFunction) {
+                        superNodeMe(functionDeclarations, helperFuncToHelperFuncMap);
+
+                        if(isCustomFunction(node, services)) {
                             if (functionDeclarations.some((declaration) => {
                                 return officeCallingFuncs.has(declaration);
                             })) {
@@ -99,47 +89,36 @@ export = {
                                     node: node
                                 });
                             } else {
-                                let newMentionsArray = helperFuncToMentionsMap.get(functionDeclarations[0]);
                                 helperFuncToMentionsMap.set(functionDeclarations[0], 
-                                    newMentionsArray ? 
-                                    newMentionsArray.concat({
+                                    (helperFuncToMentionsMap.get(functionDeclarations[0]) || []).concat({
                                         messageId: "officeReadCall",
                                         loc: node.loc,
                                         node: node
-                                    }) :
-                                    [{
-                                        messageId: "officeReadCall",
-                                        loc: node.loc,
-                                        node: node
-                                    }]
+                                    })
                                 );
                             }
                         }
                         
-                        functionStarts.forEach((functionStart) => {
-                            let newHelperFuncSet = helperFuncToHelperFuncMap.get(functionDeclarations[0]);
-                            if (!newHelperFuncSet) {
-                                newHelperFuncSet = new Set<ts.Node>([]);
-                            }
-                            helperFuncToHelperFuncMap.set(functionDeclarations[0], 
-                                newHelperFuncSet.add(functionStart)
+                        const functionStart = getStartOfFunction(node, services);
+                        
+                        if (functionStart) {
+                            helperFuncToHelperFuncMap.set(
+                                functionDeclarations[0], 
+                                (helperFuncToHelperFuncMap.get(functionDeclarations[0]) || new Set<ts.Node>([])).add(functionStart)
                             );
-                            let bubbledUpSet = bubbleUpNewCallingFuncs(functionStart, helperFuncToHelperFuncMap);
-                            bubbledUpSet.forEach((bubbledUp) => {
-                                let mentions = helperFuncToMentionsMap.get(bubbledUp);
-                                mentions?.forEach((mention) => {
-                                    ruleContext.report(mention);
-                                })
-                                helperFuncToMentionsMap.delete(bubbledUp);
-                            })
-                        });
+                            reportIfCalledFromCustomFunction(functionStart, 
+                                ruleContext, 
+                                helperFuncToHelperFuncMap, 
+                                helperFuncToMentionsMap
+                            );
+                        }
                     }
                 }
             },
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
                 if (isOfficeObject(node.right, typeChecker, services) 
-                    && isCustomFunction(services, ruleContext)) {
+                    && isCustomFunction(node, services)) {
                     ruleContext.report({
                         messageId: "officeReadCall",
                         loc: node.loc,
@@ -150,7 +129,7 @@ export = {
 
             VariableDeclarator: function(node: TSESTree.VariableDeclarator) {
                 if (node.init && isOfficeObject(node.init, typeChecker, services) 
-                    && isCustomFunction(services, ruleContext)) {
+                    && isCustomFunction(node, services)) {
                     ruleContext.report({
                         messageId: "officeReadCall",
                         loc: node.loc,
