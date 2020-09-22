@@ -13,6 +13,7 @@ import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
+import * as devSettingsSideload from "../../src/sideload";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 const isWindows = (process.platform === "win32");
 const isMac = (process.platform === "darwin");
@@ -489,4 +490,34 @@ describe("RuntimeLogging", async function() {
       });
     });
   }
+});
+
+describe("Sideload to web", function() {
+  const docurl: string = "https://microsoft-my.sharepoint-df.com/personal/user_microsoft_com/_layouts/15/Doc.aspx?&file=Document.docx";
+  const expectedQueryParams = "&wdaddindevserverport=3000&wdaddinmanifestfile=manifest.xml&wdaddinmanifestguid=6dd581d2-98d1-4eaf-9506-e0a24be515f5";
+  let expectedUrl: string = `${docurl}${expectedQueryParams}`;
+  const manifestsFolder = fspath.resolve("test/files/manifests");
+  let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+  it("Get sideload url with query params", async function() {
+    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl, 3000);
+    assert.strictEqual(generatedUrl, expectedUrl);
+  });
+  it("Get sideload url with query params when isTest equals 'true'", async function() {
+    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl, 3000, true /* isTest */);
+    const expectedTestQueryParam: string = "&wdaddintest=true";
+    expectedUrl = `${expectedUrl}${expectedTestQueryParam}`;
+    assert.strictEqual(generatedUrl, expectedUrl);
+  })
+  it("Get sideload url with unsupported host (expect error)'", async function() {
+    let error;
+    let manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
+        devSettingsSideload.AppType.Web, docurl, 3000);
+    } catch (err) {
+      error = err;
+    }
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, "Sideload is not supported for project on web.");
+  })
 });

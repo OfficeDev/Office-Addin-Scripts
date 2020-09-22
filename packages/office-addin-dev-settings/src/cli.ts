@@ -59,7 +59,11 @@ commander
 commander
     .command("sideload <manifest-path>")
     .description("Launch Office with the Office Add-in loaded.")
-    .option("-a,--app <app>", `The Office app to launch. ("Excel", "PowerPoint", or "Word")`)
+    .option("-a,--app <app>", `The Office app to launch. ("Excel", "OneNote", "PowerPoint", or "Word")`)
+    .option("-p,--platform <platform>", `Plaform to launch sideloading for ("desktop" or "web")`)
+    .option("-d,--document <document>", `The location of the document to be sideloaded - this can be an absolute file path or url`)
+    .option("--dev-server-port <port>", `The dev-server port used for sideloading to web`)
+    .option("-t,--test <test>", `Used for testing to ignore Office Online registration dialogs (Internal only)`)
     .action(commands.sideload);
 
 commander
