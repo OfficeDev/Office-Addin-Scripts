@@ -1,7 +1,7 @@
-To get the plugin up and running for contribution on your machine, follow these steps
+To get the plugin up and running for contribution on your machine, follow these steps:
 
 ## Step 1
-Clone Office-Addin-Scripts and navigate to /packages/eslint-plugin-excel-custom-functions
+Clone Office-Addin-Scripts and navigate to /packages/eslint-plugin-excel-custom-functions.
 
 ## Step 2
 
