@@ -1,4 +1,4 @@
-import { TSESTree, ESLintUtils } from "@typescript-eslint/experimental-utils";
+import { TSESTree, ESLintUtils, ParserServices } from "@typescript-eslint/experimental-utils";
 import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis, variableDeclaratorAnalysis} from './utils'
 import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import ts from 'typescript';
@@ -39,8 +39,8 @@ export = {
         AssignmentExpression: (node: TSESTree.AssignmentExpression) => void;
         VariableDeclarator: (node: TSESTree.VariableDeclarator) => void;
     } {
-        const services = ESLintUtils.getParserServices(ruleContext);
-        const typeChecker = services.program.getTypeChecker();
+        const services: ParserServices = ESLintUtils.getParserServices(ruleContext);
+        const typeChecker: ts.TypeChecker = services.program.getTypeChecker();
 
         // Registry of all functions that use Office API calls (regardless if CF or not)
         let officeCallingFuncs = new Set<ts.Node>(); 
