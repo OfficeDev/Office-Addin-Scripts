@@ -229,3 +229,95 @@ export function reportIfCalledFromCustomFunction(nodeToBubbleUpFrom: ts.Node,
     helperFuncToMentionsMap.delete(bubbledUp);
   });
 }
+
+export function callExpressionAnalysis(node: TSESTree.CallExpression, 
+  services: RequiredParserServices, 
+  typeChecker: ts.TypeChecker, 
+  ruleContext: TSESLint.RuleContext<MessageIds, Options>,
+  officeCallingFuncs: Set<ts.Node>, 
+  helperFuncToMentionsMap: Map<ts.Node, Array<{messageId: MessageIds, loc: TSESTree.SourceLocation, node: TSESTree.Node}>>, 
+  helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>,
+  isCheckingForWrite: boolean = false): void {
+  if (isOfficeObject(node, typeChecker, services)) {
+    if (isOfficeFuncWriteOrRead(node, typeChecker, services) === (isCheckingForWrite ? OfficeCalls.WRITE : OfficeCalls.READ)) {
+      if (isCustomFunction(node, services)) {
+        ruleContext.report({
+          messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
+          loc: node.loc,
+          node: node
+        });
+      }
+
+      const functionStart = getStartOfFunction(node, services);
+      if (functionStart) {
+        reportIfCalledFromCustomFunction(functionStart, 
+          ruleContext, 
+          helperFuncToHelperFuncMap, 
+          helperFuncToMentionsMap, 
+          officeCallingFuncs
+        );
+      }
+    }
+  } else if (isHelperFunc(node, typeChecker, services)) {
+    const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
+
+    if (functionDeclarations && functionDeclarations.length > 0) {
+      superNodeMe(functionDeclarations, helperFuncToHelperFuncMap);
+
+      if(isCustomFunction(node, services)) {
+        if (functionDeclarations.some((declaration) => {
+          return officeCallingFuncs.has(declaration);
+        })) {
+          ruleContext.report({
+            messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
+            loc: node.loc,
+            node: node
+          });
+        } else {
+          helperFuncToMentionsMap.set(functionDeclarations[0], 
+            (helperFuncToMentionsMap.get(functionDeclarations[0]) || []).concat({
+              messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
+              loc: node.loc,
+              node: node
+            })
+          );
+        }
+      }
+
+      const functionStart = getStartOfFunction(node, services);
+      
+      if (functionStart) {
+        helperFuncToHelperFuncMap.set(
+          functionDeclarations[0], 
+          (helperFuncToHelperFuncMap.get(functionDeclarations[0]) || new Set<ts.Node>([])).add(functionStart)
+        );
+        reportIfCalledFromCustomFunction(functionStart, 
+          ruleContext, 
+          helperFuncToHelperFuncMap, 
+          helperFuncToMentionsMap
+        );
+      }
+    }
+  }
+}
+
+export function assignmentExpressionAnalysis(node: TSESTree.AssignmentExpression, ruleContext: TSESLint.RuleContext<MessageIds, Options>, services: RequiredParserServices, typeChecker: ts.TypeChecker, isCheckingForWrite: boolean = false) {
+  if (isOfficeObject(isCheckingForWrite ? node.left : node.right, typeChecker, services) && isCustomFunction(node, services)) {
+    ruleContext.report({
+      messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
+      loc: node.loc,
+      node: node
+    });
+  }
+}
+
+export function variableDeclaratorAnalysis(node: TSESTree.VariableDeclarator, ruleContext: TSESLint.RuleContext<MessageIds, Options>, services: RequiredParserServices, typeChecker: ts.TypeChecker) {
+  if (node.init && isOfficeObject(node.init, typeChecker, services) && isCustomFunction(node, services)) {
+    ruleContext.report({
+      messageId: "officeReadCall",
+      loc: node.loc,
+      node: node
+    });
+  }
+}
+ 

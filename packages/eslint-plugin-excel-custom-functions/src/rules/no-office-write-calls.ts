@@ -1,5 +1,5 @@
 import { TSESTree, ESLintUtils } from "@typescript-eslint/experimental-utils";
-import { REPO_URL, isCustomFunction, isOfficeObject, isOfficeFuncWriteOrRead, OfficeCalls, isHelperFunc, getStartOfFunction, getFunctionDeclarations, superNodeMe, reportIfCalledFromCustomFunction} from './utils'
+import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis} from './utils'
 import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import ts from 'typescript';
 
@@ -52,79 +52,20 @@ export = {
 
         return {
             CallExpression: function(node: TSESTree.CallExpression) {
-                if (isOfficeObject(node, typeChecker, services)) {
-                    if (isOfficeFuncWriteOrRead(node, typeChecker, services) === OfficeCalls.WRITE) {
-                        if (isCustomFunction(node, services)) {
-                            ruleContext.report({
-                                messageId: "officeWriteCall",
-                                loc: node.loc,
-                                node: node
-                            });
-                        }
-
-                        const functionStart = getStartOfFunction(node, services);
-                        if (functionStart) {
-                            reportIfCalledFromCustomFunction(functionStart, 
-                                ruleContext, 
-                                helperFuncToHelperFuncMap, 
-                                helperFuncToMentionsMap, 
-                                officeCallingFuncs
-                            );
-                        }
-                    }
-                } else if (isHelperFunc(node, typeChecker, services)) {
-                    const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
-
-                    if (functionDeclarations && functionDeclarations.length > 0) {
-                        superNodeMe(functionDeclarations, helperFuncToHelperFuncMap);
-
-                        if(isCustomFunction(node, services)) {
-                            if (functionDeclarations.some((declaration) => {
-                                return officeCallingFuncs.has(declaration);
-                            })) {
-                                ruleContext.report({
-                                    messageId: "officeWriteCall",
-                                    loc: node.loc,
-                                    node: node
-                                });
-                            } else {
-                                helperFuncToMentionsMap.set(functionDeclarations[0], 
-                                    (helperFuncToMentionsMap.get(functionDeclarations[0]) || []).concat({
-                                        messageId: "officeWriteCall",
-                                        loc: node.loc,
-                                        node: node
-                                    })
-                                );
-                            }
-                        }
-
-                        const functionStart = getStartOfFunction(node, services);
-                        
-                        if (functionStart) {
-                            helperFuncToHelperFuncMap.set(
-                                functionDeclarations[0], 
-                                (helperFuncToHelperFuncMap.get(functionDeclarations[0]) || new Set<ts.Node>([])).add(functionStart)
-                            );
-                            reportIfCalledFromCustomFunction(functionStart, 
-                                ruleContext, 
-                                helperFuncToHelperFuncMap, 
-                                helperFuncToMentionsMap
-                            );
-                        }
-                    }
-                }
+                callExpressionAnalysis(node, 
+                    services, 
+                    typeChecker, 
+                    ruleContext, 
+                    officeCallingFuncs, 
+                    helperFuncToMentionsMap, 
+                    helperFuncToHelperFuncMap, 
+                    true
+                );
             },
 
             AssignmentExpression: function(node: TSESTree.AssignmentExpression) {
-                if (isOfficeObject(node.left, typeChecker, services)
-                && isCustomFunction(node, services)) {
-                    ruleContext.report({
-                        messageId: "officeWriteCall",
-                        loc: node.loc,
-                        node: node
-                    });
-                }
-            }
+                assignmentExpressionAnalysis(node, ruleContext, services, typeChecker, true);
+            },
         };
     }
 }
