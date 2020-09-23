@@ -2,6 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
+    "audit": "npm audit -- audit-level=critical & lerna exec --concurrency 1 --no-sort --stream npm audit -- --audit-level=critical",
+    "audit:fix": "npm audit fix & lerna exec --concurrency 1 --no-sort --stream npm audit fix",
     "build": "lerna run build",
     "dist-tags": "lerna exec --concurrency 1 --no-sort --stream npm dist-tag ls",
     "postinstall": "lerna bootstrap",
@@ -11,6 +13,6 @@
     "update-packages": "lerna exec --concurrency 1 --no-sort --stream npm update --dev"
   },
   "devDependencies": {
-    "lerna": "^3.21.0"
+    "lerna": "^3.22.1"
   }
 }

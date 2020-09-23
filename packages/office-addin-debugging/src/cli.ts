@@ -18,6 +18,7 @@ commander
     .option("--dev-server-port <port>", "Verify the dev server is running using this port.")
     .option("--no-debug", "Start without debugging.")
     .option("--no-live-reload", "Do not enable live-reload.")
+    .option("--dev-tools", "Open the web browser developer tools when debugging (if supported)")
     .option("--packager <command>", "Run the packager.")
     .option("--packager-host <host>")
     .option("--packager-port <port>")

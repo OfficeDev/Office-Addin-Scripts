@@ -94,11 +94,13 @@ export class OfficeAddinUsageData {
         this.usageDataOptIn();
       }
 
-      appInsights.setup(this.options.instrumentationKey)
-        .setAutoCollectExceptions(false)
-        .start();
-      this.usageDataClient = appInsights.defaultClient;
-      this.removeApplicationInsightsSensitiveInformation();
+      if (this.options.usageDataLevel === UsageDataLevel.on) {
+        appInsights.setup(this.options.instrumentationKey)
+          .setAutoCollectExceptions(false)
+          .start();
+        this.usageDataClient = appInsights.defaultClient;
+        this.removeApplicationInsightsSensitiveInformation();
+      }
     } catch (err) {
       throw new Error(err);
     }

@@ -28,6 +28,7 @@ commander
     .option("--enable", `Enable debugging for the add-in.`)
     .option("--disable", "Disable debugging for the add-in.")
     .option("--debug-method <method>", "Specify the debug method: 'direct' or 'proxy'.")
+    .option("--open-dev-tools", "Open the web browser dev tools (if supported).")
     .description("Configure debugging for the Office Add-in.")
     .action(commands.debugging);
 

@@ -9,7 +9,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml"]
+      "args": ["appcontainer", "${workspaceFolder}\\test\\files\\manifests\\manifest.xml"]
     },
     {
       "name": "Command Line: appcontainer --loopback",
@@ -23,21 +23,21 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["appcontainer", "${workspaceFolder}\\test\\manifest.xml", "--prevent-loopback"]
+      "args": ["appcontainer", "${workspaceFolder}\\test\\files\\manifests\\manifest.xml", "--prevent-loopback"]
     },
     {
       "name": "Command Line: clear",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["clear", "${workspaceFolder}\\test\\manifest.xml"]
+      "args": ["clear", "${workspaceFolder}\\test\\files\\manifests\\manifest.xml"]
     },
     {
       "name": "Command Line: debugging",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["debugging", "${workspaceFolder}\\test\\manifest.xml"]
+      "args": ["debugging", "${workspaceFolder}\\test\\files\\manifests\\manifest.xml"]
     },
     {
       "name": "Command Line: debugging --disable",
@@ -46,7 +46,7 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "debugging",
-        "${workspaceFolder}\\test\\manifest.xml",
+        "${workspaceFolder}\\test\\files\\manifests\\manifest.xml",
         "--disable"
       ]
     },
@@ -57,8 +57,20 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "debugging",
-        "${workspaceFolder}\\test\\manifest.xml",
+        "${workspaceFolder}\\test\\files\\manifests\\manifest.xml",
         "--enable"
+      ]
+    },
+    {
+      "name": "Command Line: debugging --enable --open-dev-tools",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [
+        "debugging",
+        "${workspaceFolder}\\test\\files\\manifests\\manifest.xml",
+        "--enable",
+        "--open-dev-tools"
       ]
     },
     {
@@ -66,7 +78,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["live-reload", "${workspaceFolder}\\test\\manifest.xml"]
+      "args": ["live-reload", "${workspaceFolder}\\test\\files\\manifests\\manifest.xml"]
     },
     {
       "name": "Command Line: live-reload --disable",
@@ -75,7 +87,7 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "live-reload",
-        "${workspaceFolder}\\test\\manifest.xml",
+        "${workspaceFolder}\\test\\files\\manifests\\manifest.xml",
         "--disable"
       ]
     },
@@ -86,7 +98,7 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "live-reload",
-        "${workspaceFolder}\\test\\manifest.xml",
+        "${workspaceFolder}\\test\\files\\manifests\\manifest.xml",
         "--enable"
       ]
     },
@@ -137,7 +149,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["source-bundle-url", "${workspaceFolder}\\test\\manifest.xml"]
+      "args": ["source-bundle-url", "${workspaceFolder}\\test\\files\\manifests\\manifest.xml"]
     },
     {
       "name": "Command Line: source-bundle-url (set)",
@@ -158,7 +170,7 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "source-bundle-url",
-        "${workspaceFolder}\\test\\manifest.xml",
+        "${workspaceFolder}\\test\\files\\manifests\\manifest.xml",
         "--host", "",
         "--port", "",
         "--path", "",
@@ -172,7 +184,7 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "source-bundle-url",
-        "${workspaceFolder}\\test\\manifest.xml",
+        "${workspaceFolder}\\test\\files\\manifests\\manifest.xml",
         "--host", "",
         "--port", "4444",
       ]
@@ -182,7 +194,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["unregister", "{$workspaceFolder}/test/manifest.xml"]
+      "args": ["unregister", "{$workspaceFolder}\\test\\files\\manifests\\manifest.xml"]
     },
     {
       "type": "node",
