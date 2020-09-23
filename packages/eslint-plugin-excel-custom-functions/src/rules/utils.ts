@@ -103,7 +103,7 @@ function isFunctionDeclarationLike(tsNode: ts.Node): boolean {
     || tsNode.kind == ts.SyntaxKind.ArrowFunction));
 }
 
-function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]) {
+function getJsDocCustomFunction(tags: readonly ts.JSDocTag[]): { reason: string | (string & { __escapedIdentifier: void })} | undefined {
   for (const tag of tags) {
     if (tag.tagName.escapedText === 'customfunction') {
       return { reason: tag.tagName.escapedText || '' };
@@ -194,6 +194,7 @@ export function isHelperFunc(node: TSESTree.Node, typeChecker: ts.TypeChecker, s
   return output;
 }
 
+// Given a node and the helper function -> parent function map, return a set containing that original node and all parent funcs
 export function bubbleUpNewCallingFuncs(node: ts.Node, helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>): Set<ts.Node> {
   let outputSet = new Set<ts.Node>([node]);
   let examiningSet = helperFuncToHelperFuncMap.get(node);
@@ -214,6 +215,7 @@ export function bubbleUpNewCallingFuncs(node: ts.Node, helperFuncToHelperFuncMap
   return outputSet;
 }
 
+// If a function (or any parent functions that use the original function as a helper function) has queued reports, report them all
 export function reportIfCalledFromCustomFunction(nodeToBubbleUpFrom: ts.Node,
   ruleContext: TSESLint.RuleContext<MessageIds, Options>, 
   helperFuncToHelperFuncMap: Map<ts.Node, Set<ts.Node>>, 
@@ -315,7 +317,7 @@ export function callExpressionAnalysis(node: TSESTree.CallExpression,
   }
 }
 
-export function assignmentExpressionAnalysis(node: TSESTree.AssignmentExpression, ruleContext: TSESLint.RuleContext<MessageIds, Options>, services: RequiredParserServices, typeChecker: ts.TypeChecker, isCheckingForWrite: boolean = false) {
+export function assignmentExpressionAnalysis(node: TSESTree.AssignmentExpression, ruleContext: TSESLint.RuleContext<MessageIds, Options>, services: RequiredParserServices, typeChecker: ts.TypeChecker, isCheckingForWrite: boolean = false): void {
   if (isOfficeObject(isCheckingForWrite ? node.left : node.right, typeChecker, services) && isCustomFunction(node, services)) {
     ruleContext.report({
       messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
@@ -325,7 +327,7 @@ export function assignmentExpressionAnalysis(node: TSESTree.AssignmentExpression
   }
 }
 
-export function variableDeclaratorAnalysis(node: TSESTree.VariableDeclarator, ruleContext: TSESLint.RuleContext<MessageIds, Options>, services: RequiredParserServices, typeChecker: ts.TypeChecker) {
+export function variableDeclaratorAnalysis(node: TSESTree.VariableDeclarator, ruleContext: TSESLint.RuleContext<MessageIds, Options>, services: RequiredParserServices, typeChecker: ts.TypeChecker): void {
   if (node.init && isOfficeObject(node.init, typeChecker, services) && isCustomFunction(node, services)) {
     ruleContext.report({
       messageId: "officeReadCall",
