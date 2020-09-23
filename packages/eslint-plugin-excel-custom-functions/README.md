@@ -1,6 +1,6 @@
 # eslint-plugin-excel-custom-functions
 
-eslint plugin to check against Office.js api calls within the shared app
+This eslint plugin checks for Office.js api calls within custom functions. It throws a linting error on write operations and a linting warning on read operations.
 
 ## Installation
 
@@ -36,14 +36,16 @@ Then configure the rules you want to use under the rules section.
 ```json
 {
     "rules": {
-        "excel-custom-functions/rule-name": 2
+        "excel-custom-functions/no-office-read-calls": "warn",
+        "excel-custom-functions/no-office-write-calls": "error"
     }
 }
 ```
 
 ## Supported Rules
 
-* Fill in provided rules here
+* no-office-read-calls
+* no-office-write-calls
 
 
 
