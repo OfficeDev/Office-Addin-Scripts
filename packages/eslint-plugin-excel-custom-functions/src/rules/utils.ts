@@ -271,7 +271,7 @@ export function callExpressionAnalysis(node: TSESTree.CallExpression,
     if (functionDeclarations && functionDeclarations.length > 0) {
       superNodeMe(functionDeclarations, helperFuncToHelperFuncMap);
 
-      if(isCustomFunction(node, services)) {
+      if (isCustomFunction(node, services)) {
         if (functionDeclarations.some((declaration) => {
           return officeCallingFuncs.has(declaration);
         })) {
