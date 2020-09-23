@@ -241,12 +241,17 @@ export function callExpressionAnalysis(node: TSESTree.CallExpression,
   if (isOfficeObject(node, typeChecker, services)) {
     if (isOfficeFuncWriteOrRead(node, typeChecker, services) === (isCheckingForWrite ? OfficeCalls.WRITE : OfficeCalls.READ)) {
       if (isCustomFunction(node, services)) {
+        
+        // Reporting cases where office calls are made in custom functions
         ruleContext.report({
           messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
           loc: node.loc,
           node: node
         });
       }
+
+      // Adds the function this node is part of to a set of Office-calling functions
+      // Releases all queued reports for that function and any parent functions that use it
 
       const functionStart = getStartOfFunction(node, services);
       if (functionStart) {
@@ -268,12 +273,17 @@ export function callExpressionAnalysis(node: TSESTree.CallExpression,
         if (functionDeclarations.some((declaration) => {
           return officeCallingFuncs.has(declaration);
         })) {
+
+          // If this is in a custom function and if this call expression is noted as having an office call in it, report
           ruleContext.report({
             messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
             loc: node.loc,
             node: node
           });
         } else {
+
+          // Otherwise, keep note of the location with a queued report
+          // Should later analysis reveal that the call expression has an office call in it, we have the report ready
           helperFuncToMentionsMap.set(functionDeclarations[0], 
             (helperFuncToMentionsMap.get(functionDeclarations[0]) || []).concat({
               messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
@@ -287,10 +297,14 @@ export function callExpressionAnalysis(node: TSESTree.CallExpression,
       const functionStart = getStartOfFunction(node, services);
       
       if (functionStart) {
+
+        // add an inner function -> parent function mapping for later tracking
         helperFuncToHelperFuncMap.set(
           functionDeclarations[0], 
           (helperFuncToHelperFuncMap.get(functionDeclarations[0]) || new Set<ts.Node>([])).add(functionStart)
         );
+
+        // Releases all queued reports for that function and any parent functions that use it
         reportIfCalledFromCustomFunction(functionStart, 
           ruleContext, 
           helperFuncToHelperFuncMap, 
