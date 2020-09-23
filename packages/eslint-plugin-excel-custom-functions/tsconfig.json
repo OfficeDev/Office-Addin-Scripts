@@ -9,7 +9,7 @@
     "importHelpers": true,
     "sourceMap": true,
     "module": "CommonJS",
-    "target": "ES5",
+    "target": "ES6",
     "lib": ["ES2015"],
     "types": ["node", "jest"],
     "resolveJsonModule": true,
