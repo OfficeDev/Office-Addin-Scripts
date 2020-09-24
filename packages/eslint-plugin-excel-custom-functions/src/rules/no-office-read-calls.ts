@@ -1,11 +1,10 @@
 import { TSESTree, ESLintUtils, ParserServices } from "@typescript-eslint/experimental-utils";
-import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis, variableDeclaratorAnalysis} from './utils'
-import { RuleContext, RuleMetaDataDocs, RuleMetaData  } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
+import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis, variableDeclaratorAnalysis } from './utils'
+import { RuleContext, RuleMetaDataDocs, RuleMetaData } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import ts from 'typescript';
 
 /**
  * @fileoverview Prevents office api calls
- * @author Artur Tarasenko (artarase)
  */
 "use strict";
 

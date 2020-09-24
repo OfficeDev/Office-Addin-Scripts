@@ -18,13 +18,13 @@ type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;
 export type Options = unknown[];
 export type MessageIds = string;
 
-export const REPO_URL = 'https://github.com/arttarawork/Office-Addin-Scripts/packages/eslint-plugin-office-custom-functions';
+export const REPO_URL = 'https://aka.ms/o-a-scripts';
 
 
 export const createRule = ESLintUtils.RuleCreator(name => {
   const ruleName = parsePath(name).name;
 
-  return `${REPO_URL}/blob/v${version}/docs/rules/${ruleName}.md`;
+  return `${REPO_URL}/packages/eslint-plugin-excel-custom-functions/docs/rules/${ruleName}.md`;
 });
 
 // Code to determine if function has @customfunction tag
