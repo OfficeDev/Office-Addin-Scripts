@@ -133,7 +133,7 @@ export async function enableDebugging(manifestPath: string, command: commander.C
 
     validateManifestId(manifest);
 
-    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod));
+    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod), command.openDevTools);
 
     console.log("Debugging has been enabled.");
   } catch (err) {
