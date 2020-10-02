@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-office-addins",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Provides an eslint configuration for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
