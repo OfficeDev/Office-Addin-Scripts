@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-certs",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
