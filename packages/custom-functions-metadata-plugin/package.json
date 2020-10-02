@@ -1,6 +1,6 @@
 {
   "name": "custom-functions-metadata-plugin",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "author": "Office Dev",
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
@@ -24,7 +24,7 @@
     "test": "echo \"No tests.\""
   },
   "dependencies": {
-    "custom-functions-metadata": "^1.0.33",
+    "custom-functions-metadata": "^1.0.34",
     "es6-promise": "^4.2.8",
     "webpack": "^4.42.1"
   },

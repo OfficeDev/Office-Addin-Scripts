@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-excel-custom-functions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "ESLint rules that report usage of Office Api Code in Shared App",
   "author": "Artur Tarasenko <artarase@microsoft.com>",
   "main": "dist/index.js",
