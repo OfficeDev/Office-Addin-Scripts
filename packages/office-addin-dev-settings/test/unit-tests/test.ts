@@ -527,11 +527,15 @@ describe("Sideload to web", function() {
   const manifestsFolder = fspath.resolve("test/files/manifests");
   let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
   it("Get sideload url with query params", async function() {
-    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl);
+    const manifest: officeAddinManifest.ManifestInfo = await officeAddinManifest.readManifestFile(manifestPath);
+    const manifestFileName = fspath.basename(manifestPath)
+    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestFileName, manifest, docurl);
     assert.strictEqual(generatedUrl, expectedUrl);
   });
   it("Get sideload url with query params when isTest equals 'true'", async function() {
-    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl, true /* isTest */);
+    const manifest: officeAddinManifest.ManifestInfo = await officeAddinManifest.readManifestFile(manifestPath);
+    const manifestFileName = fspath.basename(manifestPath)
+    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestFileName, manifest, docurl, true /* isTest */);
     const expectedTestQueryParam: string = "&wdaddintest=true";
     expectedUrl = `${expectedUrl}${expectedTestQueryParam}`;
     assert.strictEqual(generatedUrl, expectedUrl);
@@ -558,7 +562,7 @@ describe("Sideload to web", function() {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
-    assert.strictEqual(error.message, "Manifest SourceLocation is not using localhost.");
+    assert.strictEqual(error.message, "The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1.");
   })
   it("Sideload without specifying required document parameter (expect error)'", async function() {
     let error;
@@ -570,6 +574,6 @@ describe("Sideload to web", function() {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
-    assert.strictEqual(error.message, "Missing --document paramater.");
+    assert.strictEqual(error.message, "The document url was not provided.");
   })
 });

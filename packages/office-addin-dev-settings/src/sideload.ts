@@ -104,9 +104,12 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
  * @param isTest Indicates whether to append test query param to suppress Office Online dialogs.
  * @returns Document url with query params appended.
  */
-export async function generateSideloadUrl(manifestPath: string, documentUrl: string,  isTest: boolean = false): Promise<string> {
+export async function generateSideloadUrl(manifestFileName: string, manifest: ManifestInfo, documentUrl: string | undefined,  isTest: boolean = false): Promise<string> {
   const testQueryParam = "&wdaddintest=true";
-  const manifest = await readManifestFile(manifestPath);
+
+  if (documentUrl === undefined) {
+    throw new Error("The document url was not provided.");
+  } 
 
   if (!manifest.id) {
     throw new Error("The manifest does not contain the id for the add-in.");
@@ -118,14 +121,13 @@ export async function generateSideloadUrl(manifestPath: string, documentUrl: str
 
   const sourceLocationUrl: URL = new URL(manifest.defaultSettings.sourceLocation);
   if (sourceLocationUrl.protocol.indexOf("https") === -1) {
-    throw new Error("Manifest SourceLocation protocol is not using HTTPS.");
+    throw new Error("The SourceLocation in the manifest does not use the HTTPS protocol.");
   }
 
   if (sourceLocationUrl.host.indexOf("localhost") === -1 && sourceLocationUrl.host.indexOf("127.0.0.1") === -1) {
-    throw new Error("Manifest SourceLocation is not using localhost.");
+    throw new Error("The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1.");
   }
 
-  const manifestFileName: string = path.basename(manifestPath);
   let queryParms: string = `&wdaddindevserverport=${sourceLocationUrl.port}&wdaddinmanifestfile=${manifestFileName}&wdaddinmanifestguid=${manifest.id}`;
   
   if (isTest) {
@@ -290,14 +292,11 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
     if (isDesktop) {
       await registerAddIn(manifestPath);
       sideloadFile = await generateSideloadFile(app, manifest, document);
-      await open(sideloadFile, { wait: false });
     } else {
-      if (document === undefined) {
-        throw new Error("Missing --document paramater.");
-      }    
-      sideloadFile = await generateSideloadUrl(manifestPath, document, isTest);
-      await open(sideloadFile, { wait: false });
+      const manifestFileName: string = path.basename(manifestPath);
+      sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
     }
+    await open(sideloadFile, { wait: false });
   } else {
     throw new Error(`Sideload is not supported for ${app} on ${isDesktop ? AppType.Desktop : AppType.Web}.`);
   }
