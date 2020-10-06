@@ -492,32 +492,84 @@ describe("RuntimeLogging", async function() {
   }
 });
 
+describe("Sideload to Desktop", function() {
+  const manifestsFolder = fspath.resolve("test/files/manifests");
+  const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+  it("Verify pathToWrite not undefined", async function() {
+    const manifest = await officeAddinManifest.readManifestFile(manifestPath);
+    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(officeAddinManifest.OfficeApp.Excel, manifest);
+    assert.notStrictEqual(pathToWrite, undefined);
+  });
+  it("Specify document - veriy pathToWrite not undefined", async function() {
+    const manifest = await officeAddinManifest.readManifestFile(manifestPath);
+    const document: string | undefined = devSettingsSideload.getTemplatePath(officeAddinManifest.OfficeApp.Excel, officeAddinManifest.AddInType.TaskPane);
+    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(officeAddinManifest.OfficeApp.Excel, manifest, document);
+    assert.notStrictEqual(pathToWrite, undefined);
+  });
+  it("Sideload unsupported host (expect error)'", async function() {
+    let error;
+    const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
+        devSettingsSideload.AppType.Desktop, undefined /* document */, undefined /* devServerPort */);
+    } catch (err) {
+      error = err;
+    }
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, "Sideload is not supported for project on desktop.");
+  })
+});
+
 describe("Sideload to web", function() {
   const docurl: string = "https://microsoft-my.sharepoint-df.com/personal/user_microsoft_com/_layouts/15/Doc.aspx?&file=Document.docx";
-  const expectedQueryParams = "&wdaddindevserverport=3000&wdaddinmanifestfile=manifest.xml&wdaddinmanifestguid=6dd581d2-98d1-4eaf-9506-e0a24be515f5";
+  const expectedQueryParams = "&wdaddindevserverport=8080&wdaddinmanifestfile=manifest.xml&wdaddinmanifestguid=6dd581d2-98d1-4eaf-9506-e0a24be515f5";
   let expectedUrl: string = `${docurl}${expectedQueryParams}`;
   const manifestsFolder = fspath.resolve("test/files/manifests");
   let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
   it("Get sideload url with query params", async function() {
-    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl, 3000);
+    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl);
     assert.strictEqual(generatedUrl, expectedUrl);
   });
   it("Get sideload url with query params when isTest equals 'true'", async function() {
-    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl, 3000, true /* isTest */);
+    const generatedUrl: string = await devSettingsSideload.generateSideloadUrl(manifestPath, docurl, true /* isTest */);
     const expectedTestQueryParam: string = "&wdaddintest=true";
     expectedUrl = `${expectedUrl}${expectedTestQueryParam}`;
     assert.strictEqual(generatedUrl, expectedUrl);
   })
-  it("Get sideload url with unsupported host (expect error)'", async function() {
+  it("Sideload unsupported host (expect error)'", async function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
-        devSettingsSideload.AppType.Web, docurl, 3000);
+        devSettingsSideload.AppType.Web, docurl);
     } catch (err) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
     assert.strictEqual(error.message, "Sideload is not supported for project on web.");
+  })
+  it("Sideload unsupported source location (expect error)'", async function() {
+    let error;
+    let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */,
+        devSettingsSideload.AppType.Web, docurl);
+    } catch (err) {
+      error = err;
+    }
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, "Manifest SourceLocation is not using localhost.");
+  })
+  it("Sideload without specifying required document parameter (expect error)'", async function() {
+    let error;
+    const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */,
+        devSettingsSideload.AppType.Web, undefined);
+    } catch (err) {
+      error = err;
+    }
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, "Missing --document paramater.");
   })
 });

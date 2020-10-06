@@ -315,12 +315,11 @@ export async function sideload(manifestPath: string, command: commander.Command)
   try {
     const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
     const canPrompt = true;
-    const devServerPort: number | undefined =  command.devServerPort ? parseDevServerPort(command.devServerPort) : undefined;
     const document: string | undefined = command.document ? command.document : undefined;
     const isTest: boolean | undefined = command.test ? true : false;
     const platform: AppType | undefined = command.platform ? command.platform : undefined;
 
-    await sideloadAddIn(manifestPath, app, canPrompt, platform, document, devServerPort, isTest);
+    await sideloadAddIn(manifestPath, app, canPrompt, platform, document, isTest);
   } catch (err) {
     logErrorMessage(err);
   }
