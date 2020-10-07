@@ -191,7 +191,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    enableDebugging: boolean = true, enableLiveReload: boolean = true, openDevTools: boolean = false) {
+    enableDebugging: boolean = true, enableLiveReload: boolean = true, openDevTools: boolean = false, skipLoopbackPrompt: boolean = false) {
 
     try {
 
@@ -222,7 +222,7 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
         // enable loopback for Edge
         if (isWindowsPlatform && parseInt(os.release(), 10) === 10) {
             const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
-            await devSettings.ensureLoopbackIsEnabled(name);
+            await devSettings.ensureLoopbackIsEnabled(name, !skipLoopbackPrompt);
         }
 
         // enable debugging

@@ -19,6 +19,7 @@ commander
     .option("--no-debug", "Start without debugging.")
     .option("--no-live-reload", "Do not enable live-reload.")
     .option("--dev-tools", "Open the web browser developer tools when debugging (if supported)")
+    .option("--skip-loopback-prompt", "Skip prompt for enabling edge loopback.")
     .option("--packager <command>", "Run the packager.")
     .option("--packager-host <host>")
     .option("--packager-port <port>")
