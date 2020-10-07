@@ -54,7 +54,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
-        const skipLoopbackPrompt: boolean = command.skipLoopbackPrompt;
+        const skipLoopbackPrompt: boolean  | undefined = command.skipLoopbackPrompt;
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
             command.sourceBundleUrlHost, command.sourceBundleUrlPort,
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
