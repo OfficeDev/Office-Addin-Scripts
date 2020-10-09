@@ -149,6 +149,8 @@ export async function validate(manifestPath: string, command: commander.Command)
         }
       }
     }
+
+    process.exitCode = validation.isValid ? 0 : 1;
   } catch (err) {
     logErrorMessage(err);
   }
