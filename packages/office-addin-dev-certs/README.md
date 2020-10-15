@@ -26,7 +26,7 @@ Creates an SSL certificate for "localhost" signed by a developer CA certificate 
 
 Syntax:
 
-`office addin-dev-certs install [options]`
+`office-addin-dev-certs install [options]`
 
 Options:
 
@@ -45,7 +45,7 @@ Verify the certificate.
 
 Syntax:
 
-`office addin-dev-certs verify`
+`office-addin-dev-certs verify`
  
 #
 
@@ -54,7 +54,7 @@ Uninstall the certificate.
 
 Syntax:
 
-`office addin-dev-certs uninstall [options]`
+`office-addin-dev-certs uninstall [options]`
 
 Options:
 
