@@ -30,7 +30,7 @@
     "commander": "^2.20.3",
     "nconf": "^0.10.0",
     "office-addin-cli": "^1.0.13",
-    "xregexp": "^4.4.0"
+    "xregexp": "^4.3.0"
   },
   "devDependencies": {
     "@types/assert": "^1.4.6",
