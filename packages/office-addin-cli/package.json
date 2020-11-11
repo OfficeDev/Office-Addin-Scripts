@@ -1,6 +1,6 @@
 {
   "name": "office-addin-cli",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "A command-line interface for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
