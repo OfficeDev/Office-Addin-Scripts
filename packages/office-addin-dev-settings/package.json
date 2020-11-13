@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "child_process": "^1.0.2",
-    "commander": "^2.18.0",
+    "commander": "^6.2.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^6.2.2",
     "jszip": "^3.2.2",
