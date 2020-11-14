@@ -4,6 +4,8 @@
 import * as appInsights from "applicationinsights";
 import * as readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
+import * as defaults from "./defaults";
+
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
@@ -23,24 +25,24 @@ export enum UsageDataLevel {
 
 /**
  * UpdateData options
- * @member groupName Group name for usage data settings
+ * @member groupName Group name for usage data settings (Optional)
  * @member projectName The name of the project that is using the usage data package.
  * @member instrumentationKey Instrumentation key for usage data resource
- * @member promptQuestion Question displayed to user over opt-in for usage data
- * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt)
- * @member usageDataLevel User's response to the prompt for usage data
- * @member method The desired method to use for reporting usage data.
- * @member isForTesting True if the data is just for testing, false for actual data that should be reported.
+ * @member promptQuestion Question displayed to user over opt-in for usage data (Optional)
+ * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt) (Optional)
+ * @member usageDataLevel User's response to the prompt for usage data (Optional)
+ * @member method The desired method to use for reporting usage data. (Optional)
+ * @member isForTesting True if the data is just for testing, false for actual data that should be reported. (Optional)
  */
 export interface IUsageDataOptions {
-  groupName: string;
+  groupName?: string;
   projectName: string;
   instrumentationKey: string;
-  promptQuestion: string;
-  raisePrompt: boolean;
-  usageDataLevel: UsageDataLevel;
-  method: UsageDataReportingMethod;
-  isForTesting: boolean;
+  promptQuestion?: string;
+  raisePrompt?: boolean;
+  usageDataLevel?: UsageDataLevel;
+  method?: UsageDataReportingMethod;
+  isForTesting?: boolean;
 }
 
 /**
@@ -52,10 +54,22 @@ export class OfficeAddinUsageData {
   private eventsSent: number = 0;
   private exceptionsSent: number = 0;
   private options: IUsageDataOptions;
+  private defaultData = {
+    Platform: process.platform,
+    NodeVersion: process.version
+  };
 
   constructor(usageDataOptions: IUsageDataOptions) {
     try {
-      this.options = usageDataOptions;
+      this.options = {
+        groupName: defaults.groupName,
+        promptQuestion: "",
+        raisePrompt: true,
+        usageDataLevel: UsageDataLevel.off,
+        method: UsageDataReportingMethod.applicationInsights,
+        isForTesting: false,
+        ...usageDataOptions
+      };
 
       if (this.options.instrumentationKey === undefined) {
         throw new Error("Instrumentation Key not defined - cannot create usage data object");
@@ -65,25 +79,28 @@ export class OfficeAddinUsageData {
         throw new Error("Group Name not defined - cannot create usage data object");
       }
 
-      if (this.options.promptQuestion === undefined) {
-        this.options.promptQuestion = `Office Add-in CLI tools collect anonymized usage data which is sent to Microsoft to help improve our product. Please read our privacy statement and usage data details at https://aka.ms/OfficeAddInCLIPrivacy.`;
-      }
-
       if (jsonData.groupNameExists(this.options.groupName)) {
         this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
       }
 
-      if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
-        this.usageDataOptIn();
-      } else {
+      // Generator-office will not raise a prompt because the yeoman generator creates the prompt.  If the projectName
+      // is defaults.generatorOffice and a office-addin-usage-data file hasn't been written yet, write one out.
+      if (this.options.projectName === defaults.generatorOffice && this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools
+        && jsonData.needToPromptForUsageData(this.options.groupName)) {
         jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
       }
 
-      appInsights.setup(this.options.instrumentationKey)
-        .setAutoCollectExceptions(false)
-        .start();
-      this.usageDataClient = appInsights.defaultClient;
-      this.removeApplicationInsightsSensitiveInformation();
+      if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
+        this.usageDataOptIn();
+      }
+
+      if (this.options.usageDataLevel === UsageDataLevel.on) {
+        appInsights.setup(this.options.instrumentationKey)
+          .setAutoCollectExceptions(false)
+          .start();
+        this.usageDataClient = appInsights.defaultClient;
+        this.removeApplicationInsightsSensitiveInformation();
+      }
     } catch (err) {
       throw new Error(err);
     }
@@ -111,10 +128,10 @@ export class OfficeAddinUsageData {
       usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
       try {
         for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          usageDataEvent.properties[key] = value; 
+          usageDataEvent.properties[key] = value;
           usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-        
+
         this.usageDataClient.trackEvent(usageDataEvent);
         this.eventsSent++;
       } catch (err) {
@@ -147,30 +164,32 @@ export class OfficeAddinUsageData {
       this.exceptionsSent++;
     }
   }
-/**
- * Prompts user for usage data participation once and records response
- * @param testData Specifies whether test code is calling this method
- * @param testReponse Specifies test response
- */
-public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
-  try {
-    let response: string = "";
-    if (testData) {
-      response = testResponse;
-    } else {
-      response = readLine.question(`${this.options.promptQuestion}\n`);
+
+  /**
+   * Prompts user for usage data participation once and records response
+   * @param testData Specifies whether test code is calling this method
+   * @param testReponse Specifies test response
+   */
+  public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
+    try {
+      let response: string = "";
+      if (testData) {
+        response = testResponse;
+      } else {
+        response = readLine.question(`${this.options.promptQuestion}\n`);
+      }
+      if (response.toLowerCase() === "y") {
+        this.options.usageDataLevel = UsageDataLevel.on;
+      } else {
+        this.options.usageDataLevel = UsageDataLevel.off;
+      }
+      jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+    } catch (err) {
+      this.reportError("UsageDataOptIn", err);
+      throw new Error(err);
     }
-    if (response.toLowerCase() === "y") {
-      this.options.usageDataLevel = UsageDataLevel.on;
-    } else {
-      this.options.usageDataLevel = UsageDataLevel.off;
-    }
-    jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
-  } catch (err) {
-    this.reportError("UsageDataOptIn", err);
-    throw new Error(err);
   }
- }
+
   /**
    * Stops usage data from being sent, by default usage data will be on
    */
@@ -242,6 +261,7 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
       throw new Error(err);
     }
   }
+
   /**
    * Removes sensitive information fields from ApplicationInsights data
    */
@@ -249,5 +269,72 @@ public usageDataOptIn(testData: boolean = this.options.isForTesting, testRespons
     delete this.usageDataClient.context.tags["ai.cloud.roleInstance"]; // cloud name
     delete this.usageDataClient.context.tags["ai.device.id"]; // machine name
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
+  }
+
+  /**
+   * Reports custom success event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      ...data
+    });
+  }
+
+  /**
+   * Reports custom event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public sendUsageDataEvent(data: object = {}) {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      try {
+        let eventTelemetryObj = new appInsights.Contracts.EventData();
+        eventTelemetryObj.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+        eventTelemetryObj.properties = {
+          ...this.defaultData,
+          ...data
+        };
+        this.usageDataClient.trackEvent(eventTelemetryObj);
+        this.eventsSent++;
+      } catch (e) {
+        this.reportError("sendUsageDataEvent", e);
+      }
+    }
+  }
+
+  /**
+   * Reports custom exception event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param err Error or message about error sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      try {
+        let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+        error.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
+          exception: this.maskFilePaths(error),
+          properties: {}
+        };
+        Object.entries({
+          Succeeded: false,
+          Method: method,
+          ...this.defaultData,
+          ...data
+        }).forEach((entry) => {
+          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
+        });
+        this.usageDataClient.trackException(exceptionTelemetryObj);
+        this.exceptionsSent++;
+      } catch (e) {
+        this.reportError("sendUsageDataException", e);
+        throw e;
+      }
+    }
   }
 }

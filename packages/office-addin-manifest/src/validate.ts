@@ -4,20 +4,27 @@
 import { createReadStream } from "fs";
 import fetch from "node-fetch";
 import { readManifestFile } from "./manifestInfo";
+import { usageDataObject } from './defaults';
 
 export class ManifestValidationDetails {
-    public capabilities?: string[];
-    public capabilitiesCodes?: string[];
+    public adminInstallOnly?: boolean;
+    public capabilities?: object;
     public defaultLocale?: string;
-    public defaultSourceLocations?: string[];
     public description?: string;
     public displayName?: string;
+    public hosts?: string[];
     public iconUrl?: string;
     public localizedDescriptions?: object;
     public localizedIconUrls?: object;
+    public localizedRootSourceUrls?: object;
     public productId?: string;
     public providerName?: string;
+    public requirements?: string;
+    public rootSourceUrl?: string;
+    public subtype?: string;
+    public supportedLanguages?: string[];
     public supportedProducts?: ManifestValidationProduct[];
+    public type?: string;
     public version?: string;
 }
 
@@ -26,28 +33,27 @@ export class ManifestValidationIssue {
     public column?: number;
     public line?: number;
     public title?: string;
-    public detail?: string;
-    public link?: string;
+    public content?: string;
+    public helpUrl?: string;
 }
 
 export class ManifestValidationProduct {
-    public productCode?: string;
+    public code?: string;
     public title?: string;
     public version?: string;
 }
 
 export class ManifestValidationReport {
-    public result?: string;
+    public status?: string;
     public errors?: ManifestValidationIssue[];
     public warnings?: ManifestValidationIssue[];
-    public suggestions?: ManifestValidationIssue[];
-    public infos?: ManifestValidationIssue[];
+    public notes?: ManifestValidationIssue[];
+    public addInDetails?: ManifestValidationDetails;
 }
 
 export class ManifestValidation {
     public isValid: boolean;
     public report?: ManifestValidationReport;
-    public details?: ManifestValidationDetails;
     public status?: number;
 
     constructor() {
@@ -56,48 +62,55 @@ export class ManifestValidation {
 }
 
 export async function validateManifest(manifestPath: string): Promise<ManifestValidation> {
-    const validation: ManifestValidation = new ManifestValidation();
-
-    // read the manifest file
-    // const manifest = await readManifestFile(manifestPath);
-    const stream = await createReadStream(manifestPath);
-    let response;
-
     try {
-        response = await fetch("https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck",
-            {
-                body: stream,
-                headers: {
-                    "Content-Type": "application/xml",
-                },
-                method: "POST",
-            });
-    } catch (err) {
-        throw new Error(`Unable to contact the manifest validation service.\n${err}`);
-    }
+        const validation: ManifestValidation = new ManifestValidation();
 
-    const text = await response.text();
-    const json = JSON.parse(text.trim());
+        // read the manifest file
+        // const manifest = await readManifestFile(manifestPath);
+        const stream = await createReadStream(manifestPath);
+        let response;
 
-    if (json && json.checkReport) {
-        validation.report = json.checkReport.validationReport;
-        validation.details = json.checkReport.details;
-        validation.status = json.status;
-    }
-
-    if (validation.report) {
-        const result = validation.report.result;
-
-        if (result) {
-            switch (result.toLowerCase()) {
-                case "passed":
-                    validation.isValid = true;
-                    break;
-            }
+        try {
+            response = await fetch("https://packageacceptance.omex.office.net/api/check",
+                {
+                    body: stream,
+                    headers: {
+                        "Content-Type": "application/xml",
+                    },
+                    method: "POST",
+                });
+        } catch (err) {
+            throw new Error(`Unable to contact the manifest validation service.\n${err}`);
         }
-    } else {
-        throw new Error("The manifest validation service did not return the expected response.");
-    }
 
-    return validation;
+        const text = await response.text();
+        const json = JSON.parse(text.trim());
+
+        if (json) {
+            validation.report = json;
+            validation.status = response.status;
+        }
+
+        if (validation.report) {
+            const result = validation.report.status;
+
+            if (result) {
+                switch (result.toLowerCase()) {
+                    case "accepted":
+                        validation.isValid = true;
+                        break;
+                }
+            }
+        } else {
+            throw new Error("The manifest validation service did not return the expected response.");
+        }
+
+        usageDataObject.sendUsageDataSuccessEvent("validateManifest");
+
+        return validation;
+
+    } catch (err) {
+        usageDataObject.sendUsageDataException("validateManifest", err);
+        throw err;
+    }
 }

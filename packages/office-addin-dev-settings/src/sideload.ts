@@ -71,7 +71,11 @@ async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo): Pro
   );
 
   // replace the placeholder id and version
-  const webExtensionXml = (await zip.file(webExtensionPath).async("text"))
+  const zipFile = zip.file(webExtensionPath);
+  if (!zipFile) {
+    throw new Error("webextension was not found.")
+  }
+  const webExtensionXml = (await zipFile.async("text"))
     .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
     .replace(/1.0.0.0/g, manifest.version);
   zip.file(webExtensionPath, webExtensionXml);

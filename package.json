@@ -2,14 +2,17 @@
   "name": "root",
   "private": true,
   "scripts": {
+    "audit": "npm audit -- audit-level=critical & lerna exec --concurrency 1 --no-sort --stream npm audit -- --audit-level=critical",
+    "audit:fix": "npm audit fix & lerna exec --concurrency 1 --no-sort --stream npm audit fix",
     "build": "lerna run build",
     "dist-tags": "lerna exec --concurrency 1 --no-sort --stream npm dist-tag ls",
     "postinstall": "lerna bootstrap",
     "publish:next": "lerna publish --dist-tag next",
     "test": "lerna run test",
-    "update-latest-dist-tags": "lerna exec --concurrency 1 --no-sort --stream  for /f \"usebackq\" %a in (`npm view . name`) do @for /f \"usebackq\" %b in (`npm view . dist-tags.next`) do @npm dist-tag add %a@%b"
+    "update-latest-dist-tags": "lerna exec --concurrency 1 --no-sort --stream  for /f \"usebackq\" %a in (`npm view . name`) do @for /f \"usebackq\" %b in (`npm view . dist-tags.next`) do @npm dist-tag add %a@%b",
+    "update-packages": "lerna exec --concurrency 1 --no-sort --stream npm update --dev"
   },
   "devDependencies": {
-    "lerna": "^3.19.0"
+    "lerna": "^3.22.1"
   }
 }

@@ -3,11 +3,12 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
-import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents } from "./dev-settings";
+import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
 
+const OpenDevTools: string = "OpenDevTools";
 const RuntimeLogging: string = "RuntimeLogging";
 const SourceBundleExtension: string = "SourceBundleExtension";
 const SourceBundleHost: string = "SourceBundleHost";
@@ -16,6 +17,8 @@ const SourceBundlePort: string = "SourceBundlePort";
 const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
+const WebViewSelection: string = "WebViewSelection";
+
 
 export async function clearDevSettings(addinId: string): Promise<void> {
   return deleteDeveloperSettingsRegistryKey(addinId);
@@ -32,13 +35,19 @@ export async function disableRuntimeLogging() {
   return registry.deleteKey(key);
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy): Promise<void> {
+export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Proxy, openDevTools: boolean = false): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   const useDirectDebugger: boolean = enable && (method === DebuggingMethod.Direct);
   const useProxyDebugger: boolean = enable && (method === DebuggingMethod.Proxy);
 
   await registry.addBooleanValue(key, UseDirectDebugger, useDirectDebugger);
   await registry.addBooleanValue(key, UseProxyDebugger, useProxyDebugger);
+
+  if (enable && openDevTools) {
+    await registry.addBooleanValue(key, OpenDevTools, true);
+  } else {
+    await registry.deleteValue(key, OpenDevTools);
+  }
 }
 
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
@@ -73,6 +82,13 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
   return methods;
 }
 
+export async function getOpenDevTools(addinId: string): Promise<boolean> {
+  const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
+  const methods: DebuggingMethod[] = [];
+
+  return isRegistryValueTrue(await registry.getValue(key, OpenDevTools));
+}
+
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
@@ -97,6 +113,12 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
     await registry.getStringValue(key, SourceBundleExtension),
   );
   return components;
+}
+
+export async function getWebView(addinId: string): Promise<WebViewType | undefined> {
+  const key = getDeveloperSettingsRegistryKey(addinId);
+  const webViewString = await registry.getStringValue(key, WebViewSelection);
+  return toWebViewType(webViewString);
 }
 
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
@@ -170,6 +192,37 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
     } else {
       await registry.deleteValue(key, SourceBundleExtension);
     }
+  }
+}
+
+export async function setWebView(addinId: string, webViewType: WebViewType | undefined): Promise<void> {
+  const key = getDeveloperSettingsRegistryKey(addinId);
+  switch (webViewType){
+    case undefined:
+    case WebViewType.Default:
+      await registry.deleteValue(key, WebViewSelection);
+      break;
+    case WebViewType.IE:
+    case WebViewType.Edge:
+    case WebViewType.EdgeChromium:
+      const webViewString: string = webViewType as string;
+      await registry.addStringValue(key, WebViewSelection, webViewString);
+      break;
+    default:
+      throw new Error(`The webViewType ${webViewType} is not supported.`);
+  }
+}
+
+function toWebViewType(webViewString?: string): WebViewType | undefined {
+  switch (webViewString ? webViewString.toLowerCase() : undefined) {
+    case "ie":
+      return WebViewType.IE;
+    case "edge":
+      return WebViewType.Edge;
+    case "edge chromium":
+      return WebViewType.EdgeChromium;
+    default:
+      return undefined;
   }
 }
 
