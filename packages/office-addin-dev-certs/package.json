@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "child_process": "^1.0.2",
-    "commander": "^2.20.3",
+    "commander": "^6.2.0",
     "fs-extra": "^7.0.1",
     "mkcert": "^1.4.0",
     "office-addin-cli": "^1.0.15",

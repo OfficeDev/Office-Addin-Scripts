@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "assert": "^1.5.0",
-    "commander": "^2.20.3",
+    "commander": "^6.2.0",
     "nconf": "^0.10.0",
     "office-addin-cli": "^1.0.15",
     "xregexp": "^4.3.0"
