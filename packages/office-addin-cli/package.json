@@ -20,7 +20,7 @@
     "Office"
   ],
   "dependencies": {
-    "commander": "^2.20.3",
+    "commander": "^6.2.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {

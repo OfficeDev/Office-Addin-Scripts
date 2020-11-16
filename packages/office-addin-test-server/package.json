@@ -19,7 +19,7 @@
         "Office Add-in"
     ],
     "dependencies": {
-        "commander": "^2.20.3",
+        "commander": "^6.2.0",
         "cors": "^2.8.5",
         "es6-promise": "^4.2.8",
         "express": "^4.17.1",
