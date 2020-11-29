@@ -53,7 +53,7 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     throw new Error("The manifest contains an unsupported OfficeApp xsi:type.");
   }
   
-  const templatePath = document ? path.resolve(document) : getTemplatePath(app, addInType);
+  const templatePath = document && document !== "" ? path.resolve(document) : getTemplatePath(app, addInType);
 
   if (!templatePath) {
     throw new Error("Sideload is not supported.");
@@ -104,11 +104,11 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
  * @param isTest Indicates whether to append test query param to suppress Office Online dialogs.
  * @returns Document url with query params appended.
  */
-export async function generateSideloadUrl(manifestFileName: string, manifest: ManifestInfo, documentUrl: string | undefined,  isTest: boolean = false): Promise<string> {
+export async function generateSideloadUrl(manifestFileName: string, manifest: ManifestInfo, documentUrl: string | undefined,  isTest: boolean = false): Promise<string | undefined> {
   const testQueryParam = "&wdaddintest=true";
 
-  if (documentUrl === undefined) {
-    throw new Error("The document url was not provided.");
+  if (documentUrl === undefined || documentUrl === "") {
+    return undefined;
   } 
 
   if (!manifest.id) {
@@ -259,7 +259,7 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
 export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false,
   platform?: AppType, document?: string, isTest: boolean = false): Promise<void> {
   let isDesktop: boolean = true;
-  let sideloadFile: string;
+  let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
@@ -296,7 +296,9 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       const manifestFileName: string = path.basename(manifestPath);
       sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
     }
-    await open(sideloadFile, { wait: false });
+    if (sideloadFile) {
+      await open(sideloadFile, { wait: false });
+    }
   } else {
     throw new Error(`Sideload is not supported for ${app} on ${isDesktop ? AppType.Desktop : AppType.Web}.`);
   }
