@@ -44,9 +44,14 @@ export class SSOService {
 
     private async getSecret(isTest: boolean = false): Promise<void> {
         const manifestInfo = await manifest.readManifestFile(this.manifestPath);
-        const appSecret = getSecretFromCredentialStore(manifestInfo.displayName, isTest);
-        if (appSecret === '') {
-            const errorMessage: string = 'Call to getSecretFromCredentialStore returned empty string';
+        let appSecret: string = process.env.CLIENT_SECRET;
+
+        if (appSecret == "") {
+            appSecret = getSecretFromCredentialStore(manifestInfo.displayName, isTest);
+        }
+        
+        if (appSecret === "") {
+            const errorMessage: string = 'Could not find app secret in .ENV file or getSecretFromCredentialStore returned empty string';
             throw new Error(errorMessage);
         }
         process.env.secret = appSecret;
