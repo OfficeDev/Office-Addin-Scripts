@@ -546,7 +546,7 @@ describe("Unit Tests", function() {
   describe("validate.ts", function() {
     describe("validateManifest()", function() {
       this.slow(5000);
-      it("valid manifest", async function() {
+      it.skip("valid manifest", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.manifest.xml");
         assert.strictEqual(validation.isValid, true);
@@ -556,7 +556,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
-      it("Excel", async function() {
+      it.skip("Excel", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Excel.manifest.xml");
         assert.strictEqual(validation.isValid, true);
@@ -566,7 +566,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
-      it("OneNote", async function() {
+      it.skip("OneNote", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.OneNote.manifest.xml");
         assert.strictEqual(validation.isValid, true);
@@ -576,7 +576,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
-      it("Outlook", async function() {
+      it.skip("Outlook", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Outlook.manifest.xml");
         assert.strictEqual(validation.isValid, true);
@@ -586,7 +586,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
-      it("PowerPoint", async function() {
+      it.skip("PowerPoint", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.PowerPoint.manifest.xml");
         assert.strictEqual(validation.isValid, true);
@@ -596,7 +596,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
-      it("Project", async function() {
+      it.skip("Project", async function() {
         const validation = await validateManifest("test/manifests/TaskPane.Project.manifest.xml");
         assert.strictEqual(validation.isValid, true);
         assert.strictEqual(validation.status, 200);
@@ -605,7 +605,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
-      it("Word", async function() {
+      it.skip("Word", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Word.manifest.xml");
         assert.strictEqual(validation.isValid, true);

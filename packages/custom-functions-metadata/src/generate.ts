@@ -3,7 +3,7 @@
 
 import * as fs from "fs";
 import * as ts from "typescript";
-import * as XRegExp from "xregexp";
+import XRegExp = require("xregexp");
 
 export interface ICustomFunctionsMetadata {
   functions: IFunction[];
