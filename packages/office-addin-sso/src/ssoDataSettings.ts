@@ -44,7 +44,7 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
                 const getSecretFromWindowsStoreCommand = `powershell -ExecutionPolicy Bypass -File "${defaults.getSecretCommandPath}" "${ssoAppName}" "${os.userInfo().username}"`;
                 return execSync(getSecretFromWindowsStoreCommand, { stdio: "pipe" }).toString();
             case "darwin":
-                const getSecretFromMacStoreCommand = `${isTest ? "" : "sudo"} security find-generic-password -a ${os.userInfo().username} -s ${ssoAppName} -w`;
+                const getSecretFromMacStoreCommand = `${isTest ? "" : "sudo"} security find-generic-password -a ${os.userInfo().username} -s "${ssoAppName}" -w`;
                 return execSync(getSecretFromMacStoreCommand, { stdio: "pipe" }).toString();;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
