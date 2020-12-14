@@ -71,7 +71,7 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
         let response;
 
         try {
-            response = await fetch("https://validationgateway.omex.office.net/package/api/check",
+            response = await fetch("https://validationgateway.omex.office.net/package/api/check?gates=DisableIconDimensionValidation",
                 {
                     body: stream,
                     headers: {
