@@ -41,6 +41,10 @@ Specifies to run the dev server using the specified command.
 
 Specifies the port for the dev server. If provided, the dev server is only started if not already running. 
 
+`--document`
+
+Specifies the document to sideload.  The document option can either be the local path to a document or a url.
+
 ` --no-debug`
 
 Start without debugging.
