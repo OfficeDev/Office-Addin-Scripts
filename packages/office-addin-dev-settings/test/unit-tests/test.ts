@@ -540,18 +540,6 @@ describe("Sideload to web", function() {
     expectedUrl = `${expectedUrl}${expectedTestQueryParam}`;
     assert.strictEqual(generatedUrl, expectedUrl);
   })
-  it("Sideload unsupported host (expect error)'", async function() {
-    let error;
-    let manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
-    try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
-        devSettingsSideload.AppType.Web, docurl);
-    } catch (err) {
-      error = err;
-    }
-    assert.ok(error instanceof Error, "should throw an error");
-    assert.strictEqual(error.message, "Sideload is not supported for project on web.");
-  })
   it("Sideload unsupported source location (expect error)'", async function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
