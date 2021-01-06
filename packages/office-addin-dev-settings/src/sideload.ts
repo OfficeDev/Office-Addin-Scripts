@@ -134,7 +134,7 @@ export async function generateSideloadUrl(manifestFileName: string, manifest: Ma
     queryParms = `${queryParms}${testQueryParam}`;
   }
 
-  return`${documentUrl}${queryParms}`;
+  return `${documentUrl}${queryParms}`;
 }
 
 /**
@@ -261,10 +261,6 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
     isDesktop = false;
   }
 
-  if (platform && platform == AppType.Web && document === undefined) {
-    throw new Error(`Sideload to web requires the document option parameter.`);
-  }
-
   if (isDesktop) {
     if (app) {
       if (appsInManifest.indexOf(app) < 0) {
@@ -296,6 +292,10 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       throw new Error(`Sideload is not supported for ${app} on ${AppType.Desktop}.`);
     }
   } else {
+    if (platform && platform == AppType.Web && document === undefined) {
+      throw new Error(`For sideload to web, you need to specify a document url.`);
+    }
+    
     const manifestFileName: string = path.basename(manifestPath);
     sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
   }
