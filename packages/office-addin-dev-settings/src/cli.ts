@@ -60,6 +60,8 @@ commander
     .command("sideload <manifest-path>")
     .description("Launch Office with the Office Add-in loaded.")
     .option("-a,--app <app>", `The Office app to launch. ("Excel", "PowerPoint", or "Word")`)
+    .option("-p,--platform <platform>", `Plaform to launch sideloading for ("desktop" or "web")`)
+    .option("-d,--document <document>", `The location of the document to be sideloaded - this can be an absolute file path or url`)
     .action(commands.sideload);
 
 commander

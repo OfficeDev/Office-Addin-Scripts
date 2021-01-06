@@ -21,6 +21,11 @@ import { chooseOfficeApp } from "./prompt";
 
 const readFileAsync = util.promisify(fs.readFile);
 
+export enum AppType {
+  Desktop = "desktop",
+  Web = "web",
+}
+
 /**
  * Create an Office document in the temporary files directory
  * which can be opened to launch the Office app and load the add-in.
@@ -28,7 +33,7 @@ const readFileAsync = util.promisify(fs.readFile);
  * @param manifest Manifest for the add-in.
  * @returns Path to the file.
  */
-async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo): Promise<string> {
+export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo, document?: string): Promise<string> {
   if (!manifest.id) {
     throw new Error("The manifest does not contain the id for the add-in.");
   }
@@ -42,14 +47,13 @@ async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo): Pro
       "The manifest does not contain the version for the add-in.",
     );
   }
-
   const addInType = getAddInTypeForManifestOfficeAppType(manifest.officeAppType);
 
   if (!addInType) {
     throw new Error("The manifest contains an unsupported OfficeApp xsi:type.");
   }
-
-  const templatePath = getTemplatePath(app, addInType);
+  
+  const templatePath = document && document !== "" ? path.resolve(document) : getTemplatePath(app, addInType);
 
   if (!templatePath) {
     throw new Error("Sideload is not supported.");
@@ -93,12 +97,53 @@ async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo): Pro
 }
 
 /**
+ * Create an Office document url with query params which can be opened
+ * to register an Office add-in in Office Online.
+ * @param manifestPath Path to the manifest file for the Office Add-in.
+ * @param documentUrl Office Online document url
+ * @param isTest Indicates whether to append test query param to suppress Office Online dialogs.
+ * @returns Document url with query params appended.
+ */
+export async function generateSideloadUrl(manifestFileName: string, manifest: ManifestInfo, documentUrl: string | undefined,  isTest: boolean = false): Promise<string | undefined> {
+  const testQueryParam = "&wdaddintest=true";
+
+  if (documentUrl === undefined || documentUrl === "") {
+    return undefined;
+  } 
+
+  if (!manifest.id) {
+    throw new Error("The manifest does not contain the id for the add-in.");
+  }
+
+  if (manifest.defaultSettings === undefined || manifest.defaultSettings.sourceLocation === undefined) {
+    throw new Error("The manifest does not contain the SourceLocation for the add-in")
+  }
+
+  const sourceLocationUrl: URL = new URL(manifest.defaultSettings.sourceLocation);
+  if (sourceLocationUrl.protocol.indexOf("https") === -1) {
+    throw new Error("The SourceLocation in the manifest does not use the HTTPS protocol.");
+  }
+
+  if (sourceLocationUrl.host.indexOf("localhost") === -1 && sourceLocationUrl.host.indexOf("127.0.0.1") === -1) {
+    throw new Error("The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1.");
+  }
+
+  let queryParms: string = `&wdaddindevserverport=${sourceLocationUrl.port}&wdaddinmanifestfile=${manifestFileName}&wdaddinmanifestguid=${manifest.id}`;
+  
+  if (isTest) {
+    queryParms = `${queryParms}${testQueryParam}`;
+  }
+
+  return `${documentUrl}${queryParms}`;
+}
+
+/**
  * Returns the path to the document used as a template for sideloading,
  * or undefined if sideloading is not supported.
  * @param app Specifies the Office app.
  * @param addInType Specifies the type of add-in.
  */
-function getTemplatePath(
+export function getTemplatePath(
   app: OfficeApp,
   addInType: AddInType,
 ): string | undefined {
@@ -153,6 +198,13 @@ function getWebExtensionPath(
   }
 }
 
+function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
+  if (app === OfficeApp.Outlook || app === OfficeApp.Project || app === OfficeApp.OneNote) {
+    return false;
+  }
+  return true;
+}
+
 /**
  * Given a file path, returns a unique file path where the file doesn't exist by
  * appending a period and a numeric suffix, starting from 2.
@@ -198,37 +250,57 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
  * @param app Office app to launch.
  * @param canPrompt
  */
-export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false): Promise<void> {
-  const manifest = await readManifestFile(manifestPath);
-
+export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false,
+  platform?: AppType, document?: string, isTest: boolean = false): Promise<void> {
+  let isDesktop: boolean = true;
+  let sideloadFile: string | undefined;
+  const manifest: ManifestInfo = await readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
-  if (app) {
-    if (appsInManifest.indexOf(app) < 0) {
-      throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
-    }
-  } else {
-    switch (appsInManifest.length) {
-      case 0:
-        throw new Error("The manifest does not support any Office apps.");
-      case 1:
-        app = appsInManifest[0];
-        break;
-      default:
-        if (canPrompt) {
-          app = await chooseOfficeApp(appsInManifest);
-        } else {
-          throw new Error("Please specify the Office app.");
-        }
-        break;
+  if (platform && platform == AppType.Web) {
+    isDesktop = false;
+  }
+
+  if (isDesktop) {
+    if (app) {
+      if (appsInManifest.indexOf(app) < 0) {
+        throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
+      }
+    } else {
+      switch (appsInManifest.length) {
+        case 0:
+          throw new Error("The manifest does not support any Office apps.");
+        case 1:
+          app = appsInManifest[0];
+          break;
+        default:
+          if (canPrompt) {
+            app = await chooseOfficeApp(appsInManifest);
+          } else {
+            throw new Error("Please specify the Office app.");
+          }
+          break;
+      }
     }
   }
 
-  await registerAddIn(manifestPath);
+  if (isDesktop && app) {
+    if (isSideloadingSupportedForDesktopHost(app)) {
+      await registerAddIn(manifestPath);
+      sideloadFile = await generateSideloadFile(app, manifest, document);
+    } else {
+      throw new Error(`Sideload is not supported for ${app} on ${AppType.Desktop}.`);
+    }
+  } else {
+    if (platform && platform == AppType.Web && document === undefined) {
+      throw new Error(`For sideload to web, you need to specify a document url.`);
+    }
+    
+    const manifestFileName: string = path.basename(manifestPath);
+    sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
+  }
 
-  if (app) {
-    const sideloadFile = await generateSideloadFile(app, manifest);
-
+  if (sideloadFile) {
     await open(sideloadFile, { wait: false });
   }
 }

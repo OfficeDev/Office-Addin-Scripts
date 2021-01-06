@@ -179,6 +179,18 @@ Options:
 
 Specify the Office application to load.
 
+`-p`
+`--platform`
+
+Specify the platform to sideload:
+* `desktop`: sideloads in desktop application.
+* `web`: sideloads in Office Online.
+
+`-d`
+`--document`
+
+Specify the document to sideload.  The document option can either be the local path to a document or a url.
+
 #
 
 ### source-bundle-url 

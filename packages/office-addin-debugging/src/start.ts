@@ -181,6 +181,7 @@ export async function runPackager(commandLine: string, host: string = "localhost
  * @param sourceBundleUrlComponents Specify components of the source bundle url.
  * @param devServerCommandLine If provided, starts the dev server.
  * @param devServerPort If provided, port to verify that the dev server is running.
+ * @param documentUrl If provided, the document to open for sideloading to web.
  * @param packagerCommandLine If provided, starts the packager.
  * @param packagerHost Specifies the host name of the packager.
  * @param packagerPort Specifies the port of the packager.
@@ -191,13 +192,13 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
     devServerCommandLine?: string, devServerPort?: number,
     packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    enableDebugging: boolean = true, enableLiveReload: boolean = true, openDevTools: boolean = false) {
+    enableDebugging: boolean = true, enableLiveReload: boolean = true,
+    openDevTools: boolean = false, document?: string) {
 
     try {
 
         const isWindowsPlatform = (process.platform === "win32");
         const isDesktopAppType = (appType === AppType.Desktop);
-        const isWebAppType = (appType === AppType.Web);
         const isProxyDebuggingMethod = (debuggingMethod === DebuggingMethod.Proxy);
         // live reload can only be enabled for the desktop app type
         // when using proxy debugging and the packager
@@ -280,13 +281,11 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
             }
         }
 
-        if (isDesktopAppType) {
-            try {
-                console.log(`Sideloading the Office Add-in...`);
-                await sideloadAddIn(manifestPath, app, true);
-            } catch (err) {
-                throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
-            }
+        try {
+            console.log(`Sideloading the Office Add-in...`);
+            await sideloadAddIn(manifestPath, app, true, appType, document, false /* isTest */);
+        } catch (err) {
+            throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
         }
 
         console.log(enableDebugging

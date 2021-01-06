@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import { logErrorMessage } from "office-addin-cli";
+import { logErrorMessage, parseNumber } from "office-addin-cli";
 import { ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
@@ -13,7 +13,7 @@ import {
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
-import { sideloadAddIn } from "./sideload";
+import { AppType, sideloadAddIn } from "./sideload";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -315,8 +315,11 @@ export async function sideload(manifestPath: string, command: commander.Command)
   try {
     const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
     const canPrompt = true;
+    const document: string | undefined = command.document ? command.document : undefined;
+    const isTest: boolean | undefined = command.test ? true : false;
+    const platform: AppType | undefined = command.platform ? command.platform : undefined;
 
-    await sideloadAddIn(manifestPath, app, canPrompt);
+    await sideloadAddIn(manifestPath, app, canPrompt, platform, document, isTest);
   } catch (err) {
     logErrorMessage(err);
   }
@@ -352,6 +355,21 @@ export async function sourceBundleUrl(manifestPath: string, command: commander.C
   } catch (err) {
     logErrorMessage(err);
   }
+}
+
+function parseDevServerPort(optionValue: any): number | undefined {
+  const devServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
+
+  if (devServerPort !== undefined) {
+      if (!Number.isInteger(devServerPort)) {
+          throw new Error("--dev-server-port should be an integer.");
+      }
+      if ((devServerPort < 0) || (devServerPort > 65535)) {
+          throw new Error("--dev-server-port should be between 0 and 65535.");
+      }
+  }
+
+  return devServerPort;
 }
 
 function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {

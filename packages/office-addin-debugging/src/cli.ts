@@ -16,6 +16,7 @@ commander
     .option("--debug-method <method>", "The debug method to use.")
     .option("--dev-server <command>", "Run the dev server.")
     .option("--dev-server-port <port>", "Verify the dev server is running using this port.")
+    .option("--document <document>", "Document to be used for sideloading.")
     .option("--no-debug", "Start without debugging.")
     .option("--no-live-reload", "Do not enable live-reload.")
     .option("--dev-tools", "Open the web browser developer tools when debugging (if supported)")
