@@ -198,15 +198,9 @@ function getWebExtensionPath(
   }
 }
 
-function isSideloadingSupportedForHost(app: OfficeApp, isDesktop: boolean): boolean {
-  if (isDesktop) {
-    if (app === OfficeApp.Outlook || app === OfficeApp.Project || app === OfficeApp.OneNote) {
-      return false;
-    }
-  } else {
-    if (app === OfficeApp.Outlook || app === OfficeApp.Project) {
-      return false;
-    }
+function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
+  if (app === OfficeApp.Outlook || app === OfficeApp.Project || app === OfficeApp.OneNote) {
+    return false;
   }
   return true;
 }
@@ -267,39 +261,46 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
     isDesktop = false;
   }
 
-  if (app) {
-    if (appsInManifest.indexOf(app) < 0) {
-      throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
-    }
-  } else {
-    switch (appsInManifest.length) {
-      case 0:
-        throw new Error("The manifest does not support any Office apps.");
-      case 1:
-        app = appsInManifest[0];
-        break;
-      default:
-        if (canPrompt) {
-          app = await chooseOfficeApp(appsInManifest);
-        } else {
-          throw new Error("Please specify the Office app.");
-        }
-        break;
+  if (platform && platform == AppType.Web && document === undefined) {
+    throw new Error(`Sideload to web requires the document option parameter.`);
+  }
+
+  if (isDesktop) {
+    if (app) {
+      if (appsInManifest.indexOf(app) < 0) {
+        throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
+      }
+    } else {
+      switch (appsInManifest.length) {
+        case 0:
+          throw new Error("The manifest does not support any Office apps.");
+        case 1:
+          app = appsInManifest[0];
+          break;
+        default:
+          if (canPrompt) {
+            app = await chooseOfficeApp(appsInManifest);
+          } else {
+            throw new Error("Please specify the Office app.");
+          }
+          break;
+      }
     }
   }
 
-  if (isSideloadingSupportedForHost(app, isDesktop)) {
-    if (isDesktop) {
+  if (isDesktop && app) {
+    if (isSideloadingSupportedForDesktopHost(app)) {
       await registerAddIn(manifestPath);
       sideloadFile = await generateSideloadFile(app, manifest, document);
     } else {
-      const manifestFileName: string = path.basename(manifestPath);
-      sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
-    }
-    if (sideloadFile) {
-      await open(sideloadFile, { wait: false });
+      throw new Error(`Sideload is not supported for ${app} on ${AppType.Desktop}.`);
     }
   } else {
-    throw new Error(`Sideload is not supported for ${app} on ${isDesktop ? AppType.Desktop : AppType.Web}.`);
+    const manifestFileName: string = path.basename(manifestPath);
+    sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
+  }
+
+  if (sideloadFile) {
+    await open(sideloadFile, { wait: false });
   }
 }
