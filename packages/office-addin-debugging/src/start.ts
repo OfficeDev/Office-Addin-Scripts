@@ -173,7 +173,11 @@ export async function runPackager(commandLine: string, host: string = "localhost
 }
 
 
-export interface StartDebuggingOptions {
+/**
+ * Start debugging
+ * @param options start debugging options.
+ */
+export async function startDebugging(options: {
     /**
      * The path to the manifest file.
      */
@@ -233,13 +237,7 @@ export interface StartDebuggingOptions {
      * If provided, the document to open for sideloading to web.
      */
     document?: string,
-};
-
-/**
- * Start Debugging
- * @param options The debugging options.
- */
-export async function startDebuggingWithOptions(options:StartDebuggingOptions) {
+}) {
 
     const {
         manifestPath,
@@ -259,54 +257,10 @@ export async function startDebuggingWithOptions(options:StartDebuggingOptions) {
     } = {
         // Defaults
         debuggingMethod: defaultDebuggingMethod(),
-        enableDebugging: true,
-        enableLiveReload: true,
-        openDevTools: false,
 
         // Override with supplied options
         ...options
     };
-
-    startDebugging(
-        manifestPath,
-        appType,
-        app,
-        debuggingMethod,
-        sourceBundleUrlComponents,
-        devServerCommandLine,
-        devServerPort,
-        packagerCommandLine,
-        packagerHost,
-        packagerPort,
-        enableDebugging,
-        enableLiveReload,
-        openDevTools,
-        document,
-    );
-}
-
-/**
- * Start debugging
- * @param manifestPath The path to the manifest file.
- * @param appType The type of application to debug.
- * @param app The Office application to debug.
- * @param debuggingMethod The method to use when debugging.
- * @param sourceBundleUrlComponents Specify components of the source bundle url.
- * @param devServerCommandLine If provided, starts the dev server.
- * @param devServerPort If provided, port to verify that the dev server is running.
- * @param documentUrl If provided, the document to open for sideloading to web.
- * @param packagerCommandLine If provided, starts the packager.
- * @param packagerHost Specifies the host name of the packager.
- * @param packagerPort Specifies the port of the packager.
- * @param enableDebugging If false, start without debugging.
- */
-export async function startDebugging(manifestPath: string, appType: AppType, app: OfficeApp | undefined,
-    debuggingMethod: DebuggingMethod = defaultDebuggingMethod(),
-    sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
-    devServerCommandLine?: string, devServerPort?: number,
-    packagerCommandLine?: string, packagerHost?: string, packagerPort?: string,
-    enableDebugging: boolean = true, enableLiveReload: boolean = true,
-    openDevTools: boolean = false, document?: string) {
 
     try {
 
@@ -316,11 +270,13 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
         // live reload can only be enabled for the desktop app type
         // when using proxy debugging and the packager
         const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
+        // only enable live reload if it can be enabled
+        const liveReload = enableLiveReload && canEnableLiveReload;
+
         let packagerPromise: Promise<void> | undefined;
         let devServerPromise: Promise<void> | undefined;
 
-        // only enable live reload if it can be enabled
-        enableLiveReload = enableLiveReload && canEnableLiveReload;
+
 
         console.log(enableDebugging
             ? "Debugging is being started..."
@@ -349,8 +305,8 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
 
         // enable live reload
         if (isDesktopAppType && isWindowsPlatform) {
-            await devSettings.enableLiveReload(manifestInfo.id, enableLiveReload);
-            if (enableLiveReload) {
+            await devSettings.enableLiveReload(manifestInfo.id, liveReload);
+            if (liveReload) {
                 console.log(`Enabled live-reload for add-in ${manifestInfo.id}.`);
             }
         }
