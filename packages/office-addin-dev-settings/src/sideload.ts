@@ -3,6 +3,7 @@
 
 import * as fs from "fs";
 import * as jszip from "jszip";
+import { startDetachedProcess } from "office-addin-debugging";
 import {
   AddInType,
   getAddInTypeForManifestOfficeAppType,
@@ -18,6 +19,7 @@ import * as path from "path";
 import * as util from "util";
 import { registerAddIn } from "./dev-settings";
 import { chooseOfficeApp } from "./prompt";
+import * as registry from "./registry";
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -199,10 +201,23 @@ function getWebExtensionPath(
 }
 
 function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
-  if (app === OfficeApp.Outlook || app === OfficeApp.Project || app === OfficeApp.OneNote) {
+  if (app === OfficeApp.Project || app === OfficeApp.OneNote) {
     return false;
   }
   return true;
+}
+
+async function getOutlookExePath(): Promise<string | undefined> {
+  try {
+    const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
+    const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
+    const outlookExePath: string | undefined = await registry.getStringValue(key, "");
+
+    return outlookExePath;
+  } catch (err) {
+    const errorMessage: string = `Unable to find Outlook install location: \n${err}`;
+    throw new Error(errorMessage);
+  }
 }
 
 /**
@@ -286,8 +301,12 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
 
   if (isDesktop && app) {
     if (isSideloadingSupportedForDesktopHost(app)) {
-      await registerAddIn(manifestPath);
-      sideloadFile = await generateSideloadFile(app, manifest, document);
+      if (app == OfficeApp.Outlook && process.platform === "win32") {
+        sideloadFile = await getOutlookExePath();
+      } else {
+        await registerAddIn(manifestPath);
+        sideloadFile = await generateSideloadFile(app, manifest, document);
+      }
     } else {
       throw new Error(`Sideload is not supported for ${app} on ${AppType.Desktop}.`);
     }
@@ -301,6 +320,10 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
   }
 
   if (sideloadFile) {
-    await open(sideloadFile, { wait: false });
+    if (app == OfficeApp.Outlook) {
+      startDetachedProcess(sideloadFile);
+    } else {
+      await open(sideloadFile, { wait: false });
+    }
   }
 }

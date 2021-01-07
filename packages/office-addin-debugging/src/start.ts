@@ -281,6 +281,12 @@ export async function startDebugging(manifestPath: string, appType: AppType, app
             }
         }
 
+        // enable Outlook sideloading
+        if (isDesktopAppType && app == OfficeApp.Outlook) {
+            await devSettings.enableOutlookSideloading(manifestPath);
+            console.log(`Enabled sideloading for Outlook.`);
+        }
+
         try {
             console.log(`Sideloading the Office Add-in...`);
             await sideloadAddIn(manifestPath, app, true, appType, document, false /* isTest */);

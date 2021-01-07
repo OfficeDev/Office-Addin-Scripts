@@ -13,6 +13,7 @@ import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
+import { deleteKey } from "../../src/registry";
 import * as devSettingsSideload from "../../src/sideload";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 const isWindows = (process.platform === "win32");
@@ -552,4 +553,41 @@ describe("Sideload to web", function() {
     assert.ok(error instanceof Error, "should throw an error");
     assert.strictEqual(error.message, "The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1.");
   })
+});
+
+describe("Outlook Sideloading", function() {
+  this.beforeAll(async function() {
+    if (isWindows) {
+      const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+      if (key) {
+        await deleteKey(key);
+      }
+    }
+  });
+  this.afterAll(async function() {
+    if (isWindows) {
+      const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+      if (key) {
+        await deleteKey(key);
+      }
+    }
+  });
+  describe("basic validation", async function() {
+    it("Sideload to Outlook - verify registry key set correctly", async function() {
+      let error;
+      const manifestsFolder = fspath.resolve("test/files/manifests");
+      const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+      try {
+        await devSettings.enableOutlookSideloading(manifestPath);
+      } catch (err) {
+        error = err;
+      }
+      if (isWindows) {
+        assert.strictEqual(await devSettings.isOutlookSideloadingEnabled(manifestPath), true);
+      } else {
+        assert.ok(error instanceof Error, "should throw an error");
+        assert.strictEqual(error.message, `Sideloading not supported for ${process.platform}.`);
+      }
+    });
+  });
 });

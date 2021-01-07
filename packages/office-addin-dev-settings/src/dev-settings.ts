@@ -101,6 +101,24 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
   }
 }
 
+export async function enableOutlookSideloading(manifestPath: string): Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      return await devSettingsWindows.enableOutlookSideloading(manifestPath);
+  default:
+    throw new Error(`Sideloading not supported for ${process.platform}.`);
+  }
+}
+
+export async function isOutlookSideloadingEnabled(manifestPath: string): Promise<boolean> {
+  switch (process.platform) {
+    case "win32":
+      return await devSettingsWindows.isOutlookSideloadingEnabled(manifestPath);
+    default:
+      throw new Error(`Sideloading not supported for ${process.platform}.`);
+  }
+}
+
 export async function enableRuntimeLogging(path?: string): Promise<string> {
   switch (process.platform) {
     case "win32":
