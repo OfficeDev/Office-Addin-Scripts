@@ -201,7 +201,7 @@ function getWebExtensionPath(
 }
 
 function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
-  if (app === OfficeApp.Project || app === OfficeApp.OneNote) {
+  if (app === OfficeApp.Outlook && process.platform !== "win32" || app === OfficeApp.Project || app === OfficeApp.OneNote) {
     return false;
   }
   return true;
@@ -301,7 +301,7 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
 
   if (isDesktop && app) {
     if (isSideloadingSupportedForDesktopHost(app)) {
-      if (app == OfficeApp.Outlook && process.platform === "win32") {
+      if (app == OfficeApp.Outlook) {
         sideloadFile = await getOutlookExePath();
       } else {
         await registerAddIn(manifestPath);
