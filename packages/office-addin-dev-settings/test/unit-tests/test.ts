@@ -576,7 +576,7 @@ describe("Outlook Sideloading", function() {
     it("Sideload to Outlook - verify registry key set correctly", async function() {
       let error;
       const manifestsFolder = fspath.resolve("test/files/manifests");
-      const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+      const manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
       try {
         await devSettings.enableOutlookSideloading(manifestPath);
       } catch (err) {
@@ -588,6 +588,23 @@ describe("Outlook Sideloading", function() {
         assert.ok(error instanceof Error, "should throw an error");
         assert.strictEqual(error.message, `Sideloading not supported for ${process.platform}.`);
       }
+    });
+    it("Sideload to Outlook - verify throws error when Outlook Host element not in manifest", async function() {
+      let error;
+      const manifestsFolder = fspath.resolve("test/files/manifests");
+      const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+      try {
+        await devSettings.enableOutlookSideloading(manifestPath);
+      } catch (err) {
+        error = err;
+      }
+      if (isWindows) {
+        assert.ok(error instanceof Error, "should throw an error");
+        assert.strictEqual(error.message, `${manifestPath} does not contain an ${officeAddinManifest.OfficeApp.Outlook} Host element.`);
+      } else {
+        assert.ok(error instanceof Error, "should throw an error");
+        assert.strictEqual(error.message, `Sideloading not supported for ${process.platform}.`);
+      }     
     });
   });
 });

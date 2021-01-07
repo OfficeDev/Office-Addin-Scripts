@@ -3,6 +3,7 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
+import { getOfficeAppsForManifestHosts, ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import * as registry from "./registry";
 
@@ -57,6 +58,12 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
 }
 
 export async function enableOutlookSideloading(manifestPath: string): Promise<void> {
+  const manifest: ManifestInfo = await readManifestFile(manifestPath);
+  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+  if (appsInManifest.indexOf(OfficeApp.Outlook) < 0) {
+    throw new Error(`${manifestPath} does not contain an ${OfficeApp.Outlook} Host element.`);
+  }
+
   const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
 
   return registry.addStringValue(key, "", manifestPath); // empty string for the default value
