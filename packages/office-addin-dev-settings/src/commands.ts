@@ -157,7 +157,6 @@ export async function enableLiveReload(manifestPath: string) {
 
 export async function enableOutlookSideloading(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
     await devSettings.enableOutlookSideloading(manifestPath);
   } catch (err) {
     logErrorMessage(err);
