@@ -7,13 +7,14 @@ import * as fsextra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as mocha from "mocha";
 import * as officeAddinManifest from "office-addin-manifest";
+import { OfficeApp } from "office-addin-manifest";
 import * as os from "os";
 import * as fspath from "path";
 import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
-import { deleteKey } from "../../src/registry";
+import { deleteKey, getStringValue } from "../../src/registry";
 import * as devSettingsSideload from "../../src/sideload";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 const isWindows = (process.platform === "win32");
@@ -344,6 +345,59 @@ describe("Registration", function() {
         });
       }
     });
+
+    if (isWindows) {
+      describe("register Outlook add-in", function() {
+        this.beforeEach(async function() {
+          const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          if (key) {
+            await deleteKey(key);
+          }
+          await devSettings.unregisterAllAddIns();
+        });
+        this.afterEach(async function() {
+          const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          if (key) {
+            await deleteKey(key);
+          }
+          await devSettings.unregisterAllAddIns();
+        });
+        it("verify OutlookSideloadManifestPath and Developer registry keys set correctly", async function() {
+          const manifestsFolder = fspath.resolve("test/files/manifests");
+          const manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
+          await devSettings.registerAddIn(manifestPath);
+          const registeredAddins = await devSettings.getRegisterAddIns();
+
+          // Verify manifest is set in Developer registry key
+          const [registeredAddin] = registeredAddins;
+          assert.strictEqual(registeredAddins.length, 1);
+          assert.strictEqual(registeredAddin.id, "d0ea1166-7b26-47a6-af8e-b978646d889f");
+          assert.strictEqual(registeredAddin.manifestPath, manifestPath);
+
+          // Verify OutlookSideloadManifestPath is set
+          const key = devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          const value = await getStringValue(key, "");
+          assert.strictEqual(value !== undefined && value === manifestPath, true);
+        });
+        it("verify OutlookSideloadManifestPath key is not set and Develoer registry key is set", async function() {
+          const manifestsFolder = fspath.resolve("test/files/manifests");
+          const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+          await devSettings.registerAddIn(manifestPath);
+
+          // Verify manifest is set in Developer registry key
+          const registeredAddins = await devSettings.getRegisterAddIns();
+          const [registeredAddin] = registeredAddins;
+          assert.strictEqual(registeredAddins.length, 1);
+          assert.strictEqual(registeredAddin.id, "6dd581d2-98d1-4eaf-9506-e0a24be515f5");
+          assert.strictEqual(registeredAddin.manifestPath, manifestPath);
+
+          // Verify OutlookSideloadManifestPath is not set
+          const key = devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          const value = await getStringValue(key, "");
+          assert.strictEqual(value === undefined, true);
+        });
+      });
+    }
   }
 });
 
@@ -540,7 +594,7 @@ describe("Sideload to web", function() {
     const expectedTestQueryParam: string = "&wdaddintest=true";
     expectedUrl = `${expectedUrl}${expectedTestQueryParam}`;
     assert.strictEqual(generatedUrl, expectedUrl);
-  })
+  });
   it("Sideload unsupported source location (expect error)'", async function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
@@ -552,59 +606,29 @@ describe("Sideload to web", function() {
     }
     assert.ok(error instanceof Error, "should throw an error");
     assert.strictEqual(error.message, "The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1.");
+  });
+  it("Sideload no document parameter provided (expect error)'", async function() {
+    let error;
+    let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */,
+        devSettingsSideload.AppType.Web);
+    } catch (err) {
+      error = err;
+    }
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, `For sideload to web, you need to specify a document url.`);
   })
-});
-
-describe("Outlook Sideloading", function() {
-  this.beforeAll(async function() {
-    if (isWindows) {
-      const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
-      if (key) {
-        await deleteKey(key);
-      }
+  it("Sideload unsupported Outlook host (expect error)'", async function() {
+    let error;
+    let manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Outlook, true /* canPrompt */,
+        devSettingsSideload.AppType.Web);
+    } catch (err) {
+      error = err;
     }
-  });
-  this.afterAll(async function() {
-    if (isWindows) {
-      const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
-      if (key) {
-        await deleteKey(key);
-      }
-    }
-  });
-  describe("basic validation", async function() {
-    it("Sideload to Outlook - verify registry key set correctly", async function() {
-      let error;
-      const manifestsFolder = fspath.resolve("test/files/manifests");
-      const manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
-      try {
-        await devSettings.enableOutlookSideloading(manifestPath);
-      } catch (err) {
-        error = err;
-      }
-      if (isWindows) {
-        assert.strictEqual(await devSettings.isOutlookSideloadingEnabled(manifestPath), true);
-      } else {
-        assert.ok(error instanceof Error, "should throw an error");
-        assert.strictEqual(error.message, `Sideloading not supported for ${process.platform}.`);
-      }
-    });
-    it("Sideload to Outlook - verify throws error when Outlook Host element not in manifest", async function() {
-      let error;
-      const manifestsFolder = fspath.resolve("test/files/manifests");
-      const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
-      try {
-        await devSettings.enableOutlookSideloading(manifestPath);
-      } catch (err) {
-        error = err;
-      }
-      if (isWindows) {
-        assert.ok(error instanceof Error, "should throw an error");
-        assert.strictEqual(error.message, `${manifestPath} does not contain an ${officeAddinManifest.OfficeApp.Outlook} Host element.`);
-      } else {
-        assert.ok(error instanceof Error, "should throw an error");
-        assert.strictEqual(error.message, `Sideloading not supported for ${process.platform}.`);
-      }     
-    });
-  });
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, `Sideload to web is not supported for ${OfficeApp.Outlook}.`);
+  })
 });

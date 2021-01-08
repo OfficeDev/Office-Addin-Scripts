@@ -57,23 +57,10 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
   return registry.addBooleanValue(key, UseLiveReload, enable);
 }
 
-export async function enableOutlookSideloading(manifestPath: string): Promise<void> {
-  const manifest: ManifestInfo = await readManifestFile(manifestPath);
-  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
-  if (appsInManifest.indexOf(OfficeApp.Outlook) < 0) {
-    throw new Error(`${manifestPath} does not contain an ${OfficeApp.Outlook} Host element.`);
-  }
-
+async function enableOutlookSideloading(manifestPath: string): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
 
   return registry.addStringValue(key, "", manifestPath); // empty string for the default value
-}
-
-export async function isOutlookSideloadingEnabled(manifestPath: string): Promise<boolean> {
-  const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
-  const value = await registry.getStringValue(key, "");
-
-  return value !== undefined && value === manifestPath;
 }
 
 export async function enableRuntimeLogging(path: string): Promise<void> {
@@ -174,6 +161,12 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 }
 
 export async function registerAddIn(addinId: string, manifestPath: string) {
+  const manifest: ManifestInfo = await readManifestFile(manifestPath);
+  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+  if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
+    enableOutlookSideloading(manifestPath);
+  }
+
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key

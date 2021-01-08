@@ -3,7 +3,6 @@
 
 import * as fs from "fs";
 import * as jszip from "jszip";
-import { startDetachedProcess } from "office-addin-debugging";
 import {
   AddInType,
   getAddInTypeForManifestOfficeAppType,
@@ -18,6 +17,7 @@ import * as os from "os";
 import * as path from "path";
 import * as util from "util";
 import { registerAddIn } from "./dev-settings";
+import { startDetachedProcess } from "./process";
 import { chooseOfficeApp } from "./prompt";
 import * as registry from "./registry";
 
@@ -207,6 +207,13 @@ function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
   return true;
 }
 
+function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
+  if (app === OfficeApp.Outlook || app === OfficeApp.Project) {
+    return false;
+  }
+  return true;
+}
+
 async function getOutlookExePath(): Promise<string | undefined> {
   try {
     const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
@@ -301,18 +308,22 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
 
   if (isDesktop && app) {
     if (isSideloadingSupportedForDesktopHost(app)) {
+      await registerAddIn(manifestPath);
       if (app == OfficeApp.Outlook) {
         sideloadFile = await getOutlookExePath();
       } else {
-        await registerAddIn(manifestPath);
         sideloadFile = await generateSideloadFile(app, manifest, document);
       }
     } else {
       throw new Error(`Sideload is not supported for ${app} on ${AppType.Desktop}.`);
     }
   } else {
-    if (platform && platform == AppType.Web && document === undefined) {
+    if (platform && platform == AppType.Web && document === undefined && app && isSideloadingSupportedForWebHost(app)) {
       throw new Error(`For sideload to web, you need to specify a document url.`);
+    }
+
+    if (app && !isSideloadingSupportedForWebHost(app)) {
+      throw new Error(`Sideload to web is not supported for ${app}.`);
     }
     
     const manifestFileName: string = path.basename(manifestPath);

@@ -155,14 +155,6 @@ export async function enableLiveReload(manifestPath: string) {
   }
 }
 
-export async function enableOutlookSideloading(manifestPath: string) {
-  try {
-    await devSettings.enableOutlookSideloading(manifestPath);
-  } catch (err) {
-    logErrorMessage(err);
-  }
-}
-
 export async function enableRuntimeLogging(path?: string) {
   try {
     const logPath = await devSettings.enableRuntimeLogging(path);
