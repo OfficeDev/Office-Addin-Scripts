@@ -172,64 +172,73 @@ export async function runPackager(commandLine: string, host: string = "localhost
     }
 }
 
-
 /**
- * Start debugging
- * @param options start debugging options.
+ * `startDebugging` options.
  */
-export async function startDebugging(options: {
+export interface StartDebuggingOptions {
+
     /**
      * The path to the manifest file.
      */
     manifestPath: string,
+
     /**
      * The type of application to debug.
      */
     appType: AppType,
+
     /**
      * The Office application to debug.
      */
     app?: OfficeApp,
+
     /**
      * The method to use when debugging.
      */
     debuggingMethod?: DebuggingMethod,
+
     /**
      * Specify components of the source bundle url.
      */
     sourceBundleUrlComponents?: devSettings.SourceBundleUrlComponents,
+
     /**
      * If provided, starts the dev server.
      */
     devServerCommandLine?: string,
+
     /**
      *  If provided, port to verify that the dev server is running.
      */
     devServerPort?: number,
+
     /**
      *  If provided, starts the packager.
      */
     packagerCommandLine?: string,
+
     /**
      * Specifies the host name of the packager.
      */
     packagerHost?: string,
+
     /**
      * Specifies the port of the packager.
      */
     packagerPort?: string,
+
     /**
-     * If false, start without debugging.
+     * Enable debugging.
      */
     enableDebugging?: boolean,
 
     /**
-     * 
+     * Enable live reload.
      */
     enableLiveReload?: boolean,
 
     /**
-     * 
+     * Open Dev Tools.
      */
     openDevTools?: boolean,
 
@@ -237,7 +246,13 @@ export async function startDebugging(options: {
      * If provided, the document to open for sideloading to web.
      */
     document?: string,
-}) {
+}
+
+/**
+ * Start debugging
+ * @param options `startDebugging` options.
+ */
+export async function startDebugging(options: StartDebuggingOptions) {
 
     const {
         manifestPath,
@@ -267,16 +282,12 @@ export async function startDebugging(options: {
         const isWindowsPlatform = (process.platform === "win32");
         const isDesktopAppType = (appType === AppType.Desktop);
         const isProxyDebuggingMethod = (debuggingMethod === DebuggingMethod.Proxy);
+
         // live reload can only be enabled for the desktop app type
         // when using proxy debugging and the packager
         const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
-        // only enable live reload if it can be enabled
-        const liveReload = enableLiveReload && canEnableLiveReload;
-
-        let packagerPromise: Promise<void> | undefined;
-        let devServerPromise: Promise<void> | undefined;
-
-
+        // only use live reload if enabled and it can be enabled
+        const useLiveReload = enableLiveReload && canEnableLiveReload;
 
         console.log(enableDebugging
             ? "Debugging is being started..."
@@ -305,8 +316,8 @@ export async function startDebugging(options: {
 
         // enable live reload
         if (isDesktopAppType && isWindowsPlatform) {
-            await devSettings.enableLiveReload(manifestInfo.id, liveReload);
-            if (liveReload) {
+            await devSettings.enableLiveReload(manifestInfo.id, useLiveReload);
+            if (useLiveReload) {
                 console.log(`Enabled live-reload for add-in ${manifestInfo.id}.`);
             }
         }
@@ -317,6 +328,10 @@ export async function startDebugging(options: {
                 await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
             }
         }
+
+        // Run packager and dev server at the same time and wait for them to complete.
+        let packagerPromise: Promise<void> | undefined;
+        let devServerPromise: Promise<void> | undefined;
 
         if (packagerCommandLine && isProxyDebuggingMethod && isDesktopAppType) {
             packagerPromise = runPackager(packagerCommandLine, packagerHost, packagerPort);
