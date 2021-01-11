@@ -189,6 +189,7 @@ export interface StartDebuggingOptions {
 
     /**
      * The Office application to debug.
+     * If unspecified and there is more than one application in the manifest will prompt to specify the application.
      */
     app?: OfficeApp,
 
@@ -229,6 +230,7 @@ export interface StartDebuggingOptions {
 
     /**
      * Enable debugging.
+     * Starts with debugging if true or undefined.
      */
     enableDebugging?: boolean,
 
@@ -272,6 +274,7 @@ export async function startDebugging(options: StartDebuggingOptions) {
     } = {
         // Defaults
         debuggingMethod: defaultDebuggingMethod(),
+        enableDebugging: true,
 
         // Override with supplied options
         ...options
