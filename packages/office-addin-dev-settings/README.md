@@ -3,20 +3,17 @@
 Provides the ability to configure developer settings for Office Add-ins.
 
 ## Command-Line Interface
-- [Office-Addin-Dev-Settings](#office-addin-dev-settings)
-  - [Command-Line Interface](#command-line-interface)
-    - [appcontainer](#appcontainer)
-    - [clear](#clear)
-- [](#)
-    - [debugging](#debugging)
-    - [live-reload](#live-reload)
-    - [register](#register)
-    - [registered](#registered)
-    - [runtime-log](#runtime-log)
-    - [sideload](#sideload)
-    - [source-bundle-url](#source-bundle-url)
-    - [unregister](#unregister)
-    - [webview](#webview)
+* [appcontainer](#appcontainer)
+* [clear](#clear)
+* [debugging](#debugging)
+* [live-reload](#live-reload)
+* [register](#register)
+* [registered](#registered)
+* [runtime-log](#runtime-log)
+* [sideload](#sideload)
+* [source-bundle-url](#source-bundle-url)
+* [unregister](#unregister)
+* [webview](#webview)
 
 #
 
