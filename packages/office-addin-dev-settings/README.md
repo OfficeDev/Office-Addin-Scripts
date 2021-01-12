@@ -3,17 +3,20 @@
 Provides the ability to configure developer settings for Office Add-ins.
 
 ## Command-Line Interface
-* [appcontainer](#appcontainer)
-* [clear](#clear)
-* [debugging](#debugging)
-* [live-reload](#live-reload)
-* [register](#register)
-* [registered](#registered)
-* [runtime-log](#runtime-log)
-* [sideload](#sideload)
-* [source-bundle-url](#source-bundle-url)
-* [unregister](#unregister)
-* [webview](#webview)
+- [Office-Addin-Dev-Settings](#office-addin-dev-settings)
+  - [Command-Line Interface](#command-line-interface)
+    - [appcontainer](#appcontainer)
+    - [clear](#clear)
+- [](#)
+    - [debugging](#debugging)
+    - [live-reload](#live-reload)
+    - [register](#register)
+    - [registered](#registered)
+    - [runtime-log](#runtime-log)
+    - [sideload](#sideload)
+    - [source-bundle-url](#source-bundle-url)
+    - [unregister](#unregister)
+    - [webview](#webview)
 
 #
 
@@ -256,6 +259,6 @@ Syntax:
 
 `manifest`: path to manifest file. 
 
-`runtime`: Office runtime to load (currently accepts 'ie', 'edge', or 'default'). 
+`runtime`: Office runtime to load (currently accepts 'ie', 'edge', 'edgechromium', or 'default'). 
 
 #

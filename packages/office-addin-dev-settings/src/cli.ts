@@ -84,7 +84,8 @@ commander
     .action(commands.webView)
     .on("--help", () => {
         console.log("\nFor [web-view-type], choose one of the following values:\n");
-        console.log("\t'edge' for Microsoft Edge");
+        console.log("\t'edgechromium' for the new Chromium-based Microsoft Edge");
+        console.log("\t'edge' for the older Microsoft Edge");
         console.log("\t'ie' for Internet Explorer 11");
         console.log("\t'default' to remove any preference");
         console.log("\nOmit [web-view-type] to see the current setting.");
