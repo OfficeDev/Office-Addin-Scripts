@@ -229,7 +229,7 @@ function toWebViewType(webViewString?: string): WebViewType | undefined {
 export function toWebViewTypeName(webViewType?: WebViewType): string | undefined {
   switch (webViewType) {
     case WebViewType.Edge:
-      return "legacy Microsoft Edge (EdgeHtml)";
+      return "legacy Microsoft Edge (EdgeHTML)";
     case WebViewType.EdgeChromium:
       return "Microsoft Edge (Chromium)";
     case WebViewType.IE:
