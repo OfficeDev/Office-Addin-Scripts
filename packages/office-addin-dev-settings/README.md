@@ -252,10 +252,10 @@ Switches the webview runtime in Office for testing and development scenarios.
 
 Syntax:
 
-`office addin-dev-settings webview <manifest> <runtime>`
+`office addin-dev-settings webview <manifest> <web-view-type>`
 
 `manifest`: path to manifest file. 
 
-`runtime`: Office runtime to load (currently accepts 'ie', 'edge', 'edgechromium', or 'default'). 
+`runtime`: Office webview to load (currently accepts 'ie', 'edge' or 'edge-chromium, 'edge-legacy', or 'default'). 
 
 #

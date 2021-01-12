@@ -244,12 +244,15 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case "internet explorer":
     case "internetexplorer":
       return devSettings.WebViewType.IE;
-    case "edge":
+    case "edgelegacy":
+    case "edge-legacy":
     case "spartan":
       return devSettings.WebViewType.Edge;
     case "edge chromium":
     case "edgechromium":
+    case "edge-chromium":
     case "anaheim":
+    case "edge":
       return devSettings.WebViewType.EdgeChromium;
     case "default":
     case "":
