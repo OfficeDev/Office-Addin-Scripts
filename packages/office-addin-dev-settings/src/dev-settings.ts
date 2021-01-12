@@ -10,6 +10,8 @@ import { platform } from "os";
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
+export { toWebViewTypeName } from "./dev-settings-windows";
+
 export enum DebuggingMethod {
   Direct,
   Proxy,
