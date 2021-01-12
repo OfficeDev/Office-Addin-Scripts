@@ -256,6 +256,6 @@ Syntax:
 
 `manifest`: path to manifest file. 
 
-`runtime`: Office webview to load (currently accepts 'ie', 'edge' or 'edge-chromium, 'edge-legacy', or 'default'). 
+`runtime`: Office webview to load ('edge' or 'edge-chromium, 'edge-legacy', 'ie', or 'default'). 
 
 #
