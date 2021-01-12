@@ -423,10 +423,10 @@ export async function webView(manifestPath: string, webViewString?: string) {
       await devSettings.setWebView(manifest.id!, webViewType);
     }
 
-    console.log(webViewType
-      ? `The web view type is set to ${webViewType}.`
+    const webViewTypeName = devSettings.toWebViewTypeName(webViewType);
+    console.log(webViewTypeName
+      ? `The web view type is set to ${webViewTypeName}.`
       : "The web view type has not been set.");
-
   } catch (err) {
     logErrorMessage(err);
   }
