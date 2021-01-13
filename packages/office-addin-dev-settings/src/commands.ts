@@ -314,18 +314,18 @@ export async function runtimeLogging(command: commander.Command) {
   }
 }
 
-export async function sideload(manifestPath: string, platform: string, command: commander.Command) {
+export async function sideload(manifestPath: string, appType: string, command: commander.Command) {
   try {
     const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
     const canPrompt = true;
     const document: string | undefined = command.document ? command.document : undefined;
     const isTest: boolean | undefined = command.test ? true : false;
 
-    if (platform !== AppType.Desktop && platform !== AppType.Web) {
-      throw new Error(`Unsupported sideload plaform argument: ${platform}`);
+    if (appType !== AppType.Desktop && appType !== AppType.Web) {
+      throw new Error(`Unsupported sideload plaform argument: ${appType}`);
     }
 
-    await sideloadAddIn(manifestPath, platform, app, canPrompt, document, isTest);
+    await sideloadAddIn(manifestPath, appType, app, canPrompt, document, isTest);
   } catch (err) {
     logErrorMessage(err);
   }

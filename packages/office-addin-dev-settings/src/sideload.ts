@@ -272,9 +272,9 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
  * @param app Office app to launch.
  * @param canPrompt
  */
-export async function sideloadAddIn(manifestPath: string, platform: AppType, app?: OfficeApp, canPrompt: boolean = false,
+export async function sideloadAddIn(manifestPath: string, appType: AppType, app?: OfficeApp, canPrompt: boolean = false,
   document?: string, isTest: boolean = false): Promise<void> {
-  const isDesktop: boolean = platform === AppType.Desktop ? true : false;
+  const isDesktop: boolean = appType === AppType.Desktop ? true : false;
   let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);

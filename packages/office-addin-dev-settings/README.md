@@ -164,13 +164,15 @@ Start Office and open a document so the Office Add-in is loaded.
 
 Syntax:
 
-`office addin-dev-settings sideload <manifest> [options]`
+`office addin-dev-settings sideload <manifest> <app-type> [options]`
 
-`manifest`: path to manifest file. 
+`manifest`: path to manifest file.
+
+`app-type`: host application type to sideload ("desktop" or "web").
 
 Note:
 
-If the add-in supports more than one Office app, the command will prompt to choose the app unless the `--app` parameter is provided.  
+If the add-in supports more than one Office app and the app-type is "desktop", the command will prompt to choose the app unless the `--app` parameter is provided.  
 
 Options:
 
@@ -178,13 +180,6 @@ Options:
 `--app`
 
 Specify the Office application to load.
-
-`-p`
-`--platform`
-
-Specify the platform to sideload:
-* `desktop`: sideloads in desktop application.
-* `web`: sideloads in Office Online.
 
 `-d`
 `--document`
@@ -256,6 +251,6 @@ Syntax:
 
 `manifest`: path to manifest file. 
 
-`runtime`: Office webview to load ('edge' or 'edge-chromium, 'edge-legacy', 'ie', or 'default'). 
+`web-view-type`: Office webview to load ('edge' or 'edge-chromium, 'edge-legacy', 'ie', or 'default'). 
 
 #
