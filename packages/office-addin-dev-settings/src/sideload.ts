@@ -201,7 +201,8 @@ function getWebExtensionPath(
 }
 
 function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
-  if (app === OfficeApp.Excel ||  app === OfficeApp.Outlook && process.platform === "win32" || app === OfficeApp.PowerPoint || app === OfficeApp.Word) {
+  if (app === OfficeApp.Excel || app === OfficeApp.Outlook && process.platform === "win32" && process.env.OUTLOOK_SIDELOAD_ENABLED != undefined ||
+    app === OfficeApp.PowerPoint || app === OfficeApp.Word) {
     return true;
   }
   return false;
@@ -278,7 +279,6 @@ export async function sideloadAddIn(manifestPath: string, appType: AppType, app?
   let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
-  const isOutlookSideloadEnabled = process.env.OUTLOOK_SIDELOAD_ENABLED != undefined;
 
   if (!isDesktop && document === undefined) {
     throw new Error(`For sideload to web, you need to specify a document url.`);
@@ -310,7 +310,7 @@ export async function sideloadAddIn(manifestPath: string, appType: AppType, app?
   if (isDesktop && app) {
     if (isSideloadingSupportedForDesktopHost(app)) {
       await registerAddIn(manifestPath);
-      if (app == OfficeApp.Outlook && isOutlookSideloadEnabled) {
+      if (app == OfficeApp.Outlook) {
         sideloadFile = await getOutlookExePath();
       } else {
         sideloadFile = await generateSideloadFile(app, manifest, document);
