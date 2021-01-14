@@ -142,7 +142,7 @@ export async function ensureLoopbackIsEnabled(manifestPath: string, askForConfir
     || (error.message && (<string>(error.message)).startsWith("Platform not supported:"))) {
       // Until changes to usage-data get approved, this convention will do
       // usageDataObject.sendUsageDataSuccessfulFailEvent("ensureLoopbackIsEnabled", error)
-      usageDataObject.sendUsageDataSuccessEvent("ensureLoopbackIsEnabled", {Pass: false, error})
+      usageDataObject.sendUsageDataSuccessEvent("ensureLoopbackIsEnabled", {Pass: false, ...error})
     } else {
       usageDataObject.sendUsageDataException("ensureLoopbackIsEnabled", error)
       throw error
