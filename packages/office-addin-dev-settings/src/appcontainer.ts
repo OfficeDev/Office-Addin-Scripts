@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import * as childProcess from "child_process";
-import { usage } from "commander";
 import inquirer = require("inquirer");
 import { readManifestFile } from "office-addin-manifest";
 import { URL } from "whatwg-url";
