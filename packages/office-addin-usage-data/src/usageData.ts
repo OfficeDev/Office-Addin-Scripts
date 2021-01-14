@@ -280,6 +280,22 @@ export class OfficeAddinUsageData {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
+      Pass: true,
+      ...data
+    });
+  }
+
+  /**
+   * Reports custom successful fail event object to Application Insights
+   * "Successful fail" means that there was an error as a result of user error, but our code worked properly
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      Pass: false,
       ...data
     });
   }
