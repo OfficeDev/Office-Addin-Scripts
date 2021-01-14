@@ -2,9 +2,11 @@
 // Licensed under the MIT license.
 
 import * as childProcess from "child_process";
+import { usage } from "commander";
 import inquirer = require("inquirer");
 import { readManifestFile } from "office-addin-manifest";
 import { URL } from "whatwg-url";
+import { usageDataObject } from './defaults';
 
 export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
 export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
@@ -120,13 +122,30 @@ export function getDisplayNameFromManifestPath(manifestPath: string): string {
 }
 
 export async function ensureLoopbackIsEnabled(manifestPath: string, askForConfirmation: boolean = true): Promise<boolean> {
-  const name = await getAppcontainerNameFromManifestPath(manifestPath);
-  let isEnabled = await isLoopbackExemptionForAppcontainer(name);
-
-  if (!isEnabled) {
-    if (!askForConfirmation || await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath))) {
-      await addLoopbackExemptionForAppcontainer(name);
-      isEnabled = true;
+  let isEnabled = false;
+  try {
+    const name = await getAppcontainerNameFromManifestPath(manifestPath);
+    isEnabled = await isLoopbackExemptionForAppcontainer(name);
+  
+    if (!isEnabled) {
+      if (!askForConfirmation || await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath))) {
+        await addLoopbackExemptionForAppcontainer(name);
+        isEnabled = true;
+      }
+    }
+    // Until changes to usage-data get approved, this convention will do
+    // usageDataObject.sendUsageDataSuccessEvent("ensureLoopbackIsEnabled")
+    usageDataObject.sendUsageDataSuccessEvent("ensureLoopbackIsEnabled", {Pass: true})
+  } catch (error) {
+    if (error == new Error(`The source location could not be retrieved from the manifest.`)
+    || error == new Error(`Please provide the path to the manifest file.`)
+    || (error.message && (<string>(error.message)).startsWith("Platform not supported:"))) {
+      // Until changes to usage-data get approved, this convention will do
+      // usageDataObject.sendUsageDataSuccessfulFailEvent("ensureLoopbackIsEnabled", error)
+      usageDataObject.sendUsageDataSuccessEvent("ensureLoopbackIsEnabled", {Pass: false, error})
+    } else {
+      usageDataObject.sendUsageDataException("ensureLoopbackIsEnabled", error)
+      throw error
     }
   }
 
