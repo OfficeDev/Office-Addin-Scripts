@@ -252,10 +252,9 @@ export interface StartDebuggingOptions {
 
 /**
  * Start debugging
- * @param options `startDebugging` options.
+ * @param options startDebugging options.
  */
 export async function startDebugging(options: StartDebuggingOptions) {
-
     const {
         manifestPath,
         appType,
