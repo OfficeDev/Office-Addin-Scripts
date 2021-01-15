@@ -116,6 +116,14 @@ email to ensure we received your original message. Further information, includin
 [MSRC PGP](https://technet.microsoft.com/en-us/security/dn606155) key, can be found in
 the [Security TechCenter](https://technet.microsoft.com/en-us/security/default).
 
+## Join the Microsoft 365 Developer Program
+Get a free sandbox, tools, and other resources you need to build solutions for the Microsoft 365 platform.
+- [Free developer sandbox](https://developer.microsoft.com/microsoft-365/dev-program#Subscription) Get a free, renewable 90-day Microsoft 365 E5 developer subscription.
+- [Sample data packs](https://developer.microsoft.com/microsoft-365/dev-program#Sample) Automatically configure your sandbox by installing user data and content to help you build your solutions.
+- [Access to experts](https://developer.microsoft.com/microsoft-365/dev-program#Experts) Access community events to learn from Microsoft 365 experts.
+- [Personalized recommendations](https://developer.microsoft.com/microsoft-365/dev-program#Recommendations) Find developer resources quickly from your personalized dashboard.
+
+
 ## Code of Conduct
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
