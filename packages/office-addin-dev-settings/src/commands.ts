@@ -244,12 +244,15 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case "internet explorer":
     case "internetexplorer":
       return devSettings.WebViewType.IE;
-    case "edge":
+    case "edgelegacy":
+    case "edge-legacy":
     case "spartan":
       return devSettings.WebViewType.Edge;
     case "edge chromium":
     case "edgechromium":
+    case "edge-chromium":
     case "anaheim":
+    case "edge":
       return devSettings.WebViewType.EdgeChromium;
     case "default":
     case "":
@@ -420,10 +423,10 @@ export async function webView(manifestPath: string, webViewString?: string) {
       await devSettings.setWebView(manifest.id!, webViewType);
     }
 
-    console.log(webViewType
-      ? `The web view type is set to ${webViewType}.`
+    const webViewTypeName = devSettings.toWebViewTypeName(webViewType);
+    console.log(webViewTypeName
+      ? `The web view type is set to ${webViewTypeName}.`
       : "The web view type has not been set.");
-
   } catch (err) {
     logErrorMessage(err);
   }
