@@ -273,6 +273,16 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
+  describe("Test sendUsageDataSuccessfulFailEvent", () => {
+    it("should send successful fail events successfully", () => {
+      addInUsageData.sendUsageDataSuccessfulFailEvent("testMethod-sendUsageDataSuccessfulFailEvent", {TestVal: 42, OtherTestVal: "testing"});
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+    it("should send successful fail events successfully, even when there's no additional data", () => {
+      addInUsageData.sendUsageDataSuccessfulFailEvent("testMethod-sendUsageDataSuccessfulFailEvent");
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+  });
   describe("Test sendUsageDataEvent", () => {
     it("should send events successfully", () => {
       addInUsageData.sendUsageDataEvent({TestVal: 42, OtherTestVal: "testing"});
