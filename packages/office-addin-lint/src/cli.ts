@@ -13,28 +13,19 @@ commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
   .command("check")
-  .option(
-    "--files <files>",
-    `Specifies the source files to check. Default: ${defaults.lintFiles}`
-  )
+  .option("--files <files>", `Specifies the source files to check. Default: ${defaults.lintFiles}`)
   .description(`Check source files against lint rules.`)
   .action(commands.lint);
 
 commander
   .command("fix")
-  .option(
-    "--files <files>",
-    `Specifies the source files to fix. Default: ${defaults.lintFiles}`
-  )
+  .option("--files <files>", `Specifies the source files to fix. Default: ${defaults.lintFiles}`)
   .description(`Apply fixes to source based on lint rules.`)
   .action(commands.lintFix);
 
 commander
   .command("prettier")
-  .option(
-    "--files <files>",
-    `Specifies which files to use. Default: ${defaults.lintFiles}`
-  )
+  .option("--files <files>", `Specifies which files to use. Default: ${defaults.lintFiles}`)
   .description(`Make the source prettier.`)
   .action(commands.prettier);
 

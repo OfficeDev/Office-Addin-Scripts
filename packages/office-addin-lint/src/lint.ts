@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as path from "path";
-import { usageDataObject } from "./defaults"
+import { usageDataObject } from "./defaults";
 
 const esLintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
@@ -32,8 +32,12 @@ export function performLintCheck(files: string) {
     execCommand(command);
     usageDataObject.sendUsageDataSuccessEvent("performLintCheck");
   } catch (err) {
-    usageDataObject.sendUsageDataException("performLintCheck", err);
-    throw err;
+    if (err.status && err.status == 1) {
+      usageDataObject.sendUsageDataSuccessfulFailEvent("performLintCheck");
+    } else {
+      usageDataObject.sendUsageDataException("performLintCheck", err);
+      throw err;
+    }
   }
 }
 
@@ -43,13 +47,17 @@ export function getLintFixCommand(files: string): string {
 }
 
 export function performLintFix(files: string) {
-  try{
+  try {
     const command = getLintFixCommand(files);
     execCommand(command);
     usageDataObject.sendUsageDataSuccessEvent("performLintFix");
   } catch (err) {
-    usageDataObject.sendUsageDataException("performLintFix", err);
-    throw err;
+    if (err.status && err.status == 1) {
+      usageDataObject.sendUsageDataSuccessfulFailEvent("performLintFix");
+    } else {
+      usageDataObject.sendUsageDataException("performLintFix", err);
+      throw err;
+    }
   }
 }
 
@@ -59,12 +67,16 @@ export function getPrettierCommand(files: string): string {
 }
 
 export function makeFilesPrettier(files: string) {
-  try{
+  try {
     const command = getPrettierCommand(files);
     execCommand(command);
     usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier");
   } catch (err) {
-    usageDataObject.sendUsageDataException("makeFilesPrettier", err);
-    throw err;
+    if (err.status && err.status == 1) {
+      usageDataObject.sendUsageDataSuccessfulFailEvent("makeFilesPrettier");
+    } else {
+      usageDataObject.sendUsageDataException("makeFilesPrettier", err);
+      throw err;
+    }
   }
 }
