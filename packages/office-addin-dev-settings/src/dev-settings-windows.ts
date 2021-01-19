@@ -3,12 +3,14 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
+import { getOfficeAppsForManifestHosts, ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
 
 const OpenDevTools: string = "OpenDevTools";
+export const OutlookSideloadManifestPath: string = "OutlookSideloadManifestPath";
 const RuntimeLogging: string = "RuntimeLogging";
 const SourceBundleExtension: string = "SourceBundleExtension";
 const SourceBundleHost: string = "SourceBundleHost";
@@ -53,6 +55,12 @@ export async function enableDebugging(addinId: string, enable: boolean = true, m
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   return registry.addBooleanValue(key, UseLiveReload, enable);
+}
+
+async function enableOutlookSideloading(manifestPath: string): Promise<void> {
+  const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
+
+  return registry.addStringValue(key, "", manifestPath); // empty string for the default value
 }
 
 export async function enableRuntimeLogging(path: string): Promise<void> {
@@ -153,6 +161,12 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 }
 
 export async function registerAddIn(addinId: string, manifestPath: string) {
+  const manifest: ManifestInfo = await readManifestFile(manifestPath);
+  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+  if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
+    enableOutlookSideloading(manifestPath);
+  }
+
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
