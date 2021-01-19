@@ -3,5 +3,6 @@
 
 export * from "./appcontainer";
 export * from "./dev-settings";
+export * from "./process";
 export * from "./sideload";
 export { parseWebViewType } from "./commands";
