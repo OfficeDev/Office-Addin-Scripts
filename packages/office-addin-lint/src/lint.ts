@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as path from "path";
-import { usageDataObject } from "./defaults";
+import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
 const esLintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
@@ -32,7 +32,7 @@ export function performLintCheck(files: string) {
     execCommand(command);
     usageDataObject.sendUsageDataSuccessEvent("performLintCheck");
   } catch (err) {
-    if (err.status && err.status == 1) {
+    if (err.status && err.status == ESLintExitCode.LintingError) {
       usageDataObject.sendUsageDataSuccessEvent("performLintCheck", err);
     } else {
       usageDataObject.sendUsageDataException("performLintCheck", err);
@@ -52,7 +52,7 @@ export function performLintFix(files: string) {
     execCommand(command);
     usageDataObject.sendUsageDataSuccessEvent("performLintFix");
   } catch (err) {
-    if (err.status && err.status == 1) {
+    if (err.status && err.status == ESLintExitCode.LintingError) {
       usageDataObject.sendUsageDataSuccessEvent("performLintFix", err);
     } else {
       usageDataObject.sendUsageDataException("performLintFix", err);
@@ -72,7 +72,7 @@ export function makeFilesPrettier(files: string) {
     execCommand(command);
     usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier");
   } catch (err) {
-    if (err.status && err.status == 1) {
+    if (err.status && err.status == PrettierExitCode.LintingError) {
       usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", err);
     } else {
       usageDataObject.sendUsageDataException("makeFilesPrettier", err);
