@@ -30,10 +30,10 @@ export function performLintCheck(files: string) {
   try {
     const command = getLintCheckCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintCheck");
+    usageDataObject.sendUsageDataSuccessEvent("performLintCheck", { exitCode: ESLintExitCode.Success });
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.LintingError) {
-      usageDataObject.sendUsageDataSuccessEvent("performLintCheck", err);
+      usageDataObject.sendUsageDataSuccessEvent("performLintCheck", { exitCode: ESLintExitCode.LintingError });
     } else {
       usageDataObject.sendUsageDataException("performLintCheck", err);
       throw err;
@@ -50,10 +50,10 @@ export function performLintFix(files: string) {
   try {
     const command = getLintFixCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintFix");
+    usageDataObject.sendUsageDataSuccessEvent("performLintFix", { exitCode: ESLintExitCode.Success });
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.LintingError) {
-      usageDataObject.sendUsageDataSuccessEvent("performLintFix", err);
+      usageDataObject.sendUsageDataSuccessEvent("performLintFix", { exitCode: ESLintExitCode.LintingError });
     } else {
       usageDataObject.sendUsageDataException("performLintFix", err);
       throw err;
@@ -70,10 +70,10 @@ export function makeFilesPrettier(files: string) {
   try {
     const command = getPrettierCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier");
+    usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", { exitCode: PrettierExitCode.Success });
   } catch (err) {
     if (err.status && err.status == PrettierExitCode.LintingError) {
-      usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", err);
+      usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", { exitCode: PrettierExitCode.LintingError });
     } else {
       usageDataObject.sendUsageDataException("makeFilesPrettier", err);
       throw err;
