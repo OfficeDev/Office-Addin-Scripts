@@ -25,7 +25,7 @@ export async function lint(command: commander.Command) {
   } catch (err) {
     // no need to display an error since there will already be error output;
     // just return a non-zero exit code
-    process.exitCode = defaults.ESLintExitCode.ToolingError;
+    process.exitCode = defaults.ESLintExitCode.CommandFailed;
   }
 }
 
@@ -36,7 +36,7 @@ export async function lintFix(command: commander.Command) {
   } catch (err) {
     // no need to display an error since there will already be error output;
     // just return a non-zero exit code
-    process.exitCode = defaults.ESLintExitCode.ToolingError;
+    process.exitCode = defaults.ESLintExitCode.CommandFailed;
   }
 }
 
@@ -46,6 +46,6 @@ export async function prettier(command: commander.Command) {
     makeFilesPrettier(pathToFiles);
   } catch (err) {
     logErrorMessage(`Unable to make code prettier.\n${err}`);
-    process.exitCode = defaults.PrettierExitCode.ToolingError;
+    process.exitCode = defaults.PrettierExitCode.CommandFailed;
   }
 }
