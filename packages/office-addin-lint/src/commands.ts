@@ -23,7 +23,11 @@ export async function lint(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
     performLintCheck(pathToFiles);
   } catch (err) {
-    process.exitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
+    let outputExitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
+    if (outputExitCode != 1) {
+      logErrorMessage(`Unexpected error detected.\n${err}`);
+    }
+    process.exitCode = outputExitCode;
   }
 }
 
@@ -32,7 +36,11 @@ export async function lintFix(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
     performLintFix(pathToFiles);
   } catch (err) {
-    process.exitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
+    let outputExitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
+    if (outputExitCode != 1) {
+      logErrorMessage(`Unexpected error detected.\n${err}`);
+    }
+    process.exitCode = outputExitCode;
   }
 }
 
@@ -41,7 +49,10 @@ export async function prettier(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
     makeFilesPrettier(pathToFiles);
   } catch (err) {
-    logErrorMessage(`Unable to make code prettier.\n${err}`);
-    process.exitCode = err && typeof err.status == "number" ? err.status : defaults.PrettierExitCode.CommandFailed;
+    let outputExitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
+    logErrorMessage(
+      outputExitCode == 1 ? `Unable to make code prettier.\n${err}` : `Unexpected error detected.\n${err}`
+    );
+    process.exitCode = outputExitCode;
   }
 }
