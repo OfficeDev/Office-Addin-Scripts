@@ -21,38 +21,41 @@ function getPathToFiles(command: commander.Command): string {
 export async function lint(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    performLintCheck(pathToFiles);
+    await performLintCheck(pathToFiles);
   } catch (err) {
-    let outputExitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
-    if (outputExitCode != 1) {
-      logErrorMessage(`Unexpected error detected.\n${err}`);
+    if (typeof err.status == "number") {
+      process.exitCode = err.status;
+    } else {
+      process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      logErrorMessage(err);
     }
-    process.exitCode = outputExitCode;
   }
 }
 
 export async function lintFix(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    performLintFix(pathToFiles);
+    await performLintFix(pathToFiles);
   } catch (err) {
-    let outputExitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
-    if (outputExitCode != 1) {
-      logErrorMessage(`Unexpected error detected.\n${err}`);
+    if (typeof err.status == "number") {
+      process.exitCode = err.status;
+    } else {
+      process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      logErrorMessage(err);
     }
-    process.exitCode = outputExitCode;
   }
 }
 
 export async function prettier(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    makeFilesPrettier(pathToFiles);
+    await makeFilesPrettier(pathToFiles);
   } catch (err) {
-    let outputExitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
-    logErrorMessage(
-      outputExitCode == 1 ? `Unable to make code prettier.\n${err}` : `Unexpected error detected.\n${err}`
-    );
-    process.exitCode = outputExitCode;
+    if (typeof err.status == "number") {
+      process.exitCode = err.status;
+    } else {
+      process.exitCode = defaults.PrettierExitCode.CommandFailed;
+      logErrorMessage(err);
+    }
   }
 }

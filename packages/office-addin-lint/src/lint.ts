@@ -34,11 +34,10 @@ export function performLintCheck(files: string) {
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
       usageDataObject.sendUsageDataSuccessEvent("performLintCheck", { exitCode: ESLintExitCode.HasLintError });
-      throw err;
     } else {
       usageDataObject.sendUsageDataException("performLintCheck", err);
-      throw err;
     }
+    throw err;
   }
 }
 
@@ -55,11 +54,10 @@ export function performLintFix(files: string) {
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
       usageDataObject.sendUsageDataSuccessEvent("performLintFix", { exitCode: ESLintExitCode.HasLintError });
-      throw err;
     } else {
       usageDataObject.sendUsageDataException("performLintFix", err);
-      throw err;
     }
+    throw err;
   }
 }
 
@@ -78,10 +76,9 @@ export function makeFilesPrettier(files: string) {
       usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", {
         exitCode: PrettierExitCode.HasFormattingProblem
       });
-      throw err;
     } else {
       usageDataObject.sendUsageDataException("makeFilesPrettier", err);
-      throw err;
     }
+    throw err;
   }
 }
