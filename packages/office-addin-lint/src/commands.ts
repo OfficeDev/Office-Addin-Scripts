@@ -23,9 +23,7 @@ export async function lint(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
     performLintCheck(pathToFiles);
   } catch (err) {
-    // no need to display an error since there will already be error output;
-    // just return a non-zero exit code
-    process.exitCode = defaults.ESLintExitCode.CommandFailed;
+    process.exitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
   }
 }
 
@@ -34,9 +32,7 @@ export async function lintFix(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
     performLintFix(pathToFiles);
   } catch (err) {
-    // no need to display an error since there will already be error output;
-    // just return a non-zero exit code
-    process.exitCode = defaults.ESLintExitCode.CommandFailed;
+    process.exitCode = err && typeof err.status == "number" ? err.status : defaults.ESLintExitCode.CommandFailed;
   }
 }
 
@@ -46,6 +42,6 @@ export async function prettier(command: commander.Command) {
     makeFilesPrettier(pathToFiles);
   } catch (err) {
     logErrorMessage(`Unable to make code prettier.\n${err}`);
-    process.exitCode = defaults.PrettierExitCode.CommandFailed;
+    process.exitCode = err && typeof err.status == "number" ? err.status : defaults.PrettierExitCode.CommandFailed;
   }
 }
