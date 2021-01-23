@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as path from "path";
-import { usageDataObject } from "./defaults"
+import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
 const esLintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
@@ -30,9 +30,13 @@ export function performLintCheck(files: string) {
   try {
     const command = getLintCheckCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintCheck");
+    usageDataObject.sendUsageDataSuccessEvent("performLintCheck", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
-    usageDataObject.sendUsageDataException("performLintCheck", err);
+    if (err.status && err.status == ESLintExitCode.HasLintError) {
+      usageDataObject.sendUsageDataSuccessEvent("performLintCheck", { exitCode: ESLintExitCode.HasLintError });
+    } else {
+      usageDataObject.sendUsageDataException("performLintCheck", err);
+    }
     throw err;
   }
 }
@@ -43,12 +47,16 @@ export function getLintFixCommand(files: string): string {
 }
 
 export function performLintFix(files: string) {
-  try{
+  try {
     const command = getLintFixCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintFix");
+    usageDataObject.sendUsageDataSuccessEvent("performLintFix", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
-    usageDataObject.sendUsageDataException("performLintFix", err);
+    if (err.status && err.status == ESLintExitCode.HasLintError) {
+      usageDataObject.sendUsageDataSuccessEvent("performLintFix", { exitCode: ESLintExitCode.HasLintError });
+    } else {
+      usageDataObject.sendUsageDataException("performLintFix", err);
+    }
     throw err;
   }
 }
@@ -59,12 +67,18 @@ export function getPrettierCommand(files: string): string {
 }
 
 export function makeFilesPrettier(files: string) {
-  try{
+  try {
     const command = getPrettierCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier");
+    usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", { exitCode: PrettierExitCode.NoFormattingProblems });
   } catch (err) {
-    usageDataObject.sendUsageDataException("makeFilesPrettier", err);
+    if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
+      usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", {
+        exitCode: PrettierExitCode.HasFormattingProblem
+      });
+    } else {
+      usageDataObject.sendUsageDataException("makeFilesPrettier", err);
+    }
     throw err;
   }
 }
