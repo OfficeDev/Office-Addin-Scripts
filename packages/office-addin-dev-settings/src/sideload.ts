@@ -219,7 +219,11 @@ async function getOutlookExePath(): Promise<string | undefined> {
   try {
     const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
     const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
-    const outlookExePath: string | undefined = await registry.getStringValue(key, "");
+    let outlookExePath: string | undefined = await registry.getStringValue(key, "");
+    
+    if (outlookExePath) {
+      outlookExePath = `"${outlookExePath}"`;
+    }
 
     return outlookExePath;
   } catch (err) {
