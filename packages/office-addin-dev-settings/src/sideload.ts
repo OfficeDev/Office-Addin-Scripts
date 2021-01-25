@@ -219,11 +219,7 @@ async function getOutlookExePath(): Promise<string | undefined> {
   try {
     const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
     const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
-    let outlookExePath: string | undefined = await registry.getStringValue(key, "");
-    
-    if (outlookExePath) {
-      outlookExePath = `"${outlookExePath}"`;
-    }
+    const outlookExePath: string | undefined = await registry.getStringValue(key, "");
 
     return outlookExePath;
   } catch (err) {
@@ -334,6 +330,10 @@ export async function sideloadAddIn(manifestPath: string, appType: AppType, app?
 
   if (sideloadFile) {
     if (app == OfficeApp.Outlook) {
+      // check to see if Outlook exe path contains spaces and escape the path if it does.
+      if (sideloadFile.indexOf(' ') >= 0){
+        sideloadFile = `"${sideloadFile}"`;
+      }
       startDetachedProcess(sideloadFile);
     } else {
       await open(sideloadFile, { wait: false });
