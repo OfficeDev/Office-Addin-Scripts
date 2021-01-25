@@ -330,6 +330,10 @@ export async function sideloadAddIn(manifestPath: string, appType: AppType, app?
 
   if (sideloadFile) {
     if (app == OfficeApp.Outlook) {
+      // check to see if Outlook exe path contains spaces and escape the path if it does.
+      if (sideloadFile.indexOf(' ') >= 0){
+        sideloadFile = `"${sideloadFile}"`;
+      }
       startDetachedProcess(sideloadFile);
     } else {
       await open(sideloadFile, { wait: false });
