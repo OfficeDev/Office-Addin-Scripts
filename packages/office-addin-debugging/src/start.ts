@@ -369,7 +369,7 @@ export async function startDebugging(options: StartDebuggingOptions) {
 
         try {
             console.log(`Sideloading the Office Add-in...`);
-            await sideloadAddIn(manifestPath, app, true, appType, document, false /* isTest */);
+            await sideloadAddIn(manifestPath, appType, app, true, document, false /* isTest */);
         } catch (err) {
             throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
         }

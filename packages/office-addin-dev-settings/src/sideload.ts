@@ -17,7 +17,9 @@ import * as os from "os";
 import * as path from "path";
 import * as util from "util";
 import { registerAddIn } from "./dev-settings";
+import { startDetachedProcess } from "./process";
 import { chooseOfficeApp } from "./prompt";
+import * as registry from "./registry";
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -199,10 +201,31 @@ function getWebExtensionPath(
 }
 
 function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
-  if (app === OfficeApp.Outlook || app === OfficeApp.Project || app === OfficeApp.OneNote) {
-    return false;
+  if (app === OfficeApp.Excel || app === OfficeApp.Outlook && process.platform === "win32" && process.env.OUTLOOK_SIDELOAD_ENABLED != undefined ||
+    app === OfficeApp.PowerPoint || app === OfficeApp.Word) {
+    return true;
   }
-  return true;
+  return false;
+}
+
+function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
+  if (app === OfficeApp.Excel || app === OfficeApp.PowerPoint || app === OfficeApp.Project || app === OfficeApp.Word) {
+    return true;
+  }
+  return false;
+}
+
+async function getOutlookExePath(): Promise<string | undefined> {
+  try {
+    const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
+    const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
+    const outlookExePath: string | undefined = await registry.getStringValue(key, "");
+
+    return outlookExePath;
+  } catch (err) {
+    const errorMessage: string = `Unable to find Outlook install location: \n${err}`;
+    throw new Error(errorMessage);
+  }
 }
 
 /**
@@ -250,17 +273,17 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
  * @param app Office app to launch.
  * @param canPrompt
  */
-export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false,
-  platform?: AppType, document?: string, isTest: boolean = false): Promise<void> {
-  let isDesktop: boolean = true;
+export async function sideloadAddIn(manifestPath: string, appType: AppType, app?: OfficeApp, canPrompt: boolean = false,
+  document?: string, isTest: boolean = false): Promise<void> {
+  const isDesktop: boolean = appType === AppType.Desktop ? true : false;
   let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
-  if (platform && platform == AppType.Web) {
-    isDesktop = false;
+  if (!isDesktop && document === undefined) {
+    throw new Error(`For sideload to web, you need to specify a document url.`);
   }
-
+  
   if (isDesktop) {
     if (app) {
       if (appsInManifest.indexOf(app) < 0) {
@@ -287,20 +310,33 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
   if (isDesktop && app) {
     if (isSideloadingSupportedForDesktopHost(app)) {
       await registerAddIn(manifestPath);
-      sideloadFile = await generateSideloadFile(app, manifest, document);
+      if (app == OfficeApp.Outlook) {
+        sideloadFile = await getOutlookExePath();
+      } else {
+        sideloadFile = await generateSideloadFile(app, manifest, document);
+      }
     } else {
       throw new Error(`Sideload is not supported for ${app} on ${AppType.Desktop}.`);
     }
-  } else {
-    if (platform && platform == AppType.Web && document === undefined) {
-      throw new Error(`For sideload to web, you need to specify a document url.`);
+  } else if (app) {
+    if (isSideloadingSupportedForWebHost(app)) {
+      const manifestFileName: string = path.basename(manifestPath);
+      sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
+
+    } else {
+      throw new Error(`Sideload to web is not supported for ${app}.`);
     }
-    
-    const manifestFileName: string = path.basename(manifestPath);
-    sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
   }
 
   if (sideloadFile) {
-    await open(sideloadFile, { wait: false });
+    if (app == OfficeApp.Outlook) {
+      // check to see if Outlook exe path contains spaces and escape the path if it does.
+      if (sideloadFile.indexOf(' ') >= 0){
+        sideloadFile = `"${sideloadFile}"`;
+      }
+      startDetachedProcess(sideloadFile);
+    } else {
+      await open(sideloadFile, { wait: false });
+    }
   }
 }

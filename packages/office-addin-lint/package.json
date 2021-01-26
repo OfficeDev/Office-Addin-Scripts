@@ -28,6 +28,7 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
+    "office-addin-prettier-config": "^1.0.12",
     "office-addin-usage-data": "^1.0.20",
     "prettier": "^1.19.1"
   },
