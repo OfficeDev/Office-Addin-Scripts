@@ -14,10 +14,10 @@ function determineManifestPath(platform: Platform, dev: boolean): string {
     manifestPath = manifestPath.replace("${flavor}", dev ? "dev" : "prod").replace("${platform}", platform);
 
     if (!manifestPath) {
-      throw new Error(`The manifest path was not provided.`);
+        throw new Error(`The manifest path was not provided.`);
     }
     if (!fs.existsSync(manifestPath)) {
-      throw new Error(`The manifest path does not exist: ${manifestPath}.`);
+        throw new Error(`The manifest path does not exist: ${manifestPath}.`);
     }
 
     return manifestPath;
@@ -75,8 +75,24 @@ export async function start(manifestPath: string, platform: string | undefined, 
             manifestPath = determineManifestPath(appPlatformToDebug, dev);
         }
 
-        await startDebugging(manifestPath, appTypeToDebug, app, debuggingMethod, sourceBundleUrlComponents,
-            devServer, devServerPort, packager, packagerHost, packagerPort, enableDebugging, enableLiveReload, openDevTools, document);
+
+        await startDebugging({
+            manifestPath,
+            appType: appTypeToDebug,
+            app,
+            debuggingMethod,
+            sourceBundleUrlComponents,
+            devServerCommandLine: devServer,
+            devServerPort,
+            packagerCommandLine: packager,
+            packagerHost,
+            packagerPort,
+            enableDebugging,
+            enableLiveReload,
+            openDevTools,
+            document
+        });
+
     } catch (err) {
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }
