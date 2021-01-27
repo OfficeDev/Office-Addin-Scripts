@@ -566,7 +566,7 @@ describe("Sideload to Desktop", function() {
     const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, devSettingsSideload.AppType.Desktop, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
-         undefined /* document */, undefined /* devServerPort */);
+         undefined /* document */);
     } catch (err) {
       error = err;
     }

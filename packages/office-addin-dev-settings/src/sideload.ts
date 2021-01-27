@@ -274,11 +274,12 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
  * @param canPrompt
  */
 export async function sideloadAddIn(manifestPath: string, appType: AppType, app?: OfficeApp, canPrompt: boolean = false,
-  document?: string, isTest: boolean = false): Promise<void> {
+  document?: string): Promise<void> {
   const isDesktop: boolean = appType === AppType.Desktop ? true : false;
   let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+  const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
   if (!isDesktop && document === undefined) {
     throw new Error(`For sideload to web, you need to specify a document url.`);

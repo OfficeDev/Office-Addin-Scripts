@@ -325,7 +325,7 @@ export async function sideload(manifestPath: string, appType: string, command: c
       throw new Error(`Unsupported sideload plaform argument: ${appType}`);
     }
 
-    await sideloadAddIn(manifestPath, appType, app, canPrompt, document, isTest);
+    await sideloadAddIn(manifestPath, appType, app, canPrompt, document);
   } catch (err) {
     logErrorMessage(err);
   }
