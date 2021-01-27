@@ -129,28 +129,31 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
 export async function validate(manifestPath: string, command: commander.Command) {
   try {
-    const validation: ManifestValidation = await validateManifest(manifestPath);
-
-    if (validation.isValid) {
-      console.log("The manifest is valid.");
-    } else {
-      console.log("The manifest is not valid.");
-    }
-    console.log();
-
-    if (validation.report) {
-      logManifestValidationErrors(validation.report.errors);
-      logManifestValidationWarnings(validation.report.warnings);
-      logManifestValidationInfos(validation.report.notes);
+    const manifest: manifestInfo.ManifestInfo = await manifestInfo.readManifestFile(manifestPath);
+    if (manifest) {
+      const validation: ManifestValidation = await validateManifest(manifestPath);
 
       if (validation.isValid) {
-        if (validation.report.addInDetails) {
-          logManifestValidationSupportedProducts(validation.report.addInDetails.supportedProducts);
+        console.log("The manifest is valid.");
+      } else {
+        console.log("The manifest is not valid.");
+      }
+      console.log();
+  
+      if (validation.report) {
+        logManifestValidationErrors(validation.report.errors);
+        logManifestValidationWarnings(validation.report.warnings);
+        logManifestValidationInfos(validation.report.notes);
+  
+        if (validation.isValid) {
+          if (validation.report.addInDetails) {
+            logManifestValidationSupportedProducts(validation.report.addInDetails.supportedProducts);
+          }
         }
       }
+  
+      process.exitCode = validation.isValid ? 0 : 1;
     }
-
-    process.exitCode = validation.isValid ? 0 : 1;
   } catch (err) {
     logErrorMessage(err);
   }
