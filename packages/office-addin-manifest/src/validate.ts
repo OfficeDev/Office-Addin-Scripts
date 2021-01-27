@@ -65,8 +65,9 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
     try {
         const validation: ManifestValidation = new ManifestValidation();
 
-        // read the manifest file
-        // const manifest = await readManifestFile(manifestPath);
+        // read the manifest file to ensure the file path is valid
+        await readManifestFile(manifestPath);
+
         const stream = await createReadStream(manifestPath);
         let response;
 
@@ -101,10 +102,7 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
                         break;
                 }
             }
-        } else {
-            throw new Error("The manifest validation service did not return the expected response.");
-        }
-
+        }        
         usageDataObject.sendUsageDataSuccessEvent("validateManifest");
 
         return validation;
