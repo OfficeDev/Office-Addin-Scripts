@@ -527,7 +527,7 @@ describe("Unit Tests", function() {
         }
         assert.strictEqual(result, `You need to specify something to change in the manifest.`);
       });
-      it.skip("should handle an invalid manifest file path", async function() {
+      it("should handle an invalid manifest file path", async function() {
         // call  modify, specifying an invalid manifest path with a valid guid and displayName
         const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
         const testGuid = uuid.v1();
@@ -555,6 +555,17 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
+      });
+      it("invalid manifest path", async function() {
+        this.timeout(6000);
+        let result: string = "";
+        const invalidManifestPath = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
+        try {
+          await validateManifest(invalidManifestPath);
+        } catch (err) {
+          result = err.message;
+        }
+        assert.strictEqual(result.indexOf("ENOENT: no such file or directory") >= 0, true);
       });
       it("Excel", async function() {
         this.timeout(6000);
