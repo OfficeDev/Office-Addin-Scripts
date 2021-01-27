@@ -3,7 +3,7 @@
 
 import { createReadStream } from "fs";
 import fetch from "node-fetch";
-import { ManifestInfo, readManifestFile } from "./manifestInfo";
+import { readManifestFile } from "./manifestInfo";
 import { usageDataObject } from './defaults';
 
 export class ManifestValidationDetails {
@@ -102,8 +102,7 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
                         break;
                 }
             }
-        }
-        
+        }        
         usageDataObject.sendUsageDataSuccessEvent("validateManifest");
 
         return validation;
