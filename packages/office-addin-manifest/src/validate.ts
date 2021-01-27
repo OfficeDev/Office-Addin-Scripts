@@ -3,7 +3,7 @@
 
 import { createReadStream } from "fs";
 import fetch from "node-fetch";
-import { readManifestFile } from "./manifestInfo";
+import { ManifestInfo, readManifestFile } from "./manifestInfo";
 import { usageDataObject } from './defaults';
 
 export class ManifestValidationDetails {
@@ -65,47 +65,51 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
     try {
         const validation: ManifestValidation = new ManifestValidation();
 
-        // read the manifest file
-        // const manifest = await readManifestFile(manifestPath);
-        const stream = await createReadStream(manifestPath);
-        let response;
+        // read the manifest file to ensure the file path is valid
+        const manifest: ManifestInfo = await readManifestFile(manifestPath);
 
-        try {
-            response = await fetch("https://validationgateway.omex.office.net/package/api/check?gates=DisableIconDimensionValidation",
-                {
-                    body: stream,
-                    headers: {
-                        "Content-Type": "application/xml",
-                    },
-                    method: "POST",
-                });
-        } catch (err) {
-            throw new Error(`Unable to contact the manifest validation service.\n${err}`);
-        }
-
-        const text = await response.text();
-        const json = JSON.parse(text.trim());
-
-        if (json) {
-            validation.report = json;
-            validation.status = response.status;
-        }
-
-        if (validation.report) {
-            const result = validation.report.status;
-
-            if (result) {
-                switch (result.toLowerCase()) {
-                    case "accepted":
-                        validation.isValid = true;
-                        break;
-                }
+        if (manifest) {
+            const stream = await createReadStream(manifestPath);
+            let response;
+    
+            try {
+                response = await fetch("https://validationgateway.omex.office.net/package/api/check?gates=DisableIconDimensionValidation",
+                    {
+                        body: stream,
+                        headers: {
+                            "Content-Type": "application/xml",
+                        },
+                        method: "POST",
+                    });
+            } catch (err) {
+                throw new Error(`Unable to contact the manifest validation service.\n${err}`);
             }
-        } else {
-            throw new Error("The manifest validation service did not return the expected response.");
-        }
+    
+            const text = await response.text();
+            const json = JSON.parse(text.trim());
+    
+            if (json) {
+                validation.report = json;
+                validation.status = response.status;
+            }
+    
+            if (validation.report) {
+                const result = validation.report.status;
+    
+                if (result) {
+                    switch (result.toLowerCase()) {
+                        case "accepted":
+                            validation.isValid = true;
+                            break;
+                    }
+                }
+            } else {
+                throw new Error("The manifest validation service did not return the expected response.");
+            }
+    
+            usageDataObject.sendUsageDataSuccessEvent("validateManifest");
 
-        usageDataObject.sendUsageDataSuccessEvent("validateManifest");
+        }
 
         return validation;
 

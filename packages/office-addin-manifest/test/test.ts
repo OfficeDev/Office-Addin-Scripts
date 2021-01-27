@@ -556,6 +556,16 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
+      it("invalid manifest path", async function() {
+        this.timeout(6000);
+        let result: string = "";
+        try {
+          await validateManifest("test/manifests/invalid.manifest.path.xml");
+        } catch (err) {
+          result = err.message;
+        }
+        assert.strictEqual(result.indexOf("ENOENT: no such file or directory") >= 0, true);
+      });
       it("Excel", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/TaskPane.Excel.manifest.xml");
