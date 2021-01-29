@@ -76,8 +76,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         }
 
 
-        await startDebugging({
-            manifestPath,
+        await startDebugging(manifestPath, {
             appType: appTypeToDebug,
             app,
             debuggingMethod,

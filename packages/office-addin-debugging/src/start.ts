@@ -178,11 +178,6 @@ export async function runPackager(commandLine: string, host: string = "localhost
 export interface StartDebuggingOptions {
 
     /**
-     * The path to the manifest file.
-     */
-    manifestPath: string,
-
-    /**
      * The type of application to debug.
      */
     appType: AppType,
@@ -254,9 +249,8 @@ export interface StartDebuggingOptions {
  * Start debugging
  * @param options startDebugging options.
  */
-export async function startDebugging(options: StartDebuggingOptions) {
+export async function startDebugging(manifestPath: string, options: StartDebuggingOptions) {
     const {
-        manifestPath,
         appType,
         app,
         debuggingMethod,
@@ -294,7 +288,7 @@ export async function startDebugging(options: StartDebuggingOptions) {
         console.log(enableDebugging
             ? "Debugging is being started..."
             : "Starting without debugging...");
-        console.log(`App type: ${appType.toString()}`);
+        console.log(`App type: ${appType}`);
 
         const manifestInfo = await readManifestFile(manifestPath);
 
@@ -312,7 +306,7 @@ export async function startDebugging(options: StartDebuggingOptions) {
         if (isDesktopAppType && isWindowsPlatform) {
             await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
             if (enableDebugging) {
-                console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+                console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${DebuggingMethod[debuggingMethod]}`);
             }
         }
 
