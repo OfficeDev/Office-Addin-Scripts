@@ -168,7 +168,6 @@ Syntax:
 
 `manifest`: path to manifest file.
 
-`app-type`: host application type to sideload ("desktop" or "web").
 
 Note:
 
@@ -180,6 +179,11 @@ Options:
 `--app`
 
 Specify the Office application to load.
+
+`-t`
+`--type`
+
+Specify the application type to sideload ("desktop" or "web")
 
 `-d`
 `--document`

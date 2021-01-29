@@ -201,8 +201,7 @@ function getWebExtensionPath(
 }
 
 function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
-  if (app === OfficeApp.Excel || app === OfficeApp.Outlook && process.platform === "win32" && process.env.OUTLOOK_SIDELOAD_ENABLED != undefined ||
-    app === OfficeApp.PowerPoint || app === OfficeApp.Word) {
+  if (app === OfficeApp.Excel || app === OfficeApp.Outlook && process.platform === "win32" || app === OfficeApp.PowerPoint || app === OfficeApp.Word) {
     return true;
   }
   return false;
@@ -273,8 +272,8 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
  * @param app Office app to launch.
  * @param canPrompt
  */
-export async function sideloadAddIn(manifestPath: string, appType: AppType, app?: OfficeApp, canPrompt: boolean = false,
-  document?: string): Promise<void> {
+export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false,
+  appType?: AppType, document?: string): Promise<void> {  
   const isDesktop: boolean = appType === AppType.Desktop ? true : false;
   let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);

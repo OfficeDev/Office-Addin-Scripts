@@ -269,8 +269,8 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         ...options,
 
         // Defaults when variable is undefined.
-        debuggingMethod: definedOrOther(options.debuggingMethod, defaultDebuggingMethod()),
-        enableDebugging: definedOrOther(options.enableDebugging, true),
+        debuggingMethod: options.debuggingMethod || defaultDebuggingMethod(),
+        enableDebugging: options.enableDebugging || true,        
     };
 
     try {
@@ -363,7 +363,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
         try {
             console.log(`Sideloading the Office Add-in...`);
-            await sideloadAddIn(manifestPath, appType, app, true, document);
+            await sideloadAddIn(manifestPath, app, true, appType, document);
         } catch (err) {
             throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
         }
@@ -377,18 +377,6 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         usageDataObject.sendUsageDataException("startDebugging", err);
         throw err;
     }
-}
-
-/**
- * @param option 
- * @param other 
- * @returns other if option is undefined or option
- */
-function definedOrOther<T>(option:T | undefined, other: T) {
-    if (option === undefined) {
-        return other;
-    }
-    return option;
 }
 
 export async function waitUntil(callback: (() => Promise<boolean>), retryCount: number, retryDelay: number): Promise<boolean> {
