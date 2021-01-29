@@ -271,12 +271,12 @@ export async function startDebugging(options: StartDebuggingOptions) {
         openDevTools,
         document,
     } = {
-        // Defaults
-        debuggingMethod: defaultDebuggingMethod(),
-        enableDebugging: true,
+        // Supplied Options
+        ...options,
 
-        // Override with supplied options
-        ...options
+        // Defaults when variable is undefined.
+        debuggingMethod: definedOrOther(options.debuggingMethod, defaultDebuggingMethod()),
+        enableDebugging: definedOrOther(options.enableDebugging, true),
     };
 
     try {
@@ -383,6 +383,18 @@ export async function startDebugging(options: StartDebuggingOptions) {
         usageDataObject.sendUsageDataException("startDebugging", err);
         throw err;
     }
+}
+
+/**
+ * @param option 
+ * @param other 
+ * @returns other if option is undefined or option
+ */
+function definedOrOther<T>(option:T | undefined, other: T) {
+    if (option === undefined) {
+        return other;
+    }
+    return option;
 }
 
 export async function waitUntil(callback: (() => Promise<boolean>), retryCount: number, retryDelay: number): Promise<boolean> {
