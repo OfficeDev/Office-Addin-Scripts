@@ -112,7 +112,7 @@ export async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
         const tenantRoles: Object = await promiseExecuteCommand(azRestCommand);
         let tenantAdminId: string = '';
         tenantRoles['value'].forEach(item => {
-            if (item.displayName === "Company Administrator") {
+            if (item.displayName === "Global Administrator") {
                 tenantAdminId = item.id;
             }
         });
