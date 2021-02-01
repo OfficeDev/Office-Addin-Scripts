@@ -274,6 +274,9 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     };
 
     try {
+        if (appType === undefined) {
+            throw new Error("Please specify the application type to debug.");
+        }
 
         const isWindowsPlatform = (process.platform === "win32");
         const isDesktopAppType = (appType === AppType.Desktop);
