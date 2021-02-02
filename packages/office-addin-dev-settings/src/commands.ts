@@ -13,7 +13,7 @@ import {
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
-import { AppType, sideloadAddIn } from "./sideload";
+import { AppType, parseAppType, sideloadAddIn } from "./sideload";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -230,19 +230,6 @@ export async function liveReload(manifestPath: string, command: commander.Comman
     await disableLiveReload(manifestPath);
   } else {
     await isLiveReloadEnabled(manifestPath);
-  }
-}
-
-function parseAppType(appType: string | undefined): AppType | undefined {
-  switch (appType ? appType.toLowerCase() : undefined) {
-    case "desktop":
-      return AppType.Desktop;
-    case "web":
-      return AppType.Web;
-    case undefined:
-      return undefined
-    default:
-      throw new Error(`Please select a valid app-type instead of '${appType}'.`);    
   }
 }
 

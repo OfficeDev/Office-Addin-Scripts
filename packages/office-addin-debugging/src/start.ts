@@ -60,21 +60,6 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     }
 }
 
-export function parseAppType(text: string): AppType | undefined {
-    switch (text) {
-        case "desktop":
-        case "macos":
-        case "win32":
-        case "ios":
-        case "android":
-            return AppType.Desktop;
-        case "web":
-            return AppType.Web;
-        default:
-            return undefined;
-    }
-}
-
 export function parseDebuggingMethod(text: string): DebuggingMethod | undefined {
     switch (text) {
         case "direct":

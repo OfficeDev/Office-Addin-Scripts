@@ -6,7 +6,7 @@ import * as fs from "fs";
 import { logErrorMessage, parseNumber } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
-import { AppType, parseAppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
+import { AppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {
@@ -41,7 +41,7 @@ function parseDevServerPort(optionValue: any): number | undefined {
 export async function start(manifestPath: string, platform: string | undefined, command: commander.Command) {
     try {
         const appPlatformToDebug: Platform | undefined = parsePlatform(platform || process.env.npm_package_config_app_platform_to_debug || Platform.Win32);
-        const appTypeToDebug: AppType | undefined = parseAppType(appPlatformToDebug || process.env.npm_package_config_app_type_to_debug || AppType.Desktop);
+        const appTypeToDebug: AppType | undefined = devSettings.parseAppType(appPlatformToDebug || process.env.npm_package_config_app_type_to_debug || AppType.Desktop);
         const appToDebug: string | undefined = command.app || process.env.npm_package_config_app_to_debug;
         const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;
         const dev: boolean = command.prod ? false : true;

@@ -29,6 +29,28 @@ export enum AppType {
 }
 
 /**
+ * Parse the input text and get the associated AppType
+ * @param text app-type/platform text
+ * @returns AppType or undefined.
+ */
+export function parseAppType(text: string | undefined): AppType | undefined {
+  switch (text ? text.toLowerCase() : undefined) {
+    case "desktop":
+    case "macos":
+    case "win32":
+    case "ios":
+    case "android":
+      return AppType.Desktop;
+    case "web":
+      return AppType.Web;
+    case undefined:
+      return undefined
+    default:
+      throw new Error(`Please select a valid app-type instead of '${text}'.`); 
+  }
+}
+
+/**
  * Create an Office document in the temporary files directory
  * which can be opened to launch the Office app and load the add-in.
  * @param app Office app
