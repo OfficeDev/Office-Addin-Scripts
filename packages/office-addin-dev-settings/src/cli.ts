@@ -56,13 +56,17 @@ commander
     .description("Configure the runtime log for all Office Add-ins.")
     .action(commands.runtimeLogging);
 
-commander
-    .command("sideload <manifest-path>")
+    commander
+    .command("sideload <manifest-path> [app-type]")
     .description("Launch Office with the Office Add-in loaded.")
-    .option("-a,--app <app>", `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`)    
+    .option("-a,--app <app>", `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`)
     .option("-d,--document <document>", `The location of the document to be sideloaded - this can be an absolute file path or url`)
-    .option("-t, --type <type>", `Application type to sideload ("desktop" or "web")`)
-    .action(commands.sideload);
+    .action(commands.sideload)
+    .on("--help", () => {
+        console.log("\nFor [app-type], choose one of the following values:\n");
+        console.log("\t'desktop' for sideloading desktop add-ins");
+        console.log("\t'web' for sideloading web add-ins");
+    });
 
 commander
     .command("source-bundle-url <manifest-path>")

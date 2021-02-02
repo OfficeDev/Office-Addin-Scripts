@@ -233,6 +233,19 @@ export async function liveReload(manifestPath: string, command: commander.Comman
   }
 }
 
+function parseAppType(appType: string | undefined): AppType | undefined {
+  switch (appType ? appType.toLowerCase() : undefined) {
+    case "desktop":
+      return AppType.Desktop;
+    case "web":
+      return AppType.Web;
+    case undefined:
+      return undefined
+    default:
+      throw new Error(`Please select a valid app-type instead of '${appType}'.`);    
+  }
+}
+
 function parseStringCommandOption(optionValue: any): string | undefined {
   return (typeof(optionValue) === "string") ? optionValue : undefined;
 }
@@ -314,16 +327,12 @@ export async function runtimeLogging(command: commander.Command) {
   }
 }
 
-export async function sideload(manifestPath: string, command: commander.Command) {
+export async function sideload(manifestPath: string, type: string | undefined, command: commander.Command) {
   try {
     const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
     const canPrompt = true;
     const document: string | undefined = command.document ? command.document : undefined;
-    const appType: AppType = command.type || AppType.Desktop;
-
-    if (appType !== AppType.Desktop && appType !== AppType.Web) {
-      throw new Error(`Unsupported sideload plaform argument: ${appType}`);
-    }
+    const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
 
     await sideloadAddIn(manifestPath, app, canPrompt, appType, document);
   } catch (err) {

@@ -164,10 +164,11 @@ Start Office and open a document so the Office Add-in is loaded.
 
 Syntax:
 
-`office addin-dev-settings sideload <manifest> <app-type> [options]`
+`office addin-dev-settings sideload <manifest> [app-type] [options]`
 
 `manifest`: path to manifest file.
 
+`app-type`: host application type to sideload ("desktop" or "web").
 
 Note:
 
@@ -179,11 +180,6 @@ Options:
 `--app`
 
 Specify the Office application to load.
-
-`-t`
-`--type`
-
-Specify the application type to sideload ("desktop" or "web")
 
 `-d`
 `--document`
