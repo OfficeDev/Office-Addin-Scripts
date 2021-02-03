@@ -29,6 +29,28 @@ export enum AppType {
 }
 
 /**
+ * Parse the input text and get the associated AppType
+ * @param text app-type/platform text
+ * @returns AppType or undefined.
+ */
+export function parseAppType(text: string | undefined): AppType | undefined {
+  switch (text ? text.toLowerCase() : undefined) {
+    case "desktop":
+    case "macos":
+    case "win32":
+    case "ios":
+    case "android":
+      return AppType.Desktop;
+    case "web":
+      return AppType.Web;
+    case undefined:
+      return undefined
+    default:
+      throw new Error(`Please select a valid app-type instead of '${text}'.`); 
+  }
+}
+
+/**
  * Create an Office document in the temporary files directory
  * which can be opened to launch the Office app and load the add-in.
  * @param app Office app
@@ -201,8 +223,7 @@ function getWebExtensionPath(
 }
 
 function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
-  if (app === OfficeApp.Excel || app === OfficeApp.Outlook && process.platform === "win32" && process.env.OUTLOOK_SIDELOAD_ENABLED != undefined ||
-    app === OfficeApp.PowerPoint || app === OfficeApp.Word) {
+  if (app === OfficeApp.Excel || app === OfficeApp.Outlook && process.platform === "win32" || app === OfficeApp.PowerPoint || app === OfficeApp.Word) {
     return true;
   }
   return false;
@@ -273,8 +294,13 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
  * @param app Office app to launch.
  * @param canPrompt
  */
-export async function sideloadAddIn(manifestPath: string, appType: AppType, app?: OfficeApp, canPrompt: boolean = false,
-  document?: string): Promise<void> {
+export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false,
+  appType?: AppType, document?: string): Promise<void> {
+
+  if (appType === undefined) {
+    appType = AppType.Desktop;
+  }
+
   const isDesktop: boolean = appType === AppType.Desktop ? true : false;
   let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);

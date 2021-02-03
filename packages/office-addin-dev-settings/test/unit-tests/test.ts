@@ -565,8 +565,8 @@ describe("Sideload to Desktop", function() {
     let error;
     const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, devSettingsSideload.AppType.Desktop, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
-         undefined /* document */);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
+        devSettingsSideload.AppType.Desktop, undefined /* document */);
     } catch (err) {
       error = err;
     }
@@ -599,8 +599,8 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, devSettingsSideload.AppType.Web, officeAddinManifest.OfficeApp.Excel,
-        true /* canPrompt */, docurl);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */,
+        devSettingsSideload.AppType.Web, docurl);
     } catch (err) {
       error = err;
     }
@@ -611,7 +611,7 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, devSettingsSideload.AppType.Web, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */, devSettingsSideload.AppType.Web);
     } catch (err) {
       error = err;
     }
@@ -622,8 +622,8 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, devSettingsSideload.AppType.Web, officeAddinManifest.OfficeApp.Outlook,
-        true /* canPrompt */, docurl);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Outlook, true /* canPrompt */,
+        devSettingsSideload.AppType.Web, docurl);
     } catch (err) {
       error = err;
     }

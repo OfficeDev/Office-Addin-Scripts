@@ -13,7 +13,7 @@ import {
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
 import * as devSettings from "./dev-settings";
-import { AppType, sideloadAddIn } from "./sideload";
+import { AppType, parseAppType, sideloadAddIn } from "./sideload";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -314,18 +314,14 @@ export async function runtimeLogging(command: commander.Command) {
   }
 }
 
-export async function sideload(manifestPath: string, appType: string, command: commander.Command) {
+export async function sideload(manifestPath: string, type: string | undefined, command: commander.Command) {
   try {
     const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
     const canPrompt = true;
     const document: string | undefined = command.document ? command.document : undefined;
-    const isTest: boolean | undefined = command.test ? true : false;
+    const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
 
-    if (appType !== AppType.Desktop && appType !== AppType.Web) {
-      throw new Error(`Unsupported sideload plaform argument: ${appType}`);
-    }
-
-    await sideloadAddIn(manifestPath, appType, app, canPrompt, document);
+    await sideloadAddIn(manifestPath, app, canPrompt, appType, document);
   } catch (err) {
     logErrorMessage(err);
   }

@@ -60,21 +60,6 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     }
 }
 
-export function parseAppType(text: string): AppType | undefined {
-    switch (text) {
-        case "desktop":
-        case "macos":
-        case "win32":
-        case "ios":
-        case "android":
-            return AppType.Desktop;
-        case "web":
-            return AppType.Web;
-        default:
-            return undefined;
-    }
-}
-
 export function parseDebuggingMethod(text: string): DebuggingMethod | undefined {
     switch (text) {
         case "direct":
@@ -178,11 +163,6 @@ export async function runPackager(commandLine: string, host: string = "localhost
 export interface StartDebuggingOptions {
 
     /**
-     * The path to the manifest file.
-     */
-    manifestPath: string,
-
-    /**
      * The type of application to debug.
      */
     appType: AppType,
@@ -254,9 +234,8 @@ export interface StartDebuggingOptions {
  * Start debugging
  * @param options startDebugging options.
  */
-export async function startDebugging(options: StartDebuggingOptions) {
+export async function startDebugging(manifestPath: string, options: StartDebuggingOptions) {
     const {
-        manifestPath,
         appType,
         app,
         debuggingMethod,
@@ -271,15 +250,18 @@ export async function startDebugging(options: StartDebuggingOptions) {
         openDevTools,
         document,
     } = {
-        // Defaults
-        debuggingMethod: defaultDebuggingMethod(),
-        enableDebugging: true,
+        // Supplied Options
+        ...options,
 
-        // Override with supplied options
-        ...options
+        // Defaults when variable is undefined.
+        debuggingMethod: options.debuggingMethod || defaultDebuggingMethod(),
+        enableDebugging: options.enableDebugging || true,        
     };
 
     try {
+        if (appType === undefined) {
+            throw new Error("Please specify the application type to debug.");
+        }
 
         const isWindowsPlatform = (process.platform === "win32");
         const isDesktopAppType = (appType === AppType.Desktop);
@@ -294,7 +276,7 @@ export async function startDebugging(options: StartDebuggingOptions) {
         console.log(enableDebugging
             ? "Debugging is being started..."
             : "Starting without debugging...");
-        console.log(`App type: ${appType.toString()}`);
+        console.log(`App type: ${appType}`);
 
         const manifestInfo = await readManifestFile(manifestPath);
 
@@ -312,7 +294,7 @@ export async function startDebugging(options: StartDebuggingOptions) {
         if (isDesktopAppType && isWindowsPlatform) {
             await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
             if (enableDebugging) {
-                console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${debuggingMethod.toString()}`);
+                console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${DebuggingMethod[debuggingMethod]}`);
             }
         }
 
@@ -369,7 +351,7 @@ export async function startDebugging(options: StartDebuggingOptions) {
 
         try {
             console.log(`Sideloading the Office Add-in...`);
-            await sideloadAddIn(manifestPath, appType, app, true, document);
+            await sideloadAddIn(manifestPath, app, true, appType, document);
         } catch (err) {
             throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
         }
