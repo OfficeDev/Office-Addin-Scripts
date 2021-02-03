@@ -16,39 +16,13 @@ import open = require("open");
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
+import { AppType } from "./appType";
 import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";
 import { chooseOfficeApp } from "./prompt";
 import * as registry from "./registry";
 
 const readFileAsync = util.promisify(fs.readFile);
-
-export enum AppType {
-  Desktop = "desktop",
-  Web = "web",
-}
-
-/**
- * Parse the input text and get the associated AppType
- * @param text app-type/platform text
- * @returns AppType or undefined.
- */
-export function parseAppType(text: string | undefined): AppType | undefined {
-  switch (text ? text.toLowerCase() : undefined) {
-    case "desktop":
-    case "macos":
-    case "win32":
-    case "ios":
-    case "android":
-      return AppType.Desktop;
-    case "web":
-      return AppType.Web;
-    case undefined:
-      return undefined
-    default:
-      throw new Error(`Please select a valid app-type instead of '${text}'.`); 
-  }
-}
 
 /**
  * Create an Office document in the temporary files directory
@@ -76,7 +50,7 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
   if (!addInType) {
     throw new Error("The manifest contains an unsupported OfficeApp xsi:type.");
   }
-  
+
   const templatePath = document && document !== "" ? path.resolve(document) : getTemplatePath(app, addInType);
 
   if (!templatePath) {
@@ -133,7 +107,7 @@ export async function generateSideloadUrl(manifestFileName: string, manifest: Ma
 
   if (documentUrl === undefined || documentUrl === "") {
     return undefined;
-  } 
+  }
 
   if (!manifest.id) {
     throw new Error("The manifest does not contain the id for the add-in.");
@@ -153,7 +127,7 @@ export async function generateSideloadUrl(manifestFileName: string, manifest: Ma
   }
 
   let queryParms: string = `&wdaddindevserverport=${sourceLocationUrl.port}&wdaddinmanifestfile=${manifestFileName}&wdaddinmanifestguid=${manifest.id}`;
-  
+
   if (isTest) {
     queryParms = `${queryParms}${testQueryParam}`;
   }
@@ -301,66 +275,71 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
     appType = AppType.Desktop;
   }
 
-  const isDesktop: boolean = appType === AppType.Desktop ? true : false;
-  let sideloadFile: string | undefined;
   const manifest: ManifestInfo = await readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
   const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
-  if (!isDesktop && document === undefined) {
-    throw new Error(`For sideload to web, you need to specify a document url.`);
-  }
-  
-  if (isDesktop) {
-    if (app) {
-      if (appsInManifest.indexOf(app) < 0) {
-        throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
-      }
-    } else {
-      switch (appsInManifest.length) {
-        case 0:
-          throw new Error("The manifest does not support any Office apps.");
-        case 1:
-          app = appsInManifest[0];
-          break;
-        default:
-          if (canPrompt) {
-            app = await chooseOfficeApp(appsInManifest);
-          } else {
-            throw new Error("Please specify the Office app.");
-          }
-          break;
-      }
+  if (app) {
+    if (appsInManifest.indexOf(app) < 0) {
+      throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
+    }
+  } else {
+    switch (appsInManifest.length) {
+      case 0:
+        throw new Error("The manifest does not support any Office apps.");
+      case 1:
+        app = appsInManifest[0];
+        break;
+      default:
+        if (canPrompt) {
+          app = await chooseOfficeApp(appsInManifest);
+        }
+        break;
     }
   }
 
-  if (isDesktop && app) {
-    if (isSideloadingSupportedForDesktopHost(app)) {
-      await registerAddIn(manifestPath);
-      if (app == OfficeApp.Outlook) {
-        sideloadFile = await getOutlookExePath();
-      } else {
-        sideloadFile = await generateSideloadFile(app, manifest, document);
+  if (!app) {
+    throw new Error("Please specify the Office app.");
+  }
+
+  let sideloadFile: string | undefined;
+
+  switch (appType) {
+    case AppType.Desktop:
+      if (!isSideloadingSupportedForDesktopHost(app)) {
+        throw new Error(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
       }
-    } else {
-      throw new Error(`Sideload is not supported for ${app} on ${AppType.Desktop}.`);
-    }
-  } else if (app) {
-    if (isSideloadingSupportedForWebHost(app)) {
+
+      await registerAddIn(manifestPath);
+
+      // for Outlook, open Outlook.exe; for other Office apps, open the document
+      sideloadFile = (app === OfficeApp.Outlook)
+        ? await getOutlookExePath()
+        : await generateSideloadFile(app, manifest, document);
+      break;
+    case AppType.Web:
+      if (!document) {
+        throw new Error(`For sideload to web, you need to specify a document url.`);
+      }
+
+      if (!isSideloadingSupportedForWebHost(app)) {
+        throw new Error(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
+      }
+
       const manifestFileName: string = path.basename(manifestPath);
       sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
-
-    } else {
-      throw new Error(`Sideload to web is not supported for ${app}.`);
-    }
+      break;
+    default:
+      throw new Error("Sideload is not supported for the specified app type.");
   }
 
   if (sideloadFile) {
-    if (app == OfficeApp.Outlook) {
-      // check to see if Outlook exe path contains spaces and escape the path if it does.
+    if (app === OfficeApp.Outlook) {
+      // put the Outlook.exe path in quotes if it contains spaces
       if (sideloadFile.indexOf(' ') >= 0){
         sideloadFile = `"${sideloadFile}"`;
       }
+
       startDetachedProcess(sideloadFile);
     } else {
       await open(sideloadFile, { wait: false });

@@ -60,12 +60,12 @@ commander
     .command("sideload <manifest-path> [app-type]")
     .description("Launch Office with the Office Add-in loaded.")
     .option("-a,--app <app>", `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`)
-    .option("-d,--document <document>", `The location of the document to be sideloaded - this can be an absolute file path or url`)
+    .option("-d,--document <document>", `The file path or url of the Office document to open.`)
     .action(commands.sideload)
     .on("--help", () => {
         console.log("\n[app-type] specifies the type of Office app::\n");
-        console.log("\t'desktop': Office app for Windows or Mac (default),");
-        console.log("\t'web': Office running in the web browser");
+        console.log("  'desktop': Office app for Windows or Mac (default)");
+        console.log("  'web': Office running in the web browser");
     });
 
 commander

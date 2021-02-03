@@ -12,8 +12,9 @@ import {
   isLoopbackExemptionForAppcontainer,
   removeLoopbackExemptionForAppcontainer,
 } from "./appcontainer";
+import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
-import { AppType, parseAppType, sideloadAddIn } from "./sideload";
+import { sideloadAddIn } from "./sideload";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -414,7 +415,7 @@ export async function webView(manifestPath: string, webViewString?: string) {
 
     validateManifestId(manifest);
     let webViewType: devSettings.WebViewType | undefined;
-    
+
     if (webViewString === undefined) {
       webViewType = await devSettings.getWebView(manifest.id!);
     } else {
