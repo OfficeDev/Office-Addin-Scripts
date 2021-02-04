@@ -1,6 +1,6 @@
 {
     "name": "office-addin-test-server",
-    "version": "1.0.34",
+    "version": "1.0.35",
     "description": "Creates a local web server for testing Office Add-ins and receiving test results.",
     "main": "./lib/main.js",
     "scripts": {
@@ -24,7 +24,7 @@
         "es6-promise": "^4.2.8",
         "express": "^4.17.1",
         "office-addin-cli": "^1.0.16",
-        "office-addin-dev-certs": "^1.5.9"
+        "office-addin-dev-certs": "^1.5.10"
     },
     "devDependencies": {
         "@types/cors": "^2.8.6",
