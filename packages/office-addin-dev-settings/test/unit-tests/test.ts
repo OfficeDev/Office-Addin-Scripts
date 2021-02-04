@@ -12,6 +12,7 @@ import * as os from "os";
 import * as fspath from "path";
 import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
+import { AppType } from "../../src/appType";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
 import { deleteKey, getStringValue } from "../../src/registry";
@@ -565,13 +566,12 @@ describe("Sideload to Desktop", function() {
     let error;
     const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
-        devSettingsSideload.AppType.Desktop, undefined /* document */);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */, AppType.Desktop, undefined /* document */);
     } catch (err) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
-    assert.strictEqual(error.message, "Sideload is not supported for project on desktop.");
+    assert.strictEqual(error.message, "Sideload to the Project app is not supported.");
   })
 });
 
@@ -599,8 +599,7 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */,
-        devSettingsSideload.AppType.Web, docurl);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */, AppType.Web, docurl);
     } catch (err) {
       error = err;
     }
@@ -611,7 +610,7 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */, devSettingsSideload.AppType.Web);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */, AppType.Web);
     } catch (err) {
       error = err;
     }
@@ -622,12 +621,11 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Outlook, true /* canPrompt */,
-        devSettingsSideload.AppType.Web, docurl);
+      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Outlook, true /* canPrompt */, AppType.Web, docurl);
     } catch (err) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
-    assert.strictEqual(error.message, `Sideload to web is not supported for ${OfficeApp.Outlook}.`);
+    assert.strictEqual(error.message, `Sideload to the Outlook web app is not supported.`);
   })
 });
