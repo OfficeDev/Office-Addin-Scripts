@@ -290,14 +290,6 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
             await devSettings.ensureLoopbackIsEnabled(name);
         }
 
-        // enable debugging
-        if (isDesktopAppType && isWindowsPlatform) {
-            await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
-            if (enableDebugging) {
-                console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${DebuggingMethod[debuggingMethod]}`);
-            }
-        }
-
         // enable live reload
         if (isDesktopAppType && isWindowsPlatform) {
             await devSettings.enableLiveReload(manifestInfo.id, useLiveReload);
