@@ -294,7 +294,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         if (isDesktopAppType && isWindowsPlatform) {
             await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
             if (enableDebugging) {
-                console.log(`Enabled debugging for add-in ${manifestInfo.id}. Debug method: ${DebuggingMethod[debuggingMethod]}`);
+                console.log(`Enabled debugging for add-in ${manifestInfo.id}.`);
             }
         }
 
