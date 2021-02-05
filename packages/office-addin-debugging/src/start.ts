@@ -290,6 +290,11 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
             await devSettings.ensureLoopbackIsEnabled(name);
         }
 
+        // enable debugging
+        if (isDesktopAppType && isWindowsPlatform) {
+            await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
+        }
+
         // enable live reload
         if (isDesktopAppType && isWindowsPlatform) {
             await devSettings.enableLiveReload(manifestInfo.id, useLiveReload);
