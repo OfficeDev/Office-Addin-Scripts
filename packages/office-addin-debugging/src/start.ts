@@ -293,6 +293,9 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         // enable debugging
         if (isDesktopAppType && isWindowsPlatform) {
             await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
+            if (enableDebugging) {
+                console.log(`Enabled debugging for add-in ${manifestInfo.id}.`);
+            }
         }
 
         // enable live reload
