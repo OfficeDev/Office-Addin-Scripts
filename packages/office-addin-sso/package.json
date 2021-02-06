@@ -34,7 +34,6 @@
     "pug": "^2.0.4"
   },
   "devDependencies": {
-    "@types/chalk": "^2.2.0",
     "@types/cors": "2.8.4",
     "@types/express": "4.16.0",
     "@types/jquery": "^3.3.34",
