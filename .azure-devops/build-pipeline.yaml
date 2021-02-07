@@ -3,14 +3,22 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: master
 
 jobs:
-- job: Windows
+- job: Windows 1903
   pool:
     name: OPX Windows 1903 Dogfood Pool
-    demands: npm
   steps:
+  - checkout: self
   - template: ./steps/npm-install.yaml
   - template: ./steps/build.yaml
   - template: ./steps/run-tests.yaml
@@ -19,8 +27,8 @@ jobs:
 - job: Mac
   pool:
     name: OPX Mac Dogfood Pool
-    demands: npm
   steps:
+  - checkout: self
   - template: ./steps/npm-install.yaml
   - template: ./steps/build.yaml
   - template: ./steps/run-tests.yaml
@@ -28,9 +36,9 @@ jobs:
 
 - job: Linux
   pool:
-    name: Azure Pipelines
-    demands: npm
+    vmImage: ubuntu-16.04
   steps:
+  - checkout: self
   - template: ./steps/npm-install.yaml
   - template: ./steps/build.yaml
   - template: ./steps/run-tests.yaml
