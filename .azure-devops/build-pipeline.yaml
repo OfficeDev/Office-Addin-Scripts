@@ -14,7 +14,7 @@ resources:
     ref: master
 
 jobs:
-- job: Windows 1903
+- job: Windows
   pool:
     name: OPX Windows 1903 Dogfood Pool
   steps:
