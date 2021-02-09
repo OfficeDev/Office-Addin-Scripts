@@ -22,7 +22,7 @@ function getEsLintBaseCommand(): string {
 }
 
 export function getLintCheckCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} ${files}`;
+  const eslintCommand: string = `${getEsLintBaseCommand()} ${files.replace(/ /g, '\\ ')}`; // Converting space to '\\'
   return eslintCommand;
 }
 
@@ -42,7 +42,7 @@ export function performLintCheck(files: string) {
 }
 
 export function getLintFixCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} --fix ${files}`;
+  const eslintCommand: string = `${getEsLintBaseCommand()} --fix ${files.replace(/ /g, '\\ ')}`; // Converting space to '\\'
   return eslintCommand;
 }
 
@@ -62,7 +62,7 @@ export function performLintFix(files: string) {
 }
 
 export function getPrettierCommand(files: string): string {
-  const prettierFixCommand: string = `node ${prettierFilePath} --parser typescript --write ${files}`;
+  const prettierFixCommand: string = `node ${prettierFilePath} --parser typescript --write ${files.replace(/ /g, '\\ ')}`; // Converting space to '\\'
   return prettierFixCommand;
 }
 
