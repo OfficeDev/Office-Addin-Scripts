@@ -15,6 +15,7 @@ import {
 import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
+import { usageDataObject } from './defaults';
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -44,7 +45,9 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
         }
       }
+      usageDataObject.sendUsageDataSuccessEvent("appcontainer");
     } catch (err) {
+      usageDataObject.sendUsageDataException("appcontainer", err);
       logErrorMessage(err);
     }
   } else {
