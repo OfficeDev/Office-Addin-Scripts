@@ -64,7 +64,9 @@ export async function clear(manifestPath: string) {
     await devSettings.clearDevSettings(manifest.id!);
 
     console.log("Developer settings have been cleared.");
+    usageDataObject.sendUsageDataSuccessEvent("clear");
   } catch (err) {
+    usageDataObject.sendUsageDataException("clear", err);
     logErrorMessage(err);
   }
 }
@@ -78,7 +80,9 @@ export async function debugging(manifestPath: string, command: commander.Command
     } else {
       await isDebuggingEnabled(manifestPath);
     }
+    usageDataObject.sendUsageDataSuccessEvent("debugging");
   } catch (err) {
+    usageDataObject.sendUsageDataException("debugging", err);
     logErrorMessage(err);
   }
 }
@@ -228,12 +232,18 @@ export async function isRuntimeLoggingEnabled() {
 }
 
 export async function liveReload(manifestPath: string, command: commander.Command) {
-  if (command.enable) {
-    await enableLiveReload(manifestPath);
-  } else if (command.disable) {
-    await disableLiveReload(manifestPath);
-  } else {
-    await isLiveReloadEnabled(manifestPath);
+  try{
+    if (command.enable) {
+      await enableLiveReload(manifestPath);
+    } else if (command.disable) {
+      await disableLiveReload(manifestPath);
+    } else {
+      await isLiveReloadEnabled(manifestPath);
+    }
+    usageDataObject.sendUsageDataSuccessEvent("liveReload");
+  } catch (err) {
+    usageDataObject.sendUsageDataException("liveReload", err);
+    logErrorMessage(err);
   }
 }
 
@@ -271,7 +281,9 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
 export async function register(manifestPath: string, command: commander.Command) {
   try {
     await devSettings.registerAddIn(manifestPath);
+    usageDataObject.sendUsageDataSuccessEvent("register");
   } catch (err) {
+    usageDataObject.sendUsageDataException("register", err);
     logErrorMessage(err);
   }
 }
@@ -298,7 +310,9 @@ export async function registered(command: commander.Command) {
     } else {
       console.log("No add-ins are registered.");
     }
+    usageDataObject.sendUsageDataSuccessEvent("registered");
   } catch (err) {
+    usageDataObject.sendUsageDataException("registered", err);
     logErrorMessage(err);
   }
 }
@@ -313,7 +327,9 @@ export async function runtimeLogging(command: commander.Command) {
     } else {
       await isRuntimeLoggingEnabled();
     }
+    usageDataObject.sendUsageDataSuccessEvent("runtimeLogging");
   } catch (err) {
+    usageDataObject.sendUsageDataException("runtimeLogging", err);
     logErrorMessage(err);
   }
 }
@@ -326,7 +342,9 @@ export async function sideload(manifestPath: string, type: string | undefined, c
     const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
 
     await sideloadAddIn(manifestPath, app, canPrompt, appType, document);
+    usageDataObject.sendUsageDataSuccessEvent("sideload");
   } catch (err) {
+    usageDataObject.sendUsageDataException("sideload", err);
     logErrorMessage(err);
   }
 }
@@ -358,7 +376,9 @@ export async function sourceBundleUrl(manifestPath: string, command: commander.C
     } else {
       await getSourceBundleUrl(manifestPath);
     }
+    usageDataObject.sendUsageDataSuccessEvent("sourceBundleUrl");
   } catch (err) {
+    usageDataObject.sendUsageDataException("sourceBundleUrl", err);
     logErrorMessage(err);
   }
 }
@@ -401,7 +421,9 @@ export async function unregister(manifestPath: string, command: commander.Comman
     } else {
       await devSettings.unregisterAddIn(manifestPath);
     }
+    usageDataObject.sendUsageDataSuccessEvent("unregister");
   } catch (err) {
+    usageDataObject.sendUsageDataException("unregister", err);
     logErrorMessage(err);
   }
 }
@@ -430,7 +452,9 @@ export async function webView(manifestPath: string, webViewString?: string) {
     console.log(webViewTypeName
       ? `The web view type is set to ${webViewTypeName}.`
       : "The web view type has not been set.");
+    usageDataObject.sendUsageDataSuccessEvent("webView");
   } catch (err) {
+    usageDataObject.sendUsageDataException("webView", err);
     logErrorMessage(err);
   }
 }
