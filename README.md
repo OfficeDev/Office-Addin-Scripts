@@ -110,7 +110,7 @@ When you submit a pull request, a CLA-bot will automatically determine whether y
 5. In a command prompt:
     1. ```git clone https://github.com/OfficeDev/Office-Addin-Scripts```
     2. ```cd Office-Addin-Scripts```
-    3. ```git remote add {username} {fork-repo-url}``` (e.g. git remote add {username} https://github.com/{username}/Office-Addin-Scripts.git --- where “{username}” is your GitHub user name)
+    3. ```git remote add {username} https://github.com/{username}/Office-Addin-Scripts.git``` (where “{username}” is your GitHub user name)
     4. ```git checkout -b my-branch-name``` (recommend using all lowercase with hyphens for branch names)
 6. Make your desired changes
 7. Commit your changes and push the fork you created
