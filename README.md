@@ -108,13 +108,14 @@ When you submit a pull request, a CLA-bot will automatically determine whether y
 3. Clone [OfficeDev/Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts)
 4. Create a fork off of OfficeDev/Office-Addin-Scripts in GitHub
 5. In a command prompt:
-    1. git remote add {username} {fork-repo-url}     (e.g. git remote add {username} https://github.com/{username}/Office-Addin-Scripts.git --- where “{username}” is your GitHub user name)
-    2. git checkout -b my-branch-name (recommend using all lowercase with hyphens for branch names)
+    1. cd Office-Addin-Scripts
+    2. git remote add {username} {fork-repo-url}     (e.g. git remote add {username} https://github.com/{username}/Office-Addin-Scripts.git --- where “{username}” is your GitHub user name)
+    3. git checkout -b my-branch-name (recommend using all lowercase with hyphens for branch names)
 6. Make your desired changes
 7. Commit your changes and push the fork you created
     1. git commit
     2. git push -u {username} {branch-name}
-
+8. Go to [Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts) and create a pull request.
 
 ## Feedback
 
