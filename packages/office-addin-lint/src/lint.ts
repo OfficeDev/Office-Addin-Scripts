@@ -16,13 +16,17 @@ function execCommand(command: string) {
   const child = execSync(command, { stdio: "inherit" });
 }
 
+function normalizeFilePath(filePath: string) : string {
+  return filePath.replace(/ /g, '\\ '); // Converting space to '\\'
+}
+
 function getEsLintBaseCommand(): string {
   const eslintBaseCommand: string = `node ${esLintFilePath} -c ${esLintConfigPath} --resolve-plugins-relative-to ${__dirname}`;
   return eslintBaseCommand;
 }
 
 export function getLintCheckCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} ${files}`;
+  const eslintCommand: string = `${getEsLintBaseCommand()} ${normalizeFilePath(files)}`;
   return eslintCommand;
 }
 
@@ -42,7 +46,7 @@ export function performLintCheck(files: string) {
 }
 
 export function getLintFixCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} --fix ${files}`;
+  const eslintCommand: string = `${getEsLintBaseCommand()} --fix ${normalizeFilePath(files)}`;
   return eslintCommand;
 }
 
@@ -62,7 +66,7 @@ export function performLintFix(files: string) {
 }
 
 export function getPrettierCommand(files: string): string {
-  const prettierFixCommand: string = `node ${prettierFilePath} --parser typescript --write ${files}`;
+  const prettierFixCommand: string = `node ${prettierFilePath} --parser typescript --write ${normalizeFilePath(files)}`;
   return prettierFixCommand;
 }
 
