@@ -272,35 +272,6 @@ export class OfficeAddinUsageData {
   }
 
   /**
-   * Reports custom success event object to Application Insights
-   * @param projectName Project name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   */
-  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      Pass: true,
-      ...data
-    });
-  }
-
-  /**
-   * Reports custom successful fail event object to Application Insights
-   * "Successful fail" means that there was an error as a result of user error, but our code worked properly
-   * @param projectName Project name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   */
-  public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      Pass: false,
-      ...data
-    });
-  }
-
-  /**
    * Reports custom event object to Application Insights
    * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
@@ -323,12 +294,73 @@ export class OfficeAddinUsageData {
   }
 
   /**
+   * Reports custom success event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   * @deprecated Use `reportSuccess` instead.  
+   */
+  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
+    this.reportSuccess(method, data);
+  }
+
+  /**
+   * Reports custom successful fail event object to Application Insights
+   * "Successful fail" means that there was an error as a result of user error, but our code worked properly
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   * @deprecated Use `reportExpectedError` instead.  
+   */
+  public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
+    this.reportExpectedError(method, data);
+  }
+
+  /**
+   * Reports custom exception event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param err Error or message about error sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   * @deprecated Use `reportUnexpectedError` instead.  
+   */
+  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
+    this.reportUnexpectedError(method, err, data);
+  }
+
+  /**
+   * Reports custom success event object to Application Insights
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public reportSuccess(method: string, data: object = {}) {
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      Pass: true,
+      ...data
+    });
+  }
+
+  /**
+   * Reports custom successful fail event object to Application Insights
+   * "Successful fail" means that there was an error as a result of user error, but our code worked properly
+   * @param projectName Project name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public reportExpectedError(method: string, data: object = {}) {
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      Pass: false,
+      ...data
+    });
+  }
+
+  /**
    * Reports custom exception event object to Application Insights
    * @param projectName Project name sent to Application Insights
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
+  public reportUnexpectedError(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
