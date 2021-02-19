@@ -357,11 +357,11 @@ export class OfficeAddinUsageData {
    * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public reportExpectedError(method: string, err: string, data: object = {}) {
+  public reportExpectedError(method: string, err: Error, data: object = {}) {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
-      Error: err,
+      Error: err.message,
       ...data
     });
   }
