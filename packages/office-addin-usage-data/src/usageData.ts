@@ -25,11 +25,11 @@ export enum UsageDataLevel {
 
 /**
  * Defines an error that is expected to happen given some situation
- * @member err Message to be logged in the error
+ * @member message Message to be logged in the error
  */
 export class ExpectedError extends Error {
-  constructor(err: string) {
-      super(err);
+  constructor(message: string | undefined) {
+      super(message);
 
       // need to adjust the prototype after super()
       // See https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
