@@ -16,6 +16,7 @@ import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
 import { usageDataObject } from './defaults';
+import { ExpectedError } from "office-addin-usage-data";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -26,7 +27,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           const allowed = await ensureLoopbackIsEnabled(manifestPath, askForConfirmation);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
-          throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
+          throw new ExpectedError(`Unable to allow loopback for the appcontainer. \n${err}`);
         }
       } else if (command.preventLoopback) {
         try {
@@ -34,7 +35,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           await removeLoopbackExemptionForAppcontainer(name);
           console.log(`Loopback is no longer allowed.`);
         } catch (err) {
-          throw new Error(`Unable to disallow loopback. \n${err}`);
+          throw new ExpectedError(`Unable to disallow loopback. \n${err}`);
         }
       } else {
         try {
@@ -42,12 +43,16 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           const allowed = await isLoopbackExemptionForAppcontainer(name);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
-          throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
+          throw new ExpectedError(`Unable to determine if appcontainer allows loopback. \n${err}`);
         }
       }
-      usageDataObject.sendUsageDataSuccessEvent("appcontainer");
+      usageDataObject.reportSuccess("appcontainer");
     } catch (err) {
-      usageDataObject.sendUsageDataException("appcontainer", err);
+      if (err instanceof ExpectedError){
+        usageDataObject.reportExpectedError("appcontainer", err);
+      } else { 
+        usageDataObject.reportUnexpectedError("appcontainer", err); 
+      }
       logErrorMessage(err);
     }
   } else {
@@ -274,7 +279,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case undefined:
       return undefined;
     default:
-      throw new Error(`Please select a valid web view type instead of '${webViewString!}'.`);
+      throw new ExpectedError(`Please select a valid web view type instead of '${webViewString!}'.`);
   }
 }
 
@@ -388,10 +393,10 @@ function parseDevServerPort(optionValue: any): number | undefined {
 
   if (devServerPort !== undefined) {
       if (!Number.isInteger(devServerPort)) {
-          throw new Error("--dev-server-port should be an integer.");
+          throw new ExpectedError("--dev-server-port should be an integer.");
       }
       if ((devServerPort < 0) || (devServerPort > 65535)) {
-          throw new Error("--dev-server-port should be between 0 and 65535.");
+          throw new ExpectedError("--dev-server-port should be between 0 and 65535.");
       }
   }
 
@@ -410,7 +415,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
       // preferred debug method
       return devSettings.DebuggingMethod.Direct;
     default:
-      throw new Error(`Please provide a valid debug method instead of '${text}'.`);
+      throw new ExpectedError(`Please provide a valid debug method instead of '${text}'.`);
   }
 }
 
@@ -430,7 +435,7 @@ export async function unregister(manifestPath: string, command: commander.Comman
 
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
-    throw new Error(`The manifest file doesn't contain the id of the Office Add-in.`);
+    throw new ExpectedError(`The manifest file doesn't contain the id of the Office Add-in.`);
   }
 }
 
