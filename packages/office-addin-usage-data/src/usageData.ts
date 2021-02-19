@@ -24,6 +24,19 @@ export enum UsageDataLevel {
 }
 
 /**
+ * Defines an error that is expected to happen given some situation
+ * @member err Message to be logged in the error
+ */
+export class ExpectedError extends Error {
+  constructor(err: string) {
+      super(err);
+
+      // Set the prototype explicitly.
+      Object.setPrototypeOf(this, ExpectedError.prototype);
+  }
+}
+
+/**
  * UpdateData options
  * @member groupName Group name for usage data settings (Optional)
  * @member projectName The name of the project that is using the usage data package.
@@ -334,7 +347,6 @@ export class OfficeAddinUsageData {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
-      Pass: true,
       ...data
     });
   }
@@ -345,11 +357,11 @@ export class OfficeAddinUsageData {
    * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public reportExpectedError(method: string, data: object = {}) {
+  public reportExpectedError(method: string, err: string, data: object = {}) {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
-      Pass: false,
+      Error: err,
       ...data
     });
   }
