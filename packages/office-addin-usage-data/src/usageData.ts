@@ -31,7 +31,8 @@ export class ExpectedError extends Error {
   constructor(err: string) {
       super(err);
 
-      // Set the prototype explicitly.
+      // need to adjust the prototype after super()
+      // See https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
       Object.setPrototypeOf(this, ExpectedError.prototype);
   }
 }
