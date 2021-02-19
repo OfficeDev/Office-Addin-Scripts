@@ -360,7 +360,7 @@ export class OfficeAddinUsageData {
    */
   public reportExpectedError(method: string, err: Error, data: object = {}) {
     this.sendUsageDataEvent({
-      Succeeded: true,
+      Succeeded: false,
       Method: method,
       Error: err.message,
       ...data
