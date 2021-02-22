@@ -27,7 +27,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           const allowed = await ensureLoopbackIsEnabled(manifestPath, askForConfirmation);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
-          throw new ExpectedError(`Unable to allow loopback for the appcontainer. \n${err}`);
+          throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
         }
       } else if (command.preventLoopback) {
         try {
@@ -35,7 +35,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           await removeLoopbackExemptionForAppcontainer(name);
           console.log(`Loopback is no longer allowed.`);
         } catch (err) {
-          throw new ExpectedError(`Unable to disallow loopback. \n${err}`);
+          throw new Error(`Unable to disallow loopback. \n${err}`);
         }
       } else {
         try {
@@ -43,7 +43,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           const allowed = await isLoopbackExemptionForAppcontainer(name);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
-          throw new ExpectedError(`Unable to determine if appcontainer allows loopback. \n${err}`);
+          throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
         }
       }
       usageDataObject.reportSuccess("appcontainer");
