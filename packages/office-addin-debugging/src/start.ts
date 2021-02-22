@@ -220,6 +220,12 @@ export interface StartDebuggingOptions {
     enableLiveReload?: boolean,
 
     /**
+     * Enables launch of the Office host app and sideload of the add-in (if true or undefined).
+     * Set to false to disable sideload. 
+     */
+    enableSideload?: boolean,
+
+    /**
      * Open Dev Tools.
      */
     openDevTools?: boolean,
@@ -247,6 +253,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         packagerPort,
         enableDebugging,
         enableLiveReload,
+        enableSideload,
         openDevTools,
         document,
     } = {
@@ -255,7 +262,8 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
         // Defaults when variable is undefined.
         debuggingMethod: options.debuggingMethod || defaultDebuggingMethod(),
-        enableDebugging: (options.enableDebugging !== undefined) ? options.enableDebugging : true,        
+        enableDebugging: options.enableDebugging ?? true,   
+        enableSideload: options.enableSideload ?? true
     };
 
     try {
@@ -349,11 +357,13 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
             }
         }
 
-        try {
-            console.log(`Sideloading the Office Add-in...`);
-            await sideloadAddIn(manifestPath, app, true, appType, document);
-        } catch (err) {
-            throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
+        if (enableSideload) {
+            try {
+                console.log(`Sideloading the Office Add-in...`);
+                await sideloadAddIn(manifestPath, app, true, appType, document);
+            } catch (err) {
+                throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
+            }
         }
 
         console.log(enableDebugging

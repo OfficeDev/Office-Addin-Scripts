@@ -51,6 +51,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
         const document: string | undefined = command.document || process.env.npm_package_config_document;
         const enableDebugging: boolean = command.debug;
         const enableLiveReload: boolean = (command.liveReload === true);
+        const enableSideload: boolean = (command.sideload !== false); // enable if true or undefined; only disable if false
         const openDevTools: boolean = (command.devTools === true);
         const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
@@ -88,6 +89,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
             packagerPort,
             enableDebugging,
             enableLiveReload,
+            enableSideload,
             openDevTools,
             document
         });
