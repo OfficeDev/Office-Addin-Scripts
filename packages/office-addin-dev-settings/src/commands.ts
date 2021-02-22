@@ -48,11 +48,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
       }
       usageDataObject.reportSuccess("appcontainer");
     } catch (err) {
-      if (err instanceof ExpectedError){
-        usageDataObject.reportExpectedError("appcontainer", err);
-      } else { 
-        usageDataObject.reportUnexpectedError("appcontainer", err); 
-      }
+      usageDataObject.reportException("appcontainer", err);
       logErrorMessage(err);
     }
   } else {
