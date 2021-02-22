@@ -287,7 +287,6 @@ export class OfficeAddinUsageData {
 
   /**
    * Reports custom event object to Application Insights
-   * @param projectName Project name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
   public sendUsageDataEvent(data: object = {}) {
@@ -309,7 +308,7 @@ export class OfficeAddinUsageData {
 
   /**
    * Reports custom success event object to Application Insights
-   * @param projectName Project name sent to Application Insights
+   * @param method Method name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    * @deprecated Use `reportSuccess` instead.  
    */
@@ -325,7 +324,7 @@ export class OfficeAddinUsageData {
   /**
    * Reports custom successful fail event object to Application Insights
    * "Successful fail" means that there was an error as a result of user error, but our code worked properly
-   * @param projectName Project name sent to Application Insights
+   * @param method Method name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    * @deprecated Use `reportExpectedError` instead.  
    */
@@ -340,7 +339,7 @@ export class OfficeAddinUsageData {
 
   /**
    * Reports custom exception event object to Application Insights
-   * @param projectName Project name sent to Application Insights
+   * @param method Method name sent to Application Insights
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    * @deprecated Use `reportUnexpectedError` instead.  
@@ -373,34 +372,57 @@ export class OfficeAddinUsageData {
 
   /**
    * Reports custom success event object to Application Insights
-   * @param projectName Project name sent to Application Insights
+   * @param method Method name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
   public reportSuccess(method: string, data: object = {}) {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
+      ExpectedError: false,
+      ...data
+    });
+  }
+
+  /**
+   * Reports custom expected exception event object to Application Insights
+   * @param method Method name sent to Application Insights
+   * @param err Error or message about error sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public reportExpectedException(method: string, err: Error | string, data: object = {}) {
+    const errMessage = (err instanceof Error) ? err.message : err;
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      ExpectedError: true,
+      Error: errMessage,
       ...data
     });
   }
 
   /**
    * Reports custom exception event object to Application Insights
-   * @param projectName Project name sent to Application Insights
+   * @param method Method name sent to Application Insights
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    * @param isExpected Boolean represents if error is an expected error or not
    */
-  public reportException(method: string, err: Error | string, data: object = {}, isExpected: boolean) {
+  public reportException(method: string, err: Error | string, data: object = {}, isExpected?: boolean) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
+        const expected = isExpected ?? (err instanceof ExpectedError ? true : false);
+        if(expected) {
+          this.reportExpectedException(method, err, data);
+          return;
+        }
+
         let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
           properties: {}
         };
-        const expected = isExpected ?? (err instanceof ExpectedError ? true : false);
         Object.entries({
           Succeeded: false,
           Method: method,
