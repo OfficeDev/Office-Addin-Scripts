@@ -314,7 +314,12 @@ export class OfficeAddinUsageData {
    * @deprecated Use `reportSuccess` instead.  
    */
   public sendUsageDataSuccessEvent(method: string, data: object = {}) {
-    this.reportSuccess(method, data);
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      Pass: true,
+      ...data
+    });
   }
 
   /**
@@ -325,7 +330,12 @@ export class OfficeAddinUsageData {
    * @deprecated Use `reportExpectedError` instead.  
    */
   public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
-    this.reportExpectedError(method, data);
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      Pass: false,
+      ...data
+    });  
   }
 
   /**
@@ -336,7 +346,29 @@ export class OfficeAddinUsageData {
    * @deprecated Use `reportUnexpectedError` instead.  
    */
   public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
-    this.reportUnexpectedError(method, err, data);
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      try {
+        let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+        error.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
+          exception: this.maskFilePaths(error),
+          properties: {}
+        };
+        Object.entries({
+          Succeeded: false,
+          Method: method,
+          ...this.defaultData,
+          ...data
+        }).forEach((entry) => {
+          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
+        });
+        this.usageDataClient.trackException(exceptionTelemetryObj);
+        this.exceptionsSent++;
+      } catch (e) {
+        this.reportError("sendUsageDataException", e);
+        throw e;
+      }
+    }
   }
 
   /**
