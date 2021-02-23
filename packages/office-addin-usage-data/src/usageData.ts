@@ -234,6 +234,13 @@ export class OfficeAddinUsageData {
     return this.options.instrumentationKey;
   }
 
+   /**
+   * Transform the project name by adddin '-test' suffix to it if necessary
+   */
+  private getEventName() {
+    return this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+  }
+
   /**
    * Returns the amount of events that have been sent
    * @returns The count of events sent
@@ -283,13 +290,6 @@ export class OfficeAddinUsageData {
     delete this.usageDataClient.context.tags["ai.cloud.roleInstance"]; // cloud name
     delete this.usageDataClient.context.tags["ai.device.id"]; // machine name
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
-  }
-
-   /**
-   * Transform the project name by adddin '-test' suffix to it if necessary
-   */
-  private getEventName() {
-    return this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
   }
 
   /**
