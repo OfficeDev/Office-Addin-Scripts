@@ -285,6 +285,10 @@ export class OfficeAddinUsageData {
     delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
   }
 
+  private getEventName() {
+    return this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+  }
+
   /**
    * Reports custom event object to Application Insights
    * @param data Data object(s) sent to Application Insights
@@ -293,7 +297,7 @@ export class OfficeAddinUsageData {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let eventTelemetryObj = new appInsights.Contracts.EventData();
-        eventTelemetryObj.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+        eventTelemetryObj.name = this.getEventName();
         eventTelemetryObj.properties = {
           ...this.defaultData,
           ...data
@@ -348,7 +352,7 @@ export class OfficeAddinUsageData {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
-        error.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+        error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
           properties: {}
@@ -391,12 +395,16 @@ export class OfficeAddinUsageData {
    * @param data Data object(s) sent to Application Insights
    */
   public reportExpectedException(method: string, err: Error | string, data: object = {}) {
-    const errMessage = (err instanceof Error) ? err.message : err;
+    let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+    error.name = this.getEventName();
+    this.maskFilePaths(error);
+    const errorMessage = (error instanceof Error) ? error.message : error;
+    
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
       ExpectedError: true,
-      Error: errMessage,
+      Error: errorMessage,
       ...data
     });
   }
@@ -408,17 +416,16 @@ export class OfficeAddinUsageData {
    * @param data Data object(s) sent to Application Insights
    * @param isExpected Boolean represents if error is an expected error or not
    */
-  public reportException(method: string, err: Error | string, data: object = {}, isExpected?: boolean) {
+  public reportException(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        const expected = isExpected ?? (err instanceof ExpectedError ? true : false);
-        if(expected) {
+        if (err instanceof ExpectedError) {
           this.reportExpectedException(method, err, data);
           return;
         }
 
         let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
-        error.name = this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+        error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
           properties: {}
@@ -426,7 +433,7 @@ export class OfficeAddinUsageData {
         Object.entries({
           Succeeded: false,
           Method: method,
-          Expected: expected,
+          ExpectedError: false,
           ...this.defaultData,
           ...data
         }).forEach((entry) => {
