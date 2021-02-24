@@ -331,6 +331,41 @@ export class OfficeAddinUsageData {
   }
 
   /**
+   * Reports custom expected exception event object to Application Insights
+   * @param method Method name sent to Application Insights
+   * @param err Error or message about error sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public reportExpectedException(method: string, err: Error | string, data: object = {}) {
+    let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+    error.name = this.getEventName();
+    this.maskFilePaths(error);
+    const errorMessage = (error instanceof Error) ? error.message : error;
+    
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      ExpectedError: true,
+      Error: errorMessage,
+      ...data
+    });
+  }
+
+  /**
+   * Reports custom success event object to Application Insights
+   * @param method Method name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   */
+  public reportSuccess(method: string, data: object = {}) {
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      ExpectedError: false,
+      ...data
+    });
+  }
+  
+  /**
    * Reports custom exception event object to Application Insights
    * @param method Method name sent to Application Insights
    * @param err Error or message about error sent to Application Insights
@@ -364,22 +399,16 @@ export class OfficeAddinUsageData {
   }
 
   /**
-   * Reports custom expected exception event object to Application Insights
+   * Reports custom success event object to Application Insights
    * @param method Method name sent to Application Insights
-   * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
+   * @deprecated Use `reportSuccess` instead.  
    */
-  public reportExpectedException(method: string, err: Error | string, data: object = {}) {
-    let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
-    error.name = this.getEventName();
-    this.maskFilePaths(error);
-    const errorMessage = (error instanceof Error) ? error.message : error;
-    
+  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
-      ExpectedError: true,
-      Error: errorMessage,
+      Pass: true,
       ...data
     });
   }
@@ -398,35 +427,6 @@ export class OfficeAddinUsageData {
       Pass: false,
       ...data
     });  
-  }
-
-  /**
-   * Reports custom success event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   */
-  public reportSuccess(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      ExpectedError: false,
-      ...data
-    });
-  }
-
-  /**
-   * Reports custom success event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportSuccess` instead.  
-   */
-  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      Pass: true,
-      ...data
-    });
   }
 
   /**
