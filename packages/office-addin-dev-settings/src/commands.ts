@@ -15,6 +15,8 @@ import {
 import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
+import { usageDataObject } from './defaults';
+import { ExpectedError } from "office-addin-usage-data";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -44,7 +46,9 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
         }
       }
+      usageDataObject.reportSuccess("appcontainer");
     } catch (err) {
+      usageDataObject.reportException("appcontainer", err);
       logErrorMessage(err);
     }
   } else {
@@ -61,7 +65,9 @@ export async function clear(manifestPath: string) {
     await devSettings.clearDevSettings(manifest.id!);
 
     console.log("Developer settings have been cleared.");
+    usageDataObject.reportSuccess("clear");
   } catch (err) {
+    usageDataObject.reportException("clear", err);
     logErrorMessage(err);
   }
 }
@@ -75,7 +81,9 @@ export async function debugging(manifestPath: string, command: commander.Command
     } else {
       await isDebuggingEnabled(manifestPath);
     }
+    usageDataObject.reportSuccess("debugging");
   } catch (err) {
+    usageDataObject.reportException("debugging", err);
     logErrorMessage(err);
   }
 }
@@ -225,12 +233,18 @@ export async function isRuntimeLoggingEnabled() {
 }
 
 export async function liveReload(manifestPath: string, command: commander.Command) {
-  if (command.enable) {
-    await enableLiveReload(manifestPath);
-  } else if (command.disable) {
-    await disableLiveReload(manifestPath);
-  } else {
-    await isLiveReloadEnabled(manifestPath);
+  try{
+    if (command.enable) {
+      await enableLiveReload(manifestPath);
+    } else if (command.disable) {
+      await disableLiveReload(manifestPath);
+    } else {
+      await isLiveReloadEnabled(manifestPath);
+    }
+    usageDataObject.reportSuccess("liveReload");
+  } catch (err) {
+    usageDataObject.reportException("liveReload", err);
+    logErrorMessage(err);
   }
 }
 
@@ -268,7 +282,9 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
 export async function register(manifestPath: string, command: commander.Command) {
   try {
     await devSettings.registerAddIn(manifestPath);
+    usageDataObject.reportSuccess("register");
   } catch (err) {
+    usageDataObject.reportException("register", err);
     logErrorMessage(err);
   }
 }
@@ -295,7 +311,9 @@ export async function registered(command: commander.Command) {
     } else {
       console.log("No add-ins are registered.");
     }
+    usageDataObject.reportSuccess("registered");
   } catch (err) {
+    usageDataObject.reportException("registered", err);
     logErrorMessage(err);
   }
 }
@@ -310,7 +328,9 @@ export async function runtimeLogging(command: commander.Command) {
     } else {
       await isRuntimeLoggingEnabled();
     }
+    usageDataObject.reportSuccess("runtimeLogging");
   } catch (err) {
+    usageDataObject.reportException("runtimeLogging", err);
     logErrorMessage(err);
   }
 }
@@ -323,7 +343,9 @@ export async function sideload(manifestPath: string, type: string | undefined, c
     const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
 
     await sideloadAddIn(manifestPath, app, canPrompt, appType, document);
+    usageDataObject.reportSuccess("sideload");
   } catch (err) {
+    usageDataObject.reportException("sideload", err);
     logErrorMessage(err);
   }
 }
@@ -355,7 +377,9 @@ export async function sourceBundleUrl(manifestPath: string, command: commander.C
     } else {
       await getSourceBundleUrl(manifestPath);
     }
+    usageDataObject.reportSuccess("sourceBundleUrl");
   } catch (err) {
+    usageDataObject.reportException("sourceBundleUrl", err);
     logErrorMessage(err);
   }
 }
@@ -398,7 +422,9 @@ export async function unregister(manifestPath: string, command: commander.Comman
     } else {
       await devSettings.unregisterAddIn(manifestPath);
     }
+    usageDataObject.reportSuccess("unregister");
   } catch (err) {
+    usageDataObject.reportException("unregister", err);
     logErrorMessage(err);
   }
 }
@@ -427,7 +453,9 @@ export async function webView(manifestPath: string, webViewString?: string) {
     console.log(webViewTypeName
       ? `The web view type is set to ${webViewTypeName}.`
       : "The web view type has not been set.");
+      usageDataObject.reportSuccess("webView");
   } catch (err) {
+    usageDataObject.reportException("webView", err);
     logErrorMessage(err);
   }
 }
