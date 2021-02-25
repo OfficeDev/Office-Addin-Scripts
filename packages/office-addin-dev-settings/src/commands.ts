@@ -107,10 +107,12 @@ export async function disableDebugging(manifestPath: string) {
     await devSettings.disableDebugging(manifest.id!);
 
     console.log("Debugging has been disabled.");
+    usageDataObject.reportSuccess("disableDebugging()");
   } catch (err) {
+    usageDataObject.reportException("disableDebugging()", err);
     logErrorMessage(err);
   }
-}
+}    
 
 export async function disableLiveReload(manifestPath: string) {
   try {
@@ -121,7 +123,9 @@ export async function disableLiveReload(manifestPath: string) {
     await devSettings.disableLiveReload(manifest.id!);
 
     console.log("Live reload has been disabled.");
+    usageDataObject.reportSuccess("disableLiveReload()");
   } catch (err) {
+    usageDataObject.reportException("disableLiveReload()", err);
     logErrorMessage(err);
   }
 }
@@ -131,7 +135,9 @@ export async function disableRuntimeLogging() {
     await devSettings.disableRuntimeLogging();
 
     console.log("Runtime logging has been disabled.");
+    usageDataObject.reportSuccess("disableRuntimeLogging()");
   } catch (err) {
+    usageDataObject.reportException("disableRuntimeLogging()", err);
     logErrorMessage(err);
   }
 }
@@ -145,7 +151,9 @@ export async function enableDebugging(manifestPath: string, command: commander.C
     await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod), command.openDevTools);
 
     console.log("Debugging has been enabled.");
+    usageDataObject.reportSuccess("enableDebugging()");
   } catch (err) {
+    usageDataObject.reportException("enableDebugging()", err);
     logErrorMessage(err);
   }
 }
@@ -159,7 +167,9 @@ export async function enableLiveReload(manifestPath: string) {
     await devSettings.enableLiveReload(manifest.id!);
 
     console.log("Live reload has been enabled.");
+    usageDataObject.reportSuccess("enableLiveReload()");
   } catch (err) {
+    usageDataObject.reportException("enableLiveReload()", err);
     logErrorMessage(err);
   }
 }
@@ -169,7 +179,9 @@ export async function enableRuntimeLogging(path?: string) {
     const logPath = await devSettings.enableRuntimeLogging(path);
 
     console.log(`Runtime logging has been enabled. File: ${logPath}`);
+    usageDataObject.reportSuccess("enableRuntimeLogging()");
   } catch (err) {
+    usageDataObject.reportException("enableRuntimeLogging()", err);
     logErrorMessage(err);
   }
 }
@@ -183,7 +195,9 @@ export async function getSourceBundleUrl(manifestPath: string) {
     const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(manifest.id!);
 
     displaySourceBundleUrl(components);
+    usageDataObject.reportSuccess("getSourceBundleUrl()");
   } catch (err) {
+    usageDataObject.reportException("getSourceBundleUrl()", err);
     logErrorMessage(err);
   }
 }
@@ -199,11 +213,13 @@ export async function isDebuggingEnabled(manifestPath: string) {
     console.log(enabled
       ? "Debugging is enabled."
       : "Debugging is not enabled.");
+      usageDataObject.reportSuccess("isDebuggingEnabled()");
   } catch (err) {
+    usageDataObject.reportException("isDebuggingEnabled()", err);
     logErrorMessage(err);
   }
 }
-
+  
 export async function isLiveReloadEnabled(manifestPath: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -215,11 +231,13 @@ export async function isLiveReloadEnabled(manifestPath: string) {
     console.log(enabled
       ? "Live reload is enabled."
       : "Live reload is not enabled.");
+    usageDataObject.reportSuccess("isLiveReloadEnabled()");
   } catch (err) {
+    usageDataObject.reportException("isLiveReloadEnabled()", err);
     logErrorMessage(err);
   }
 }
-
+  
 export async function isRuntimeLoggingEnabled() {
   try {
     const path = await devSettings.getRuntimeLoggingPath();
@@ -227,7 +245,9 @@ export async function isRuntimeLoggingEnabled() {
     console.log(path
       ? `Runtime logging is enabled. File: ${path}`
       : "Runtime logging is not enabled.");
+    usageDataObject.reportSuccess("isRuntimeLoggingEnabled()");
   } catch (err) {
+    usageDataObject.reportException("isRuntimeLoggingEnabled()", err);
     logErrorMessage(err);
   }
 }
@@ -365,7 +385,9 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
 
     console.log("Configured source bundle url.");
     displaySourceBundleUrl(await devSettings.getSourceBundleUrl(manifest.id!));
+    usageDataObject.reportSuccess("setSourceBundleUrl()");
   } catch (err) {
+    usageDataObject.reportException("setSourceBundleUrl()", err);
     logErrorMessage(err);
   }
 }

@@ -21,6 +21,7 @@ import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";
 import { chooseOfficeApp } from "./prompt";
 import * as registry from "./registry";
+import { usageDataObject } from './defaults';
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -271,78 +272,82 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
 export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPrompt: boolean = false,
   appType?: AppType, document?: string): Promise<void> {
 
-  if (appType === undefined) {
-    appType = AppType.Desktop;
-  }
-
-  const manifest: ManifestInfo = await readManifestFile(manifestPath);
-  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
-  const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
-
-  if (app) {
-    if (appsInManifest.indexOf(app) < 0) {
-      throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
+  try {
+    if (appType === undefined) {
+      appType = AppType.Desktop;
     }
-  } else {
-    switch (appsInManifest.length) {
-      case 0:
-        throw new Error("The manifest does not support any Office apps.");
-      case 1:
-        app = appsInManifest[0];
+
+    const manifest: ManifestInfo = await readManifestFile(manifestPath);
+    const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+    const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
+
+    if (app) {
+      if (appsInManifest.indexOf(app) < 0) {
+        throw new Error(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
+      }
+    } else {
+      switch (appsInManifest.length) {
+        case 0:
+          throw new Error("The manifest does not support any Office apps.");
+        case 1:
+          app = appsInManifest[0];
+          break;
+        default:
+          if (canPrompt) {
+            app = await chooseOfficeApp(appsInManifest);
+          }
+          break;
+      }
+    }
+
+    if (!app) {
+      throw new Error("Please specify the Office app.");
+    }
+
+    let sideloadFile: string | undefined;
+
+    switch (appType) {
+      case AppType.Desktop:
+        if (!isSideloadingSupportedForDesktopHost(app)) {
+          throw new Error(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
+        }
+
+        await registerAddIn(manifestPath);
+
+        // for Outlook, open Outlook.exe; for other Office apps, open the document
+        sideloadFile = (app === OfficeApp.Outlook)
+          ? await getOutlookExePath()
+          : await generateSideloadFile(app, manifest, document);
+        break;
+      case AppType.Web:
+        if (!document) {
+          throw new Error(`For sideload to web, you need to specify a document url.`);
+        }
+
+        if (!isSideloadingSupportedForWebHost(app)) {
+          throw new Error(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
+        }
+
+        const manifestFileName: string = path.basename(manifestPath);
+        sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
         break;
       default:
-        if (canPrompt) {
-          app = await chooseOfficeApp(appsInManifest);
+        throw new Error("Sideload is not supported for the specified app type.");
+    }
+
+    if (sideloadFile) {
+      if (app === OfficeApp.Outlook) {
+        // put the Outlook.exe path in quotes if it contains spaces
+        if (sideloadFile.indexOf(' ') >= 0){
+          sideloadFile = `"${sideloadFile}"`;
         }
-        break;
+
+        startDetachedProcess(sideloadFile);
+      } else {
+        await open(sideloadFile, { wait: false });
+      }
     }
-  }
-
-  if (!app) {
-    throw new Error("Please specify the Office app.");
-  }
-
-  let sideloadFile: string | undefined;
-
-  switch (appType) {
-    case AppType.Desktop:
-      if (!isSideloadingSupportedForDesktopHost(app)) {
-        throw new Error(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
-      }
-
-      await registerAddIn(manifestPath);
-
-      // for Outlook, open Outlook.exe; for other Office apps, open the document
-      sideloadFile = (app === OfficeApp.Outlook)
-        ? await getOutlookExePath()
-        : await generateSideloadFile(app, manifest, document);
-      break;
-    case AppType.Web:
-      if (!document) {
-        throw new Error(`For sideload to web, you need to specify a document url.`);
-      }
-
-      if (!isSideloadingSupportedForWebHost(app)) {
-        throw new Error(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
-      }
-
-      const manifestFileName: string = path.basename(manifestPath);
-      sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
-      break;
-    default:
-      throw new Error("Sideload is not supported for the specified app type.");
-  }
-
-  if (sideloadFile) {
-    if (app === OfficeApp.Outlook) {
-      // put the Outlook.exe path in quotes if it contains spaces
-      if (sideloadFile.indexOf(' ') >= 0){
-        sideloadFile = `"${sideloadFile}"`;
-      }
-
-      startDetachedProcess(sideloadFile);
-    } else {
-      await open(sideloadFile, { wait: false });
-    }
-  }
+    usageDataObject.reportSuccess("sideloadAddIn()");
+  } catch (err) {
+    usageDataObject.reportException("sideloadAddIn()", err);
 }
