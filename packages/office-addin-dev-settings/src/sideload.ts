@@ -21,6 +21,7 @@ import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";
 import { chooseOfficeApp } from "./prompt";
 import * as registry from "./registry";
+import { ExpectedError } from "office-addin-usage-data";
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -210,6 +211,20 @@ function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
   return false;
 }
 
+async function getOutlookVersion(): Promise<string | undefined> {
+  try {
+    const OutlookInstallPathVersionRegistryKey = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`;
+    const key = new registry.RegistryKey(`${OutlookInstallPathVersionRegistryKey}`);
+    const outlookInstallVersion: string | undefined = await registry.getStringValue(key, "ClientVersionToReport");
+
+    return outlookInstallVersion;
+  }
+  catch (err) {
+    const errorMessage: string = `Unable to find Outlook version location: \n${err}`;
+    throw new Error(errorMessage);  
+  }
+}
+
 async function getOutlookExePath(): Promise<string | undefined> {
   try {
     const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
@@ -311,6 +326,21 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       }
 
       await registerAddIn(manifestPath);
+      // for Outlook, open Outlook.exe; for other Office apps, open the document
+      if (app == OfficeApp.Outlook) {
+        const version = await getOutlookVersion() ?? "";
+        if (version < "16.0.13709.10000") {
+          throw new ExpectedError("Outlook install version should be 16.0.13709.10000 or greater");
+        }
+        sideloadFile = await getOutlookExePath();
+      } else {
+        sideloadFile = await generateSideloadFile(app, manifest, document);
+      }
+      break;
+    case AppType.Web:
+      if (!document) {
+        throw new ExpectedError(`For sideload to web, you need to specify a document url.`);
+      }
 
       // for Outlook, open Outlook.exe; for other Office apps, open the document
       sideloadFile = (app === OfficeApp.Outlook)
