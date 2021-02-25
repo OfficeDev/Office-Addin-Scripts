@@ -339,16 +339,6 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       break;
     case AppType.Web:
       if (!document) {
-        throw new ExpectedError(`For sideload to web, you need to specify a document url.`);
-      }
-
-      // for Outlook, open Outlook.exe; for other Office apps, open the document
-      sideloadFile = (app === OfficeApp.Outlook)
-        ? await getOutlookExePath()
-        : await generateSideloadFile(app, manifest, document);
-      break;
-    case AppType.Web:
-      if (!document) {
         throw new Error(`For sideload to web, you need to specify a document url.`);
       }
 
