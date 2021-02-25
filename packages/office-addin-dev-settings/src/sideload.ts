@@ -351,5 +351,6 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
     usageDataObject.reportSuccess("sideloadAddIn()");
   } catch (err) {
     usageDataObject.reportException("sideloadAddIn()", err);
+    throw err;
   }
 }
