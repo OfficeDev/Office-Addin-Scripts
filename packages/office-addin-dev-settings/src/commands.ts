@@ -295,7 +295,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case undefined:
       return undefined;
     default:
-      throw new Error(`Please select a valid web view type instead of '${webViewString!}'.`);
+      throw new ExpectedError(`Please select a valid web view type instead of '${webViewString!}'.`);
   }
 }
 
@@ -411,10 +411,10 @@ function parseDevServerPort(optionValue: any): number | undefined {
 
   if (devServerPort !== undefined) {
       if (!Number.isInteger(devServerPort)) {
-          throw new Error("--dev-server-port should be an integer.");
+          throw new ExpectedError("--dev-server-port should be an integer.");
       }
       if ((devServerPort < 0) || (devServerPort > 65535)) {
-          throw new Error("--dev-server-port should be between 0 and 65535.");
+          throw new ExpectedError("--dev-server-port should be between 0 and 65535.");
       }
   }
 
@@ -433,7 +433,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
       // preferred debug method
       return devSettings.DebuggingMethod.Direct;
     default:
-      throw new Error(`Please provide a valid debug method instead of '${text}'.`);
+      throw new ExpectedError(`Please provide a valid debug method instead of '${text}'.`);
   }
 }
 
@@ -453,7 +453,7 @@ export async function unregister(manifestPath: string, command: commander.Comman
 
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
-    throw new Error(`The manifest file doesn't contain the id of the Office Add-in.`);
+    throw new ExpectedError(`The manifest file doesn't contain the id of the Office Add-in.`);
   }
 }
 

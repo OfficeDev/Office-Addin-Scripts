@@ -5,6 +5,7 @@
 
 import { getOfficeAppsForManifestHosts, ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
+import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
@@ -70,8 +71,8 @@ export async function enableRuntimeLogging(path: string): Promise<void> {
 }
 
 export function getDeveloperSettingsRegistryKey(addinId: string): registry.RegistryKey {
-  if (!addinId) { throw new Error("addinId is required."); }
-  if (typeof addinId !== "string") { throw new Error("addinId should be a string."); }
+  if (!addinId) { throw new ExpectedError("addinId is required."); }
+  if (typeof addinId !== "string") { throw new ExpectedError("addinId should be a string."); }
   return new registry.RegistryKey(`${DeveloperSettingsRegistryKey}\\${addinId}`);
 }
 
@@ -223,7 +224,7 @@ export async function setWebView(addinId: string, webViewType: WebViewType | und
       await registry.addStringValue(key, WebViewSelection, webViewString);
       break;
     default:
-      throw new Error(`The webViewType ${webViewType} is not supported.`);
+      throw new ExpectedError(`The webViewType ${webViewType} is not supported.`);
   }
 }
 
