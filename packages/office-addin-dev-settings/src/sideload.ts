@@ -213,8 +213,8 @@ function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
   return false;
 }
 
-function hasOfficeVersion(targetVersion: string, currentVersion: string): boolean {
-  return semver.gte(currentVersion, targetVersion)
+function hasOfficeVersion(targetVersion: string, currentVersion: string | undefined): boolean {
+  return currentVersion ? semver.gte(currentVersion, targetVersion) : false;
 }
 
 async function getOutlookVersion(): Promise<string | undefined> {
@@ -228,11 +228,6 @@ async function getOutlookVersion(): Promise<string | undefined> {
   catch (err) {
     return undefined;
   }
-}
-
-async function hasOutlookVersion(version: string): Promise<boolean> {
-  const currentVersion: string | undefined = await getOutlookVersion();
-  return currentVersion ? hasOfficeVersion(version, currentVersion) : false;
 }
 
 async function getOutlookExePath(): Promise<string | undefined> {
@@ -338,7 +333,8 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       await registerAddIn(manifestPath);
       // for Outlook, open Outlook.exe; for other Office apps, open the document
       if (app == OfficeApp.Outlook) {
-        if (!(await hasOutlookVersion("16.0.13709"))) {
+        const version = await getOutlookVersion();
+        if (!hasOfficeVersion("16.0.13709", version)) {
           throw new ExpectedError(`The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`);
         }
         sideloadFile = await getOutlookExePath();
