@@ -13,7 +13,7 @@ import {
   readManifestFile,
 } from "office-addin-manifest";
 import open = require("open");
-import semver = require('semver');
+import semverlt = require('semver/functions/lt');
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
@@ -215,8 +215,7 @@ function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
 
 async function getOutlookVersion(): Promise<string | undefined> {
   try {
-    const OutlookInstallPathVersionRegistryKey = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`;
-    const key = new registry.RegistryKey(`${OutlookInstallPathVersionRegistryKey}`);
+    const key = new registry.RegistryKey(`HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`);
     const outlookInstallVersion: string | undefined = await registry.getStringValue(key, "ClientVersionToReport");
     const outlookSmallerVersion = outlookInstallVersion?.split(`.`, 3).join(`.`);
     
@@ -331,8 +330,8 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       // for Outlook, open Outlook.exe; for other Office apps, open the document
       if (app == OfficeApp.Outlook) {
         const version = await getOutlookVersion();
-        if (version && semver.lt(version, "16.0.13709")) {
-          throw new ExpectedError(`Outlook install version should be 16.0.13709 or greater. Current version: ${version}`);
+        if (version && semverlt(version, "16.0.13709")) {
+          throw new ExpectedError(`The current version of Outlook (${version}) does not support sideload. Please use version 16.0.13709 or greater.`);
         }
         sideloadFile = await getOutlookExePath();
       } else {
