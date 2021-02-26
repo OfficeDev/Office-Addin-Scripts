@@ -220,8 +220,7 @@ async function getOutlookVersion(): Promise<string | undefined> {
     return outlookInstallVersion;
   }
   catch (err) {
-    const errorMessage: string = `Unable to find Outlook version location: \n${err}`;
-    throw new Error(errorMessage);  
+    return undefined;
   }
 }
 
