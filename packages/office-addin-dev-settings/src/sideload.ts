@@ -328,8 +328,8 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       await registerAddIn(manifestPath);
       // for Outlook, open Outlook.exe; for other Office apps, open the document
       if (app == OfficeApp.Outlook) {
-        const version = await getOutlookVersion() ?? "";
-        if (version < "16.0.13709.10000") {
+        const version = await getOutlookVersion();
+        if (version && version < "16.0.13709.10000") {
           throw new ExpectedError(`Outlook install version should be 16.0.13709.10000 or greater. Current version: ${version}`);
         }
         sideloadFile = await getOutlookExePath();
