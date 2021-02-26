@@ -295,7 +295,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case undefined:
       return undefined;
     default:
-      throw new ExpectedError(`Please select a valid web view type instead of '${webViewString!}'.`);
+      throw new ExpectedError(`Please select a valid web view type instead of '${webViewString}'.`);
   }
 }
 
