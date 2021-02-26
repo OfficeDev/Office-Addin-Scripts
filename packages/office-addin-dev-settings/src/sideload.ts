@@ -13,7 +13,7 @@ import {
   readManifestFile,
 } from "office-addin-manifest";
 import open = require("open");
-import semverlt = require('semver/functions/lt');
+import semver = require('semver');
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
@@ -330,7 +330,7 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
       // for Outlook, open Outlook.exe; for other Office apps, open the document
       if (app == OfficeApp.Outlook) {
         const version = await getOutlookVersion();
-        if (version && semverlt(version, "16.0.13709")) {
+        if (version && semver.lt(version, "16.0.13709")) {
           throw new ExpectedError(`The current version of Outlook (${version}) does not support sideload. Please use version 16.0.13709 or greater.`);
         }
         sideloadFile = await getOutlookExePath();
