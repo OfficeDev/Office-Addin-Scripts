@@ -37,7 +37,7 @@ export function performLintCheck(files: string) {
     usageDataObject.reportSuccess("performLintCheck()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.reportExpectedException("performLintCheck()", "Has lint error", { exitCode: ESLintExitCode.HasLintError });
+      usageDataObject.reportExpectedException("performLintCheck()", err, { exitCode: ESLintExitCode.HasLintError });
     } else {
       usageDataObject.reportException("performLintCheck()", err);
     }
@@ -57,7 +57,7 @@ export function performLintFix(files: string) {
     usageDataObject.reportSuccess("performLintFix()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.reportExpectedException("performLintFix()", "Has lint error", { exitCode: ESLintExitCode.HasLintError });
+      usageDataObject.reportExpectedException("performLintFix()", err, { exitCode: ESLintExitCode.HasLintError });
     } else {
       usageDataObject.reportException("performLintFix()", err);
     }
@@ -77,7 +77,7 @@ export function makeFilesPrettier(files: string) {
     usageDataObject.reportSuccess("makeFilesPrettier()", { exitCode: PrettierExitCode.NoFormattingProblems });
   } catch (err) {
     if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
-      usageDataObject.reportExpectedException("makeFilesPrettier()", "Has formatting problem", {
+      usageDataObject.reportExpectedException("makeFilesPrettier()", err, {
         exitCode: PrettierExitCode.HasFormattingProblem
       });
     } else {
