@@ -13,6 +13,7 @@ import {
   readManifestFile,
 } from "office-addin-manifest";
 import open = require("open");
+import semver = require('semver');
 import * as os from "os";
 import * as path from "path";
 import * as util from "util";
@@ -212,6 +213,23 @@ function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
   return false;
 }
 
+function hasOfficeVersion(targetVersion: string, currentVersion: string): boolean {
+  return semver.gte(currentVersion, targetVersion);
+}
+
+async function getOutlookVersion(): Promise<string | undefined> {
+  try {
+    const key = new registry.RegistryKey(`HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`);
+    const outlookInstallVersion: string | undefined = await registry.getStringValue(key, "ClientVersionToReport");
+    const outlookSmallerVersion = outlookInstallVersion?.split(`.`, 3).join(`.`);
+    
+    return outlookSmallerVersion;
+  }
+  catch (err) {
+    return undefined;
+  }
+}
+
 async function getOutlookExePath(): Promise<string | undefined> {
   try {
     const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
@@ -312,23 +330,25 @@ export async function sideloadAddIn(manifestPath: string, app?: OfficeApp, canPr
         if (!isSideloadingSupportedForDesktopHost(app)) {
           throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
         }
-
         await registerAddIn(manifestPath);
-
         // for Outlook, open Outlook.exe; for other Office apps, open the document
-        sideloadFile = (app === OfficeApp.Outlook)
-          ? await getOutlookExePath()
-          : await generateSideloadFile(app, manifest, document);
+        if (app == OfficeApp.Outlook) {
+          const version: string | undefined = await getOutlookVersion();
+          if (version && !hasOfficeVersion("16.0.13709", version)) {
+            throw new ExpectedError(`The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`);
+          }
+          sideloadFile = await getOutlookExePath();
+        } else {
+          sideloadFile = await generateSideloadFile(app, manifest, document);
+        }
         break;
       case AppType.Web:
         if (!document) {
           throw new ExpectedError(`For sideload to web, you need to specify a document url.`);
         }
-
         if (!isSideloadingSupportedForWebHost(app)) {
           throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
         }
-
         const manifestFileName: string = path.basename(manifestPath);
         sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
         break;
