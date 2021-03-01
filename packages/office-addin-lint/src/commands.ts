@@ -5,6 +5,7 @@ import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as defaults from "./defaults";
 import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
+import { usageDataObject } from "./defaults";
 
 /**
  * Determines path to files to run lint against. Priority order follows:
@@ -22,11 +23,13 @@ export async function lint(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
     await performLintCheck(pathToFiles);
+    usageDataObject.reportSuccess("lint");
   } catch (err) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
       process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      usageDataObject.reportException("lint", err);
       logErrorMessage(err);
     }
   }
@@ -36,11 +39,13 @@ export async function lintFix(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
     await performLintFix(pathToFiles);
+    usageDataObject.reportSuccess("lintFix");
   } catch (err) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
       process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      usageDataObject.reportException("lintFix", err);
       logErrorMessage(err);
     }
   }
@@ -50,11 +55,13 @@ export async function prettier(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
     await makeFilesPrettier(pathToFiles);
+    usageDataObject.reportSuccess("prettier");
   } catch (err) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
       process.exitCode = defaults.PrettierExitCode.CommandFailed;
+      usageDataObject.reportException("prettier", err);
       logErrorMessage(err);
     }
   }
