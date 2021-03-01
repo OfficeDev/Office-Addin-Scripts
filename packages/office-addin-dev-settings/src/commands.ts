@@ -65,9 +65,9 @@ export async function clear(manifestPath: string) {
     await devSettings.clearDevSettings(manifest.id!);
 
     console.log("Developer settings have been cleared.");
-    usageDataObject.reportSuccess("clear");
+    usageDataObject.reportSuccess("clearDevSettings");
   } catch (err) {
-    usageDataObject.reportException("clear", err);
+    usageDataObject.reportException("clearDevSettings", err);
     logErrorMessage(err);
   }
 }
