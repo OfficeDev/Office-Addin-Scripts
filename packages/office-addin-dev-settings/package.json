@@ -39,6 +39,7 @@
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.11.1",
     "@types/node-fetch": "^2.5.7",
+    "@types/semver": "^7.3.4",
     "@types/sinon": "^7.5.2",
     "@types/whatwg-url": "^6.4.0",
     "@types/winreg": "^1.2.30",
