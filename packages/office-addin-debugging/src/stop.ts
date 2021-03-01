@@ -6,6 +6,7 @@ import { readManifestFile } from "office-addin-manifest";
 import * as debugInfo from "./debugInfo";
 import { startProcess, stopProcess } from "./process";
 import { usageDataObject } from './defaults';
+import { ExpectedError } from "office-addin-usage-data";
 
 export async function stopDebugging(manifestPath: string) {
     try {
@@ -15,7 +16,7 @@ export async function stopDebugging(manifestPath: string) {
         const manifestInfo = await readManifestFile(manifestPath);
     
         if (!manifestInfo.id) {
-            throw new Error("Manifest does not contain the id for the Office Add-in.");
+            throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");
         }
     
         // clear dev settings
@@ -38,9 +39,9 @@ export async function stopDebugging(manifestPath: string) {
         }
     
         console.log("Debugging has been stopped.");
-        usageDataObject.sendUsageDataSuccessEvent("stopDebugging");
+        usageDataObject.reportSuccess("stopDebugging()");
     } catch(err) {
-        usageDataObject.sendUsageDataException("stopDebugging", err);
+        usageDataObject.reportException("stopDebugging()", err);
         throw err;
     }
 }

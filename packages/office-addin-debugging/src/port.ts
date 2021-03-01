@@ -4,6 +4,7 @@
 import * as childProcess from "child_process";
 import * as crypto from "crypto";
 import * as net from "net";
+import { ExpectedError } from "office-addin-usage-data";
 
 /**
  * Determines whether a port is in use.
@@ -115,6 +116,6 @@ function randomPortNumber(): number {
  */
 function validatePort(port: number): void {
   if ((typeof(port) !== "number") || (port < 0) || (port > 65535)) {
-    throw new Error("Port should be a number from 0 to 65535.");
+    throw new ExpectedError("Port should be a number from 0 to 65535.");
   }
 }

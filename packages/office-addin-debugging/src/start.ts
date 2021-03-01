@@ -12,6 +12,7 @@ import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess } from "./process";
 import { usageDataObject } from './defaults';
+import { ExpectedError } from "office-addin-usage-data";
 
 export enum AppType {
     Desktop = "desktop",
@@ -90,7 +91,7 @@ export function parsePlatform(text: string): Platform | undefined {
         case "win32":
             return Platform.Win32;
         default:
-            throw new Error(`The current platform is not supported: ${process.platform}`);
+            throw new ExpectedError(`The current platform is not supported: ${process.platform}`);
     }
 }
 
@@ -268,7 +269,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
     try {
         if (appType === undefined) {
-            throw new Error("Please specify the application type to debug.");
+            throw new ExpectedError("Please specify the application type to debug.");
         }
 
         const isWindowsPlatform = (process.platform === "win32");
@@ -289,7 +290,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         const manifestInfo = await readManifestFile(manifestPath);
 
         if (!manifestInfo.id) {
-            throw new Error("Manifest does not contain the id for the Office Add-in.");
+            throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");
         }
 
         // enable loopback for Edge
@@ -370,9 +371,9 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
             ? "Debugging started."
             : "Started.");
 
-        usageDataObject.sendUsageDataSuccessEvent("startDebugging");
+        usageDataObject.reportSuccess("startDebugging()");
     } catch (err) {
-        usageDataObject.sendUsageDataException("startDebugging", err);
+        usageDataObject.reportException("startDebugging()", err);
         throw err;
     }
 }
