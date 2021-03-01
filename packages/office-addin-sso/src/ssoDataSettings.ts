@@ -8,6 +8,7 @@ import { execSync } from "child_process";
 import * as fs from 'fs';
 import * as os from 'os';
 import { modifyManifestFile } from 'office-addin-manifest';
+import { ExpectedError } from 'office-addin-usage-data';
 
 export function addSecretToCredentialStore(ssoAppName: string, secret: string, isTest: boolean = false): void {
     try {
@@ -29,7 +30,7 @@ export function addSecretToCredentialStore(ssoAppName: string, secret: string, i
                 break;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                throw new Error(errorMessage);
+                throw new ExpectedError(errorMessage);
         }
     } catch (err) {
         const errorMessage: string = `Unable to add secret to Credential Store: \n${err}`;
@@ -48,7 +49,7 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
                 return execSync(getSecretFromMacStoreCommand, { stdio: "pipe" }).toString();;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                throw new Error(errorMessage);
+                throw new ExpectedError(errorMessage);
         }
     } catch {
         return '';
@@ -69,7 +70,7 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
             fs.writeFileSync(envFilePath, updatedAppDataContent);
             return true;
         } else {
-            throw new Error(`${envFilePath} does not exist`)
+            throw new ExpectedError(`${envFilePath} does not exist`)
         }
     } catch (err) {
         const errorMessage: string = `Unable to write SSO application data to .env file: \n${err}`;
@@ -94,7 +95,7 @@ function updateFallBackAuthDialogFile(applicationId: string, port: string, fallb
         }
         else {
             if (isTest) {
-                throw new Error(`${defaults.testFallbackAuthDialogFilePath} does not exist`);
+                throw new ExpectedError(`${defaults.testFallbackAuthDialogFilePath} does not exist`);
             } else {
                 const errorMessage: string = `${isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath} does not exist`;
                 throw new Error(errorMessage);
@@ -140,7 +141,7 @@ async function updateProjectManifest(applicationId: string, port: string, manife
             return true;
         } else {
             const errorMessage: string = 'Manifest does not exist at specified location';
-            throw new Error(errorMessage)
+            throw new ExpectedError(errorMessage)
         }
     } catch (err) {
         const errorMessage: string = `Unable to update manifest: \n${err}`

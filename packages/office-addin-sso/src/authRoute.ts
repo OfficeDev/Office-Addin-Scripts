@@ -49,11 +49,11 @@ export class AuthRouter {
                     res.send(json);
 
                     // Send usage data
-                    usageDataObject.sendUsageDataSuccessEvent('authRouter', {scope: scopeName});
+                    usageDataObject.reportSuccess('authRouter()', {scope: scopeName});
                 }
                 catch (error) {
                     res.status(500).send(error);
-                    usageDataObject.sendUsageDataException('authRouter', error);
+                    usageDataObject.reportException('authRouter()', error);
                 }
             }
         });
