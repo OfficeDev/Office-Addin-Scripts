@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import * as winreg from "winreg";
+import { ExpectedError } from "office-addin-usage-data";
 
 export class RegistryKey {
   public winreg: winreg.Registry;
@@ -11,11 +12,11 @@ export class RegistryKey {
   }
 
   constructor(path: string) {
-    if (!path) { throw new Error("Please provide a registry key path."); }
+    if (!path) { throw new ExpectedError("Please provide a registry key path."); }
 
     const index = path.indexOf("\\");
 
-    if (index <= 0) { throw new Error(`The registry key path is not valid: "${path}".`); }
+    if (index <= 0) { throw new ExpectedError(`The registry key path is not valid: "${path}".`); }
 
     const hive = path.substring(0, index);
     const subpath = path.substring(index);

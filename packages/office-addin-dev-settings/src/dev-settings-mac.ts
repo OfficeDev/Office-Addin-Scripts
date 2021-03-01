@@ -7,6 +7,7 @@ import { getOfficeApps, getOfficeAppsForManifestHosts, OfficeApp, readManifestFi
 import * as os from "os";
 import * as path from "path";
 import { RegisteredAddin } from "./dev-settings";
+import { ExpectedError } from "office-addin-usage-data";
 
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const registeredAddins: RegisteredAddin[] = [];
@@ -45,12 +46,12 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
       officeApps = getOfficeAppsForManifestHosts(manifest.hosts);
 
       if (officeApps.length === 0) {
-        throw new Error("The manifest file doesn't specify any hosts for the Office Add-in.");
+        throw new ExpectedError("The manifest file doesn't specify any hosts for the Office Add-in.");
       }
     }
 
     if (!manifest.id) {
-      throw new Error("The manifest file doesn't contain the id of the Office Add-in.");
+      throw new ExpectedError("The manifest file doesn't contain the id of the Office Add-in.");
     }
 
     for (const app of officeApps) {
@@ -73,7 +74,7 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
   const manifest = await readManifestFile(manifestPath);
 
   if (!manifest.id) {
-    throw new Error("The manifest file doesn't contain the id of the Office Add-in.");
+    throw new ExpectedError("The manifest file doesn't contain the id of the Office Add-in.");
   }
 
   const registeredAddIns = await getRegisteredAddIns();
