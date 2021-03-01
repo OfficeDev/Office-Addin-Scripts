@@ -71,7 +71,7 @@ export async function enableRuntimeLogging(path: string): Promise<void> {
 }
 
 export function getDeveloperSettingsRegistryKey(addinId: string): registry.RegistryKey {
-  if (!addinId) { throw new ExpectedError("addinId is required. Manifest ID is missing."); }
+  if (!addinId) { throw new ExpectedError("addinId is required."); }
   if (typeof addinId !== "string") { throw new ExpectedError("addinId should be a string."); }
   return new registry.RegistryKey(`${DeveloperSettingsRegistryKey}\\${addinId}`);
 }
