@@ -103,12 +103,11 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
                 }
             }
         }        
-        usageDataObject.sendUsageDataSuccessEvent("validateManifest");
+        usageDataObject.reportSuccess("validateManifest()");
 
         return validation;
-
     } catch (err) {
-        usageDataObject.sendUsageDataException("validateManifest", err);
+        usageDataObject.reportException("validateManifest()", err);
         throw err;
     }
 }
