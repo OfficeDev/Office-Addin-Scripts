@@ -7,6 +7,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as defaults from "./defaults";
 import { usageDataObject } from "./defaults"
+import { ExpectedError } from "office-addin-usage-data";
 
 function getVerifyCommand(): string {
     switch (process.platform) {
@@ -16,7 +17,7 @@ function getVerifyCommand(): string {
        case "darwin": // macOS
           return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
        default:
-          throw new Error(`Platform not supported: ${process.platform}`);
+          throw new ExpectedError(`Platform not supported: ${process.platform}`);
     }
 }
 
@@ -77,10 +78,10 @@ export function verifyCertificates(certificatePath: string = defaults.localhostC
             isCertificateValid = false;
         }
         let output = isCertificateValid && isCaCertificateInstalled();
-        usageDataObject.sendUsageDataSuccessEvent("verifyCertificates");
+        usageDataObject.reportSuccess("verifyCertificates()");
         return output;
     } catch (err) {
-        usageDataObject.sendUsageDataException("verifyCertificates", err);
+        usageDataObject.reportException("verifyCertificates()", err);
         throw err;
     }
 }
