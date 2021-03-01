@@ -5,6 +5,7 @@ import * as childProcess from "child_process";
 import inquirer = require("inquirer");
 import { readManifestFile } from "office-addin-manifest";
 import { URL } from "whatwg-url";
+import { ExpectedError } from "office-addin-usage-data";
 
 export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
 export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
@@ -18,7 +19,7 @@ export const EdgeWebViewName: string = "Microsoft Edge WebView";
  */
 export function addLoopbackExemptionForAppcontainer(name: string): Promise<void> {
   if (!isAppcontainerSupported()) {
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 
   return new Promise((resolve, reject) => {
@@ -49,7 +50,7 @@ export function isAppcontainerSupported() {
  */
 export function isLoopbackExemptionForAppcontainer(name: string): Promise<boolean> {
   if (!isAppcontainerSupported()) {
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 
   return new Promise((resolve, reject) => {
@@ -155,7 +156,7 @@ export async function getAppcontainerNameFromManifest(manifestPath: string): Pro
  */
 export function removeLoopbackExemptionForAppcontainer(name: string): Promise<void> {
   if (!isAppcontainerSupported()) {
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 
   return new Promise((resolve, reject) => {

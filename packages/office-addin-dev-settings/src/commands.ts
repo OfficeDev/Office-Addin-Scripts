@@ -15,6 +15,8 @@ import {
 import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
+import { usageDataObject } from './defaults';
+import { ExpectedError } from "office-addin-usage-data";
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
@@ -44,7 +46,9 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
           throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
         }
       }
+      usageDataObject.reportSuccess("appcontainer");
     } catch (err) {
+      usageDataObject.reportException("appcontainer", err);
       logErrorMessage(err);
     }
   } else {
@@ -61,7 +65,9 @@ export async function clear(manifestPath: string) {
     await devSettings.clearDevSettings(manifest.id!);
 
     console.log("Developer settings have been cleared.");
+    usageDataObject.reportSuccess("clear");
   } catch (err) {
+    usageDataObject.reportException("clear", err);
     logErrorMessage(err);
   }
 }
@@ -75,7 +81,9 @@ export async function debugging(manifestPath: string, command: commander.Command
     } else {
       await isDebuggingEnabled(manifestPath);
     }
+    usageDataObject.reportSuccess("debugging");
   } catch (err) {
+    usageDataObject.reportException("debugging", err);
     logErrorMessage(err);
   }
 }
@@ -99,10 +107,12 @@ export async function disableDebugging(manifestPath: string) {
     await devSettings.disableDebugging(manifest.id!);
 
     console.log("Debugging has been disabled.");
+    usageDataObject.reportSuccess("disableDebugging()");
   } catch (err) {
+    usageDataObject.reportException("disableDebugging()", err);
     logErrorMessage(err);
   }
-}
+}    
 
 export async function disableLiveReload(manifestPath: string) {
   try {
@@ -113,7 +123,9 @@ export async function disableLiveReload(manifestPath: string) {
     await devSettings.disableLiveReload(manifest.id!);
 
     console.log("Live reload has been disabled.");
+    usageDataObject.reportSuccess("disableLiveReload()");
   } catch (err) {
+    usageDataObject.reportException("disableLiveReload()", err);
     logErrorMessage(err);
   }
 }
@@ -123,7 +135,9 @@ export async function disableRuntimeLogging() {
     await devSettings.disableRuntimeLogging();
 
     console.log("Runtime logging has been disabled.");
+    usageDataObject.reportSuccess("disableRuntimeLogging()");
   } catch (err) {
+    usageDataObject.reportException("disableRuntimeLogging()", err);
     logErrorMessage(err);
   }
 }
@@ -137,7 +151,9 @@ export async function enableDebugging(manifestPath: string, command: commander.C
     await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod), command.openDevTools);
 
     console.log("Debugging has been enabled.");
+    usageDataObject.reportSuccess("enableDebugging()");
   } catch (err) {
+    usageDataObject.reportException("enableDebugging()", err);
     logErrorMessage(err);
   }
 }
@@ -151,7 +167,9 @@ export async function enableLiveReload(manifestPath: string) {
     await devSettings.enableLiveReload(manifest.id!);
 
     console.log("Live reload has been enabled.");
+    usageDataObject.reportSuccess("enableLiveReload()");
   } catch (err) {
+    usageDataObject.reportException("enableLiveReload()", err);
     logErrorMessage(err);
   }
 }
@@ -161,7 +179,9 @@ export async function enableRuntimeLogging(path?: string) {
     const logPath = await devSettings.enableRuntimeLogging(path);
 
     console.log(`Runtime logging has been enabled. File: ${logPath}`);
+    usageDataObject.reportSuccess("enableRuntimeLogging()");
   } catch (err) {
+    usageDataObject.reportException("enableRuntimeLogging()", err);
     logErrorMessage(err);
   }
 }
@@ -175,7 +195,9 @@ export async function getSourceBundleUrl(manifestPath: string) {
     const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(manifest.id!);
 
     displaySourceBundleUrl(components);
+    usageDataObject.reportSuccess("getSourceBundleUrl()");
   } catch (err) {
+    usageDataObject.reportException("getSourceBundleUrl()", err);
     logErrorMessage(err);
   }
 }
@@ -191,11 +213,13 @@ export async function isDebuggingEnabled(manifestPath: string) {
     console.log(enabled
       ? "Debugging is enabled."
       : "Debugging is not enabled.");
+      usageDataObject.reportSuccess("isDebuggingEnabled()");
   } catch (err) {
+    usageDataObject.reportException("isDebuggingEnabled()", err);
     logErrorMessage(err);
   }
 }
-
+  
 export async function isLiveReloadEnabled(manifestPath: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -207,11 +231,13 @@ export async function isLiveReloadEnabled(manifestPath: string) {
     console.log(enabled
       ? "Live reload is enabled."
       : "Live reload is not enabled.");
+    usageDataObject.reportSuccess("isLiveReloadEnabled()");
   } catch (err) {
+    usageDataObject.reportException("isLiveReloadEnabled()", err);
     logErrorMessage(err);
   }
 }
-
+  
 export async function isRuntimeLoggingEnabled() {
   try {
     const path = await devSettings.getRuntimeLoggingPath();
@@ -219,18 +245,26 @@ export async function isRuntimeLoggingEnabled() {
     console.log(path
       ? `Runtime logging is enabled. File: ${path}`
       : "Runtime logging is not enabled.");
+    usageDataObject.reportSuccess("isRuntimeLoggingEnabled()");
   } catch (err) {
+    usageDataObject.reportException("isRuntimeLoggingEnabled()", err);
     logErrorMessage(err);
   }
 }
 
 export async function liveReload(manifestPath: string, command: commander.Command) {
-  if (command.enable) {
-    await enableLiveReload(manifestPath);
-  } else if (command.disable) {
-    await disableLiveReload(manifestPath);
-  } else {
-    await isLiveReloadEnabled(manifestPath);
+  try{
+    if (command.enable) {
+      await enableLiveReload(manifestPath);
+    } else if (command.disable) {
+      await disableLiveReload(manifestPath);
+    } else {
+      await isLiveReloadEnabled(manifestPath);
+    }
+    usageDataObject.reportSuccess("liveReload");
+  } catch (err) {
+    usageDataObject.reportException("liveReload", err);
+    logErrorMessage(err);
   }
 }
 
@@ -261,14 +295,16 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
     case undefined:
       return undefined;
     default:
-      throw new Error(`Please select a valid web view type instead of '${webViewString!}'.`);
+      throw new ExpectedError(`Please select a valid web view type instead of '${webViewString}'.`);
   }
 }
 
 export async function register(manifestPath: string, command: commander.Command) {
   try {
     await devSettings.registerAddIn(manifestPath);
+    usageDataObject.reportSuccess("register");
   } catch (err) {
+    usageDataObject.reportException("register", err);
     logErrorMessage(err);
   }
 }
@@ -295,7 +331,9 @@ export async function registered(command: commander.Command) {
     } else {
       console.log("No add-ins are registered.");
     }
+    usageDataObject.reportSuccess("registered");
   } catch (err) {
+    usageDataObject.reportException("registered", err);
     logErrorMessage(err);
   }
 }
@@ -310,7 +348,9 @@ export async function runtimeLogging(command: commander.Command) {
     } else {
       await isRuntimeLoggingEnabled();
     }
+    usageDataObject.reportSuccess("runtimeLogging");
   } catch (err) {
+    usageDataObject.reportException("runtimeLogging", err);
     logErrorMessage(err);
   }
 }
@@ -323,7 +363,9 @@ export async function sideload(manifestPath: string, type: string | undefined, c
     const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
 
     await sideloadAddIn(manifestPath, app, canPrompt, appType, document);
+    usageDataObject.reportSuccess("sideload");
   } catch (err) {
+    usageDataObject.reportException("sideload", err);
     logErrorMessage(err);
   }
 }
@@ -343,7 +385,9 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
 
     console.log("Configured source bundle url.");
     displaySourceBundleUrl(await devSettings.getSourceBundleUrl(manifest.id!));
+    usageDataObject.reportSuccess("setSourceBundleUrl()");
   } catch (err) {
+    usageDataObject.reportException("setSourceBundleUrl()", err);
     logErrorMessage(err);
   }
 }
@@ -355,7 +399,9 @@ export async function sourceBundleUrl(manifestPath: string, command: commander.C
     } else {
       await getSourceBundleUrl(manifestPath);
     }
+    usageDataObject.reportSuccess("sourceBundleUrl");
   } catch (err) {
+    usageDataObject.reportException("sourceBundleUrl", err);
     logErrorMessage(err);
   }
 }
@@ -365,10 +411,10 @@ function parseDevServerPort(optionValue: any): number | undefined {
 
   if (devServerPort !== undefined) {
       if (!Number.isInteger(devServerPort)) {
-          throw new Error("--dev-server-port should be an integer.");
+          throw new ExpectedError("--dev-server-port should be an integer.");
       }
       if ((devServerPort < 0) || (devServerPort > 65535)) {
-          throw new Error("--dev-server-port should be between 0 and 65535.");
+          throw new ExpectedError("--dev-server-port should be between 0 and 65535.");
       }
   }
 
@@ -387,7 +433,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
       // preferred debug method
       return devSettings.DebuggingMethod.Direct;
     default:
-      throw new Error(`Please provide a valid debug method instead of '${text}'.`);
+      throw new ExpectedError(`Please provide a valid debug method instead of '${text}'.`);
   }
 }
 
@@ -398,14 +444,16 @@ export async function unregister(manifestPath: string, command: commander.Comman
     } else {
       await devSettings.unregisterAddIn(manifestPath);
     }
+    usageDataObject.reportSuccess("unregister");
   } catch (err) {
+    usageDataObject.reportException("unregister", err);
     logErrorMessage(err);
   }
 }
 
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
-    throw new Error(`The manifest file doesn't contain the id of the Office Add-in.`);
+    throw new ExpectedError(`The manifest file doesn't contain the id of the Office Add-in.`);
   }
 }
 
@@ -427,7 +475,9 @@ export async function webView(manifestPath: string, webViewString?: string) {
     console.log(webViewTypeName
       ? `The web view type is set to ${webViewTypeName}.`
       : "The web view type has not been set.");
+      usageDataObject.reportSuccess("webView");
   } catch (err) {
+    usageDataObject.reportException("webView", err);
     logErrorMessage(err);
   }
 }

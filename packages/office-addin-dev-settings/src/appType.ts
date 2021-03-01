@@ -1,3 +1,5 @@
+import { ExpectedError } from "office-addin-usage-data";
+
 /**
  * The type of Office application.
  */
@@ -31,7 +33,7 @@ export function parseAppType(text: string | undefined): AppType | undefined {
     case undefined:
       return undefined
     default:
-      throw new Error(`Please select a valid app type instead of '${text}'.`);
+      throw new ExpectedError(`Please select a valid app type instead of '${text}'.`);
   }
 }
 

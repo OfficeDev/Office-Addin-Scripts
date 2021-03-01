@@ -6,6 +6,7 @@ import { readManifestFile } from "office-addin-manifest";
 import * as fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
+import { ExpectedError } from "office-addin-usage-data";
 import { platform } from "os";
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
@@ -64,7 +65,7 @@ export async function clearDevSettings(addinId: string): Promise<void> {
     case "win32":
       return devSettingsWindows.clearDevSettings(addinId);
   default:
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -81,7 +82,7 @@ export async function disableRuntimeLogging(): Promise<void> {
     case "win32":
       return devSettingsWindows.disableRuntimeLogging();
   default:
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -90,7 +91,7 @@ export async function enableDebugging(addinId: string, enable: boolean = true, m
     case "win32":
       return devSettingsWindows.enableDebugging(addinId, enable, method, openDevTools);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -99,7 +100,7 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
     case "win32":
       return devSettingsWindows.enableLiveReload(addinId, enable);
   default:
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -109,7 +110,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       if (!path) {
         const tempDir = process.env.TEMP;
         if (!tempDir) {
-          throw new Error("The TEMP environment variable is not defined.");
+          throw new ExpectedError("The TEMP environment variable is not defined.");
         }
         path = fspath.normalize(`${tempDir}/${defaultRuntimeLogFileName}`);
       }
@@ -118,7 +119,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       if (pathExists) {
         const stat = fs.statSync(path);
         if (stat.isDirectory()) {
-          throw new Error(`You need to specify the path to a file. This is a directory: "${path}".`);
+          throw new ExpectedError(`You need to specify the path to a file. This is a directory: "${path}".`);
         }
       }
       try {
@@ -133,7 +134,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       await devSettingsWindows.enableRuntimeLogging(path);
       return path;
   default:
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -147,7 +148,7 @@ export async function getRegisterAddIns(): Promise<RegisteredAddin[]>  {
     case "win32":
       return devSettingsWindows.getRegisteredAddIns();
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -156,7 +157,7 @@ export async function getEnabledDebuggingMethods(addinId: string): Promise<Debug
     case "win32":
       return devSettingsWindows.getEnabledDebuggingMethods(addinId);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -165,7 +166,7 @@ export async function getOpenDevTools(addinId: string): Promise<boolean> {
     case "win32":
       return devSettingsWindows.getOpenDevTools(addinId);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -174,7 +175,7 @@ export async function getRuntimeLoggingPath(): Promise<string | undefined> {
     case "win32":
       return devSettingsWindows.getRuntimeLoggingPath();
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -183,7 +184,7 @@ export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleU
     case "win32":
       return devSettingsWindows.getSourceBundleUrl(addinId);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -192,7 +193,7 @@ export async function getWebView(addinId: string): Promise<WebViewType | undefin
     case "win32":
       return devSettingsWindows.getWebView(addinId);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -201,7 +202,7 @@ export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
     case "win32":
       return devSettingsWindows.isDebuggingEnabled(addinId);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -210,7 +211,7 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
     case "win32":
       return devSettingsWindows.isLiveReloadEnabled(addinId);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -223,7 +224,7 @@ export async function registerAddIn(manifestPath: string): Promise<void> {
     case "darwin":
       return devSettingsMac.registerAddIn(manifestPath);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -232,7 +233,7 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
     case "win32":
       return devSettingsWindows.setSourceBundleUrl(addinId, components);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -241,7 +242,7 @@ export async function setWebView(addinId: string, webViewType: WebViewType | und
     case "win32":
       return devSettingsWindows.setWebView(addinId, webViewType);;
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -254,7 +255,7 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
       const realManifestPath = fs.realpathSync(manifestPath);
       return devSettingsWindows.unregisterAddIn(manifest.id || "", realManifestPath);
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -265,6 +266,6 @@ export async function unregisterAllAddIns(): Promise<void> {
     case "win32":
       return devSettingsWindows.unregisterAllAddIns();
     default:
-      throw new Error(`Platform not supported: ${process.platform}.`);
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
