@@ -8,6 +8,7 @@ import { usageDataObject } from './defaults';
 import * as configure from './configure';
 import { SSOService } from './server';
 import { addSecretToCredentialStore, writeApplicationData } from './ssoDataSettings';
+import { ExpectedError } from 'office-addin-usage-data';
 
 let usageDataInfo: Object = {};
 
@@ -86,7 +87,7 @@ export async function configureSSO(manifestPath: string) {
             addSecretToCredentialStore(manifestInfo.displayName, secret);
         } else {
             const errorMessage = 'Failed to register application';
-            usageDataObject.sendUsageDataException('createNewApplication', errorMessage);
+            usageDataObject.reportException('createNewApplication', errorMessage);
             console.log(chalk.red(errorMessage));
             return;
         }
@@ -107,24 +108,29 @@ export async function configureSSO(manifestPath: string) {
         const ssoConfigDuration = (ssoConfigEndTime - ssoConfigStartTime) / 1000
 
         // Send usage data
-        usageDataObject.sendUsageDataSuccessEvent('configureSSO', {configDuration: ssoConfigDuration});
+        usageDataObject.reportSuccess('configureSSO', {configDuration: ssoConfigDuration});
     }
     else {
         const errorMessage: string = 'Login to Azure did not succeed';
-        usageDataObject.sendUsageDataException('configureSSO', errorMessage);
+        usageDataObject.reportException('configureSSO', errorMessage);
         throw new Error(errorMessage);
     }
 
 }
 
 export async function startSSOService(manifestPath: string) {
-    // Check platform and return if not Windows or Mac
-    if (process.platform !== "win32" && process.platform !== "darwin") {
-        console.log(chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`));
-        return;
+    try {
+        // Check platform and return if not Windows or Mac
+        if (process.platform !== "win32" && process.platform !== "darwin") {
+            console.log(chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`));
+            throw new ExpectedError(`${process.platform} is not supported. Only Windows and Mac are supported`);
+        }
+        const sso = new SSOService(manifestPath);
+        sso.startSsoService();
+        usageDataObject.reportSuccess('startSSOService');
+    } catch(err) {
+        usageDataObject.reportException('startSSOService', err);
     }
-    const sso = new SSOService(manifestPath);
-    sso.startSsoService();
 }
 
 function parseDevServerPort(optionValue: any): number | undefined {
@@ -132,10 +138,10 @@ function parseDevServerPort(optionValue: any): number | undefined {
 
     if (devServerPort !== undefined) {
         if (!Number.isInteger(devServerPort)) {
-            throw new Error("--dev-server-port should be an integer.");
+            throw new ExpectedError("--dev-server-port should be an integer.");
         }
         if ((devServerPort < 0) || (devServerPort > 65535)) {
-            throw new Error("--dev-server-port should be between 0 and 65535.");
+            throw new ExpectedError("--dev-server-port should be between 0 and 65535.");
         }
     }
 

@@ -8,16 +8,18 @@ import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
+import { usageDataObject } from './defaults';
+import { ExpectedError } from "office-addin-usage-data";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {
     let manifestPath = process.env.npm_package_config_manifest_location || "";
     manifestPath = manifestPath.replace("${flavor}", dev ? "dev" : "prod").replace("${platform}", platform);
 
     if (!manifestPath) {
-        throw new Error(`The manifest path was not provided.`);
+        throw new ExpectedError(`The manifest path was not provided.`);
     }
     if (!fs.existsSync(manifestPath)) {
-        throw new Error(`The manifest path does not exist: ${manifestPath}.`);
+        throw new ExpectedError(`The manifest path does not exist: ${manifestPath}.`);
     }
 
     return manifestPath;
@@ -28,10 +30,10 @@ function parseDevServerPort(optionValue: any): number | undefined {
 
     if (devServerPort !== undefined) {
         if (!Number.isInteger(devServerPort)) {
-            throw new Error("--dev-server-port should be an integer.");
+            throw new ExpectedError("--dev-server-port should be an integer.");
         }
         if ((devServerPort < 0) || (devServerPort > 65535)) {
-            throw new Error("--dev-server-port should be between 0 and 65535.");
+            throw new ExpectedError("--dev-server-port should be between 0 and 65535.");
         }
     }
 
@@ -61,15 +63,15 @@ export async function start(manifestPath: string, platform: string | undefined, 
             command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
 
         if (appPlatformToDebug === undefined) {
-            throw new Error("Please specify the platform to debug.");
+            throw new ExpectedError("Please specify the platform to debug.");
         }
 
         if (appTypeToDebug === undefined) {
-            throw new Error("Please specify the application type to debug.");
+            throw new ExpectedError("Please specify the application type to debug.");
         }
 
         if (appPlatformToDebug === Platform.Android || appPlatformToDebug === Platform.iOS) {
-            throw new Error(`Platform type ${appPlatformToDebug} not currently supported for debugging`);
+            throw new ExpectedError(`Platform type ${appPlatformToDebug} not currently supported for debugging`);
         }
 
         if (!manifestPath) {
@@ -94,7 +96,9 @@ export async function start(manifestPath: string, platform: string | undefined, 
             document
         });
 
+        usageDataObject.reportSuccess("start");
     } catch (err) {
+        usageDataObject.reportException("start", err);
         logErrorMessage(`Unable to start debugging.\n${err}`);
     }
 }
@@ -109,7 +113,9 @@ export async function stop(manifestPath: string, platform: string | undefined, c
         }
 
         await stopDebugging(manifestPath);
+        usageDataObject.reportSuccess("stop");
     } catch (err) {
+        usageDataObject.reportException("stop", err);
         logErrorMessage(`Unable to stop debugging.\n${err}`);
     }
 }

@@ -8,6 +8,7 @@ import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
 import { isCaCertificateInstalled, verifyCertificates } from "./verify";
 import { usageDataObject } from "./defaults"
+import { ExpectedError } from "office-addin-usage-data";
 
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
    switch (process.platform) {
@@ -17,7 +18,7 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
       case "darwin": // macOS
          return `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
       default:
-         throw new Error(`Platform not supported: ${process.platform}`);
+         throw new ExpectedError(`Platform not supported: ${process.platform}`);
    }
 }
 
@@ -34,9 +35,9 @@ export async function ensureCertificatesAreInstalled(daysUntilCertificateExpires
          await installCaCertificate(defaults.caCertificatePath, machine);
       }
       
-      usageDataObject.sendUsageDataSuccessEvent("ensureCertificatesAreInstalled");
+      usageDataObject.reportSuccess("ensureCertificatesAreInstalled()");
    } catch(err) {
-      usageDataObject.sendUsageDataException("ensureCertificatesAreInstalled", err);
+      usageDataObject.reportException("ensureCertificatesAreInstalled()", err);
       throw err;
    }
 }
