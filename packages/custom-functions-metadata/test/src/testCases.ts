@@ -79,10 +79,6 @@ describe("test cases", function() {
                         }
 
                         assert.strictEqual(actualMetadata, expectedMetadata, "metadata does not match expected");
-                        if (actualMetadata !== expectedMetadata) {
-                            console.log(`actualMetadata:\n${actualMetadata}`);                            
-                            console.log(`expectedMetadata:\n${expectedMetadata}`);
-                        }
                         assert.strictEqual(actualErrors, expectedErrors, "errors do not match expected");
 
                         // if actual metadata is what was expected, delete the actual metadata file
