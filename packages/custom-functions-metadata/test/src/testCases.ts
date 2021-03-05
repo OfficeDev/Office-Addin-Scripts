@@ -5,7 +5,7 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
 import * as path from "path";
-import { generate } from "../../src/generate";
+import { generateCustomFunctionsMetadata } from "../../src/generate";
 
 function deleteFileIfExists(filePath: string): void {
     if (fs.existsSync(filePath)) {
@@ -48,7 +48,7 @@ describe("test cases", function() {
                         const expectedErrorsFile = path.join(testCaseDirPath, `expected.${scriptType}.errors.txt`);
                         const actualMetadataFile = path.join(testCaseDirPath, `actual.${scriptType}.json`);
                         const expectedMetadataFile = path.join(testCaseDirPath, "expected.json");
-                        const expectedMetadata: string | undefined = readFileIfExists(expectedMetadataFile);
+                        const expectedMetadata: string | undefined = readFileIfExists(expectedMetadataFile) || "";
 
                         // add a file named "debugger" to break on the test case
                         if (fs.existsSync(path.resolve(testCaseDirPath, "debugger"))) {
@@ -57,11 +57,18 @@ describe("test cases", function() {
                         }
 
                         // generate metadata
-                        const result = await generate(sourceFile, actualMetadataFile);
+                        const result = await generateCustomFunctionsMetadata(sourceFile);
 
-                        const actualMetadata = readFileIfExists(actualMetadataFile);
+                        const actualMetadata = result.metadataJson;
                         const actualErrors = (result.errors.length > 0) ? result.errors.join("\n") : undefined;
                         const expectedErrors = readFileIfExists(expectedErrorsFile);
+
+                        if (result.errors.length > 0) {
+                            deleteFileIfExists(actualMetadataFile);
+                        } else {
+                            // write the actual metadata file
+                            fs.writeFileSync(actualMetadataFile, actualMetadata);
+                        }
 
                         // if actual errors are different than expected, write out the actual errors to a file
                         // otherwise, delete the actual errors file if it exists
@@ -72,6 +79,10 @@ describe("test cases", function() {
                         }
 
                         assert.strictEqual(actualMetadata, expectedMetadata, "metadata does not match expected");
+                        if (actualMetadata !== expectedMetadata) {
+                            console.log(`actualMetadata:\n${actualMetadata}`);                            
+                            console.log(`expectedMetadata:\n${expectedMetadata}`);
+                        }
                         assert.strictEqual(actualErrors, expectedErrors, "errors do not match expected");
 
                         // if actual metadata is what was expected, delete the actual metadata file
