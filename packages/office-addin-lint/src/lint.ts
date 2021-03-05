@@ -34,12 +34,12 @@ export function performLintCheck(files: string) {
   try {
     const command = getLintCheckCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintCheck", { exitCode: ESLintExitCode.NoLintErrors });
+    usageDataObject.reportSuccess("performLintCheck()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.sendUsageDataSuccessEvent("performLintCheck", { exitCode: ESLintExitCode.HasLintError });
+      usageDataObject.reportExpectedException("performLintCheck()", err, { exitCode: ESLintExitCode.HasLintError });
     } else {
-      usageDataObject.sendUsageDataException("performLintCheck", err);
+      usageDataObject.reportException("performLintCheck()", err);
     }
     throw err;
   }
@@ -54,12 +54,12 @@ export function performLintFix(files: string) {
   try {
     const command = getLintFixCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintFix", { exitCode: ESLintExitCode.NoLintErrors });
+    usageDataObject.reportSuccess("performLintFix()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.sendUsageDataSuccessEvent("performLintFix", { exitCode: ESLintExitCode.HasLintError });
+      usageDataObject.reportExpectedException("performLintFix()", err, { exitCode: ESLintExitCode.HasLintError });
     } else {
-      usageDataObject.sendUsageDataException("performLintFix", err);
+      usageDataObject.reportException("performLintFix()", err);
     }
     throw err;
   }
@@ -74,14 +74,14 @@ export function makeFilesPrettier(files: string) {
   try {
     const command = getPrettierCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", { exitCode: PrettierExitCode.NoFormattingProblems });
+    usageDataObject.reportSuccess("makeFilesPrettier()", { exitCode: PrettierExitCode.NoFormattingProblems });
   } catch (err) {
     if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
-      usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier", {
+      usageDataObject.reportExpectedException("makeFilesPrettier()", err, {
         exitCode: PrettierExitCode.HasFormattingProblem
       });
     } else {
-      usageDataObject.sendUsageDataException("makeFilesPrettier", err);
+      usageDataObject.reportException("makeFilesPrettier()", err);
     }
     throw err;
   }

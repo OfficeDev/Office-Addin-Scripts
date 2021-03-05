@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-office-addins",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "eslint plugin for office-addins",
   "keywords": [
     "eslint",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.34",
-    "concurrently": "^5.3.0",
+    "concurrently": "^6.0.0",
     "rimraf": "^3.0.2",
     "typescript": "^3.8.3"
   },

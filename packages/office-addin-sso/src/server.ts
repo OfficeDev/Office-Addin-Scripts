@@ -33,10 +33,10 @@ export class SSOService {
                 await this.getSecret(isTest);
                 await this.startServer(this.app.appInstance, this.port);
                 this.ssoServiceStarted = true;
-                usageDataObject.sendUsageDataSuccessEvent('startSsoService');
+                usageDataObject.reportSuccess('startSsoService()');
                 resolve(true);
             } catch(err) {
-                usageDataObject.sendUsageDataException('startSsoService', err);
+                usageDataObject.reportException('startSsoService()', err);
                 reject(false);
             }
         });

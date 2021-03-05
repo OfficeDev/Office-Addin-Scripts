@@ -1,6 +1,6 @@
 {
   "name": "office-addin-usage-data",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Provides infrastructure to send usage data events and exceptions.",
   "main": "./lib/main.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "@types/es6-promise": "3.3.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.34",
-    "concurrently": "^5.3.0",
+    "concurrently": "^6.0.0",
     "mocha": "^7.1.1",
     "rimraf": "^3.0.2",
     "ts-node": "^8.8.1",

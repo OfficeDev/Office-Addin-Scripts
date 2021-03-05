@@ -19,9 +19,9 @@ export async function info(manifestPath: string) {
   try {
     const manifest = await manifestInfo.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
-    usageDataObject.sendUsageDataSuccessEvent("info");
+    usageDataObject.reportSuccess("info");
   } catch (err) {
-    usageDataObject.sendUsageDataException("info", err);
+    usageDataObject.reportException("info", err);
     logErrorMessage(err);
   }
 }
@@ -122,10 +122,12 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
     const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
+    usageDataObject.reportSuccess("modify");
   } catch (err) {
+    usageDataObject.reportException("modify", err);
     logErrorMessage(err);
   }
-}
+}  
 
 export async function validate(manifestPath: string, command: commander.Command) {
   try {
@@ -151,7 +153,9 @@ export async function validate(manifestPath: string, command: commander.Command)
     }
 
     process.exitCode = validation.isValid ? 0 : 1;
+    usageDataObject.reportSuccess("validate");
   } catch (err) {
+    usageDataObject.reportException("validate", err);
     logErrorMessage(err);
   }
 }

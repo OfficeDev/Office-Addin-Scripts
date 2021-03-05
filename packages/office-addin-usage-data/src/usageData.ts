@@ -324,7 +324,7 @@ export class OfficeAddinUsageData {
         this.usageDataClient.trackException(exceptionTelemetryObj);
         this.exceptionsSent++;
       } catch (e) {
-        this.reportError("sendUsageDataException", e);
+        this.reportError("reportException", e);
         throw e;
       }
     }

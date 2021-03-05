@@ -84,11 +84,11 @@ export async function modifyManifestFile(manifestPath: string, guid?: string, di
         manifestData = await modifyManifestXml(manifestPath, guid, displayName);
         await writeManifestData(manifestPath, manifestData);
         let output = await readManifestFile(manifestPath);
-        usageDataObject.sendUsageDataSuccessEvent("modifyManifestFile");
+        usageDataObject.reportSuccess("modifyManifestFile()");
         return output;
         
       } catch(err) {
-        usageDataObject.sendUsageDataException("modifyManifestFile", err);
+        usageDataObject.reportException("modifyManifestFile()", err);
         throw err;
       }
     }

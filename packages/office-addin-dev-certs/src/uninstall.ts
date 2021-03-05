@@ -7,6 +7,7 @@ import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 import { usageDataObject } from "./defaults"
+import { ExpectedError } from "office-addin-usage-data";
 
 function getUninstallCommand(machine: boolean = false): string {
    switch (process.platform) {
@@ -16,7 +17,7 @@ function getUninstallCommand(machine: boolean = false): string {
       case "darwin": // macOS
          return `sudo security delete-certificate -c '${defaults.certificateName}'`;
       default:
-         throw new Error(`Platform not supported: ${process.platform}`);
+         throw new ExpectedError(`Platform not supported: ${process.platform}`);
    }
 }
 
@@ -41,9 +42,9 @@ export async function uninstallCaCertificate(machine: boolean = false, verbose: 
          console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
          execSync(command, {stdio : "pipe" });
          console.log(`You no longer have trusted access to https://localhost.`);
-         usageDataObject.sendUsageDataSuccessEvent("uninstallCaCertificate");
+         usageDataObject.reportSuccess("uninstallCaCertificate()");
       } catch (error) {
-         usageDataObject.sendUsageDataException("uninstallCaCertificate", error);
+         usageDataObject.reportException("uninstallCaCertificate()", error);
          throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
       }
    } else {

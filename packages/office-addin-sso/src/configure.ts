@@ -7,6 +7,7 @@ import * as childProcess from 'child_process';
 import * as defaults from './defaults';
 import * as fs from 'fs';
 import { usageDataObject } from './defaults';
+import { ExpectedError } from 'office-addin-usage-data';
 require('dotenv').config();
 
 export async function createNewApplication(ssoAppName: string, port: string, userJson: Object): Promise<Object> {
@@ -66,18 +67,18 @@ export async function isAzureCliInstalled(): Promise<boolean> {
                 const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
                 cliInstalled = appsWindows.filter(app => app.DisplayName === 'Microsoft Azure CLI').length > 0;
                 // Send usage data
-                usageDataObject.sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
+                usageDataObject.reportSuccess('isAzureCliInstalled()', {cliInstalled: cliInstalled});
                 return cliInstalled;
             case "darwin":
                 const appsInstalledMacCommand = 'brew list';
                 const appsMac: Object | string = await promiseExecuteCommand(appsInstalledMacCommand, false /* returnJson */);
                 cliInstalled = appsMac.toString().includes('azure-cli');
                 // Send usage data
-                usageDataObject.sendUsageDataSuccessEvent('isAzureCliInstalled', {cliInstalled: cliInstalled});
+                usageDataObject.reportSuccess('isAzureCliInstalled()', {cliInstalled: cliInstalled});
                 return cliInstalled;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                throw new Error(errorMessage);
+                throw new ExpectedError(errorMessage);
         }        
     } catch (err) {
         const errorMessage: string = `Unable to determine if Azure CLI is installed: \n${err}`;
@@ -98,7 +99,7 @@ export async function installAzureCli(): Promise<void> {
                 break;
             default:
                 const errorMessage: string = `Platform not supported: ${process.platform}`;
-                throw new Error(errorMessage);
+                throw new ExpectedError(errorMessage);
         }
     } catch (err) {
         const errorMessage: string = `Unable to install Azure CLI: \n${err}`;
@@ -128,7 +129,7 @@ export async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
         });
 
         // Send usage data
-        usageDataObject.sendUsageDataSuccessEvent('isUserTenantAdmin', {isUserTenantAdmin: isTenantAdmin});
+        usageDataObject.reportSuccess('isUserTenantAdmin()', {isUserTenantAdmin: isTenantAdmin});
 
         return isTenantAdmin;
     } catch (err) {
@@ -247,7 +248,7 @@ export async function setSharePointTenantReplyUrls(tenantName: string): Promise<
         }
 
         // Send usage data
-        usageDataObject.sendUsageDataSuccessEvent('setTenantReplyUrls', {isUserTenantAdmin: setReplyUrls});
+        usageDataObject.reportSuccess('setTenantReplyUrls()', {isUserTenantAdmin: setReplyUrls});
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
@@ -292,11 +293,11 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
         }
 
         // Send usage data
-        usageDataObject.sendUsageDataSuccessEvent('setOutlookTenantReplyUrls', {tenantReplyUrlsSet: setReplyUrls});
+        usageDataObject.reportSuccess('setOutlookTenantReplyUrls()', {tenantReplyUrlsSet: setReplyUrls});
         return setReplyUrls;
     } catch (err) {
         const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
-        usageDataObject.sendUsageDataException('setOutlookTenantReplyUrls', errorMessage);
+        usageDataObject.reportException('setOutlookTenantReplyUrls()', errorMessage);
         throw new Error(errorMessage);
     }
 }
