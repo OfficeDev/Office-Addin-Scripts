@@ -43,9 +43,8 @@ class CustomFunctionsMetadataPlugin {
                 errors.forEach((err: string) => compilation.errors.push(new WebpackError(inputFilePath + " " + err)));
             } else {
                 const content = fs.readFileSync(outputFilePath);
-                compilation.emitAsset(outputFilePath, new sources.RawSource(content));
+                compilation.assets[this.options.output] = new sources.RawSource(content);
             }
-            
         });
 
         compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
