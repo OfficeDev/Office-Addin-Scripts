@@ -48,7 +48,7 @@ describe("test cases", function() {
                         const expectedErrorsFile = path.join(testCaseDirPath, `expected.${scriptType}.errors.txt`);
                         const actualMetadataFile = path.join(testCaseDirPath, `actual.${scriptType}.json`);
                         const expectedMetadataFile = path.join(testCaseDirPath, "expected.json");
-                        const expectedMetadata: string | undefined = readFileIfExists(expectedMetadataFile) || "";
+                        const expectedMetadata = readFileIfExists(expectedMetadataFile) || "";
 
                         // add a file named "debugger" to break on the test case
                         if (fs.existsSync(path.resolve(testCaseDirPath, "debugger"))) {
