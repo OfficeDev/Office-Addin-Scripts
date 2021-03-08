@@ -11,7 +11,7 @@ commander.name("custom-functions-metadata");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
-  .command("generate <source-file> <metadata-file>")
+  .command("generate <source-file> [output-file]")
   .description("Generate the metadata for the custom functions from the source code.")
   .action(commands.generate);
 

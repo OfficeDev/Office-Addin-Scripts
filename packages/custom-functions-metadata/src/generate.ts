@@ -12,36 +12,37 @@ export interface ICustomFunctionsMetadata {
 export interface IFunction {
   id: string;
   name: string;
-  description: string;
-  helpUrl: string;
+  description?: string;
+  helpUrl?: string;
   parameters: IFunctionParameter[];
-  result: IFunctionResult;
-  options: IFunctionOptions;
+  result?: IFunctionResult;
+  options?: IFunctionOptions;
 }
 
 export interface IFunctionOptions {
-  cancelable: boolean;
-  requiresAddress: boolean;
-  stream: boolean;
-  volatile: boolean;
-  requiresParameterAddresses: boolean;
+  cancelable?: boolean;
+  requiresAddress?: boolean;
+  stream?: boolean;
+  volatile?: boolean;
+  requiresParameterAddresses?: boolean;
 }
 
 export interface IFunctionParameter {
   name: string;
   description?: string;
   type: string;
-  dimensionality: string;
-  optional: boolean;
-  repeating: boolean;
+  dimensionality?: string;
+  optional?: boolean;
+  repeating?: boolean;
 }
 
 export interface IFunctionResult {
-  type: string;
-  dimensionality: string;
+  type?: string;
+  dimensionality?: string;
 }
 
 export interface IGenerateResult {
+  metadataJson: string;
   associate: IAssociate[];
   errors: string[];
 }
@@ -153,47 +154,35 @@ type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
-export async function generate(
+export async function generateCustomFunctionsMetadata(
   inputFile: string,
-  outputFileName: string,
   wantConsoleOutput: boolean = false
 ): Promise<IGenerateResult> {
-  const errors: string[] = [];
-  const associate: IAssociate[] = [];
   const generateResults: IGenerateResult = {
-    associate,
-    errors
+    metadataJson: "",
+    associate: [],
+    errors: []
   };
 
   if (fs.existsSync(inputFile)) {
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
-    parseTreeResult.extras.forEach(extra => extra.errors.forEach(err => errors.push(err)));
-    generateResults.associate = [...parseTreeResult.associate];
+    parseTreeResult.extras.forEach(extra => extra.errors.forEach(err => generateResults.errors.push(err)));
 
-    if (errors.length === 0) {
-      const json = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
-
-      try {
-        fs.writeFileSync(outputFileName, json);
-
-        if (wantConsoleOutput) {
-          console.log(`${outputFileName} created for file: ${inputFile}`);
-        }
-      } catch (err) {
-        if (wantConsoleOutput) {
-          console.error(err);
-        }
-        throw new Error(`Error writing: ${outputFileName} : ${err}`);
+    if (generateResults.errors.length > 0) {
+      if (wantConsoleOutput) {
+        console.error("Errors in file: " + inputFile);
+        generateResults.errors.forEach(err => console.error(err));
       }
-    } else if (wantConsoleOutput) {
-      console.error("Errors in file: " + inputFile);
-      errors.forEach(err => console.error(err));
+    } else {
+      generateResults.metadataJson = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
+      generateResults.associate = [...parseTreeResult.associate];
     }
   } else {
     throw new Error(`File not found: ${inputFile}`);
   }
-  return Promise.resolve(generateResults);
+
+  return generateResults;
 }
 
 /**
