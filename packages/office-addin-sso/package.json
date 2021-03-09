@@ -31,7 +31,7 @@
     "morgan": "1.9.1",
     "node-fetch": "^2.6.1",
     "office-addin-usage-data": "^1.0.24",
-    "pug": "^3.0.2"
+    "pug": "^2.0.4"
   },
   "devDependencies": {
     "@types/cors": "2.8.4",
