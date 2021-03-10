@@ -79,6 +79,12 @@
     "extends": [
       "prettier",
       "prettier/@typescript-eslint"
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
     ]
   },
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
