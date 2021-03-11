@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-settings",
-  "version": "1.8.17",
+  "version": "1.8.18",
   "description": "Configure developer settings for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -25,9 +25,9 @@
     "inquirer": "^7.3.3",
     "jszip": "^3.5.0",
     "junk": "^3.1.0",
-    "office-addin-cli": "^1.0.18",
-    "office-addin-manifest": "^1.5.17",
-    "office-addin-usage-data": "^1.0.24",
+    "office-addin-cli": "^1.0.19",
+    "office-addin-manifest": "^1.5.18",
+    "office-addin-usage-data": "^1.0.25",
     "open": "^6.4.0",
     "whatwg-url": "^7.1.0",
     "winreg": "^1.2.4"
