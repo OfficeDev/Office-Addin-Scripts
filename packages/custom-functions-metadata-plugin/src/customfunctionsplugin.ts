@@ -4,7 +4,7 @@
 import { generateCustomFunctionsMetadata, IGenerateResult } from "custom-functions-metadata";
 import * as fs from "fs";
 import * as path from "path";
-import * as webpack from "webpack";
+import { Compiler, sources, WebpackError } from "webpack";
 
 const pluginName = "CustomFunctionsMetadataPlugin";
 
@@ -17,7 +17,9 @@ class CustomFunctionsMetadataPlugin {
         this.options = options;
     }
 
-    public apply(compiler: webpack.Compiler) {
+    public apply(compiler: Compiler) {
+        const outputPath: string = (compiler.options && compiler.options.output) ? compiler.options.output.path || "" : "";
+        const outputFilePath = path.resolve(outputPath, this.options.output);
         const inputFilePath = path.resolve(this.options.input);
         let generateResult: IGenerateResult;
 
@@ -27,17 +29,14 @@ class CustomFunctionsMetadataPlugin {
 
         compiler.hooks.emit.tap(pluginName, (compilation) => {
             if (generateResult.errors.length > 0) {
-                generateResult.errors.forEach((err: string) => compilation.errors.push(inputFilePath + " " + err));
+                generateResult.errors.forEach((err: string) => compilation.errors.push(new WebpackError(inputFilePath + " " + err)));
             } else {
-                compilation.assets[this.options.output] = {
-                    source() { return generateResult.metadataJson; },
-                    size() { return generateResult.metadataJson.length; },
-                };
+                compilation.assets[this.options.output] = new sources.RawSource(generateResult.metadataJson);
             }
         });
 
         compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
-            compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (source, module) => {
+            compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (source : any, module : any) => {
                 if (module._source && module._source._name.endsWith(inputFilePath)) {
                     generateResult.associate.forEach((item: { id: string; functionName: string; }) => {
                         module._source._value += `\nCustomFunctions.associate("${item.id}", ${item.functionName});`;
