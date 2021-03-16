@@ -16,8 +16,8 @@ function execCommand(command: string) {
   const child = execSync(command, { stdio: "inherit" });
 }
 
-function normalizeFilePath(filePath: string) : string {
-  return filePath.replace(/ /g, '\\ '); // Converting space to '\\'
+function normalizeFilePath(filePath: string): string {
+  return filePath.replace(/ /g, "\\ "); // Converting space to '\\'
 }
 
 function getEsLintBaseCommand(): string {
@@ -78,7 +78,7 @@ export function makeFilesPrettier(files: string) {
   } catch (err) {
     if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
       usageDataObject.reportExpectedException("makeFilesPrettier()", err, {
-        exitCode: PrettierExitCode.HasFormattingProblem
+        exitCode: PrettierExitCode.HasFormattingProblem,
       });
     } else {
       usageDataObject.reportException("makeFilesPrettier()", err);
