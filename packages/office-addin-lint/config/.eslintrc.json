@@ -4,7 +4,7 @@
       "@typescript-eslint"
     ],
     "rules": {
-      "prettier/prettier": "error",
+      "prettier/prettier": ["error", { "endOfLine": "auto" }],
       "no-eval": "error",
       "no-delete-var": "warn",
       "no-octal": "warn",
