@@ -1,0 +1,10 @@
+{
+    "scripts": {
+      "test": "1",
+      "test-test": "2",
+      "test_test": "3",
+      "test test": "4",
+      "test-tes-te": "5"
+    }
+}
+  

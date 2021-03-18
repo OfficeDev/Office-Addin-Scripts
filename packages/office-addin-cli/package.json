@@ -21,7 +21,8 @@
   ],
   "dependencies": {
     "commander": "^6.2.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "read-package-json-fast": "^2.0.2"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
