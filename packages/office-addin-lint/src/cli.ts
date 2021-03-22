@@ -30,7 +30,7 @@ commander
   .action(commands.prettier);
 
 // if the command is not known, display an error
-commander.on("command:*", function() {
+commander.on("command:*", function () {
   logErrorMessage(`The command syntax is not valid.\n`);
   process.exitCode = 1;
   commander.help();

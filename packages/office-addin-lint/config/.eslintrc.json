@@ -20,7 +20,6 @@
       "project": "./tsconfig.json"
     },
     "extends": [
-      "prettier",
-      "prettier/@typescript-eslint"
+      "prettier"
     ]
   }
