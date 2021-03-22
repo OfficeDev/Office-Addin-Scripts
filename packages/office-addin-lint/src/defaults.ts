@@ -3,7 +3,7 @@
 
 import * as usageData from "office-addin-usage-data";
 
-export const lintFiles = "src/**/*.{ts,tsx,js,jsx}";
+export const lintFiles = "src/**/*.{ts?(x),js?(x)}";
 
 export enum ESLintExitCode {
   NoLintErrors = 0,
