@@ -12,6 +12,7 @@
     "eslint"
   ],
   "devDependencies": {
+    "@types/es6-promise": "^3.3.0",
     "@types/node": "^12.12.34",
     "concurrently": "^6.0.0",
     "rimraf": "^2.7.1",

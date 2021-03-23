@@ -24,6 +24,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "@types/es6-promise": "^3.3.0",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.12.34",
     "@types/node-fetch": "^2.5.5",
