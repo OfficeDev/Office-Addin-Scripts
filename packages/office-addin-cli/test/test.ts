@@ -6,6 +6,7 @@ import * as mocha from "mocha";
 import * as sinon from "sinon";
 import * as log from "../src/log";
 import * as parse from "../src/parse";
+import * as jsonScript from "../src/getPackageJsonScript";
 
 function isError(err: Error, message: string): boolean {
   return (err instanceof Error) && err.message === message;
@@ -71,6 +72,64 @@ describe("office-addin-cli tests", function() {
       });
       it("null", function() {
         assert.throws(() => parse.parseNumber(null), errorShouldBeANumber);
+      });
+    });
+  });
+
+  describe("get_package_json_script.ts", function() {
+    describe("getPackageJsonScript() for npmv6", function() {
+      let npm_package_json_backup: string | undefined;
+      before(async function() {
+        npm_package_json_backup = process.env.npm_package_json;
+      });
+      it("npm - empty string", async function() {
+        assert.strictEqual(await jsonScript.getPackageJsonScript(""), undefined);
+      });
+      it("npmv6 - exists", async function() {
+        process.env["npm_package_scripts_test"] = "npmv6 1";
+        process.env.npm_package_json = "";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("test"), "npmv6 1");
+      });
+      it("npmv6 - non existent", async function() {
+        process.env.npm_package_json = "";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("npmv6testmissing"), undefined);
+      });
+      after(function() {
+        process.env.npm_package_json = npm_package_json_backup;
+      });
+    });
+
+    describe("getPackageJsonScript() for npmv7", function() {
+      let npm_package_json_backup: string | undefined;
+      before(async function() {
+        npm_package_json_backup = process.env.npm_package_json;
+      });
+      it("npmv7 - no hyphen", async function() {
+        process.env.npm_package_json = "./test/test.json";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("test"), "1");
+      });
+      it("npmv7 - hyphen", async function() {
+        process.env.npm_package_json = "./test/test.json";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("test-test"), "2");
+      });
+      it("npmv7 - underscore", async function() {
+        process.env.npm_package_json = "./test/test.json";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("test_test"), "3");
+      });
+      it("npmv7 - space", async function() {
+        process.env.npm_package_json = "./test/test.json";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("test test"), "4");
+      });
+      it("npmv7 - multiple hyphens", async function() {
+        process.env.npm_package_json = "./test/test.json";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("test-tes-te"), "5");
+      });
+      it("npmv7 - non existent", async function() {
+        process.env.npm_package_json = "./test/test.json";
+        assert.strictEqual(await jsonScript.getPackageJsonScript("testmissing"), undefined);
+      });
+      after(function() {
+        process.env.npm_package_json = npm_package_json_backup;
       });
     });
   });

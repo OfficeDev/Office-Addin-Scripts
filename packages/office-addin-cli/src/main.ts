@@ -3,3 +3,4 @@
 
 export * from "./log";
 export * from "./parse";
+export * from "./getPackageJsonScript";

@@ -3,7 +3,7 @@
 
 import * as commander from "commander";
 import * as fs from "fs";
-import { logErrorMessage, parseNumber } from "office-addin-cli";
+import { logErrorMessage, parseNumber, getPackageJsonScript } from "office-addin-cli";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
@@ -48,14 +48,14 @@ export async function start(manifestPath: string, platform: string | undefined, 
         const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;
         const dev: boolean = command.prod ? false : true;
         const debuggingMethod = parseDebuggingMethod(command.debugMethod);
-        const devServer: string | undefined = command.devServer || process.env.npm_package_scripts_dev_server;
+        const devServer: string | undefined = command.devServer || await getPackageJsonScript("dev-server");
         const devServerPort = parseDevServerPort(command.devServerPort || process.env.npm_package_config_dev_server_port);
         const document: string | undefined = command.document || process.env.npm_package_config_document;
         const enableDebugging: boolean = command.debug;
         const enableLiveReload: boolean = (command.liveReload === true);
         const enableSideload: boolean = (command.sideload !== false); // enable if true or undefined; only disable if false
         const openDevTools: boolean = (command.devTools === true);
-        const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
+        const packager: string | undefined = command.packager || await getPackageJsonScript("packager");
         const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
         const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
         const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
