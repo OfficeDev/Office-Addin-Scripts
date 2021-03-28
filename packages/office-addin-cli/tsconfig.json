@@ -3,6 +3,7 @@
         "target": "es6",
         "module": "commonjs",
         "moduleResolution": "node",
+        "esModuleInterop": true,
         "skipLibCheck": true,
         "sourceMap": true,
         "declaration": true,
@@ -12,9 +13,8 @@
         "noImplicitUseStrict": true,
         "types": [
             "node",
-            "node-fetch",
-            "es6-promise"
-        ]
+            "node-fetch"
+        ],
     },
     "include": [
         "src/**/*",
