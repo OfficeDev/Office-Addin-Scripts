@@ -1,12 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+/// <reference types="../src/read-package-json-fast"/>
+
 import * as assert from "assert";
 import * as mocha from "mocha";
 import * as sinon from "sinon";
 import * as log from "../src/log";
 import * as parse from "../src/parse";
-import * as jsonScript from "../src/getPackageJsonScript";
+
+import { clearCachedScripts, getPackageJsonScript } from "../src/npmPackage";
 
 function isError(err: Error, message: string): boolean {
   return (err instanceof Error) && err.message === message;
@@ -76,60 +79,89 @@ describe("office-addin-cli tests", function() {
     });
   });
 
-  describe("get_package_json_script.ts", function() {
-    describe("getPackageJsonScript() for npmv6", function() {
-      let npm_package_json_backup: string | undefined;
-      before(async function() {
-        npm_package_json_backup = process.env.npm_package_json;
+  describe("getPackageJsonScript.ts", function() {
+    describe("getPackageJsonScript()", function() {
+      const envBackup: {[key: string]: string | undefined} = {};
+      beforeEach(async function() {
+        envBackup.npm_package_json = process.env.npm_package_json;
       });
-      it("npm - empty string", async function() {
-        assert.strictEqual(await jsonScript.getPackageJsonScript(""), undefined);
-      });
-      it("npmv6 - exists", async function() {
-        process.env["npm_package_scripts_test"] = "npmv6 1";
-        process.env.npm_package_json = "";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("test"), "npmv6 1");
-      });
-      it("npmv6 - non existent", async function() {
-        process.env.npm_package_json = "";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("npmv6testmissing"), undefined);
-      });
-      after(function() {
-        process.env.npm_package_json = npm_package_json_backup;
-      });
-    });
+      afterEach(async function() {
+        clearCachedScripts();
 
-    describe("getPackageJsonScript() for npmv7", function() {
-      let npm_package_json_backup: string | undefined;
-      before(async function() {
-        npm_package_json_backup = process.env.npm_package_json;
+        if (envBackup.npm_package_json) {
+          process.env.npm_package_json = envBackup.npm_package_json;
+        } else {
+          delete process.env.npm_package_json;
+        }
+        delete process.env.npm_package_scripts_one;
+        delete process.env.npm_package_scripts_two_two;
+        delete process.env.npm_package_scripts_three_three;
+        delete process.env.npm_package_scripts_four_four;
+        delete process.env.npm_package_scripts_five_five_five;
       });
-      it("npmv7 - no hyphen", async function() {
+      it("NPM v6: script name empty", async function() {
+        delete process.env.npm_package_json;
+        const script = await getPackageJsonScript("");
+        assert.strictEqual(script, undefined);
+      });
+      it("NPM v6: script name exists", async function() {
+        delete process.env.npm_package_json;
+        process.env.npm_package_scripts_one = "npmv6 1";
+        const script = await getPackageJsonScript("one");
+        assert.strictEqual(script, "npmv6 1");
+      });
+      it("NPM v6: script name does not exist", async function() {
+        delete process.env.npm_package_json;
+        const script = await getPackageJsonScript("npmv6testmissing");
+        assert.strictEqual(script, undefined);
+      });
+      it("NPM v6: script name contains hyphen", async function() {
+        delete process.env.npm_package_json;
+        process.env.npm_package_scripts_two_two = "2";
+        const script = await getPackageJsonScript("two-two");
+        assert.strictEqual(script, "2");
+      });
+      it("NPM v6: script name contains underscore", async function() {
+        delete process.env.npm_package_json;
+        process.env.npm_package_scripts_three_three = "3";
+        const script = await getPackageJsonScript("three_three");
+        assert.strictEqual(script, "3");
+      });
+      it("NPM v6: script name contains multiple hyphens", async function() {
+        delete process.env.npm_package_json;
+        process.env.npm_package_scripts_five_five_five = "5";
+        const script = await getPackageJsonScript("five-five-five");
+        assert.strictEqual(script, "5");
+      });
+      it("NPM v7: script exists", async function() {
         process.env.npm_package_json = "./test/test.json";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("test"), "1");
+        const script = await getPackageJsonScript("one");
+        assert.strictEqual(script, "1");
       });
-      it("npmv7 - hyphen", async function() {
+      it("NPM v7: script name does not exist", async function() {
         process.env.npm_package_json = "./test/test.json";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("test-test"), "2");
+        const script = await getPackageJsonScript("testmissing");
+        assert.strictEqual(script, undefined);
       });
-      it("npmv7 - underscore", async function() {
+      it("NPM v7: script name contains hyphen", async function() {
         process.env.npm_package_json = "./test/test.json";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("test_test"), "3");
+        const script = await getPackageJsonScript("two-two");
+        assert.strictEqual(script, "2");
       });
-      it("npmv7 - space", async function() {
+      it("NPM v7: script name contains underscore", async function() {
         process.env.npm_package_json = "./test/test.json";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("test test"), "4");
+        const script = await getPackageJsonScript("three_three");
+        assert.strictEqual(script, "3");
       });
-      it("npmv7 - multiple hyphens", async function() {
+      it("NPM v7: script name contains a space", async function() {
         process.env.npm_package_json = "./test/test.json";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("test-tes-te"), "5");
+        const script = await getPackageJsonScript("four four");
+        assert.strictEqual(script, "4");
       });
-      it("npmv7 - non existent", async function() {
+      it("NPM v7: script name contains multiple hyphens", async function() {
         process.env.npm_package_json = "./test/test.json";
-        assert.strictEqual(await jsonScript.getPackageJsonScript("testmissing"), undefined);
-      });
-      after(function() {
-        process.env.npm_package_json = npm_package_json_backup;
+        const script = await getPackageJsonScript("five-five-five");
+        assert.strictEqual(script, "5");
       });
     });
   });
