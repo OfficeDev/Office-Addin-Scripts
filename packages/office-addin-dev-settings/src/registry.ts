@@ -184,7 +184,7 @@ export async function getStringValue(key: RegistryKey, value: string): Promise<s
 }
 
 export async function getValue(key: RegistryKey, value: string): Promise<RegistryValue | undefined> {
-  return new Promise<RegistryValue>((resolve, reject) => {
+  return new Promise<RegistryValue | undefined>((resolve, reject) => {
     const onError = (err: any, item?: winreg.RegistryItem) => {
       if (err) {
         resolve(undefined);

@@ -4,11 +4,19 @@
 import { generateCustomFunctionsMetadata, IGenerateResult } from "custom-functions-metadata";
 import * as fs from "fs";
 import * as path from "path";
-import { Compiler, sources, WebpackError } from "webpack";
+import { Compiler, sources, WebpackError, NormalModule } from "webpack";
 
 const pluginName = "CustomFunctionsMetadataPlugin";
 
 type Options = {input: string, output: string};
+
+declare global {
+    namespace NodeJS {
+        interface Global {
+            generateResults: Record<string, IGenerateResult> | undefined;
+        }
+    }
+}
 
 class CustomFunctionsMetadataPlugin {
     private options: Options;
@@ -23,24 +31,31 @@ class CustomFunctionsMetadataPlugin {
         const inputFilePath = path.resolve(this.options.input);
         let generateResult: IGenerateResult;
 
-        compiler.hooks.compile.tap(pluginName, async () => {
+        compiler.hooks.beforeCompile.tapPromise(pluginName, async () => {
             generateResult = await generateCustomFunctionsMetadata(inputFilePath, true);
         });
 
-        compiler.hooks.emit.tap(pluginName, (compilation) => {
+        compiler.hooks.compilation.tap(pluginName, (compilation) => {
             if (generateResult.errors.length > 0) {
                 generateResult.errors.forEach((err: string) => compilation.errors.push(new WebpackError(inputFilePath + " " + err)));
             } else {
                 compilation.assets[this.options.output] = new sources.RawSource(generateResult.metadataJson);
+                if (!global.generateResults) {
+                    global.generateResults = {};
+                }
+                global.generateResults[this.options.input] = generateResult;
             }
-        });
 
-        compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
-            compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (source : any, module : any) => {
-                if (module._source && module._source._name.endsWith(inputFilePath)) {
-                    generateResult.associate.forEach((item: { id: string; functionName: string; }) => {
-                        module._source._value += `\nCustomFunctions.associate("${item.id}", ${item.functionName});`;
-                    });
+            NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(pluginName, (_, module) => {
+                if (module.userRequest.endsWith(inputFilePath)) {
+                    module.loaders.push({
+                        loader: require.resolve("./loader.js"),
+                        options: {
+                            input: this.options.input,
+                        },
+                        ident: null,
+                        type: null,
+                    })
                 }
             });
         });
