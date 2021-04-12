@@ -37,7 +37,7 @@ class CustomFunctionsMetadataPlugin {
 
         compiler.hooks.compilation.tap(pluginName, (compilation, params) => {
             compilation.moduleTemplates.javascript.hooks.render.tap(pluginName, (source : any, module : any) => {
-                if (module._source && module._source._name.endsWith(inputFilePath)) {
+                if (module._source && module._source._name?.endsWith(inputFilePath)) {
                     generateResult.associate.forEach((item: { id: string; functionName: string; }) => {
                         module._source._value += `\nCustomFunctions.associate("${item.id}", ${item.functionName});`;
                     });
