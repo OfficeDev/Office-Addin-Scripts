@@ -21,7 +21,7 @@
   "dependencies": {
     "applicationinsights": "^1.7.3",
     "commander": "^6.2.0",
-    "office-addin-cli": "^0.2.8",
+    "office-addin-cli": "^1.1.1",
     "readline-sync": "^1.4.9"
   },
   "devDependencies": {
