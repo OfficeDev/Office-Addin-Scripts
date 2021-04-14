@@ -126,7 +126,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
         const file = fs.openSync(path, "a+");
         fs.closeSync(file);
       } catch (err) {
-        throw new Error(pathExists
+        throw new ExpectedError(pathExists
           ? `You need to specify the path to a writable file. Unable to write to: "${path}".`
           : `You need to specify the path where the file can be written. Unable to write to: "${path}".`);
       }
