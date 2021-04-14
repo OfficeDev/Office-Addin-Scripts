@@ -57,7 +57,7 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
   const templatePath = document && document !== "" ? path.resolve(document) : getTemplatePath(app, addInType);
 
   if (!templatePath) {
-    throw new ExpectedError("Sideload is not supported.");
+    throw new ExpectedError(`Sideload is not supported for apptype: ${addInType}.`);
   }
 
   const templateBuffer = await readFileAsync(templatePath);
