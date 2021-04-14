@@ -12,7 +12,7 @@ import * as jsonData from "../src/usageDataSettings";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
-const errWithBackslash = new Error(`this error contains a file path C:\\Users\\admin\\AppData\\Local\Temp\\excel file .xlsx`);
+const errWithBackslash = new Error(`this error contains a file path:C:\\Users\\admin\\AppData\\Local\Temp\\excel file .xlsx`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
@@ -172,8 +172,8 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(err.stack.includes(compareError.stack), true);
 
       const compareErrorWithBackslash = new Error();
-      compareErrorWithBackslash.message = "this error contains a file path C:excel file .xlsx";
-      compareErrorWithBackslash.stack = "this error contains a file path C:excel file .xlsx";;
+      compareErrorWithBackslash.message = "this error contains a file path:C:excel file .xlsx";
+      compareErrorWithBackslash.stack = "this error contains a file path:C:excel file .xlsx";;
       addInUsageData.maskFilePaths(errWithBackslash);
       assert.equal(compareErrorWithBackslash.message, errWithBackslash.message);
       assert.equal(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
