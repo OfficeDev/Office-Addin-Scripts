@@ -13,11 +13,6 @@ const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
 
 describe("Start test server, validate pingTestServer and sendTestResults methods and stop test server", function () {
-    before(function() {
-        if (process.platform == "linux") {
-            this.skip();
-        }
-    });
     describe("Setup test server", function () {
         it("Test server should have started", async function () {
             const startTestServer = await promiseStartTestServer;
