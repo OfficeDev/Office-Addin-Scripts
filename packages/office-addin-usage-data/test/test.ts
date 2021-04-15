@@ -159,7 +159,7 @@ describe("Test office-addin-usage data-package", function() {
     });
   });
   describe("Test maskFilePaths method", () => {
-    it("should return a parsed file path error", () => {
+    it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
       const compareError = new Error();
       compareError.name = "TestData-test";
@@ -170,7 +170,9 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);
       assert.equal(err.stack.includes(compareError.stack), true);
-
+    });
+    it("should parse error file paths with backslashs", () => {
+      addInUsageData.setUsageDataOff();
       const compareErrorWithBackslash = new Error();
       compareErrorWithBackslash.message = "this error contains a file path:C:\\excel file .xlsx";
       compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";;
