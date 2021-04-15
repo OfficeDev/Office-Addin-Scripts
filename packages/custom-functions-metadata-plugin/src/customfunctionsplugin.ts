@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import { generateCustomFunctionsMetadata, IGenerateResult } from "custom-functions-metadata";
-import * as fs from "fs";
 import * as path from "path";
 import { Compiler, sources, WebpackError, NormalModule } from "webpack";
 
@@ -10,13 +9,6 @@ const pluginName = "CustomFunctionsMetadataPlugin";
 
 type Options = {input: string, output: string};
 
-declare global {
-    namespace NodeJS {
-        interface Global {
-            generateResults: Record<string, IGenerateResult> | undefined;
-        }
-    }
-}
 
 class CustomFunctionsMetadataPlugin {
     private options: Options;
@@ -25,9 +17,9 @@ class CustomFunctionsMetadataPlugin {
         this.options = options;
     }
 
+    public static generateResults: Record<string, IGenerateResult> = {};
+
     public apply(compiler: Compiler) {
-        const outputPath: string = (compiler.options && compiler.options.output) ? compiler.options.output.path || "" : "";
-        const outputFilePath = path.resolve(outputPath, this.options.output);
         const inputFilePath = path.resolve(this.options.input);
         let generateResult: IGenerateResult;
 
@@ -40,10 +32,7 @@ class CustomFunctionsMetadataPlugin {
                 generateResult.errors.forEach((err: string) => compilation.errors.push(new WebpackError(inputFilePath + " " + err)));
             } else {
                 compilation.assets[this.options.output] = new sources.RawSource(generateResult.metadataJson);
-                if (!global.generateResults) {
-                    global.generateResults = {};
-                }
-                global.generateResults[this.options.input] = generateResult;
+                CustomFunctionsMetadataPlugin.generateResults[this.options.input] = generateResult;
             }
 
             NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(pluginName, (_, module) => {
@@ -62,4 +51,4 @@ class CustomFunctionsMetadataPlugin {
     }
 }
 
-module.exports = CustomFunctionsMetadataPlugin;
+export = CustomFunctionsMetadataPlugin;

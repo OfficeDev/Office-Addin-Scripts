@@ -1,13 +1,16 @@
 import { getOptions } from "loader-utils";
 import { IAssociate } from "custom-functions-metadata";
+import CustomFunctionsMetadataPlugin from "./customfunctionsplugin";
 
-module.exports = function addFunctionAssociations(this: any, source: string): string {
+function addFunctionAssociations(this: any, source: string): string {
     const input = getOptions(this).input as string;
-    if (!global.generateResults || !global.generateResults[input]) {
+    if (!CustomFunctionsMetadataPlugin.generateResults[input]) {
         return source;
     }
-    global.generateResults[input].associate.forEach((item: IAssociate) => {
+    CustomFunctionsMetadataPlugin.generateResults[input].associate.forEach((item: IAssociate) => {
         source += `\nCustomFunctions.associate("${item.id}", ${item.functionName});`;
     });
     return source;
 }
+
+export = addFunctionAssociations;
