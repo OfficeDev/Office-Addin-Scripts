@@ -163,17 +163,17 @@ describe("Test office-addin-usage data-package", function() {
       addInUsageData.setUsageDataOff();
       const compareError = new Error();
       compareError.name = "TestData-test";
-      compareError.message = "this error contains a file path:C:index.js";
+      compareError.message = "this error contains a file path:C:\\index.js";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path:C:index.js";
+      compareError.stack = "this error contains a file path:C:\\.js";
       addInUsageData.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);
       assert.equal(err.stack.includes(compareError.stack), true);
 
       const compareErrorWithBackslash = new Error();
-      compareErrorWithBackslash.message = "this error contains a file path:C:excel file .xlsx";
-      compareErrorWithBackslash.stack = "this error contains a file path:C:excel file .xlsx";;
+      compareErrorWithBackslash.message = "this error contains a file path:C:\\excel file .xlsx";
+      compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";;
       addInUsageData.maskFilePaths(errWithBackslash);
       assert.equal(compareErrorWithBackslash.message, errWithBackslash.message);
       assert.equal(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
