@@ -371,9 +371,21 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
             ? "Debugging started."
             : "Started.");
 
-        usageDataObject.reportSuccess("startDebugging()");
+        usageDataObject.reportSuccess("startDebugging()", 
+            {
+                app: app, 
+                document: document, 
+                appType: appType
+            }
+        );
     } catch (err) {
-        usageDataObject.reportException("startDebugging()", err);
+        usageDataObject.reportException("startDebugging()", err, 
+            {
+                app: app, 
+                document: document, 
+                appType: appType
+            }
+        );
         throw err;
     }
 }
