@@ -13,12 +13,6 @@ import * as install from "../src/install";
 import * as uninstall from "../src/uninstall";
 import * as verify from "../src/verify";
 
-before(function() {
-    // skip tests on Linux -- need to get dev certs working there
-    if (process.platform == "linux") {
-        this.skip();
-    }
-})
 describe("office-addin-dev-certs", function() {
     const sinon = require("sinon");
     const mkcert = require("mkcert");
