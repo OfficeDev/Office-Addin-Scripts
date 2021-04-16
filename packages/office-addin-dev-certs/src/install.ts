@@ -17,6 +17,8 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
          return `powershell -ExecutionPolicy Bypass -File "${script}" ${machine ? "LocalMachine" : "CurrentUser"} "${caCertificatePath}"`;
       case "darwin": // macOS
          return `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain '${caCertificatePath}'`;
+      case "linux":
+         return `sudo mkdir -p /usr/local/share/ca-certificates/office-addin-dev-certs && sudo cp ${caCertificatePath} /usr/local/share/ca-certificates/office-addin-dev-certs && sudo /usr/sbin/update-ca-certificates`;
       default:
          throw new ExpectedError(`Platform not supported: ${process.platform}`);
    }
