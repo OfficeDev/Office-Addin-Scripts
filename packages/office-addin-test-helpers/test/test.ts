@@ -15,6 +15,8 @@ const testValues: any = [];
 describe("Start test server, validate pingTestServer and sendTestResults methods and stop test server", function () {
     describe("Setup test server", function () {
         it("Test server should have started", async function () {
+            // give the server some time to start
+            this.timeout(10000);
             const startTestServer = await promiseStartTestServer;
             assert.equal(startTestServer, true);
         });
