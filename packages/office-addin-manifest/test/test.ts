@@ -24,7 +24,7 @@ import { validateManifest } from "../src/validate";
 
 const manifestOriginalFolder = path.resolve("./test/manifests");
 const manifestTestFolder = path.resolve("./testExecution/testManifests");
-const testManifest = path.resolve(manifestTestFolder, "Taskpane.manifest.xml");
+const testManifest = path.resolve(manifestTestFolder, "TaskPane.manifest.xml");
 
 describe("Unit Tests", function() {
   describe("addInTypes.ts", function() {
@@ -472,11 +472,6 @@ describe("Unit Tests", function() {
       });
     });
     describe("modifyManifestFile()", function() {
-      before(function() {
-        if (process.platform == "linux") {
-          this.skip();
-        }
-      })
       beforeEach(async function() {
         await _createManifestFilesFolder();
       });
@@ -647,8 +642,8 @@ async function _deleteManifestTestFolder(projectFolder: string): Promise<void> {
 
 async function _createManifestFilesFolder(): Promise<void> {
     if (fs.existsSync(manifestTestFolder)) {
-      _deleteManifestTestFolder(manifestTestFolder);
-  }
+      await _deleteManifestTestFolder(manifestTestFolder);
+    }
     const fsExtra = require("fs-extra");
     await fsExtra.copy(manifestOriginalFolder, manifestTestFolder);
 }
