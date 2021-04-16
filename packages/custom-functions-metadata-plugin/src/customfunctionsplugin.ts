@@ -9,7 +9,6 @@ const pluginName = "CustomFunctionsMetadataPlugin";
 
 type Options = {input: string, output: string};
 
-
 class CustomFunctionsMetadataPlugin {
     private options: Options;
 
