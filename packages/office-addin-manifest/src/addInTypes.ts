@@ -50,7 +50,7 @@ export function parseAddInType(value: string): AddInType {
   const addInType = toAddInType(value);
 
   if (!addInType) {
-    throw new Error(`${value} is not a valid Office add-in type.`);
+    throw new ExpectedError(`${value} is not a valid Office add-in type.`);
   }
 
   return addInType;
