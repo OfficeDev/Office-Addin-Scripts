@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 import * as fetch from "isomorphic-fetch";
-export const defaultPort: number = 4201;
+export const defaultPort: number = 4202;
 
 export async function pingTestServer(port: number = defaultPort): Promise<object> {
     return new Promise<object>(async (resolve, reject) => {
