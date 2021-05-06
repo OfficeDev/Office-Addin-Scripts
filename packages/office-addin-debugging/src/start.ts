@@ -264,7 +264,8 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         // Defaults when variable is undefined.
         debuggingMethod: options.debuggingMethod || defaultDebuggingMethod(),
         enableDebugging: options.enableDebugging ?? true,   
-        enableSideload: options.enableSideload ?? true
+        enableSideload: options.enableSideload ?? true,
+        enableLiveReload: options.enableLiveReload ?? true
     };
 
     try {
