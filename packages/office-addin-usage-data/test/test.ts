@@ -12,6 +12,7 @@ import * as jsonData from "../src/usageDataSettings";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
+const errWithBackslash = new Error(`this error contains a file path:C:\\Users\\admin\\AppData\\Local\Temp\\excel file .xlsx`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
@@ -158,17 +159,26 @@ describe("Test office-addin-usage data-package", function() {
     });
   });
   describe("Test maskFilePaths method", () => {
-    it("should return a parsed file path error", () => {
+    it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
       const compareError = new Error();
       compareError.name = "TestData-test";
-      compareError.message = "this error contains a file path:C:index.js";
+      compareError.message = "this error contains a file path:C:\\index.js";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path:C:index.js";
+      compareError.stack = "this error contains a file path:C:\\.js";
       addInUsageData.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);
       assert.equal(err.stack.includes(compareError.stack), true);
+    });
+    it("should parse error file paths with backslashs", () => {
+      addInUsageData.setUsageDataOff();
+      const compareErrorWithBackslash = new Error();
+      compareErrorWithBackslash.message = "this error contains a file path:C:\\excel file .xlsx";
+      compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";;
+      addInUsageData.maskFilePaths(errWithBackslash);
+      assert.equal(compareErrorWithBackslash.message, errWithBackslash.message);
+      assert.equal(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
     });
   });
 

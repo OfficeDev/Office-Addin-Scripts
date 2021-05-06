@@ -143,7 +143,7 @@ export async function getAppcontainerNameFromManifest(manifestPath: string): Pro
   const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
 
   if (sourceLocation === undefined) {
-    throw new Error(`The source location could not be retrieved from the manifest.`);
+    throw new ExpectedError(`The source location could not be retrieved from the manifest.`);
   }
 
   return getAppcontainerName(sourceLocation, false);

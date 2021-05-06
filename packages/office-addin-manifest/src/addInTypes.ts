@@ -1,6 +1,8 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
+import { ExpectedError } from "office-addin-usage-data";
+
 /**
  * The types of Office add-ins.
  */
@@ -48,7 +50,7 @@ export function parseAddInType(value: string): AddInType {
   const addInType = toAddInType(value);
 
   if (!addInType) {
-    throw new Error(`${value} is not a valid Office add-in type.`);
+    throw new ExpectedError(`${value} is not a valid Office add-in type.`);
   }
 
   return addInType;
