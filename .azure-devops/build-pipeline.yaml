@@ -25,7 +25,7 @@ resources:
 jobs:
 - job: Windows
   pool:
-    name: OPX Windows 1903 Dogfood Pool
+    name: OPX Windows 1903 Dogfood Pool - GitHub
   steps:
   - checkout: self
     clean: ${{ parameters.clean }}
