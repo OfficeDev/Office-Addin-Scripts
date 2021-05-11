@@ -1,25 +1,5 @@
 {
-    "plugins": [
-      "prettier",
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "prettier/prettier": ["error", { "endOfLine": "auto" }],
-      "no-eval": "error",
-      "no-delete-var": "warn",
-      "no-octal": "warn",
-      "no-inner-declarations": "warn"
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 6,
-      "sourceType": "module",
-      "ecmaFeatures": {
-        "jsx": true
-      },
-      "project": "./tsconfig.json"
-    },
     "extends": [
-      "prettier"
+      "plugin:office-addins/recommended"
     ]
   }
