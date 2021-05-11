@@ -1,34 +1,40 @@
 module.exports = {
     configs: {
         recommended: {
-            plugins: ['office-addins'],
+            parser: "@typescript-eslint/parser",
+            plugins: [
+                '@typescript-eslint',
+                'office-addins',
+                'prettier',
+            ],
             parserOptions: {
+                ecmaVersion: 6,
+                sourceType: "module",
                 ecmaFeatures: {
                     jsx: true
-                  }
+                },
+                project: "./tsconfig.json"
             },
             extends: ['eslint:recommended'],
-            rules: {}
+            rules: {
+                'prettier/prettier': ['error', { 'endOfLine': 'auto' }],
+                'no-eval': 'error',
+                'no-delete-var': 'warn',
+                'no-octal': 'warn',
+                'no-inner-declarations': 'warn',
+            }
         },
         react: {
-            plugins: ['office-addins'],
-            parserOptions: {
-                ecmaFeatures: {
-                    jsx: true
-                  }
-            },
-            extends: ['plugin:react/recommended'],
-            rules: {}
+            extends: [
+                'plugin:office-addins/recommended',
+                'plugin:react/recommended',
+            ]
         },
         reactnative: {
-            plugins: ['office-addins'],
-            parserOptions: {
-                ecmaFeatures: {
-                    jsx: true
-                  }
-            },
-            extends: ['plugin:react-native/all'],
-            rules: {}
+            extends: [
+                'plugin:office-addins/recommended',
+                'plugin:react-native/all',
+            ],
         }
     }
   };
