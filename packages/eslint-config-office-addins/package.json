@@ -11,6 +11,9 @@
   "keywords": [
     "eslint"
   ],
+  "dependencies": {
+    "eslint-plugin-office-addins": "^0.1.14"
+  },
   "devDependencies": {
     "@types/node": "^12.12.34",
     "concurrently": "^6.0.0",
