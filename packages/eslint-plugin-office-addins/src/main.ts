@@ -1,4 +1,7 @@
 module.exports = {
+    rules: {
+        'no-context-sync-in-loop': require('./rules/no-context-sync-in-loop'),
+    },
     configs: {
         recommended: {
             parser: "@typescript-eslint/parser",
