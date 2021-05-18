@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-office-addins",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "eslint plugin for office-addins",
   "keywords": [
     "eslint",
