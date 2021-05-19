@@ -69,6 +69,13 @@ ruleTester.run('office-ready-in-outlook', rule, {
           });
         };`,
       errors: [{ messageId: "officeOnReadyInOutlook" }]
+    },
+    {
+      code: `
+        Office.initialize = () => {
+          console.log("Testing arrow functions");
+        };`,
+      errors: [{ messageId: "officeOnReadyInOutlook" }]
     }
   ]
 });

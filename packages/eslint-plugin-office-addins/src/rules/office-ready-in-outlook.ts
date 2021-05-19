@@ -17,11 +17,11 @@ export = {
   },
   create: function (context: any) {
     return {
-      "CallExpression[callee.property.name='run'] :matches(ForStatement, ForInStatement, WhileStatement, DoWhileStatement, ForOfStatement) CallExpression[callee.object.name='context'][callee.property.name='sync']"(
-        node: TSESTree.CallExpression
+      "AssignmentExpression[left.object.name='Office'][left.property.name='initialize']"(
+        node: TSESTree.AssignmentExpression
       ) {
         context.report({
-          node: node.callee,
+          node: node,
           messageId: "officeOnReadyInOutlook",
         });
       },
