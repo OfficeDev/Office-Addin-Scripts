@@ -5,7 +5,7 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
-      officeReadyInOutlook: "Prefer calling Office.onReady() instead of Office.initialize in Outlook applications",
+      officeOnReadyInOutlook: "Prefer calling Office.onReady() instead of Office.initialize in Outlook applications",
     },
     docs: {
       description: "It is not a good idea to call Office.initialize in Outlook",
@@ -22,7 +22,7 @@ export = {
       ) {
         context.report({
           node: node.callee,
-          messageId: "officeReadyInOutlook",
+          messageId: "officeOnReadyInOutlook",
         });
       },
     };
