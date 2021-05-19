@@ -1,14 +1,14 @@
 import { TSESTree } from "@typescript-eslint/typescript-estree";
 
 export = {
-  name: "office-ready-in-outlook",
+  name: "office-ready",
   meta: {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
-      officeOnReadyInOutlook: "Prefer calling Office.onReady() instead of Office.initialize in Outlook applications",
+      officeOnReady: "Prefer calling Office.onReady() instead of Office.initialize",
     },
     docs: {
-      description: "It is not a good idea to call Office.initialize in Outlook",
+      description: "It is a bad practice to call Office.initialize instead of Office.onReady",
       category: <"Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors">"Best Practices",
       recommended: <false | "error" | "warn">false,
       url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
@@ -22,7 +22,7 @@ export = {
       ) {
         context.report({
           node: node,
-          messageId: "officeOnReadyInOutlook",
+          messageId: "officeOnReady",
         });
       },
     };

@@ -1,11 +1,11 @@
 import { ESLintUtils } from '@typescript-eslint/experimental-utils'
-import rule from '../../src/rules/office-ready-in-outlook';
+import rule from '../../src/rules/office-ready';
 
 const ruleTester = new ESLintUtils.RuleTester({
   parser: '@typescript-eslint/parser',
 });
 
-ruleTester.run('office-ready-in-outlook', rule, {
+ruleTester.run('office-ready', rule, {
   valid: [ 
     {
       code: `
@@ -47,7 +47,7 @@ ruleTester.run('office-ready-in-outlook', rule, {
     {
       code: `
         Office.initialize = function () {};`,
-      errors: [{ messageId: "officeOnReadyInOutlook" }]
+      errors: [{ messageId: "officeOnReady" }]
     },
     {
       code: `
@@ -56,7 +56,7 @@ ruleTester.run('office-ready-in-outlook', rule, {
               console.log("Sorry, this add-in only works with newer versions of Excel.");
           }
         };`,
-      errors: [{ messageId: "officeOnReadyInOutlook" }]
+      errors: [{ messageId: "officeOnReady" }]
     },
     {
       code: `
@@ -68,14 +68,14 @@ ruleTester.run('office-ready-in-outlook', rule, {
               }
           });
         };`,
-      errors: [{ messageId: "officeOnReadyInOutlook" }]
+      errors: [{ messageId: "officeOnReady" }]
     },
     {
       code: `
         Office.initialize = () => {
           console.log("Testing arrow functions");
         };`,
-      errors: [{ messageId: "officeOnReadyInOutlook" }]
+      errors: [{ messageId: "officeOnReady" }]
     }
   ]
 });
