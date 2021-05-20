@@ -5,7 +5,7 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
-      noOfficeInitialize: "Prefer calling Office.onReady() instead of Office.initialize",
+      noOfficeInitialize: "Office.onReady() is preferred over Office.initialize",
     },
     docs: {
       description: "Office.onReady() is more flexible than Office.initalize",
