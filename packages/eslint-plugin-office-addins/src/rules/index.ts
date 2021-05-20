@@ -1,7 +1,7 @@
 import noContextSyncInLoop from "./no-context-sync-in-loop";
-import officeReady from "./office-ready";
+import noOfficeInitialize from "./no-office-initialize";
 
 export default {
   "no-context-sync-in-loop": noContextSyncInLoop,
-  "office-ready": officeReady
+  "no-office-initialize": noOfficeInitialize
 };
