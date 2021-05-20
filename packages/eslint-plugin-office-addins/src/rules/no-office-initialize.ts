@@ -8,7 +8,7 @@ export = {
       noOfficeInitialize: "Prefer calling Office.onReady() instead of Office.initialize",
     },
     docs: {
-      description: "Office.onReady() is more flexible the Office.initalize",
+      description: "Office.onReady() is more flexible than Office.initalize",
       category: <"Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors">"Best Practices",
       recommended: <false | "error" | "warn">false,
       url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
