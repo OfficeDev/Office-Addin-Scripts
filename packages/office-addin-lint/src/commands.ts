@@ -22,7 +22,8 @@ function getPathToFiles(command: commander.Command): string {
 export async function lint(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    await performLintCheck(pathToFiles);
+    const useTestConfig: boolean = command.test;
+    await performLintCheck(pathToFiles, useTestConfig);
     usageDataObject.reportSuccess("lint");
   } catch (err) {
     if (typeof err.status == "number") {
@@ -38,7 +39,8 @@ export async function lint(command: commander.Command) {
 export async function lintFix(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    await performLintFix(pathToFiles);
+    const useTestConfig: boolean = command.test;
+    await performLintFix(pathToFiles, useTestConfig);
     usageDataObject.reportSuccess("lintFix");
   } catch (err) {
     if (typeof err.status == "number") {

@@ -4,12 +4,13 @@
 import * as path from "path";
 import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
-const esLintPath = require.resolve("eslint");
+const eslintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
-const esLintDir = path.parse(esLintPath).dir;
-const esLintFilePath = path.resolve(esLintDir, "../bin/eslint.js");
+const eslintDir = path.parse(eslintPath).dir;
+const eslintFilePath = path.resolve(eslintDir, "../bin/eslint.js");
 const prettierFilePath = path.resolve(prettierPath, "../bin-prettier.js");
-const esLintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
+const eslintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
+const eslintTestConfigPath = path.resolve(__dirname, "../config/.eslintrc.test.json");
 
 function execCommand(command: string) {
   const execSync = require("child_process").execSync;
@@ -20,19 +21,20 @@ function normalizeFilePath(filePath: string): string {
   return filePath.replace(/ /g, "\\ "); // Converting space to '\\'
 }
 
-function getEsLintBaseCommand(): string {
-  const eslintBaseCommand: string = `node ${esLintFilePath} -c ${esLintConfigPath} --resolve-plugins-relative-to ${__dirname}`;
+function getEsLintBaseCommand(useTestConfig: boolean): string {
+  const configFilePath = useTestConfig ? eslintTestConfigPath : eslintConfigPath
+  const eslintBaseCommand: string = `node ${eslintFilePath} -c ${configFilePath} --resolve-plugins-relative-to ${__dirname}`;
   return eslintBaseCommand;
 }
 
-export function getLintCheckCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} ${normalizeFilePath(files)}`;
+export function getLintCheckCommand(files: string, useTestConfig: boolean = false): string {
+  const eslintCommand: string = `${getEsLintBaseCommand(useTestConfig)} ${normalizeFilePath(files)}`;
   return eslintCommand;
 }
 
-export function performLintCheck(files: string) {
+export function performLintCheck(files: string, useTestConfig: boolean) {
   try {
-    const command = getLintCheckCommand(files);
+    const command = getLintCheckCommand(files, useTestConfig);
     execCommand(command);
     usageDataObject.reportSuccess("performLintCheck()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
@@ -45,14 +47,14 @@ export function performLintCheck(files: string) {
   }
 }
 
-export function getLintFixCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} --fix ${normalizeFilePath(files)}`;
+export function getLintFixCommand(files: string, useTestConfig: boolean = false): string {
+  const eslintCommand: string = `${getEsLintBaseCommand(useTestConfig)} --fix ${normalizeFilePath(files)}`;
   return eslintCommand;
 }
 
-export function performLintFix(files: string) {
+export function performLintFix(files: string, useTestConfig: boolean) {
   try {
-    const command = getLintFixCommand(files);
+    const command = getLintFixCommand(files, useTestConfig);
     execCommand(command);
     usageDataObject.reportSuccess("performLintFix()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
