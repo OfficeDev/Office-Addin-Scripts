@@ -24,10 +24,29 @@ module.exports = {
       },
     },
     react: {
+      plugins: ["office-addins", "react"],
       extends: ["plugin:office-addins/recommended", "plugin:react/recommended"],
+      settings: {
+        react: {
+          "version": "detect"
+        },
+      },
     },
     reactnative: {
+      plugins: ["office-addins", "react-native"],
       extends: ["plugin:office-addins/recommended", "plugin:react-native/all"],
+      settings: {
+        react: {
+          "version": "detect"
+        },
+      },
+    },
+    test: {
+      plugins: ["office-addins"],
+      extends: ["plugin:office-addins/recommended"],
+      rules: {
+        "office-addins/no-context-sync-in-loop": "warn",
+      },
     },
   },
 };

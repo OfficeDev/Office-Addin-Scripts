@@ -14,12 +14,14 @@ commander.version(process.env.npm_package_version || "(version not available)");
 commander
   .command("check")
   .option("--files <files>", `Specifies the source files to check. Default: ${defaults.lintFiles}`)
+  .option("--test", "Use the test lint configuration")
   .description(`Check source files against lint rules.`)
   .action(commands.lint);
 
 commander
   .command("fix")
   .option("--files <files>", `Specifies the source files to fix. Default: ${defaults.lintFiles}`)
+  .option("--test", "Use the test lint configuration")
   .description(`Apply fixes to source based on lint rules.`)
   .action(commands.lintFix);
 
