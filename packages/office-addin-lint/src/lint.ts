@@ -21,7 +21,7 @@ function normalizeFilePath(filePath: string): string {
   return filePath.replace(/ /g, "\\ "); // Converting space to '\\'
 }
 
-function getEsLintBaseCommand(useTestConfig: boolean): string {
+function getEsLintBaseCommand(useTestConfig: boolean = false): string {
   const configFilePath = useTestConfig ? eslintTestConfigPath : eslintConfigPath
   const eslintBaseCommand: string = `node ${eslintFilePath} -c ${configFilePath} --resolve-plugins-relative-to ${__dirname}`;
   return eslintBaseCommand;
@@ -32,7 +32,7 @@ export function getLintCheckCommand(files: string, useTestConfig: boolean = fals
   return eslintCommand;
 }
 
-export function performLintCheck(files: string, useTestConfig: boolean) {
+export function performLintCheck(files: string, useTestConfig: boolean = false) {
   try {
     const command = getLintCheckCommand(files, useTestConfig);
     execCommand(command);
@@ -52,7 +52,7 @@ export function getLintFixCommand(files: string, useTestConfig: boolean = false)
   return eslintCommand;
 }
 
-export function performLintFix(files: string, useTestConfig: boolean) {
+export function performLintFix(files: string, useTestConfig: boolean = false) {
   try {
     const command = getLintFixCommand(files, useTestConfig);
     execCommand(command);
