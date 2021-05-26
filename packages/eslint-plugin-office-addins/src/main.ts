@@ -46,6 +46,7 @@ module.exports = {
       extends: ["plugin:office-addins/recommended"],
       rules: {
         "office-addins/no-context-sync-in-loop": "warn",
+        "office-addins/no-office-initialize": "warn",
       },
     },
   },
