@@ -5,13 +5,18 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      loopedSync: "Calling context.sync() inside a loop can lead to bad performance",
+      loopedSync:
+        "Calling context.sync() inside a loop can lead to bad performance",
     },
     docs: {
-      description: "Calling context.sync() inside of a loop dramatically increates the time the code runs the more iterations that are run",
-      category: <"Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors">"Best Practices",
+      description:
+        "Calling context.sync() inside of a loop dramatically increates the time the code runs the more iterations that are run",
+      category: <
+        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
+      >"Best Practices",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/concepts/correlated-objects-pattern?view=powerpoint-js-1.1",
+      url:
+        "https://docs.microsoft.com/en-us/office/dev/add-ins/concepts/correlated-objects-pattern?view=powerpoint-js-1.1",
     },
     schema: [],
   },

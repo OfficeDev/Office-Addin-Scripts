@@ -28,7 +28,7 @@ module.exports = {
       extends: ["plugin:office-addins/recommended", "plugin:react/recommended"],
       settings: {
         react: {
-          "version": "detect"
+          version: "detect",
         },
       },
     },
@@ -37,7 +37,7 @@ module.exports = {
       extends: ["plugin:office-addins/recommended", "plugin:react-native/all"],
       settings: {
         react: {
-          "version": "detect"
+          version: "detect",
         },
       },
     },
