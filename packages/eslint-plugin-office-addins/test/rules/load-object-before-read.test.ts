@@ -12,7 +12,7 @@ ruleTester.run('load-object-before-read', rule, {
         var rangeAddress = 'A1:B2';
         var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
         myRange.load('address');
-        return context.sync()
+        context.sync()
           .then(function () {
             console.log (myRange.address);   // ok
           });`
@@ -34,7 +34,7 @@ ruleTester.run('load-object-before-read', rule, {
         var rangeAddress = 'A1:B2';
         var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
         myRange.load('address');
-        return context.sync()
+        context.sync()
           .then(function () {
             console.log (myRange.values);  // not ok as it was not loaded
           });`,
