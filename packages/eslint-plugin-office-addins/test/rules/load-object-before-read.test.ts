@@ -8,47 +8,56 @@ const ruleTester = new ESLintUtils.RuleTester({
 ruleTester.run('load-object-before-read', rule, {
   valid: [ 
     {
-      code: "context.sync()"
+      code: `var sheetName = 'Sheet1';
+        var rangeAddress = 'A1:B2';
+        var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
+        myRange.load('address');
+        return context.sync()
+          .then(function () {
+            console.log (myRange.address);   // ok
+          });`
     },
     {
-      code: `Excel.run(async (context) => { 
-        context.sync(); 
-      });`
+      code: `var property = worksheet.getItem("sheet");
+        property.load('G2');
+        var variableName = property.G2;`
+    },
+    {
+      code: `var selectedRange = context.workbook.getSelectedRange();
+        selectedRange.load('values');
+        if(selectedRange.values === [2]){}`
     }
   ],
   invalid: [
     {
-      code: `Word.run(async (context) => { 
-          for(i = 0; i < 5; i++) { context.sync(); } 
-        });`,
+      code: `var sheetName = 'Sheet1';
+        var rangeAddress = 'A1:B2';
+        var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
+        myRange.load('address');
+        return context.sync()
+          .then(function () {
+            console.log (myRange.values);  // not ok as it was not loaded
+          });`,
       errors: [{ messageId: "loadBeforeRead" }]
     },
     {
-      code: `Excel.run(async (context) => { 
-          var person = { fname:\"John\", lname:\"Doe\", age:25 }; 
-          var x; 
-          for(x in person) { context.sync(); } 
-        });`,
+      code: `var selectedRange = context.workbook.getSelectedRange();
+        if(selectedRange.values === ["sampleText"]){}`,
       errors: [{ messageId: "loadBeforeRead" }]
     },
     {
-      code: `PowerPoint.run(async (context) => { 
-          var cars = ['BMW', 'Volvo', 'Mini']; 
-          var x; 
-          for(x of cars) { context.sync(); } 
-        });`,
+      code: `var myRange = context.workbook.worksheets.getItem("sheet").getRange("A1");
+        console.log (myRange.adress);`,
       errors: [{ messageId: "loadBeforeRead" }]
     },
     {
-      code: `Word.run(async (context) => { 
-          while(true) { context.sync() } 
-        });`,
+      code: `var selectedRange = context.workbook.getSelectedRange();
+        console.log(selectedRange.values);`,
       errors: [{ messageId: "loadBeforeRead" }]
     },
     {
-      code: `Excel.run(async (context) => { 
-          do { context.sync() } while(true); 
-        });`,
+      code: `var selectedRange = context.workbook.getSelectedRange();
+        var test = selectedRange.values;`,
       errors: [{ messageId: "loadBeforeRead" }]
     }
   ]
