@@ -17,14 +17,27 @@ export = {
   },
   create: function (context: any) {
     return {
-      "CallExpression[callee.property.name='run'] :matches(ForStatement, ForInStatement, WhileStatement, DoWhileStatement, ForOfStatement) CallExpression[callee.object.name='context'][callee.property.name='sync']"(
-        node: TSESTree.CallExpression
+      "MemberExpression[left.object.name='Office'][left.property.name='initialize']"(
+        node: TSESTree.MemberExpression
       ) {
         context.report({
-          node: node.callee,
+          node: node,
           messageId: "loadBeforeRead",
         });
       },
     };
   },
 };
+
+/*
+Locating Variable:
+VariableDeclarator :matches
+
+Locating the get functions:
+CallExpression[callee.property.name = 'getSelectedRange']
+CallExpression[callee.property.name = 'getItem']
+CallExpression[callee.property.name = 'getRange']
+
+Location the load function:
+CallExpression[callee.property.name='run']
+*/
