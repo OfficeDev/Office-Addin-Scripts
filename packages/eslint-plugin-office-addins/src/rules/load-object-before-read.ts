@@ -31,7 +31,7 @@ export = {
 
 /*
 Locating Variable:
-VariableDeclarator :matches
+VariableDeclarator :matches Identifier.name (this is the variable name) then check for get call expression
 
 Locating the get functions:
 CallExpression[callee.property.name = 'getSelectedRange']
@@ -39,5 +39,5 @@ CallExpression[callee.property.name = 'getItem']
 CallExpression[callee.property.name = 'getRange']
 
 Location the load function:
-CallExpression[callee.property.name='run']
+CallExpression[callee.property.name='load']
 */
