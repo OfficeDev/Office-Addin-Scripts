@@ -17,9 +17,14 @@ export = {
   },
   create: function (context: any) {
     return {
-      "MemberExpression[left.object.name='Office'][left.property.name='initialize']"(
-        node: TSESTree.MemberExpression
+      ":matches(VariableDeclarator[init.callee.property.name = 'getSelectedRange'], VariableDeclarator[init.callee.property.name = 'getItem'], VariableDeclarator[init.callee.property.name = 'getRange'])"(
+      //"VariableDeclarator"(
+          node: TSESTree.VariableDeclarator
       ) {
+        const variableName: string = (node.id as TSESTree.Identifier).name;
+        console.log("Variable name = ");
+        console.log(variableName);
+
         context.report({
           node: node,
           messageId: "loadBeforeRead",
