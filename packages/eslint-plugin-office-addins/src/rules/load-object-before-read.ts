@@ -39,5 +39,5 @@ CallExpression[callee.property.name = 'getItem']
 CallExpression[callee.property.name = 'getRange']
 
 Location the load function:
-CallExpression[callee.property.name='load']
+CallExpression[callee.property.name='load'][arguments.Literal.value = variableName]
 */
