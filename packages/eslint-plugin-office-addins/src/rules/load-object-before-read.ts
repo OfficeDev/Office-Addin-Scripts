@@ -1,5 +1,8 @@
 import { TSESTree } from "@typescript-eslint/typescript-estree";
-
+import {
+  Reference,
+  Variable,
+} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 
 const SENTINEL_TYPE = /^(?:(?:Function|Class)(?:Declaration|Expression)|ArrowFunctionExpression|CatchClause|ImportDeclaration|ExportNamedDeclaration)$/u;
 const FOR_IN_OF_TYPE = /^For(?:In|Of)Statement$/u;
@@ -10,7 +13,7 @@ const FOR_IN_OF_TYPE = /^For(?:In|Of)Statement$/u;
  * @param {number} location A location to check.
  * @returns {boolean} `true` if the location is inside of the range of the node.
  */
- function isInRange(node: any, location: number): boolean {
+ function isInRange(node: TSESTree.Node, location: number): boolean {
   return node && node.range[0] <= location && location <= node.range[1];
 }
 
@@ -28,21 +31,21 @@ const FOR_IN_OF_TYPE = /^For(?:In|Of)Statement$/u;
  * @param {Reference} reference A reference to check.
  * @returns {boolean} `true` if the reference is inside of the initializers.
  */
- function isInInitializer(variable: any, reference: any): boolean {
+ function isInInitializer(variable: Variable, reference: Reference): boolean {
   if (variable.scope !== reference.from) {
       return false;
   }
 
-  let node = variable.identifiers[0].parent;
-  const location = reference.identifier.range[1];
+  let node: TSESTree.Node | undefined = variable.identifiers[0].parent;
+  const location: number = reference.identifier.range[1];
 
   while (node) {
       if (node.type === "VariableDeclarator") {
-          if (isInRange(node.init, location)) {
+          if (node.init !== undefined && isInRange(node.init as TSESTree.Node, location)) {
               return true;
           }
-          if (FOR_IN_OF_TYPE.test(node.parent.parent.type) &&
-              isInRange(node.parent.parent.right, location)
+          if (FOR_IN_OF_TYPE.test(node.parent?.parent?.type as string) &&
+              isInRange(node.parent?.parent?.right, location)
           ) {
               return true;
           }
@@ -68,7 +71,7 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      loadBeforeRead: "An explicit load call needs to be made before reading a proxu object",
+      loadBeforeRead: "An explicit load call needs to be made before reading a proxy object",
     },
     docs: {
       description: 
@@ -90,7 +93,7 @@ export = {
       * @private
       */
       function findVariablesInScope(scope: any) {
-        scope.references.forEach((reference: { resolved: any; init: any; identifier: { range: number[]; }; }) => {
+        scope.references.forEach((reference: Reference) => {
           const variable = reference.resolved;
 
           /*
@@ -112,7 +115,7 @@ export = {
           context.report({
               node: reference.identifier,
               messageId: "loadBeforeRead",
-              data: reference.identifier
+              data: {name: reference.identifier.name}
           });
       });
       scope.childScopes.forEach(findVariablesInScope);
