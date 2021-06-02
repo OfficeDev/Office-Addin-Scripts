@@ -62,9 +62,19 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
             dataSheet = context.workbook.worksheets.add("Data");
           }
           dataSheet.position = 1;
-        }); 
+        });
       });`,
-      errors
+      errors,
+      output: `
+      await Excel.run(async (context) =>  {
+        var dataSheet = context.workbook.worksheets.getItemOrNullObject(\"Data\");
+        return context.sync().then(function () {
+          if (dataSheet.isNullObject) {
+            dataSheet = context.workbook.worksheets.add(\"Data\");
+          }
+          dataSheet.position = 1;
+        });
+      });`,
     },
     {
       code: `
@@ -76,7 +86,16 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         }
         dataSheet.position = 1;
       });`,
-      errors
+      errors,
+      output: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      return context.sync().then(function () {
+        if (dataSheet.isNullObject) {
+          dataSheet = context.workbook.worksheets.add("Data");
+        }
+        dataSheet.position = 1;
+      });`,
     },
     {
       code: `
@@ -85,7 +104,13 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       if (dataSheet) {
         dataSheet = context.workbook.worksheets.add("Data");
       }`,
-      errors
+      errors,
+      output: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      if (dataSheet.isNullObject) {
+        dataSheet = context.workbook.worksheets.add("Data");
+      }`,
     },
     {
       code: `
@@ -97,7 +122,16 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         }
         dataSheet.position = 1;
       });`,
-      errors
+      errors,
+      output: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      return context.sync().then(function () {
+        if (!dataSheet.isNullObject) {
+          dataSheet = context.workbook.worksheets.add("Data");
+        }
+        dataSheet.position = 1;
+      });`,
     },
     {
       code: `
@@ -109,7 +143,16 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         }
         dataSheet.position = 1;
       });`,
-      errors
+      errors,
+      output: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      return context.sync().then(function () {
+        if (true && dataSheet.isNullObject) {
+          dataSheet = context.workbook.worksheets.add("Data");
+        }
+        dataSheet.position = 1;
+      });`,
     },
     {
       code: `
@@ -121,7 +164,16 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         }
         dataSheet.position = 1;
       });`,
-      errors
+      errors,
+      output: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      return context.sync().then(function () {
+        if (dataSheet.isNullObject) {
+          dataSheet = context.workbook.worksheets.add("Data");
+        }
+        dataSheet.position = 1;
+      });`,
     },
     {
       code: `
@@ -135,7 +187,18 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         }
         dataSheet.position = 1;
       });`,
-      errors
+      errors,
+      output: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      return context.sync().then(function () {
+        for (var i = 0; i < 5; i++) {
+          if (dataSheet.isNullObject) {
+            dataSheet = context.workbook.worksheets.add("Data");
+          }
+        }
+        dataSheet.position = 1;
+      });`,
     },
     {
       code: `
@@ -147,7 +210,16 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         } while (dataSheet);
         dataSheet.position = 1;
       });`,
-      errors
+      errors,
+      output: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      return context.sync().then(function () {
+        do {
+          console.log("test case");
+        } while (dataSheet.isNullObject);
+        dataSheet.position = 1;
+      });`,
     },
   ]
 });
