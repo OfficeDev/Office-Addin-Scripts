@@ -9,7 +9,7 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      loadBeforeRead: "An explicit load call on '{{name}}' needs to be made before reading a proxy object",
+      loadBeforeRead: "An explicit load call on '{{name}}' for '{{loadValue}}' needs to be made before reading a proxy object",
     },
     docs: {
       description: 
@@ -84,15 +84,14 @@ export = {
       return false;
     }    
 
-    /**
-     * Finds if valueRead was loaded beforeHand
-     * @param variable 
-     * @returns
-    */
+    function getLoadedValue(referenceNode: Reference): string {
+      return ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier).name;
+    }
+
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
-      const valueRead = ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier).name;
+      const valueRead = getLoadedValue(referenceNode);
       console.log("On isLoaded");
       variable?.references.forEach((reference: Reference) => {
         console.log("On a new reference");
@@ -145,15 +144,11 @@ export = {
         //console.log(reference);
         if(variable?.name === "selectedRange" && !reference.init
           && ((reference.identifier.parent as any).property as TSESTree.Identifier).name !== "load") {
-          //console.log(variable?.name);
           console.log(isLoaded(reference));
         }
         if (reference.init // ok
             || !variable // ok
-            // || variable.identifiers.length === 0
-            || (variable.identifiers[0].range[1] < reference.identifier.range[1]
-            && !isInInitializer(variable, reference))
-          ) {
+            || !isLoaded(reference)) {
             return;
         }
         // Add an If here to check if load is before reference.identifier.range[1]
@@ -161,7 +156,7 @@ export = {
         context.report({
             node: reference.identifier,
             messageId: "loadBeforeRead",
-            data: {name: reference.identifier.name}
+            data: {name: reference.identifier.name, loadValue: getLoadedValue(reference)}
         });
       });
       scope.childScopes.forEach(findVariablesInScope);

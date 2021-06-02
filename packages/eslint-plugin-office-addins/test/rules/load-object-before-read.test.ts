@@ -42,39 +42,39 @@ ruleTester.run('load-object-before-read', rule, {
           .then(function () {
             console.log (myRange.values);  // not ok as it was not loaded
           });`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "values" } }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" } }]
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         if(selectedRange.values === ["sampleText"]){}`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "values" } }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" } }]
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getItem("sheet").getRange("A1");
         console.log (myRange.adress);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "adress" }  }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "adress" }  }]
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         console.log(selectedRange.values);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "values" }  }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         console.log(selectedRange.values);
         selectedRange.load('values')`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "values" }  }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
     },*/
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load("values");
         var test = selectedRange.values;`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "values" }  }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
     }
   ]
 });
