@@ -25,10 +25,10 @@ ruleTester.run('load-object-before-read', rule, {
         var variableName = property.G2;`
     },*/
     {
-      code: `
+      code: ""/*`
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load('values');
-        if(selectedRange.values === [2]){}`
+        if(selectedRange.values === [2]){}`*/
     }
   ],
   invalid: [
@@ -65,6 +65,7 @@ ruleTester.run('load-object-before-read', rule, {
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
+        selectedRange.load("values");
         var test = selectedRange.values;`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "values" }  }]
     }

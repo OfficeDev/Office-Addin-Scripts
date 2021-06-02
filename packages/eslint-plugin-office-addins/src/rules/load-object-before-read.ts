@@ -85,6 +85,31 @@ export = {
     }    
 
     /**
+     * Finds if valueRead was loaded beforeHand
+     * @param variable 
+     * @returns
+    */
+    function isLoaded(referenceNode: Reference, valueRead: string): boolean {
+      const variable = referenceNode.resolved;
+      //console.log("Logging all the references:");
+      variable?.references.forEach((reference: Reference) => {
+        //console.log(reference.identifier);
+
+        if(reference.identifier.parent?.type === "MemberExpression"
+          && (reference.identifier.parent.property as TSESTree.Identifier).name === "load"
+          && reference.identifier.parent.parent?.type === "CallExpression"
+          && (reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead) {
+
+            if(reference.identifier.range[1] < referenceNode.identifier.range[1]) {
+              return true;
+            }
+          }
+      });
+
+      return false;
+    }
+
+    /**
     * Finds and validates all variables in a given scope.
     * @param {Scope} scope The scope object.
     * @returns {void}
@@ -101,14 +126,26 @@ export = {
           * - referring to a global environment variable (there're no identifiers).
           * - located preceded by the variable (except in initializers).
           */
-        /*if (reference.init ||
-            !variable ||
-            variable.identifiers.length === 0 ||
-            (variable.identifiers[0].range[1] < reference.identifier.range[1] && !isInInitializer(variable, reference))
+        //console.log("Reference = ");
+        //console.log(reference);
+        if(variable?.name === "selectedRange" && !reference.init) {
+          console.log(variable?.name);
+          /*console.log(reference.init);
+          console.log(variable?.identifiers.length);
+          console.log(variable?.identifiers[0].range[1]);
+          console.log(reference.identifier.range[1]);
+          console.log(isInInitializer(variable as Variable, reference));*/
+          console.log(isLoaded(reference, ""));
+        }
+        if (reference.init // ok
+            || !variable // ok
+            // || variable.identifiers.length === 0
+            || (variable.identifiers[0].range[1] < reference.identifier.range[1]
+            && !isInInitializer(variable, reference))
           ) {
             return;
-        }*/
-
+        }
+        // Add an If here to check if load is before reference.identifier.range[1]
         // Reports.
         context.report({
             node: reference.identifier,
