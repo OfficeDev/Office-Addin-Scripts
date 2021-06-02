@@ -32,9 +32,9 @@ export = {
       const variable = referenceNode.resolved;
       let loadFound = false;
       const valueRead = getLoadedValue(referenceNode);
-      console.log("On isLoaded");
+      //console.log("On isLoaded");
       variable?.references.forEach((reference: Reference) => {
-        console.log("On a new reference");
+        //console.log("On a new reference");
         if(reference.identifier.parent?.type === "MemberExpression"
           && (reference.identifier.parent.property as TSESTree.Identifier).name === "load"
           && reference.identifier.parent.parent?.type === "CallExpression"
