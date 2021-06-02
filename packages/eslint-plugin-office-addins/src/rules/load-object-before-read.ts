@@ -24,66 +24,6 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    const SENTINEL_TYPE = /^(?:(?:Function|Class)(?:Declaration|Expression)|ArrowFunctionExpression|CatchClause|ImportDeclaration|ExportNamedDeclaration)$/u;
-    const FOR_IN_OF_TYPE = /^For(?:In|Of)Statement$/u;
-    
-    /**
-     * Checks whether or not a given location is inside of the range of a given node.
-     * @param {ASTNode} node An node to check.
-     * @param {number} location A location to check.
-     * @returns {boolean} `true` if the location is inside of the range of the node.
-     */
-     function isInRange(node: TSESTree.Node, location: number): boolean {
-      return node && node.range[0] <= location && location <= node.range[1];
-    }
-    
-    /**
-     * Checks whether or not a given reference is inside of the initializers of a given variable.
-     *
-     * This returns `true` in the following cases:
-     *
-     *     var a = a
-     *     var [a = a] = list
-     *     var {a = a} = obj
-     *     for (var a in a) {}
-     *     for (var a of a) {}
-     * @param {Variable} variable A variable to check.
-     * @param {Reference} reference A reference to check.
-     * @returns {boolean} `true` if the reference is inside of the initializers.
-     */
-     function isInInitializer(variable: Variable, reference: Reference): boolean {
-      if (variable.scope !== reference.from) {
-          return false;
-      }
-    
-      let node: TSESTree.Node | undefined = variable.identifiers[0].parent;
-      const location: number = reference.identifier.range[1];
-    
-      while (node) {
-          if (node.type === "VariableDeclarator") {
-              if (node.init !== undefined && isInRange(node.init as TSESTree.Node, location)) {
-                  return true;
-              }
-              /*if (FOR_IN_OF_TYPE.test(node.parent?.parent?.type as string) &&
-                  isInRange(node.parent?.parent?.right, location)
-              ) {
-                  return true;
-              }*/
-              break;
-          } else if (node.type === "AssignmentPattern") {
-              if (isInRange(node.right, location)) {
-                  return true;
-              }
-          } else if (SENTINEL_TYPE.test(node.type)) {
-              break;
-          }
-    
-          node = node.parent;
-      }
-    
-      return false;
-    }    
-
     function getLoadedValue(referenceNode: Reference): string {
       return ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier).name;
     }
@@ -140,18 +80,16 @@ export = {
           * - referring to a global environment variable (there're no identifiers).
           * - located preceded by the variable (except in initializers).
           */
-        //console.log("Reference = ");
-        //console.log(reference);
-        if(variable?.name === "selectedRange" && !reference.init
+
+        /*if(variable?.name === "selectedRange" && !reference.init
           && ((reference.identifier.parent as any).property as TSESTree.Identifier).name !== "load") {
           console.log(isLoaded(reference));
-        }
-        if (reference.init // ok
-            || !variable // ok
+        }*/
+        if (reference.init
+            || !variable
             || !isLoaded(reference)) {
             return;
         }
-        // Add an If here to check if load is before reference.identifier.range[1]
         // Reports.
         context.report({
             node: reference.identifier,
@@ -169,24 +107,3 @@ export = {
     }
   },
 };
-
-
-/*
-    return {
-      ":matches(VariableDeclarator[init.callee.property.name = 'getSelectedRange'], VariableDeclarator[init.callee.property.name = 'getItem'], VariableDeclarator[init.callee.property.name = 'getRange'])"(
-          node: TSESTree.VariableDeclarator
-      ) {
-        const variableName: string = (node.id as TSESTree.Identifier).name;
-
-        context.report({
-          node: node,
-          messageId: "loadBeforeRead",
-        });
-      },
-    };
-*/
-
-/*
-Location the load function:
-CallExpression[callee.property.name='load'][arguments.Literal.value = variableName]
-*/
