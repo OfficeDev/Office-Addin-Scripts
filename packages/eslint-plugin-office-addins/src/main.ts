@@ -28,7 +28,7 @@ module.exports = {
       extends: ["plugin:office-addins/recommended", "plugin:react/recommended"],
       settings: {
         react: {
-          "version": "detect"
+          version: "detect",
         },
       },
     },
@@ -37,7 +37,7 @@ module.exports = {
       extends: ["plugin:office-addins/recommended", "plugin:react-native/all"],
       settings: {
         react: {
-          "version": "detect"
+          version: "detect",
         },
       },
     },
@@ -47,6 +47,7 @@ module.exports = {
       rules: {
         "office-addins/no-context-sync-in-loop": "warn",
         "office-addins/no-office-initialize": "warn",
+        "office-addins/test-for-null-using-isNullObject": "error",
       },
     },
   },
