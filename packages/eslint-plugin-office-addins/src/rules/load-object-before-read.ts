@@ -89,24 +89,39 @@ export = {
      * @param variable 
      * @returns
     */
-    function isLoaded(referenceNode: Reference, valueRead: string): boolean {
+    function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
-      //console.log("Logging all the references:");
+      let loadFound = false;
+      const valueRead = ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier).name;
+      console.log("On isLoaded");
       variable?.references.forEach((reference: Reference) => {
-        //console.log(reference.identifier);
-
+        console.log("On a new reference");
         if(reference.identifier.parent?.type === "MemberExpression"
           && (reference.identifier.parent.property as TSESTree.Identifier).name === "load"
           && reference.identifier.parent.parent?.type === "CallExpression"
-          && (reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead) {
-
-            if(reference.identifier.range[1] < referenceNode.identifier.range[1]) {
-              return true;
+          && (reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead
+          && reference.identifier.range[1] < referenceNode.identifier.range[1]) {
+          loadFound = true;
+        }
+        /*
+        if(reference.identifier.parent?.type === "MemberExpression") {
+          console.log("Inside first if");
+          if((reference.identifier.parent.property as TSESTree.Identifier).name === "load") {
+            console.log("Inside second if");
+            if(reference.identifier.parent.parent?.type === "CallExpression") {
+              console.log("Inside third if");
+              if((reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead) {
+                console.log("Inside fourth if");
+                if(reference.identifier.range[1] < referenceNode.identifier.range[1]) {
+                  console.log("Inside fifth if");
+                }
+              }
             }
           }
+        }*/
       });
 
-      return false;
+      return loadFound;
     }
 
     /**
@@ -128,14 +143,10 @@ export = {
           */
         //console.log("Reference = ");
         //console.log(reference);
-        if(variable?.name === "selectedRange" && !reference.init) {
-          console.log(variable?.name);
-          /*console.log(reference.init);
-          console.log(variable?.identifiers.length);
-          console.log(variable?.identifiers[0].range[1]);
-          console.log(reference.identifier.range[1]);
-          console.log(isInInitializer(variable as Variable, reference));*/
-          console.log(isLoaded(reference, ""));
+        if(variable?.name === "selectedRange" && !reference.init
+          && ((reference.identifier.parent as any).property as TSESTree.Identifier).name !== "load") {
+          //console.log(variable?.name);
+          console.log(isLoaded(reference));
         }
         if (reference.init // ok
             || !variable // ok
