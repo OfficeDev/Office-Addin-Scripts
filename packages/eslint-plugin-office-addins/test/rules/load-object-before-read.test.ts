@@ -7,7 +7,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 
 ruleTester.run('load-object-before-read', rule, {
   valid: [ 
-    {
+    /*{
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -23,7 +23,7 @@ ruleTester.run('load-object-before-read', rule, {
         var property = worksheet.getItem("sheet");
         property.load('G2');
         var variableName = property.G2;`
-    },
+    },*/
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
@@ -32,7 +32,7 @@ ruleTester.run('load-object-before-read', rule, {
     }
   ],
   invalid: [
-    {
+    /*{
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -42,31 +42,31 @@ ruleTester.run('load-object-before-read', rule, {
           .then(function () {
             console.log (myRange.values);  // not ok as it was not loaded
           });`,
-      errors: [{ messageId: "loadBeforeRead" }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "values" } }]
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         if(selectedRange.values === ["sampleText"]){}`,
-      errors: [{ messageId: "loadBeforeRead" }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "values" } }]
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getItem("sheet").getRange("A1");
         console.log (myRange.adress);`,
-      errors: [{ messageId: "loadBeforeRead" }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "adress" }  }]
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         console.log(selectedRange.values);`,
-      errors: [{ messageId: "loadBeforeRead" }]
-    },
+      errors: [{ messageId: "loadBeforeRead", data: { name: "values" }  }]
+    },*/
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         var test = selectedRange.values;`,
-      errors: [{ messageId: "loadBeforeRead" }]
+      errors: [{ messageId: "loadBeforeRead", data: { name: "values" }  }]
     }
   ]
 });

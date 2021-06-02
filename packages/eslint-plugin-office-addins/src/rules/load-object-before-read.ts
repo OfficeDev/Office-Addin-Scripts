@@ -9,7 +9,7 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      loadBeforeRead: "An explicit load call needs to be made before reading a proxy object",
+      loadBeforeRead: "An explicit load call on '{{name}}' needs to be made before reading a proxy object",
     },
     docs: {
       description: 
@@ -101,13 +101,13 @@ export = {
           * - referring to a global environment variable (there're no identifiers).
           * - located preceded by the variable (except in initializers).
           */
-        if (reference.init ||
+        /*if (reference.init ||
             !variable ||
             variable.identifiers.length === 0 ||
             (variable.identifiers[0].range[1] < reference.identifier.range[1] && !isInInitializer(variable, reference))
           ) {
             return;
-        }
+        }*/
 
         // Reports.
         context.report({
