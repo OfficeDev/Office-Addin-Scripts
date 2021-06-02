@@ -10,7 +10,8 @@ const errors = [{ messageId: "useIsNullObject", data: { name: "dataSheet" } }];
 ruleTester.run('test-for-null-using-isNullObject', rule, {
   valid: [ 
     {
-      code: `await Excel.run(async (context) =>  {
+      code: `
+      await Excel.run(async (context) =>  {
         var dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
         return context.sync().then(function () {
             if (dataSheet.isNullObject) {
@@ -21,7 +22,8 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       });`,
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
         if (dataSheet.isNullObject) {
@@ -31,7 +33,8 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       });`,
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
         if (dataSheet.isNullObject) {
@@ -39,11 +42,20 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         }
         dataSheet.position = 1;
       });`,
+    },
+    {
+      code: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      if (dataSheet.isNullObject) {
+        dataSheet = context.workbook.worksheets.add("Data");
+      }`,
     },
   ],
   invalid: [
     {
-      code: `await Excel.run(async (context) =>  {
+      code: `
+      await Excel.run(async (context) =>  {
         var dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
         return context.sync().then(function () {
           if (dataSheet) {
@@ -55,7 +67,8 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       errors
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
         if (dataSheet) {
@@ -66,7 +79,17 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       errors
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
+      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+      if (dataSheet) {
+        dataSheet = context.workbook.worksheets.add("Data");
+      }`,
+      errors
+    },
+    {
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
         if (!dataSheet) {
@@ -77,10 +100,11 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       errors
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
-        if (true &&dataSheet) {
+        if (true && dataSheet) {
           dataSheet = context.workbook.worksheets.add("Data");
         }
         dataSheet.position = 1;
@@ -88,7 +112,8 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       errors
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
         if (null != dataSheet) {
@@ -99,7 +124,8 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       errors
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
         for (var i = 0; i < 5; i++) {
@@ -112,7 +138,8 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       errors
     },
     {
-      code: `var dataSheet;
+      code: `
+      var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       return context.sync().then(function () {
         do {

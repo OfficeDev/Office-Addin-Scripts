@@ -3,14 +3,17 @@ import {
   Reference,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { RuleFix, RuleFixer } from "@typescript-eslint/experimental-utils/dist/ts-eslint";
+import {
+  RuleFix,
+  RuleFixer,
+} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
 
 export = {
   name: "test-for-null-using-isNullObject",
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      useIsNullObject: "Test {{name}} for null using isNullObject.",
+      useIsNullObject: "Test '{{name}}' for null using isNullObject.",
     },
     docs: {
       description: "",
@@ -18,11 +21,10 @@ export = {
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Possible Errors",
       recommended: <false | "error" | "warn">false,
-      url:
-        "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model?view=powerpoint-js-1.1#ornullobject-methods-and-properties",
+      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model?view=powerpoint-js-1.1#ornullobject-methods-and-properties",
     },
     schema: [],
-    fixable: <"code" | "whitespace"> "code",
+    fixable: <"code" | "whitespace">"code",
   },
   create: function (context: any) {
     function isConditionalTestExpression(node: TSESTree.Identifier): boolean {
@@ -99,15 +101,14 @@ export = {
     function findNullObjectNullTests(scope: any): void {
       const variables = scope.variables;
       const childScopes = scope.childScopes;
-      let i, l;
 
-      for (i = 0, l = variables.length; i < l; i++) {
+      for (let i = 0; i < variables.length; i++) {
         const variable: Variable = variables[i];
         const references: Reference[] = variable.references;
         let nullObjectCall: boolean = false;
         let nullTests: Reference[] = [];
 
-        for (var ref = 0; ref < references.length; ref++) {
+        for (let ref = 0; ref < references.length; ref++) {
           const reference = references[ref];
 
           if (isNullObjectNode(reference.identifier.parent)) {
@@ -125,23 +126,31 @@ export = {
               node: reference.identifier,
               messageId: "useIsNullObject",
               data: { name: reference.identifier.name },
-              fix: function(fixer: RuleFixer) {
+              fix: function (fixer: RuleFixer) {
                 var ruleFix: RuleFix;
-                if (isInBinaryNullTest(reference.identifier) && reference.identifier.parent) {
+                if (
+                  isInBinaryNullTest(reference.identifier) &&
+                  reference.identifier.parent
+                ) {
                   let newTest = reference.identifier.name + ".isNullObject";
-                  ruleFix = fixer.replaceText(reference.identifier.parent, newTest);
-                }
-                else {
-                  ruleFix = fixer.insertTextAfter(reference.identifier, ".isNullObject");
+                  ruleFix = fixer.replaceText(
+                    reference.identifier.parent,
+                    newTest
+                  );
+                } else {
+                  ruleFix = fixer.insertTextAfter(
+                    reference.identifier,
+                    ".isNullObject"
+                  );
                 }
                 return ruleFix;
-              }
+              },
             });
           });
         }
       }
 
-      for (i = 0, l = childScopes.length; i < l; ++i) {
+      for (let i = 0; i < childScopes.length; ++i) {
         findNullObjectNullTests(childScopes[i]);
       }
     }
