@@ -7,7 +7,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 
 ruleTester.run('load-object-before-read', rule, {
   valid: [ 
-    /*{
+    {
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -23,28 +23,28 @@ ruleTester.run('load-object-before-read', rule, {
         var property = worksheet.getItem("sheet");
         property.load('G2');
         var variableName = property.G2;`
-    },*/
+    },
     {
-      code: ""/*`
+      code: `
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load('values');
-        if(selectedRange.values === [2]){}`*/
+        if(selectedRange.values === [2]){}`
     }
   ],
   invalid: [
     {
       code: `
-        //var sheetName = 'Sheet1';
+        var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
         console.log(rangeAddress);
-        //var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
-        //myRange.load('address');
-        //context.sync()
-          //.then(function () {
-            //console.log (myRange.values);  // not ok as it was not loaded
-          //});`,
+        var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
+        myRange.load('address');
+        context.sync()
+          .then(function () {
+            console.log (myRange.values);  // not ok as it was not loaded
+          });`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" } }]
-    },/*
+    },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
@@ -75,6 +75,6 @@ ruleTester.run('load-object-before-read', rule, {
         var selectedRange = context.workbook.getSelectedRange();
         var test = selectedRange.values;`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
-    }*/
+    }
   ]
 });

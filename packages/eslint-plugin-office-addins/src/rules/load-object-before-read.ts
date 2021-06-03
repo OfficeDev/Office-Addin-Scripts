@@ -24,7 +24,7 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    function getLoadedValue(referenceNode: Reference): string | undefined {
+    function getValueThatHadToBeLoaded(referenceNode: Reference): string | undefined {
       if(referenceNode.identifier.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
         && referenceNode.identifier.parent?.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
         return referenceNode.identifier.parent.property.name;
@@ -63,8 +63,16 @@ export = {
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
+      //console.log("On isLoaded with referenceNode = ");
+      //console.log(referenceNode.identifier);
+      const valueRead = getValueThatHadToBeLoaded(referenceNode);
+
       variable?.references.forEach((reference: Reference) => {
-        const valueRead = getLoadedValue(reference);
+        if(reference === referenceNode) return;
+        //console.log("On references:");
+        //console.log(reference.identifier);
+        //console.log("ValueRead = ");
+        //console.log(valueRead);
         if(reference.identifier.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
           && reference.identifier.parent.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal
           && reference.identifier.parent.parent.arguments[0].value === valueRead
@@ -94,10 +102,7 @@ export = {
           * - located preceded by the variable (except in initializers).
           */
          //console.log("On new reference");
-         //console.log(reference.init);
-         //console.log(!variable);
-         //console.log(isLoadFunction(reference));
-         //console.log(isLoaded(reference));
+         //console.log(`wasCreated = ${wasCreatedByGetFunction(reference)}, isLoadFunction = ${isLoadFunction(reference)}, isLoaded=${isLoaded(reference)}`)
         if (reference.init
             || !variable
             || !wasCreatedByGetFunction(reference)
@@ -105,11 +110,12 @@ export = {
             || isLoaded(reference)){
             return;
         }
+        //console.log("Didn't enter if");
         // Reports.
         context.report({
             node: reference.identifier,
             messageId: "loadBeforeRead",
-            data: {name: reference.identifier.name, loadValue: getLoadedValue(reference)}
+            data: {name: reference.identifier.name, loadValue: getValueThatHadToBeLoaded(reference)}
         });
       });
       scope.childScopes.forEach(findVariablesInScope);
