@@ -6,7 +6,7 @@ import * as util from "util";
 import * as uuid from "uuid";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
-import { usageDataObject } from './defaults';
+import { usageDataObject } from "./defaults";
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 type Xml = xmlMethods.Xml;
@@ -42,30 +42,84 @@ function parseManifest(xml: Xml): ManifestInfo {
   const officeApp: Xml = xml.OfficeApp;
 
   if (officeApp) {
-    const defaultSettingsXml: Xml = xmlMethods.getXmlElement(officeApp, "DefaultSettings");
+    const defaultSettingsXml: Xml = xmlMethods.getXmlElement(
+      officeApp,
+      "DefaultSettings"
+    );
 
     manifest.id = xmlMethods.getXmlElementValue(officeApp, "Id");
-    manifest.allowSnapshot = xmlMethods.getXmlElementValue(officeApp, "AllowSnapshot");
-    manifest.alternateId = xmlMethods.getXmlElementValue(officeApp, "AlternateId");
-    manifest.appDomains = xmlMethods.getXmlElementsValue(officeApp, "AppDomains", "AppDomain");
-    manifest.defaultLocale = xmlMethods.getXmlElementValue(officeApp, "DefaultLocale");
-    manifest.description = xmlMethods.getXmlElementAttributeValue(officeApp, "Description");
-    manifest.displayName = xmlMethods.getXmlElementAttributeValue(officeApp, "DisplayName");
-    manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "HighResolutionIconUrl");
-    manifest.hosts = xmlMethods.getXmlElementsAttributeValue(officeApp, "Hosts", "Host", "Name");
-    manifest.iconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "IconUrl");
-    manifest.officeAppType = xmlMethods.getXmlAttributeValue(officeApp, "xsi:type");
-    manifest.permissions = xmlMethods.getXmlElementValue(officeApp, "Permissions");
-    manifest.providerName = xmlMethods.getXmlElementValue(officeApp, "ProviderName");
-    manifest.supportUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "SupportUrl");
+    manifest.allowSnapshot = xmlMethods.getXmlElementValue(
+      officeApp,
+      "AllowSnapshot"
+    );
+    manifest.alternateId = xmlMethods.getXmlElementValue(
+      officeApp,
+      "AlternateId"
+    );
+    manifest.appDomains = xmlMethods.getXmlElementsValue(
+      officeApp,
+      "AppDomains",
+      "AppDomain"
+    );
+    manifest.defaultLocale = xmlMethods.getXmlElementValue(
+      officeApp,
+      "DefaultLocale"
+    );
+    manifest.description = xmlMethods.getXmlElementAttributeValue(
+      officeApp,
+      "Description"
+    );
+    manifest.displayName = xmlMethods.getXmlElementAttributeValue(
+      officeApp,
+      "DisplayName"
+    );
+    manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(
+      officeApp,
+      "HighResolutionIconUrl"
+    );
+    manifest.hosts = xmlMethods.getXmlElementsAttributeValue(
+      officeApp,
+      "Hosts",
+      "Host",
+      "Name"
+    );
+    manifest.iconUrl = xmlMethods.getXmlElementAttributeValue(
+      officeApp,
+      "IconUrl"
+    );
+    manifest.officeAppType = xmlMethods.getXmlAttributeValue(
+      officeApp,
+      "xsi:type"
+    );
+    manifest.permissions = xmlMethods.getXmlElementValue(
+      officeApp,
+      "Permissions"
+    );
+    manifest.providerName = xmlMethods.getXmlElementValue(
+      officeApp,
+      "ProviderName"
+    );
+    manifest.supportUrl = xmlMethods.getXmlElementAttributeValue(
+      officeApp,
+      "SupportUrl"
+    );
     manifest.version = xmlMethods.getXmlElementValue(officeApp, "Version");
 
     if (defaultSettingsXml) {
       const defaultSettings: DefaultSettings = new DefaultSettings();
 
-      defaultSettings.requestedHeight = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedHeight");
-      defaultSettings.requestedWidth = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedWidth");
-      defaultSettings.sourceLocation = xmlMethods.getXmlElementAttributeValue(defaultSettingsXml, "SourceLocation");
+      defaultSettings.requestedHeight = xmlMethods.getXmlElementValue(
+        defaultSettingsXml,
+        "RequestedHeight"
+      );
+      defaultSettings.requestedWidth = xmlMethods.getXmlElementValue(
+        defaultSettingsXml,
+        "RequestedWidth"
+      );
+      defaultSettings.sourceLocation = xmlMethods.getXmlElementAttributeValue(
+        defaultSettingsXml,
+        "SourceLocation"
+      );
 
       manifest.defaultSettings = defaultSettings;
     }
@@ -74,11 +128,17 @@ function parseManifest(xml: Xml): ManifestInfo {
   return manifest;
 }
 
-export async function modifyManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<ManifestInfo> {
+export async function modifyManifestFile(
+  manifestPath: string,
+  guid?: string,
+  displayName?: string
+): Promise<ManifestInfo> {
   let manifestData: ManifestInfo = {};
   if (manifestPath) {
     if (guid === undefined && displayName === undefined) {
-      throw new Error("You need to specify something to change in the manifest.");
+      throw new Error(
+        "You need to specify something to change in the manifest."
+      );
     } else {
       try {
         manifestData = await modifyManifestXml(manifestPath, guid, displayName);
@@ -86,8 +146,7 @@ export async function modifyManifestFile(manifestPath: string, guid?: string, di
         let output = await readManifestFile(manifestPath);
         usageDataObject.reportSuccess("modifyManifestFile()");
         return output;
-        
-      } catch(err) {
+      } catch (err) {
         usageDataObject.reportException("modifyManifestFile()", err);
         throw err;
       }
@@ -97,21 +156,34 @@ export async function modifyManifestFile(manifestPath: string, guid?: string, di
   }
 }
 
-async function modifyManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
+async function modifyManifestXml(
+  manifestPath: string,
+  guid?: string,
+  displayName?: string
+): Promise<Xml> {
   try {
     const manifestXml: Xml = await readXmlFromManifestFile(manifestPath);
     setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
     return manifestXml;
   } catch (err) {
-    throw new Error(`Unable to modify xml data for manifest file: ${manifestPath}. \n${err}`);
+    throw new Error(
+      `Unable to modify xml data for manifest file: ${manifestPath}. \n${err}`
+    );
   }
 }
 
-async function parseXmlAsync(xmlString: string, manifestPath: string): Promise<Xml> {
-  return new Promise(async function(resolve, reject) {
-    xml2js.parseString(xmlString, function(parseError, xml) {
+async function parseXmlAsync(
+  xmlString: string,
+  manifestPath: string
+): Promise<Xml> {
+  return new Promise(function (resolve, reject) {
+    xml2js.parseString(xmlString, function (parseError, xml) {
       if (parseError) {
-        reject(new Error(`Unable to parse the manifest file: ${manifestPath}. \n${parseError}`));
+        reject(
+          new Error(
+            `Unable to parse the manifest file: ${manifestPath}. \n${parseError}`
+          )
+        );
       } else {
         resolve(xml);
       }
@@ -119,7 +191,9 @@ async function parseXmlAsync(xmlString: string, manifestPath: string): Promise<X
   });
 }
 
-export async function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
+export async function readManifestFile(
+  manifestPath: string
+): Promise<ManifestInfo> {
   if (manifestPath) {
     const xml = await readXmlFromManifestFile(manifestPath);
     const manifest: ManifestInfo = parseManifest(xml);
@@ -130,25 +204,34 @@ export async function readManifestFile(manifestPath: string): Promise<ManifestIn
 }
 
 async function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
-  const fileData: string = await readFileAsync(manifestPath, {encoding: "utf8"});
+  const fileData: string = await readFileAsync(manifestPath, {
+    encoding: "utf8",
+  });
   const xml = await parseXmlAsync(fileData, manifestPath);
   return xml;
 }
 
-function setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void {
-  if (typeof(guid) !== "undefined") {
+function setModifiedXmlData(
+  xml: any,
+  guid: string | undefined,
+  displayName: string | undefined
+): void {
+  if (typeof guid !== "undefined") {
     if (!guid || guid === "random") {
       guid = uuid();
     }
     xmlMethods.setXmlElementValue(xml, "Id", guid);
   }
 
-  if (typeof(displayName) !== "undefined") {
+  if (typeof displayName !== "undefined") {
     xmlMethods.setXmlElementAttributeValue(xml, "DisplayName", displayName);
   }
 }
 
-async function writeManifestData(manifestPath: string, manifestData: any): Promise<void> {
+async function writeManifestData(
+  manifestPath: string,
+  manifestData: any
+): Promise<void> {
   let xml: Xml;
 
   try {
@@ -162,7 +245,7 @@ async function writeManifestData(manifestPath: string, manifestData: any): Promi
   try {
     // Write the xml back to the manifest file.
     await writeFileAsync(manifestPath, xml);
-    } catch (err) {
-      throw new Error(`Unable to write to file. ${manifestPath} \n${err}`);
-    }
+  } catch (err) {
+    throw new Error(`Unable to write to file. ${manifestPath} \n${err}`);
+  }
 }

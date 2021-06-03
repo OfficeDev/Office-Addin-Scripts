@@ -7,6 +7,7 @@ import { ExpectedError } from "office-addin-usage-data";
  * The types of Office add-ins.
  */
 export enum AddInType {
+  /* eslint-disable no-unused-vars */
   // the string values should be lowercase
   Content = "content",
   Mail = "mail",
@@ -15,13 +16,17 @@ export enum AddInType {
 }
 
 // initialized once since this list won't change
-const addInTypes: AddInType[] = Object.keys(AddInType).map<AddInType>(key => parseAddInType(key));
+const addInTypes: AddInType[] = Object.keys(AddInType).map<AddInType>((key) =>
+  parseAddInType(key)
+);
 
 /**
  * Get the Office app for the manifest Host name
  * @param host Host name
  */
-export function getAddInTypeForManifestOfficeAppType(officeAppType: string): AddInType | undefined {
+export function getAddInTypeForManifestOfficeAppType(
+  officeAppType: string
+): AddInType | undefined {
   switch (officeAppType ? officeAppType.trim().toLowerCase() : officeAppType) {
     case "contentapp":
       return AddInType.Content;
@@ -38,7 +43,7 @@ export function getAddInTypeForManifestOfficeAppType(officeAppType: string): Add
  * Returns the Office add-in types.
  */
 export function getAddInTypes(): AddInType[] {
-    return addInTypes;
+  return addInTypes;
 }
 
 /**
@@ -65,7 +70,9 @@ export function parseAddInTypes(input: string): AddInType[] {
   if (input.trim().toLowerCase() === "all") {
     return getAddInTypes();
   } else {
-    return input.split(",").map<AddInType>(appString => parseAddInType(appString));
+    return input
+      .split(",")
+      .map<AddInType>((appString) => parseAddInType(appString));
   }
 }
 
