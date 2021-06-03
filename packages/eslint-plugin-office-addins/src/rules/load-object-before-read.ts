@@ -24,13 +24,18 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    function getLoadedValue(referenceNode: Reference): string {
-      return ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier)?.name;
+    function getLoadedValue(referenceNode: Reference): string | undefined {
+      if(referenceNode.identifier.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && referenceNode.identifier.parent?.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+        return referenceNode.identifier.parent.property.name;
+      }
+      return undefined;
     }
 
     function isLoadFunction(reference: Reference): boolean {
-      if(reference.identifier.parent?.type === "MemberExpression"
-      && (reference.identifier.parent.property as TSESTree.Identifier).name === "load") {
+      if(reference.identifier.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && reference.identifier.parent.property.type === TSESTree.AST_NODE_TYPES.Identifier
+        && reference.identifier.parent.property.name === "load") {
         return true;
       }
       return false;
@@ -40,8 +45,8 @@ export = {
       const variable = referenceNode.resolved;
       let getFunctionFound = false;
       variable?.references.forEach((reference: Reference) => {
-          if(reference.identifier.parent?.type === "VariableDeclarator"
-            && reference.identifier.parent.init?.type === "CallExpression"
+          if(reference.identifier.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
+            && reference.identifier.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
             && reference.identifier.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
             && reference.identifier.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
               const functionName = reference.identifier.parent.init.callee.property.name;
@@ -60,8 +65,9 @@ export = {
       let loadFound = false;
       variable?.references.forEach((reference: Reference) => {
         const valueRead = getLoadedValue(reference);
-        if(reference.identifier.parent?.parent?.type === "CallExpression"
-          && (reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead
+        if(reference.identifier.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+          && reference.identifier.parent.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal
+          && reference.identifier.parent.parent.arguments[0].value === valueRead
           && reference.identifier.range[1] < referenceNode.identifier.range[1]) {
           loadFound = true;
         }
