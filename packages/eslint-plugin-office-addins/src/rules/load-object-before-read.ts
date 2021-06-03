@@ -36,34 +36,35 @@ export = {
       return false;
     }
 
+    function wasCreatedByGetFunction(referenceNode: Reference): boolean {
+      const variable = referenceNode.resolved;
+      let getFunctionFound = false;
+      variable?.references.forEach((reference: Reference) => {
+          if(reference.identifier.parent?.type === "VariableDeclarator"
+            && reference.identifier.parent.init?.type === "CallExpression"
+            && reference.identifier.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
+            && reference.identifier.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+              const functionName = reference.identifier.parent.init.callee.property.name;
+              if(functionName === "getSelectedRange"
+                || functionName === "getItem" 
+                || functionName === "getRange") {
+                getFunctionFound = true;
+              }
+          }
+        });
+      return getFunctionFound;
+    }
+
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
-      //console.log("On isLoaded");
       variable?.references.forEach((reference: Reference) => {
-        //console.log("On a new reference");
         const valueRead = getLoadedValue(reference);
         if(reference.identifier.parent?.parent?.type === "CallExpression"
           && (reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead
           && reference.identifier.range[1] < referenceNode.identifier.range[1]) {
           loadFound = true;
         }
-        /*
-        if(reference.identifier.parent?.type === "MemberExpression") {
-          console.log("Inside first if");
-          if((reference.identifier.parent.property as TSESTree.Identifier).name === "load") {
-            console.log("Inside second if");
-            if(reference.identifier.parent.parent?.type === "CallExpression") {
-              console.log("Inside third if");
-              if((reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead) {
-                console.log("Inside fourth if");
-                if(reference.identifier.range[1] < referenceNode.identifier.range[1]) {
-                  console.log("Inside fifth if");
-                }
-              }
-            }
-          }
-        }*/
       });
 
       return loadFound;
@@ -86,15 +87,16 @@ export = {
           * - referring to a global environment variable (there're no identifiers).
           * - located preceded by the variable (except in initializers).
           */
-         console.log("On new reference");
-         console.log(reference.init);
-         console.log(!variable);
-         console.log(isLoadFunction(reference));
-         console.log(isLoaded(reference));
+         //console.log("On new reference");
+         //console.log(reference.init);
+         //console.log(!variable);
+         //console.log(isLoadFunction(reference));
+         //console.log(isLoaded(reference));
         if (reference.init
             || !variable
+            || !wasCreatedByGetFunction(reference)
             || isLoadFunction(reference)
-            || isLoaded(reference)) {
+            || isLoaded(reference)){
             return;
         }
         // Reports.
