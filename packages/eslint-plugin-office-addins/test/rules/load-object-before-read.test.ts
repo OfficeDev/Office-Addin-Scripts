@@ -17,18 +17,18 @@ ruleTester.run('load-object-before-read', rule, {
           .then(function () {
             console.log (myRange.address);   // ok
           });`
-    },
+    },*/
     {
       code: `
         var property = worksheet.getItem("sheet");
         property.load('G2');
         var variableName = property.G2;`
-    },*/
+    },
     {
-      code: ""/*`
+      code: `
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load('values');
-        if(selectedRange.values === [2]){}`*/
+        if(selectedRange.values === [2]){}`
     }
   ],
   invalid: [
@@ -43,7 +43,7 @@ ruleTester.run('load-object-before-read', rule, {
             console.log (myRange.values);  // not ok as it was not loaded
           });`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" } }]
-    },
+    },*/
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
@@ -68,7 +68,7 @@ ruleTester.run('load-object-before-read', rule, {
         console.log(selectedRange.values);
         selectedRange.load('values')`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
-    },*/
+    },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
