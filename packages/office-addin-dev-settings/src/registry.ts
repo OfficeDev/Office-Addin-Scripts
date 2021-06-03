@@ -12,16 +12,23 @@ export class RegistryKey {
   }
 
   constructor(path: string) {
-    if (!path) { throw new ExpectedError("Please provide a registry key path."); }
+    if (!path) {
+      throw new ExpectedError("Please provide a registry key path.");
+    }
 
     const index = path.indexOf("\\");
 
-    if (index <= 0) { throw new ExpectedError(`The registry key path is not valid: "${path}".`); }
+    if (index <= 0) {
+      throw new ExpectedError(`The registry key path is not valid: "${path}".`);
+    }
 
     const hive = path.substring(0, index);
     const subpath = path.substring(index);
 
-    this.winreg = new winreg({ hive: normalizeRegistryHive(hive), key: subpath });
+    this.winreg = new winreg({
+      hive: normalizeRegistryHive(hive),
+      key: subpath,
+    });
   }
 }
 
@@ -57,11 +64,20 @@ export class RegistryValue {
   }
 }
 
-async function addValue(key: RegistryKey, value: string, type: string, data: string): Promise<void> {
+async function addValue(
+  key: RegistryKey,
+  value: string,
+  type: string,
+  data: string
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to set registry value "${value}" to "${data}" (${type}) for key "${key.path}".\n${err}`));
+        reject(
+          new Error(
+            `Unable to set registry value "${value}" to "${data}" (${type}) for key "${key.path}".\n${err}`
+          )
+        );
       } else {
         resolve();
       }
@@ -75,15 +91,27 @@ async function addValue(key: RegistryKey, value: string, type: string, data: str
   });
 }
 
-export async function addBooleanValue(key: RegistryKey, value: string, data: boolean): Promise<void> {
+export async function addBooleanValue(
+  key: RegistryKey,
+  value: string,
+  data: boolean
+): Promise<void> {
   return addValue(key, value, winreg.REG_DWORD, data ? "1" : "0");
 }
 
-export async function addNumberValue(key: RegistryKey, value: string, data: number): Promise<void> {
+export async function addNumberValue(
+  key: RegistryKey,
+  value: string,
+  data: number
+): Promise<void> {
   return addValue(key, value, winreg.REG_DWORD, data.toString());
 }
 
-export async function addStringValue(key: RegistryKey, value: string, data: string): Promise<void> {
+export async function addStringValue(
+  key: RegistryKey,
+  value: string,
+  data: string
+): Promise<void> {
   return addValue(key, value, winreg.REG_SZ, data);
 }
 
@@ -91,7 +119,9 @@ export async function deleteKey(key: RegistryKey): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to delete registry key "${key.path}".\n${err}`));
+        reject(
+          new Error(`Unable to delete registry key "${key.path}".\n${err}`)
+        );
       } else {
         resolve();
       }
@@ -111,11 +141,18 @@ export async function deleteKey(key: RegistryKey): Promise<void> {
   });
 }
 
-export async function deleteValue(key: RegistryKey, value: string): Promise<void> {
+export async function deleteValue(
+  key: RegistryKey,
+  value: string
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to delete registry value "${value}" in key "${key.path}".\n${err}`));
+        reject(
+          new Error(
+            `Unable to delete registry value "${value}" in key "${key.path}".\n${err}`
+          )
+        );
       } else {
         resolve();
       }
@@ -139,7 +176,11 @@ export async function doesKeyExist(key: RegistryKey): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const onError = (err: any, exists: boolean = false) => {
       if (err) {
-        reject(new Error(`Unable to determine if registry key exists: "${key.path}".\n${err}`));
+        reject(
+          new Error(
+            `Unable to determine if registry key exists: "${key.path}".\n${err}`
+          )
+        );
       } else {
         resolve(exists);
       }
@@ -153,11 +194,18 @@ export async function doesKeyExist(key: RegistryKey): Promise<boolean> {
   });
 }
 
-export async function doesValueExist(key: RegistryKey, value: string): Promise<boolean> {
+export async function doesValueExist(
+  key: RegistryKey,
+  value: string
+): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const onError = (err: any, exists: boolean = false) => {
       if (err) {
-        reject(new Error(`Unable to determine if registry value "${value}" exists for key "${key.path}".\n${err}`));
+        reject(
+          new Error(
+            `Unable to determine if registry value "${value}" exists for key "${key.path}".\n${err}`
+          )
+        );
       } else {
         resolve(exists);
       }
@@ -171,25 +219,42 @@ export async function doesValueExist(key: RegistryKey, value: string): Promise<b
   });
 }
 
-export async function getNumberValue(key: RegistryKey, value: string): Promise<number | undefined> {
+export async function getNumberValue(
+  key: RegistryKey,
+  value: string
+): Promise<number | undefined> {
   const registryValue: RegistryValue | undefined = await getValue(key, value);
 
-  return (registryValue && registryValue.isNumberType) ? parseInt(registryValue.data, undefined) : undefined;
+  return registryValue && registryValue.isNumberType
+    ? parseInt(registryValue.data, undefined)
+    : undefined;
 }
 
-export async function getStringValue(key: RegistryKey, value: string): Promise<string | undefined> {
+export async function getStringValue(
+  key: RegistryKey,
+  value: string
+): Promise<string | undefined> {
   const registryValue: RegistryValue | undefined = await getValue(key, value);
 
-  return (registryValue && registryValue.isStringType) ? registryValue.data : undefined;
+  return registryValue && registryValue.isStringType
+    ? registryValue.data
+    : undefined;
 }
 
-export async function getValue(key: RegistryKey, value: string): Promise<RegistryValue | undefined> {
-  return new Promise<RegistryValue | undefined>((resolve, reject) => {
+export async function getValue(
+  key: RegistryKey,
+  value: string
+): Promise<RegistryValue | undefined> {
+  return new Promise<RegistryValue | undefined>((resolve) => {
     const onError = (err: any, item?: winreg.RegistryItem) => {
       if (err) {
         resolve(undefined);
       } else {
-        resolve(item ? new RegistryValue(key.path, item.name, item.type, item.value) : undefined);
+        resolve(
+          item
+            ? new RegistryValue(key.path, item.name, item.type, item.value)
+            : undefined
+        );
       }
     };
 
@@ -207,7 +272,12 @@ export async function getValues(key: RegistryKey): Promise<RegistryValue[]> {
       if (err) {
         reject(err);
       } else {
-        resolve(items.map(item => new RegistryValue(key.path, item.name, item.type, item.value)));
+        resolve(
+          items.map(
+            (item) =>
+              new RegistryValue(key.path, item.name, item.type, item.value)
+          )
+        );
       }
     };
 
@@ -221,7 +291,7 @@ export async function getValues(key: RegistryKey): Promise<RegistryValue[]> {
 
 export function isNumberType(registryType: string) {
   // NOTE: REG_QWORD is not included as a number type since it cannot be returned as a "number".
-  return (registryType === RegistryTypes.REG_DWORD);
+  return registryType === RegistryTypes.REG_DWORD;
 }
 
 export function isStringType(registryType: string) {

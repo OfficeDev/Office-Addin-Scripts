@@ -6,6 +6,9 @@
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
     "test": "mocha -r ts-node/register test/**/*.ts",
     "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
   },
@@ -45,6 +48,7 @@
     "@types/winreg": "^1.2.30",
     "concurrently": "^6.0.0",
     "mocha": "^8.1.3",
+    "office-addin-lint": "^1.2.2",
     "rimraf": "^3.0.2",
     "sinon": "^7.5.0",
     "ts-node": "^9.0.0",
