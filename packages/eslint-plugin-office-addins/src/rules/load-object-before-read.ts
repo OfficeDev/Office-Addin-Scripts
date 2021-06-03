@@ -63,16 +63,10 @@ export = {
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
-      //console.log("On isLoaded with referenceNode = ");
-      //console.log(referenceNode.identifier);
       const valueRead = getValueThatHadToBeLoaded(referenceNode);
 
       variable?.references.forEach((reference: Reference) => {
         if(reference === referenceNode) return;
-        //console.log("On references:");
-        //console.log(reference.identifier);
-        //console.log("ValueRead = ");
-        //console.log(valueRead);
         if(reference.identifier.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
           && reference.identifier.parent.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal
           && reference.identifier.parent.parent.arguments[0].value === valueRead
@@ -84,25 +78,10 @@ export = {
       return loadFound;
     }
 
-    /**
-    * Finds and validates all variables in a given scope.
-    * @param {Scope} scope The scope object.
-    * @returns {void}
-    * @private
-    */
     function findVariablesInScope(scope: any) {
       scope.references.forEach((reference: Reference) => {
         const variable = reference.resolved;
 
-        /*
-          * Skips when the reference is:
-          * - initialization's.
-          * - referring to an undefined variable.
-          * - referring to a global environment variable (there're no identifiers).
-          * - located preceded by the variable (except in initializers).
-          */
-         //console.log("On new reference");
-         //console.log(`wasCreated = ${wasCreatedByGetFunction(reference)}, isLoadFunction = ${isLoadFunction(reference)}, isLoaded=${isLoaded(reference)}`)
         if (reference.init
             || !variable
             || !wasCreatedByGetFunction(reference)
@@ -110,8 +89,6 @@ export = {
             || isLoaded(reference)){
             return;
         }
-        //console.log("Didn't enter if");
-        // Reports.
         context.report({
             node: reference.identifier,
             messageId: "loadBeforeRead",
