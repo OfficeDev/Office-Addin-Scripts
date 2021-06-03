@@ -38,7 +38,6 @@
     "concurrently": "^6.0.0",
     "office-addin-lint": "^1.2.2",
     "rimraf": "^3.0.2",
-    "tslint": "^6.1.0",
     "typescript": "^3.8.3"
   },
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
