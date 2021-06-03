@@ -4,12 +4,15 @@
   "description": "A command-line interface for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
-    "cli": "node lib/cli.js",
-    "tsc": "tsc -p tsconfig.json",
-    "tsc-watch": "tsc -p tsconfig.json -w",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "cli": "node lib/cli.js",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
     "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "tsc": "tsc -p tsconfig.json",
+    "tsc-watch": "tsc -p tsconfig.json -w"
   },
   "author": "Office Dev",
   "license": "MIT",
@@ -31,6 +34,7 @@
     "@types/sinon": "^7.5.2",
     "concurrently": "^6.0.0",
     "mocha": "^8.3.2",
+    "office-addin-lint": "^1.2.2",
     "rimraf": "^3.0.2",
     "sinon": "^7.5.0",
     "ts-node": "^9.1.1",
