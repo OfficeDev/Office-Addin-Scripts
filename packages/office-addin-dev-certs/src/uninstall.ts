@@ -6,52 +6,72 @@ import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
-import { usageDataObject } from "./defaults"
+import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global process, console, __dirname */
+
 function getUninstallCommand(machine: boolean = false): string {
-   switch (process.platform) {
-      case "win32":
-         const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
-         return `powershell -ExecutionPolicy Bypass -File "${script}" ${machine ? "LocalMachine" : "CurrentUser"} "${defaults.certificateName}"`;
-      case "darwin": // macOS
-         return `sudo security delete-certificate -c '${defaults.certificateName}'`;
-      case "linux":
-         return `sudo rm -r /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} && sudo /usr/sbin/update-ca-certificates --fresh`
-      default:
-         throw new ExpectedError(`Platform not supported: ${process.platform}`);
-   }
+  switch (process.platform) {
+    case "win32": {
+      const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
+      return `powershell -ExecutionPolicy Bypass -File "${script}" ${
+        machine ? "LocalMachine" : "CurrentUser"
+      } "${defaults.certificateName}"`;
+    }
+    case "darwin": // macOS
+      return `sudo security delete-certificate -c '${defaults.certificateName}'`;
+    case "linux":
+      return `sudo rm -r /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} && sudo /usr/sbin/update-ca-certificates --fresh`;
+    default:
+      throw new ExpectedError(`Platform not supported: ${process.platform}`);
+  }
 }
 
 // Deletes the generated certificate files and delete the certificate directory if its empty
-export function deleteCertificateFiles(certificateDirectory: string = defaults.certificateDirectory): void {
-   if (fsExtra.existsSync(certificateDirectory)) {
-      fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostCertificateFileName));
-      fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostKeyFileName));
-      fsExtra.removeSync(path.join(certificateDirectory, defaults.caCertificateFileName));
+export function deleteCertificateFiles(
+  certificateDirectory: string = defaults.certificateDirectory
+): void {
+  if (fsExtra.existsSync(certificateDirectory)) {
+    fsExtra.removeSync(
+      path.join(certificateDirectory, defaults.localhostCertificateFileName)
+    );
+    fsExtra.removeSync(
+      path.join(certificateDirectory, defaults.localhostKeyFileName)
+    );
+    fsExtra.removeSync(
+      path.join(certificateDirectory, defaults.caCertificateFileName)
+    );
 
-      if (fsExtra.readdirSync(certificateDirectory).length === 0) {
-         fsExtra.removeSync(certificateDirectory);
-      }
-   }
+    if (fsExtra.readdirSync(certificateDirectory).length === 0) {
+      fsExtra.removeSync(certificateDirectory);
+    }
+  }
 }
 
-export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
-   if (isCaCertificateInstalled()) {
-      const command = getUninstallCommand(machine);
+export async function uninstallCaCertificate(
+  machine: boolean = false,
+  verbose: boolean = true
+) {
+  if (isCaCertificateInstalled()) {
+    const command = getUninstallCommand(machine);
 
-      try {
-         console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
-         execSync(command, {stdio : "pipe" });
-         console.log(`You no longer have trusted access to https://localhost.`);
-         usageDataObject.reportSuccess("uninstallCaCertificate()");
-      } catch (error) {
-         usageDataObject.reportException("uninstallCaCertificate()", error);
-         throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
-      }
-   } else {
-      if (verbose) {
-         console.log(`The CA certificate is not installed.`);
-      }
-   }
+    try {
+      console.log(
+        `Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`
+      );
+      execSync(command, { stdio: "pipe" });
+      console.log(`You no longer have trusted access to https://localhost.`);
+      usageDataObject.reportSuccess("uninstallCaCertificate()");
+    } catch (error) {
+      usageDataObject.reportException("uninstallCaCertificate()", error);
+      throw new Error(
+        `Unable to uninstall the CA certificate.\n${error.stderr.toString()}`
+      );
+    }
+  } else {
+    if (verbose) {
+      console.log(`The CA certificate is not installed.`);
+    }
+  }
 }
