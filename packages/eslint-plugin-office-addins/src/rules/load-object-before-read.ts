@@ -28,6 +28,14 @@ export = {
       return ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier).name;
     }
 
+    function isLoadFunction(reference: Reference): boolean {
+      if(reference.identifier.parent?.type === "MemberExpression"
+      && (reference.identifier.parent.property as TSESTree.Identifier).name === "load") {
+        return true;
+      }
+      return false;
+    }
+
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
@@ -35,9 +43,7 @@ export = {
       //console.log("On isLoaded");
       variable?.references.forEach((reference: Reference) => {
         //console.log("On a new reference");
-        if(reference.identifier.parent?.type === "MemberExpression"
-          && (reference.identifier.parent.property as TSESTree.Identifier).name === "load"
-          && reference.identifier.parent.parent?.type === "CallExpression"
+        if(reference.identifier.parent?.parent?.type === "CallExpression"
           && (reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead
           && reference.identifier.range[1] < referenceNode.identifier.range[1]) {
           loadFound = true;
@@ -87,7 +93,8 @@ export = {
         }*/
         if (reference.init
             || !variable
-            || !isLoaded(reference)) {
+            || isLoadFunction(reference)
+            || isLoaded(reference)) {
             return;
         }
         // Reports.

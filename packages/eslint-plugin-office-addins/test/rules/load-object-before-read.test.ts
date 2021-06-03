@@ -72,7 +72,6 @@ ruleTester.run('load-object-before-read', rule, {
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
-        selectedRange.load("values");
         var test = selectedRange.values;`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
     }
