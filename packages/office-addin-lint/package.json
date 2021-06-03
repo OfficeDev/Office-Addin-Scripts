@@ -4,10 +4,13 @@
   "description": "Provide eslint and prettier integration",
   "main": "./lib/main.js",
   "scripts": {
-    "cli": "node lib/cli.js",
-    "tsc": "tsc -p tsconfig.json",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "test": "mocha -r ts-node/register test/src/*.ts"
+    "cli": "node lib/cli.js",
+    "lint": "node lib/cli.js check",
+    "lint:fix": "node lib/cli.js fix",
+    "prettier": "node lib/cli.js prettier",
+    "test": "mocha -r ts-node/register test/src/*.ts",
+    "tsc": "tsc -p tsconfig.json"
   },
   "author": "Office Dev",
   "license": "MIT",
