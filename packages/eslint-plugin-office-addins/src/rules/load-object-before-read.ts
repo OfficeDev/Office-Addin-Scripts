@@ -25,7 +25,7 @@ export = {
   },
   create: function (context: any) {
     function getLoadedValue(referenceNode: Reference): string {
-      return ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier).name;
+      return ((referenceNode.identifier.parent as TSESTree.MemberExpression).property as TSESTree.Identifier)?.name;
     }
 
     function isLoadFunction(reference: Reference): boolean {
@@ -39,10 +39,10 @@ export = {
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
-      const valueRead = getLoadedValue(referenceNode);
       //console.log("On isLoaded");
       variable?.references.forEach((reference: Reference) => {
         //console.log("On a new reference");
+        const valueRead = getLoadedValue(reference);
         if(reference.identifier.parent?.parent?.type === "CallExpression"
           && (reference.identifier.parent.parent.arguments[0] as TSESTree.Literal).value === valueRead
           && reference.identifier.range[1] < referenceNode.identifier.range[1]) {
@@ -86,11 +86,11 @@ export = {
           * - referring to a global environment variable (there're no identifiers).
           * - located preceded by the variable (except in initializers).
           */
-
-        /*if(variable?.name === "selectedRange" && !reference.init
-          && ((reference.identifier.parent as any).property as TSESTree.Identifier).name !== "load") {
-          console.log(isLoaded(reference));
-        }*/
+         console.log("On new reference");
+         console.log(reference.init);
+         console.log(!variable);
+         console.log(isLoadFunction(reference));
+         console.log(isLoaded(reference));
         if (reference.init
             || !variable
             || isLoadFunction(reference)
