@@ -10,15 +10,18 @@
   "author": "OfficeDev",
   "main": "lib/main.js",
   "scripts": {
-    "tsc": "tsc -p tsconfig.json",
     "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "test": "jest"
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
+    "test": "jest",
+    "tsc": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@typescript-eslint/parser": "^4.23.0",
     "eslint": "^7.0.0",
-    "eslint-plugin-react": "^7.19.0",
-    "eslint-plugin-react-native": "^3.8.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-native": "^3.11.0",
     "prettier": "^2.1.2",
     "requireindex": "~1.1.0"
   },
@@ -28,6 +31,7 @@
     "@typescript-eslint/experimental-utils": "^4.23.0",
     "concurrently": "^6.0.0",
     "jest": "^26.6.3",
+    "office-addin-lint": "^1.2.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.6",
     "typescript": "^3.8.3"
