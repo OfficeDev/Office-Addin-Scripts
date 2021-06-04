@@ -15,20 +15,18 @@ export async function getGraphData(
   apiURLsegment: string,
   queryParamsSegment?: string
 ): Promise<any> {
-  return new Promise<any>(async (resolve, reject) => {
-    try {
-      const oData = await ODataHelper.getData(
-        accessToken,
-        domain,
-        apiURLsegment,
-        versionURLsegment,
-        queryParamsSegment
-      );
-      resolve(oData);
-    } catch (err) {
-      reject(`Error get Graph data. \n${err}`);
-    }
-  });
+  try {
+    const oData = await ODataHelper.getData(
+      accessToken,
+      domain,
+      apiURLsegment,
+      versionURLsegment,
+      queryParamsSegment
+    );
+    return Promise.resolve(oData);
+  } catch (err) {
+    return Promise.reject(`Error get Graph data. \n${err}`);
+  }
 }
 
 export async function getGraphToken(bootstrapToken): Promise<any> {

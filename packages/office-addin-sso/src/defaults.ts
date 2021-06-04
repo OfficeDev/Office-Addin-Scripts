@@ -65,9 +65,10 @@ export const testManifestFilePath = path.resolve(
 );
 
 // Usage data defaults
-export const usageDataObject: usageData.OfficeAddinUsageData =
-  new usageData.OfficeAddinUsageData({
+export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData(
+  {
     projectName: "office-addin-sso",
     instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
     raisePrompt: false,
-  });
+  }
+);

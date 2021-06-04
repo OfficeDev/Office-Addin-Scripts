@@ -83,19 +83,17 @@ export async function configureSSO(manifestPath: string) {
         console.log("Granting admin consent");
         await configure.grantAdminContent(applicationJson);
         // Check to set if SharePoint reply urls are set for tenant. If not, set them
-        const setSharePointReplyUrls: boolean =
-          await configure.setSharePointTenantReplyUrls(
-            applicationJson["publisherDomain"].substr(
-              0,
-              applicationJson["publisherDomain"].indexOf(".")
-            )
-          );
+        const setSharePointReplyUrls: boolean = await configure.setSharePointTenantReplyUrls(
+          applicationJson["publisherDomain"].substr(
+            0,
+            applicationJson["publisherDomain"].indexOf(".")
+          )
+        );
         if (setSharePointReplyUrls) {
           console.log("Set SharePoint reply urls for tenant");
         }
         // Check to set if Outlook reply url is set for tenant. If not, set them
-        const setOutlookReplyUrl: boolean =
-          await configure.setOutlookTenantReplyUrl();
+        const setOutlookReplyUrl: boolean = await configure.setOutlookTenantReplyUrl();
         if (setOutlookReplyUrl) {
           console.log("Set Outlook reply url for tenant");
         }
