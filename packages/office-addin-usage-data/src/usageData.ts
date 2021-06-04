@@ -6,11 +6,14 @@ import * as readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
 import * as defaults from "./defaults";
 
+/* global process */
+
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
  */
 export enum UsageDataReportingMethod {
+  /* eslint-disable no-unused-vars */
   applicationInsights = "applicationInsights",
 }
 /**
@@ -19,6 +22,7 @@ export enum UsageDataReportingMethod {
  * @enum on: on level of usage data, sends errors and events
  */
 export enum UsageDataLevel {
+  /* eslint-disable no-unused-vars */
   off = "off",
   on = "on",
 }
@@ -29,11 +33,11 @@ export enum UsageDataLevel {
  */
 export class ExpectedError extends Error {
   constructor(message: string | undefined) {
-      super(message);
+    super(message);
 
-      // need to adjust the prototype after super()
-      // See https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
-      Object.setPrototypeOf(this, ExpectedError.prototype);
+    // need to adjust the prototype after super()
+    // See https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+    Object.setPrototypeOf(this, ExpectedError.prototype);
   }
 }
 
@@ -70,7 +74,7 @@ export class OfficeAddinUsageData {
   private options: IUsageDataOptions;
   private defaultData = {
     Platform: process.platform,
-    NodeVersion: process.version
+    NodeVersion: process.version,
   };
 
   constructor(usageDataOptions: IUsageDataOptions) {
@@ -82,34 +86,52 @@ export class OfficeAddinUsageData {
         usageDataLevel: UsageDataLevel.off,
         method: UsageDataReportingMethod.applicationInsights,
         isForTesting: false,
-        ...usageDataOptions
+        ...usageDataOptions,
       };
 
       if (this.options.instrumentationKey === undefined) {
-        throw new Error("Instrumentation Key not defined - cannot create usage data object");
+        throw new Error(
+          "Instrumentation Key not defined - cannot create usage data object"
+        );
       }
 
       if (this.options.groupName === undefined) {
-        throw new Error("Group Name not defined - cannot create usage data object");
+        throw new Error(
+          "Group Name not defined - cannot create usage data object"
+        );
       }
 
       if (jsonData.groupNameExists(this.options.groupName)) {
-        this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
+        this.options.usageDataLevel = jsonData.readUsageDataLevel(
+          this.options.groupName
+        );
       }
 
       // Generator-office will not raise a prompt because the yeoman generator creates the prompt.  If the projectName
       // is defaults.generatorOffice and a office-addin-usage-data file hasn't been written yet, write one out.
-      if (this.options.projectName === defaults.generatorOffice && this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools
-        && jsonData.needToPromptForUsageData(this.options.groupName)) {
-        jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+      if (
+        this.options.projectName === defaults.generatorOffice &&
+        this.options.instrumentationKey ===
+          defaults.instrumentationKeyForOfficeAddinCLITools &&
+        jsonData.needToPromptForUsageData(this.options.groupName)
+      ) {
+        jsonData.writeUsageDataJsonData(
+          this.options.groupName,
+          this.options.usageDataLevel
+        );
       }
 
-      if (!this.options.isForTesting && this.options.raisePrompt && jsonData.needToPromptForUsageData(this.options.groupName)) {
+      if (
+        !this.options.isForTesting &&
+        this.options.raisePrompt &&
+        jsonData.needToPromptForUsageData(this.options.groupName)
+      ) {
         this.usageDataOptIn();
       }
 
       if (this.options.usageDataLevel === UsageDataLevel.on) {
-        appInsights.setup(this.options.instrumentationKey)
+        appInsights
+          .setup(this.options.instrumentationKey)
           .setAutoCollectExceptions(false)
           .start();
         this.usageDataClient = appInsights.defaultClient;
@@ -136,10 +158,15 @@ export class OfficeAddinUsageData {
    * @param eventName Event name sent to Application Insights
    * @param data Data object sent to Application Insights
    */
-  public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
+  public async reportEventApplicationInsights(
+    eventName: string,
+    data: object
+  ): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       const usageDataEvent = new appInsights.Contracts.EventData();
-      usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
+      usageDataEvent.name = this.options.isForTesting
+        ? `${eventName}-test`
+        : eventName;
       try {
         for (const [key, [value, elapsedTime]] of Object.entries(data)) {
           usageDataEvent.properties[key] = value;
@@ -171,10 +198,15 @@ export class OfficeAddinUsageData {
    * @param errorName Error name sent to Application Insights
    * @param err Error sent to Application Insights
    */
-  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
+  public async reportErrorApplicationInsights(
+    errorName: string,
+    err: Error
+  ): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
-      this.usageDataClient.trackException({ exception: this.maskFilePaths(err) });
+      this.usageDataClient.trackException({
+        exception: this.maskFilePaths(err),
+      });
       this.exceptionsSent++;
     }
   }
@@ -184,7 +216,10 @@ export class OfficeAddinUsageData {
    * @param testData Specifies whether test code is calling this method
    * @param testReponse Specifies test response
    */
-  public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
+  public usageDataOptIn(
+    testData: boolean = this.options.isForTesting,
+    testResponse: string = ""
+  ): void {
     try {
       let response: string = "";
       if (testData) {
@@ -197,7 +232,10 @@ export class OfficeAddinUsageData {
       } else {
         this.options.usageDataLevel = UsageDataLevel.off;
       }
-      jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
+      jsonData.writeUsageDataJsonData(
+        this.options.groupName,
+        this.options.usageDataLevel
+      );
     } catch (err) {
       this.reportError("UsageDataOptIn", err);
       throw new Error(err);
@@ -234,11 +272,13 @@ export class OfficeAddinUsageData {
     return this.options.instrumentationKey;
   }
 
-   /**
+  /**
    * Transform the project name by adddin '-test' suffix to it if necessary
    */
   private getEventName() {
-    return this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
+    return this.options.isForTesting
+      ? `${this.options.projectName}-test`
+      : this.options.projectName;
   }
 
   /**
@@ -271,12 +311,17 @@ export class OfficeAddinUsageData {
    */
   public maskFilePaths(err: Error): Error {
     try {
-      const regexRemoveUserFilePaths = /[\/\\](.*)[\/\\]/gmi;
-      const regexRemoveAbsoluteUserFilePathsFromStack = /\w:\\(?:[^\\\s]+\\)+/gmi;
+      const regexRemoveUserFilePaths =
+        /[\/\\](.*)[\/\\]/gim; /* eslint-disable-line no-useless-escape */
+      const regexRemoveAbsoluteUserFilePathsFromStack =
+        /\w:\\(?:[^\\\s]+\\)+/gim;
       const regexRemoveFirstFilePathFromStack = /\\(.*)\./i;
       err.message = err.message.replace(regexRemoveUserFilePaths, "\\");
       err.stack = err.stack.replace(regexRemoveFirstFilePathFromStack, "\\.");
-      err.stack = err.stack.replace(regexRemoveAbsoluteUserFilePathsFromStack, "");
+      err.stack = err.stack.replace(
+        regexRemoveAbsoluteUserFilePathsFromStack,
+        ""
+      );
       return err;
     } catch (err) {
       this.reportError("maskFilePaths", err);
@@ -299,7 +344,11 @@ export class OfficeAddinUsageData {
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public reportException(method: string, err: Error | string, data: object = {}) {
+  public reportException(
+    method: string,
+    err: Error | string,
+    data: object = {}
+  ) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         if (err instanceof ExpectedError) {
@@ -307,18 +356,21 @@ export class OfficeAddinUsageData {
           return;
         }
 
-        let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+        let error =
+          err instanceof Error
+            ? err
+            : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
-          properties: {}
+          properties: {},
         };
         Object.entries({
           Succeeded: false,
           Method: method,
           ExpectedError: false,
           ...this.defaultData,
-          ...data
+          ...data,
         }).forEach((entry) => {
           exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
         });
@@ -337,18 +389,25 @@ export class OfficeAddinUsageData {
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
-  public reportExpectedException(method: string, err: Error | string, data: object = {}) {
-    let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+  public reportExpectedException(
+    method: string,
+    err: Error | string,
+    data: object = {}
+  ) {
+    let error =
+      err instanceof Error
+        ? err
+        : new Error(`${this.options.projectName} error: ${err}`);
     error.name = this.getEventName();
     this.maskFilePaths(error);
-    const errorMessage = (error instanceof Error) ? error.message : error;
-    
+    const errorMessage = error instanceof Error ? error.message : error;
+
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
       ExpectedError: true,
       Error: errorMessage,
-      ...data
+      ...data,
     });
   }
 
@@ -362,31 +421,38 @@ export class OfficeAddinUsageData {
       Succeeded: true,
       Method: method,
       ExpectedError: false,
-      ...data
+      ...data,
     });
   }
-  
+
   /**
    * Reports custom exception event object to Application Insights
    * @param method Method name sent to Application Insights
    * @param err Error or message about error sent to Application Insights
    * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportUnexpectedError` instead.  
+   * @deprecated Use `reportUnexpectedError` instead.
    */
-  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
+  public sendUsageDataException(
+    method: string,
+    err: Error | string,
+    data: object = {}
+  ) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        let error = (err instanceof Error) ? err : new Error(`${this.options.projectName} error: ${err}`);
+        let error =
+          err instanceof Error
+            ? err
+            : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
-          properties: {}
+          properties: {},
         };
         Object.entries({
           Succeeded: false,
           Method: method,
           ...this.defaultData,
-          ...data
+          ...data,
         }).forEach((entry) => {
           exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
         });
@@ -403,14 +469,14 @@ export class OfficeAddinUsageData {
    * Reports custom success event object to Application Insights
    * @param method Method name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportSuccess` instead.  
+   * @deprecated Use `reportSuccess` instead.
    */
   public sendUsageDataSuccessEvent(method: string, data: object = {}) {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
       Pass: true,
-      ...data
+      ...data,
     });
   }
 
@@ -419,15 +485,15 @@ export class OfficeAddinUsageData {
    * "Successful fail" means that there was an error as a result of user error, but our code worked properly
    * @param method Method name sent to Application Insights
    * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportExpectedError` instead.  
+   * @deprecated Use `reportExpectedError` instead.
    */
   public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
     this.sendUsageDataEvent({
       Succeeded: true,
       Method: method,
       Pass: false,
-      ...data
-    });  
+      ...data,
+    });
   }
 
   /**
@@ -441,7 +507,7 @@ export class OfficeAddinUsageData {
         eventTelemetryObj.name = this.getEventName();
         eventTelemetryObj.properties = {
           ...this.defaultData,
-          ...data
+          ...data,
         };
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;
