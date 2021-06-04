@@ -6,9 +6,8 @@
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
-    "lint": "office-addin-lint check",
-    "lint:fix": "office-addin-lint fix",
-    "prettier": "office-addin-lint prettier",
+    "lint": "eslint src/**/*.{ts,tsx,js,jsx}",
+    "lint:fix": "eslint src/**/*.{ts,tsx,js,jsx} --fix",
     "test": "mocha -r ts-node/register test/**/*.ts",
     "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
   },
@@ -32,9 +31,12 @@
     "@types/es6-promise": "3.3.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.34",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
     "concurrently": "^6.0.2",
     "mocha": "^7.1.1",
-    "office-addin-lint": "^1.2.2",
+    "eslint": "7.28.0",
+    "eslint-plugin-office-addins": "^0.2.2",
+    "eslint-plugin-prettier": "^3.4.0",
     "rimraf": "^3.0.2",
     "ts-node": "^8.8.1",
     "typescript": "^3.8.3"
