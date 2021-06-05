@@ -5,7 +5,7 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
 import * as path from "path";
-import * as uuid from "uuid";
+import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
 import * as manifestInfo from "../src/manifestInfo";
@@ -480,7 +480,7 @@ describe("Unit Tests", function() {
       });
       it("should handle a specified valid guid and displayName", async function() {
         // call modify, specifying guid and displayName  parameters
-        const testGuid = uuid.v1();
+        const testGuid = uuidv1();
         const testDisplayName = "TestDisplayName";
         const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, testGuid, testDisplayName);
 
@@ -525,7 +525,7 @@ describe("Unit Tests", function() {
       it("should handle an invalid manifest file path", async function() {
         // call  modify, specifying an invalid manifest path with a valid guid and displayName
         const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
-        const testGuid = uuid.v1();
+        const testGuid = uuidv1();
         const testDisplayName = "TestDisplayName";
         let result;
         try {
