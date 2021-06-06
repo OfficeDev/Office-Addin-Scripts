@@ -70,7 +70,7 @@ describe("test cases", function() {
 
                         // if actual errors are different than expected, write out the actual errors to a file
                         // otherwise, delete the actual errors file if it exists
-                        if (actualErrors !== expectedErrors) {
+                        if (actualErrors && actualErrors !== expectedErrors) {
                             fs.writeFileSync(actualErrorsFile, actualErrors);
                         } else {
                             deleteFileIfExists(actualErrorsFile);
