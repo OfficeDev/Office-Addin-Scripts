@@ -3,6 +3,7 @@
   "version": "0.0.19",
   "description": "ESLint rules that report usage of Office Api Code in Shared App",
   "author": "Artur Tarasenko <artarase@microsoft.com>",
+  "license": "MIT",
   "main": "dist/index.js",
   "files": [
     "dist"
@@ -53,6 +54,13 @@
     "semantic-release": "^17.3.7",
     "ts-jest": "^26.4.0",
     "typescript": "^4.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
   "config": {
     "commitizen": {
