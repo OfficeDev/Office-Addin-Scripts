@@ -40,7 +40,7 @@
     "@types/assert": "^1.4.6",
     "@types/es6-promise": "^3.3.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^12.20.6",
+    "@types/node": "^14.17.2",
     "@types/node-fetch": "^2.5.5",
     "assert": "^1.4.1",
     "concurrently": "^6.0.0",

@@ -35,7 +35,7 @@
     "@types/assert": "^1.4.6",
     "@types/es6-promise": "^3.3.0",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^12.12.34",
+    "@types/node": "^14.17.2",
     "@types/node-fetch": "^2.5.5",
     "@types/xregexp": "^3.0.30",
     "concurrently": "^6.0.0",
