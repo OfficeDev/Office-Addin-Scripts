@@ -1,6 +1,7 @@
 import { TSESTree } from "@typescript-eslint/typescript-estree";
 import {
   Reference,
+  Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 
@@ -79,7 +80,7 @@ export = {
       return loadFound;
     }
 
-    function findLoadBeforeRead(scope: any) {
+    function findLoadBeforeRead(scope: Scope) {
       scope.references.forEach((reference: Reference) => {
         const variable = reference.resolved;
 
