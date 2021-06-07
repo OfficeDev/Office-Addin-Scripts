@@ -24,10 +24,10 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    function getValueThatHadToBeLoaded(referenceNode: Reference): string | undefined {
-      if(referenceNode.identifier.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && referenceNode.identifier.parent?.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-        return referenceNode.identifier.parent.property.name;
+    function getPropertyThatHadToBeLoaded(node: TSESTree.Node): string | undefined {
+      if(node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.parent?.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+        return node.parent.property.name;
       }
       return undefined;
     }
@@ -70,7 +70,7 @@ export = {
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
-      const valueRead = getValueThatHadToBeLoaded(referenceNode);
+      const valueRead = getPropertyThatHadToBeLoaded(referenceNode.identifier);
 
       variable?.references.forEach((reference: Reference) => {
         if(reference === referenceNode) return;
@@ -99,7 +99,7 @@ export = {
         context.report({
             node: reference.identifier,
             messageId: "loadBeforeRead",
-            data: {name: reference.identifier.name, loadValue: getValueThatHadToBeLoaded(reference)}
+            data: {name: reference.identifier.name, loadValue: getPropertyThatHadToBeLoaded(reference.identifier)}
         });
       });
       scope.childScopes.forEach(findLoadBeforeRead);
