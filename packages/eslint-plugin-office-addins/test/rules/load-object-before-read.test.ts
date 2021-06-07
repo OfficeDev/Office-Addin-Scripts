@@ -43,6 +43,14 @@ ruleTester.run('load-object-before-read', rule, {
         myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
         myRange.load('values');
         console.log(myRange.values);`
+    },
+    {
+      code: `
+      var myRange = context.workbook.worksheets.getSelectedRange();
+      myRange.load('values');
+      myRange.load('address');
+      console.log(myRange.address);
+      console.log(myRange.values);`
     },*/
   ],
   invalid: [
