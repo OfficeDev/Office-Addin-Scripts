@@ -7,5 +7,12 @@
     "test": "echo \"No tests\" "
   },
   "author": "OfficeDev",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  }
 }
