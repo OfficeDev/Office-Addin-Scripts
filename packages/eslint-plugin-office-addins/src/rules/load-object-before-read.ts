@@ -33,22 +33,16 @@ export = {
     }
 
     function isLoadFunction(node: TSESTree.Node): boolean {
-      if(node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
+      return (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
         && node.parent.property.type === TSESTree.AST_NODE_TYPES.Identifier
-        && node.parent.property.name === "load") {
-        return true;
-      }
-      return false;
+        && node.parent.property.name === "load");
     }
 
     function isGetFunction(node: TSESTree.Identifier): boolean {
       const functionName = node.name;
-      if (functionName === "getSelectedRange"
-      || functionName === "getItem" 
-      || functionName === "getRange") {
-        return true;
-      }
-      return false;
+      return (functionName === "getSelectedRange"
+        || functionName === "getItem" 
+        || functionName === "getRange");
     }
 
     function wasCreatedByGetFunction(referenceNode: Reference): boolean {
