@@ -15,9 +15,9 @@ function getUninstallCommand(machine: boolean = false): string {
   switch (process.platform) {
     case "win32": {
       const script = path.resolve(__dirname, "..\\scripts\\uninstall.ps1");
-      return `powershell -ExecutionPolicy Bypass -File "${script}" ${
-        machine ? "LocalMachine" : "CurrentUser"
-      } "${defaults.certificateName}"`;
+      return `powershell -ExecutionPolicy Bypass -File "${script}" ${machine ? "LocalMachine" : "CurrentUser"} "${
+        defaults.certificateName
+      }"`;
     }
     case "darwin": // macOS
       return `sudo security delete-certificate -c '${defaults.certificateName}'`;
@@ -29,19 +29,11 @@ function getUninstallCommand(machine: boolean = false): string {
 }
 
 // Deletes the generated certificate files and delete the certificate directory if its empty
-export function deleteCertificateFiles(
-  certificateDirectory: string = defaults.certificateDirectory
-): void {
+export function deleteCertificateFiles(certificateDirectory: string = defaults.certificateDirectory): void {
   if (fsExtra.existsSync(certificateDirectory)) {
-    fsExtra.removeSync(
-      path.join(certificateDirectory, defaults.localhostCertificateFileName)
-    );
-    fsExtra.removeSync(
-      path.join(certificateDirectory, defaults.localhostKeyFileName)
-    );
-    fsExtra.removeSync(
-      path.join(certificateDirectory, defaults.caCertificateFileName)
-    );
+    fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostCertificateFileName));
+    fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostKeyFileName));
+    fsExtra.removeSync(path.join(certificateDirectory, defaults.caCertificateFileName));
 
     if (fsExtra.readdirSync(certificateDirectory).length === 0) {
       fsExtra.removeSync(certificateDirectory);
@@ -49,25 +41,18 @@ export function deleteCertificateFiles(
   }
 }
 
-export async function uninstallCaCertificate(
-  machine: boolean = false,
-  verbose: boolean = true
-) {
+export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
   if (isCaCertificateInstalled()) {
     const command = getUninstallCommand(machine);
 
     try {
-      console.log(
-        `Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`
-      );
+      console.log(`Uninstalling CA certificate "Developer CA for Microsoft Office Add-ins"...`);
       execSync(command, { stdio: "pipe" });
       console.log(`You no longer have trusted access to https://localhost.`);
       usageDataObject.reportSuccess("uninstallCaCertificate()");
     } catch (error) {
       usageDataObject.reportException("uninstallCaCertificate()", error);
-      throw new Error(
-        `Unable to uninstall the CA certificate.\n${error.stderr.toString()}`
-      );
+      throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
     }
   } else {
     if (verbose) {

@@ -20,11 +20,7 @@ export function needToPromptForUsageData(groupName: string): boolean {
  * @param property Property that will be created or modified
  * @param value Property's value that will be assigned
  */
-export function modifyUsageDataJsonData(
-  groupName: string,
-  property: any,
-  value: any
-): void {
+export function modifyUsageDataJsonData(groupName: string, property: any, value: any): void {
   try {
     if (readUsageDataJsonData()) {
       const usageDataJsonData = readUsageDataJsonData();
@@ -34,10 +30,7 @@ export function modifyUsageDataJsonData(
         };
       }
       usageDataJsonData.usageDataInstances[groupName][property] = value;
-      fs.writeFileSync(
-        defaults.usageDataJsonFilePath,
-        JSON.stringify(usageDataJsonData, null, 2)
-      );
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     } else {
       let usageDataJsonData = {};
       usageDataJsonData[groupName] = value;
@@ -45,10 +38,7 @@ export function modifyUsageDataJsonData(
       usageDataJsonData = {
         usageDataInstances: { [groupName]: { [property]: value } },
       };
-      fs.writeFileSync(
-        defaults.usageDataJsonFilePath,
-        JSON.stringify(usageDataJsonData, null, 2)
-      );
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     }
   } catch (err) {
     throw new Error(err);
@@ -79,10 +69,7 @@ export function readUsageDataLevel(groupName: string): UsageDataLevel {
  * @param propertyName Property name that will be used to access and return the associated value
  * @returns Property of the specific group name
  */
-export function readUsageDataObjectProperty(
-  groupName: string,
-  propertyName: string
-): any {
+export function readUsageDataObjectProperty(groupName: string, propertyName: string): any {
   const jsonData = readUsageDataJsonData();
   return jsonData.usageDataInstances[groupName][propertyName];
 }
@@ -92,10 +79,7 @@ export function readUsageDataObjectProperty(
  * @param level usageDataLevel Whether user is sending none or full usage data
  */
 
-export function writeUsageDataJsonData(
-  groupName: string,
-  level: UsageDataLevel
-): void {
+export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel): void {
   if (
     fs.existsSync(defaults.usageDataJsonFilePath) &&
     fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "" &&
@@ -109,10 +93,7 @@ export function writeUsageDataJsonData(
         usageDataLevel: String,
       };
       usageDataJsonData.usageDataInstances[groupName].usageDataLevel = level;
-      fs.writeFileSync(
-        defaults.usageDataJsonFilePath,
-        JSON.stringify(usageDataJsonData, null, 2)
-      );
+      fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     }
   } else {
     let usageDataJsonData = {};
@@ -121,10 +102,7 @@ export function writeUsageDataJsonData(
     usageDataJsonData = {
       usageDataInstances: { [groupName]: { ["usageDataLevel"]: level } },
     };
-    fs.writeFileSync(
-      defaults.usageDataJsonFilePath,
-      JSON.stringify(usageDataJsonData, null, 2)
-    );
+    fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
   }
 }
 /**
@@ -139,9 +117,7 @@ export function groupNameExists(groupName: string): boolean {
     fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "undefined"
   ) {
     const jsonData = readUsageDataJsonData();
-    return Object.getOwnPropertyNames(jsonData.usageDataInstances).includes(
-      groupName
-    );
+    return Object.getOwnPropertyNames(jsonData.usageDataInstances).includes(groupName);
   }
   return false;
 }
@@ -149,9 +125,7 @@ export function groupNameExists(groupName: string): boolean {
  * Reads usage data settings from the usage data json config file for a specific group
  * @returns Settings for the specified group
  */
-export function readUsageDataSettings(
-  groupName = defaults.groupName
-): object | undefined {
+export function readUsageDataSettings(groupName = defaults.groupName): object | undefined {
   if (fs.existsSync(defaults.usageDataJsonFilePath)) {
     return readUsageDataJsonData().usageDataInstances[groupName];
   } else {

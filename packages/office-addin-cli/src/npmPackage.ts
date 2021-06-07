@@ -20,9 +20,7 @@ async function readPackageJsonScripts(jsonPath: string) {
  * Gets a script command from package json during a npm execution
  * @param scriptName The name of the script
  */
-export async function getPackageJsonScript(
-  scriptName: string
-): Promise<string | undefined> {
+export async function getPackageJsonScript(scriptName: string): Promise<string | undefined> {
   if (!scriptName) {
     return undefined;
   }

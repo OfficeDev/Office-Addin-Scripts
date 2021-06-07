@@ -52,9 +52,7 @@ export class SourceBundleUrlComponents {
     const path = this.path !== undefined ? this.path : "{path}";
     const extension = this.extension !== undefined ? this.extension : ".bundle";
 
-    return `http://${host}${
-      host && port ? ":" : ""
-    }${port}/${path}${extension}`;
+    return `http://${host}${host && port ? ":" : ""}${port}/${path}${extension}`;
   }
 
   constructor(host?: string, port?: string, path?: string, extension?: string) {
@@ -99,21 +97,13 @@ export async function enableDebugging(
 ): Promise<void> {
   switch (process.platform) {
     case "win32":
-      return devSettingsWindows.enableDebugging(
-        addinId,
-        enable,
-        method,
-        openDevTools
-      );
+      return devSettingsWindows.enableDebugging(addinId, enable, method, openDevTools);
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
-export async function enableLiveReload(
-  addinId: string,
-  enable: boolean = true
-): Promise<void> {
+export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.enableLiveReload(addinId, enable);
@@ -128,9 +118,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       if (!path) {
         const tempDir = process.env.TEMP;
         if (!tempDir) {
-          throw new ExpectedError(
-            "The TEMP environment variable is not defined."
-          );
+          throw new ExpectedError("The TEMP environment variable is not defined.");
         }
         path = fspath.normalize(`${tempDir}/${defaultRuntimeLogFileName}`);
       }
@@ -139,9 +127,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       if (pathExists) {
         const stat = fs.statSync(path);
         if (stat.isDirectory()) {
-          throw new ExpectedError(
-            `You need to specify the path to a file. This is a directory: "${path}".`
-          );
+          throw new ExpectedError(`You need to specify the path to a file. This is a directory: "${path}".`);
         }
       }
       try {
@@ -177,9 +163,7 @@ export async function getRegisterAddIns(): Promise<RegisteredAddin[]> {
   }
 }
 
-export async function getEnabledDebuggingMethods(
-  addinId: string
-): Promise<DebuggingMethod[]> {
+export async function getEnabledDebuggingMethods(addinId: string): Promise<DebuggingMethod[]> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.getEnabledDebuggingMethods(addinId);
@@ -206,9 +190,7 @@ export async function getRuntimeLoggingPath(): Promise<string | undefined> {
   }
 }
 
-export async function getSourceBundleUrl(
-  addinId: string
-): Promise<SourceBundleUrlComponents> {
+export async function getSourceBundleUrl(addinId: string): Promise<SourceBundleUrlComponents> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.getSourceBundleUrl(addinId);
@@ -217,9 +199,7 @@ export async function getSourceBundleUrl(
   }
 }
 
-export async function getWebView(
-  addinId: string
-): Promise<WebViewType | undefined> {
+export async function getWebView(addinId: string): Promise<WebViewType | undefined> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.getWebView(addinId);
@@ -251,10 +231,7 @@ export async function registerAddIn(manifestPath: string): Promise<void> {
     case "win32": {
       const manifest = await readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
-      return devSettingsWindows.registerAddIn(
-        manifest.id || "",
-        realManifestPath
-      );
+      return devSettingsWindows.registerAddIn(manifest.id || "", realManifestPath);
     }
     case "darwin":
       return devSettingsMac.registerAddIn(manifestPath);
@@ -263,10 +240,7 @@ export async function registerAddIn(manifestPath: string): Promise<void> {
   }
 }
 
-export async function setSourceBundleUrl(
-  addinId: string,
-  components: SourceBundleUrlComponents
-): Promise<void> {
+export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.setSourceBundleUrl(addinId, components);
@@ -275,10 +249,7 @@ export async function setSourceBundleUrl(
   }
 }
 
-export async function setWebView(
-  addinId: string,
-  webViewType: WebViewType | undefined
-) {
+export async function setWebView(addinId: string, webViewType: WebViewType | undefined) {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.setWebView(addinId, webViewType);
@@ -294,10 +265,7 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
     case "win32": {
       const manifest = await readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
-      return devSettingsWindows.unregisterAddIn(
-        manifest.id || "",
-        realManifestPath
-      );
+      return devSettingsWindows.unregisterAddIn(manifest.id || "", realManifestPath);
     }
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}.`);

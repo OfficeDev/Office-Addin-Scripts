@@ -3,9 +3,7 @@
 import * as fetch from "isomorphic-fetch";
 export const defaultPort: number = 4201;
 
-export async function pingTestServer(
-  port: number = defaultPort
-): Promise<object> {
+export async function pingTestServer(port: number = defaultPort): Promise<object> {
   const serverResponse: any = {};
   try {
     const pingUrl: string = `https://localhost:${port}/ping`;
@@ -20,10 +18,7 @@ export async function pingTestServer(
   }
 }
 
-export async function sendTestResults(
-  data: object,
-  port: number = defaultPort
-): Promise<boolean> {
+export async function sendTestResults(data: object, port: number = defaultPort): Promise<boolean> {
   const json = JSON.stringify(data);
   const url: string = `https://localhost:${port}/results/`;
   const dataUrl: string = url + "?data=" + encodeURIComponent(json);

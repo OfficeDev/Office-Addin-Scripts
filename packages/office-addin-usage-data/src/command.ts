@@ -29,11 +29,7 @@ export function turnUsageDataOn(): void {
 
 function setUsageDataLevel(level: UsageDataLevel) {
   try {
-    jsonData.modifyUsageDataJsonData(
-      defaults.groupName,
-      "usageDataLevel",
-      level
-    );
+    jsonData.modifyUsageDataJsonData(defaults.groupName, "usageDataLevel", level);
 
     switch (level) {
       case UsageDataLevel.off:

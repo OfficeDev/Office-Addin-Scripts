@@ -64,9 +64,7 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
   }
 }
 
-export function parseDebuggingMethod(
-  text: string
-): DebuggingMethod | undefined {
+export function parseDebuggingMethod(text: string): DebuggingMethod | undefined {
   switch (text) {
     case "direct":
       return DebuggingMethod.Direct;
@@ -96,16 +94,11 @@ export function parsePlatform(text: string): Platform | undefined {
     case "win32":
       return Platform.Win32;
     default:
-      throw new ExpectedError(
-        `The current platform is not supported: ${process.platform}`
-      );
+      throw new ExpectedError(`The current platform is not supported: ${process.platform}`);
   }
 }
 
-export async function runDevServer(
-  commandLine: string,
-  port?: number
-): Promise<void> {
+export async function runDevServer(commandLine: string, port?: number): Promise<void> {
   if (commandLine) {
     // if the dev server is running
     if (port !== undefined && (await isDevServerRunning(port))) {
@@ -130,9 +123,7 @@ export async function runDevServer(
         const isRunning: boolean = await waitUntilDevServerIsRunning(port);
 
         if (isRunning) {
-          console.log(
-            `The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`
-          );
+          console.log(`The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`);
         } else {
           throw new Error(`The dev server is not running on port ${port}.`);
         }
@@ -141,10 +132,7 @@ export async function runDevServer(
   }
 }
 
-export async function runNodeDebugger(
-  host?: string,
-  port?: string
-): Promise<void> {
+export async function runNodeDebugger(host?: string, port?: string): Promise<void> {
   nodeDebugger.run(host, port);
 
   console.log("The node debugger is running.");
@@ -259,10 +247,7 @@ export interface StartDebuggingOptions {
  * Start debugging
  * @param options startDebugging options.
  */
-export async function startDebugging(
-  manifestPath: string,
-  options: StartDebuggingOptions
-) {
+export async function startDebugging(manifestPath: string, options: StartDebuggingOptions) {
   const {
     appType,
     app,
@@ -300,24 +285,17 @@ export async function startDebugging(
 
     // live reload can only be enabled for the desktop app type
     // when using proxy debugging and the packager
-    const canEnableLiveReload: boolean =
-      isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
+    const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
     // only use live reload if enabled and it can be enabled
     const useLiveReload = enableLiveReload && canEnableLiveReload;
 
-    console.log(
-      enableDebugging
-        ? "Debugging is being started..."
-        : "Starting without debugging..."
-    );
+    console.log(enableDebugging ? "Debugging is being started..." : "Starting without debugging...");
     console.log(`App type: ${appType}`);
 
     const manifestInfo = await readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
-      throw new ExpectedError(
-        "Manifest does not contain the id for the Office Add-in."
-      );
+      throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");
     }
 
     // enable loopback for Edge
@@ -328,12 +306,7 @@ export async function startDebugging(
 
     // enable debugging
     if (isDesktopAppType && isWindowsPlatform) {
-      await devSettings.enableDebugging(
-        manifestInfo.id,
-        enableDebugging,
-        debuggingMethod,
-        openDevTools
-      );
+      await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
       if (enableDebugging) {
         console.log(`Enabled debugging for add-in ${manifestInfo.id}.`);
       }
@@ -350,10 +323,7 @@ export async function startDebugging(
     // set source bundle url
     if (isDesktopAppType && isWindowsPlatform) {
       if (sourceBundleUrlComponents) {
-        await devSettings.setSourceBundleUrl(
-          manifestInfo.id,
-          sourceBundleUrlComponents
-        );
+        await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
       }
     }
 
@@ -362,11 +332,7 @@ export async function startDebugging(
     let devServerPromise: Promise<void> | undefined;
 
     if (packagerCommandLine && isProxyDebuggingMethod && isDesktopAppType) {
-      packagerPromise = runPackager(
-        packagerCommandLine,
-        packagerHost,
-        packagerPort
-      );
+      packagerPromise = runPackager(packagerCommandLine, packagerHost, packagerPort);
     }
 
     if (devServerCommandLine) {
@@ -444,11 +410,7 @@ export async function waitUntilDevServerIsRunning(
   retryCount: number = 30,
   retryDelay: number = 1000
 ): Promise<boolean> {
-  return waitUntil(
-    async () => await isDevServerRunning(port),
-    retryCount,
-    retryDelay
-  );
+  return waitUntil(async () => await isDevServerRunning(port), retryCount, retryDelay);
 }
 
 export async function waitUntilPackagerIsRunning(
@@ -456,9 +418,5 @@ export async function waitUntilPackagerIsRunning(
   retryCount: number = 30,
   retryDelay: number = 1000
 ): Promise<boolean> {
-  return waitUntil(
-    async () => await isPackagerRunning(statusUrl),
-    retryCount,
-    retryDelay
-  );
+  return waitUntil(async () => await isPackagerRunning(statusUrl), retryCount, retryDelay);
 }

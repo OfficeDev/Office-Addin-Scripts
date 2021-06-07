@@ -11,11 +11,7 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global process */
 
-export function addSecretToCredentialStore(
-  ssoAppName: string,
-  secret: string,
-  isTest: boolean = false
-): void {
+export function addSecretToCredentialStore(ssoAppName: string, secret: string, isTest: boolean = false): void {
   try {
     switch (process.platform) {
       case "win32": {
@@ -29,16 +25,12 @@ export function addSecretToCredentialStore(
         // Check first to see if the secret already exists i the keychain. If it does, delete it and recreate it
         const existingSecret = getSecretFromCredentialStore(ssoAppName, isTest);
         if (existingSecret !== "") {
-          const updatSecretInMacStoreCommand = `${
-            isTest ? "" : "sudo"
-          } security add-generic-password -a ${
+          const updatSecretInMacStoreCommand = `${isTest ? "" : "sudo"} security add-generic-password -a ${
             os.userInfo().username
           } -U -s "${ssoAppName}" -w "${secret}"`;
           execSync(updatSecretInMacStoreCommand, { stdio: "pipe" });
         } else {
-          const addSecretToMacStoreCommand = `${
-            isTest ? "" : "sudo"
-          } security add-generic-password -a ${
+          const addSecretToMacStoreCommand = `${isTest ? "" : "sudo"} security add-generic-password -a ${
             os.userInfo().username
           } -s "${ssoAppName}" -w "${secret}"`;
           execSync(addSecretToMacStoreCommand, { stdio: "pipe" });
@@ -56,10 +48,7 @@ export function addSecretToCredentialStore(
   }
 }
 
-export function getSecretFromCredentialStore(
-  ssoAppName: string,
-  isTest: boolean = false
-): string {
+export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean = false): string {
   try {
     switch (process.platform) {
       case "win32": {
@@ -71,9 +60,7 @@ export function getSecretFromCredentialStore(
         }).toString();
       }
       case "darwin": {
-        const getSecretFromMacStoreCommand = `${
-          isTest ? "" : "sudo"
-        } security find-generic-password -a ${
+        const getSecretFromMacStoreCommand = `${isTest ? "" : "sudo"} security find-generic-password -a ${
           os.userInfo().username
         } -s ${ssoAppName} -w`;
         return execSync(getSecretFromMacStoreCommand, {
@@ -90,26 +77,17 @@ export function getSecretFromCredentialStore(
   }
 }
 
-function updateEnvFile(
-  applicationId: string,
-  port: string,
-  envFilePath: string = defaults.envDataFilePath
-): boolean {
+function updateEnvFile(applicationId: string, port: string, envFilePath: string = defaults.envDataFilePath): boolean {
   try {
     // Update .ENV file
     if (fs.existsSync(envFilePath)) {
       const appDataContent = fs.readFileSync(envFilePath, "utf8");
       // Check to see if the fallbackauthdialog file has already been updated and return if it has.
-      if (
-        !appDataContent.includes("{CLIENT_ID}") ||
-        !appDataContent.includes("{PORT}")
-      ) {
+      if (!appDataContent.includes("{CLIENT_ID}") || !appDataContent.includes("{PORT}")) {
         return false;
       }
 
-      const updatedAppDataContent = appDataContent
-        .replace("{CLIENT_ID}", applicationId)
-        .replace("{PORT}", port);
+      const updatedAppDataContent = appDataContent.replace("{CLIENT_ID}", applicationId).replace("{PORT}", port);
       fs.writeFileSync(envFilePath, updatedAppDataContent);
       return true;
     } else {
@@ -132,33 +110,20 @@ function updateFallBackAuthDialogFile(
     // Update fallbackAuthDialog file
     let srcFileContent = "";
     if (fs.existsSync(defaults.fallbackAuthDialogTypescriptFilePath)) {
-      srcFileContent = fs.readFileSync(
-        defaults.fallbackAuthDialogTypescriptFilePath,
-        "utf8"
-      );
+      srcFileContent = fs.readFileSync(defaults.fallbackAuthDialogTypescriptFilePath, "utf8");
       fallbackAuthDialogPath = defaults.fallbackAuthDialogTypescriptFilePath;
       isTypecript = true;
     } else if (fs.existsSync(defaults.fallbackAuthDialogJavascriptFilePath)) {
-      srcFileContent = fs.readFileSync(
-        defaults.fallbackAuthDialogJavascriptFilePath,
-        "utf8"
-      );
+      srcFileContent = fs.readFileSync(defaults.fallbackAuthDialogJavascriptFilePath, "utf8");
       fallbackAuthDialogPath = defaults.fallbackAuthDialogJavascriptFilePath;
     } else if (isTest) {
-      srcFileContent = fs.readFileSync(
-        defaults.testFallbackAuthDialogFilePath,
-        "utf8"
-      );
+      srcFileContent = fs.readFileSync(defaults.testFallbackAuthDialogFilePath, "utf8");
     } else {
       if (isTest) {
-        throw new ExpectedError(
-          `${defaults.testFallbackAuthDialogFilePath} does not exist`
-        );
+        throw new ExpectedError(`${defaults.testFallbackAuthDialogFilePath} does not exist`);
       } else {
         const errorMessage: string = `${
-          isTypecript
-            ? defaults.fallbackAuthDialogTypescriptFilePath
-            : defaults.fallbackAuthDialogJavascriptFilePath
+          isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath
         } does not exist`;
         throw new Error(errorMessage);
       }
@@ -177,32 +142,21 @@ function updateFallBackAuthDialogFile(
     return true;
   } catch (err) {
     if (isTest) {
-      throw new Error(
-        `Unable to write SSO application data to ${defaults.testFallbackAuthDialogFilePath}. \n${err}`
-      );
+      throw new Error(`Unable to write SSO application data to ${defaults.testFallbackAuthDialogFilePath}. \n${err}`);
     } else {
       const errorMessage: string = `Unable to write SSO application data to ${
-        isTypecript
-          ? defaults.fallbackAuthDialogTypescriptFilePath
-          : defaults.fallbackAuthDialogJavascriptFilePath
+        isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath
       }. \n${err}`;
       throw new Error(errorMessage);
     }
   }
 }
 
-async function updateProjectManifest(
-  applicationId: string,
-  port: string,
-  manifestPath: string
-): Promise<boolean> {
+async function updateProjectManifest(applicationId: string, port: string, manifestPath: string): Promise<boolean> {
   try {
     if (fs.existsSync(manifestPath)) {
       // Update manifest with application guid and unique manifest id
-      const manifestContent: string = await fs.readFileSync(
-        manifestPath,
-        "utf8"
-      );
+      const manifestContent: string = await fs.readFileSync(manifestPath, "utf8");
 
       // Check to see if the manifest has already been updated and return if it has
       if (!manifestContent.includes("{PORT}")) {
@@ -212,15 +166,12 @@ async function updateProjectManifest(
       // Update manifest file
       const re: RegExp = new RegExp("{application GUID here}", "g");
       const rePort = new RegExp("{PORT}", "g");
-      const updatedManifestContent: string = manifestContent
-        .replace(re, applicationId)
-        .replace(rePort, port);
+      const updatedManifestContent: string = manifestContent.replace(re, applicationId).replace(rePort, port);
       await fs.writeFileSync(manifestPath, updatedManifestContent);
       await modifyManifestFile(manifestPath, "random");
       return true;
     } else {
-      const errorMessage: string =
-        "Manifest does not exist at specified location";
+      const errorMessage: string = "Manifest does not exist at specified location";
       throw new ExpectedError(errorMessage);
     }
   } catch (err) {
@@ -237,21 +188,13 @@ export async function writeApplicationData(
   fallbackAuthDialogPath = defaults.fallbackAuthDialogTypescriptFilePath,
   isTest: boolean = false
 ): Promise<boolean> {
-  const envFileUpdated: boolean = updateEnvFile(
-    applicationId,
-    port,
-    envFilePath
-  );
+  const envFileUpdated: boolean = updateEnvFile(applicationId, port, envFilePath);
   const fallbackAuthDialogFileUpdated: boolean = updateFallBackAuthDialogFile(
     applicationId,
     port,
     fallbackAuthDialogPath,
     isTest
   );
-  const manifestUpdated: boolean = await updateProjectManifest(
-    applicationId,
-    port,
-    manifestPath
-  );
+  const manifestUpdated: boolean = await updateProjectManifest(applicationId, port, manifestPath);
   return envFileUpdated && fallbackAuthDialogFileUpdated && manifestUpdated;
 }

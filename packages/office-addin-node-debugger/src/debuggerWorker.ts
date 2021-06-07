@@ -43,14 +43,7 @@ process.on("message", (message) => {
       function evalJS(js: string): void {
         /* eslint-disable no-eval */
         try {
-          eval(
-            js
-              .replace(
-                /this\["webpackHotUpdate"\]/g,
-                'self["webpackHotUpdate"]'
-              )
-              .replace("GLOBAL", "global")
-          );
+          eval(js.replace(/this\["webpackHotUpdate"\]/g, 'self["webpackHotUpdate"]').replace("GLOBAL", "global"));
         } catch (error) {
           console.log(`Error Message: ${error.message}`);
           console.log(`Error stack: ${error.stack}`);
@@ -99,10 +92,7 @@ process.on("message", (message) => {
     let returnValue = [[], [], [], 0];
     try {
       if (typeof __fbBatchedBridge === "object") {
-        returnValue = __fbBatchedBridge[message.method].apply(
-          null,
-          message.arguments
-        );
+        returnValue = __fbBatchedBridge[message.method].apply(null, message.arguments);
       }
     } finally {
       sendReply(JSON.stringify(returnValue));

@@ -36,47 +36,28 @@ const readFileAsync = util.promisify(fs.readFile);
  * @param manifest Manifest for the add-in.
  * @returns Path to the file.
  */
-export async function generateSideloadFile(
-  app: OfficeApp,
-  manifest: ManifestInfo,
-  document?: string
-): Promise<string> {
+export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo, document?: string): Promise<string> {
   if (!manifest.id) {
-    throw new ExpectedError(
-      "The manifest does not contain the id for the add-in."
-    );
+    throw new ExpectedError("The manifest does not contain the id for the add-in.");
   }
 
   if (!manifest.officeAppType) {
-    throw new ExpectedError(
-      "The manifest does not contain the OfficeApp xsi:type."
-    );
+    throw new ExpectedError("The manifest does not contain the OfficeApp xsi:type.");
   }
 
   if (!manifest.version) {
-    throw new ExpectedError(
-      "The manifest does not contain the version for the add-in."
-    );
+    throw new ExpectedError("The manifest does not contain the version for the add-in.");
   }
-  const addInType = getAddInTypeForManifestOfficeAppType(
-    manifest.officeAppType
-  );
+  const addInType = getAddInTypeForManifestOfficeAppType(manifest.officeAppType);
 
   if (!addInType) {
-    throw new ExpectedError(
-      "The manifest contains an unsupported OfficeApp xsi:type."
-    );
+    throw new ExpectedError("The manifest contains an unsupported OfficeApp xsi:type.");
   }
 
-  const templatePath =
-    document && document !== ""
-      ? path.resolve(document)
-      : getTemplatePath(app, addInType);
+  const templatePath = document && document !== "" ? path.resolve(document) : getTemplatePath(app, addInType);
 
   if (!templatePath) {
-    throw new ExpectedError(
-      `Sideload is not supported for apptype: ${addInType}.`
-    );
+    throw new ExpectedError(`Sideload is not supported for apptype: ${addInType}.`);
   }
 
   const templateBuffer = await readFileAsync(templatePath);
@@ -89,10 +70,7 @@ export async function generateSideloadFile(
 
   const appName = getOfficeAppName(app);
   const extension = path.extname(templatePath);
-  const pathToWrite = makePathUnique(
-    path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`),
-    true
-  );
+  const pathToWrite = makePathUnique(path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`), true);
 
   // replace the placeholder id and version
   const zipFile = zip.file(webExtensionPath);
@@ -137,33 +115,19 @@ export async function generateSideloadUrl(
   }
 
   if (!manifest.id) {
-    throw new ExpectedError(
-      "The manifest does not contain the id for the add-in."
-    );
+    throw new ExpectedError("The manifest does not contain the id for the add-in.");
   }
 
-  if (
-    manifest.defaultSettings === undefined ||
-    manifest.defaultSettings.sourceLocation === undefined
-  ) {
-    throw new ExpectedError(
-      "The manifest does not contain the SourceLocation for the add-in"
-    );
+  if (manifest.defaultSettings === undefined || manifest.defaultSettings.sourceLocation === undefined) {
+    throw new ExpectedError("The manifest does not contain the SourceLocation for the add-in");
   }
 
-  const sourceLocationUrl: URL = new URL(
-    manifest.defaultSettings.sourceLocation
-  );
+  const sourceLocationUrl: URL = new URL(manifest.defaultSettings.sourceLocation);
   if (sourceLocationUrl.protocol.indexOf("https") === -1) {
-    throw new ExpectedError(
-      "The SourceLocation in the manifest does not use the HTTPS protocol."
-    );
+    throw new ExpectedError("The SourceLocation in the manifest does not use the HTTPS protocol.");
   }
 
-  if (
-    sourceLocationUrl.host.indexOf("localhost") === -1 &&
-    sourceLocationUrl.host.indexOf("127.0.0.1") === -1
-  ) {
+  if (sourceLocationUrl.host.indexOf("localhost") === -1 && sourceLocationUrl.host.indexOf("127.0.0.1") === -1) {
     throw new ExpectedError(
       "The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1."
     );
@@ -184,46 +148,28 @@ export async function generateSideloadUrl(
  * @param app Specifies the Office app.
  * @param addInType Specifies the type of add-in.
  */
-export function getTemplatePath(
-  app: OfficeApp,
-  addInType: AddInType
-): string | undefined {
+export function getTemplatePath(app: OfficeApp, addInType: AddInType): string | undefined {
   switch (app) {
     case OfficeApp.Excel:
       switch (addInType) {
         case AddInType.Content:
-          return path.resolve(
-            __dirname,
-            "../templates/ExcelWorkbookWithContent.xlsx"
-          );
+          return path.resolve(__dirname, "../templates/ExcelWorkbookWithContent.xlsx");
         case AddInType.TaskPane:
-          return path.resolve(
-            __dirname,
-            "../templates/ExcelWorkbookWithTaskPane.xlsx"
-          );
+          return path.resolve(__dirname, "../templates/ExcelWorkbookWithTaskPane.xlsx");
       }
       break;
     case OfficeApp.PowerPoint:
       switch (addInType) {
         case AddInType.Content:
-          return path.resolve(
-            __dirname,
-            "../templates/PowerPointPresentationWithContent.pptx"
-          );
+          return path.resolve(__dirname, "../templates/PowerPointPresentationWithContent.pptx");
         case AddInType.TaskPane:
-          return path.resolve(
-            __dirname,
-            "../templates/PowerPointPresentationWithTaskPane.pptx"
-          );
+          return path.resolve(__dirname, "../templates/PowerPointPresentationWithTaskPane.pptx");
       }
       break;
     case OfficeApp.Word:
       switch (addInType) {
         case AddInType.TaskPane:
-          return path.resolve(
-            __dirname,
-            "../templates/WordDocumentWithTaskPane.docx"
-          );
+          return path.resolve(__dirname, "../templates/WordDocumentWithTaskPane.docx");
       }
       break;
   }
@@ -234,10 +180,7 @@ export function getTemplatePath(
  * @param app Specifies the Office app.
  * @param addInType Specifies the type of add-in.
  */
-function getWebExtensionPath(
-  app: OfficeApp,
-  addInType: AddInType
-): string | undefined {
+function getWebExtensionPath(app: OfficeApp, addInType: AddInType): string | undefined {
   switch (app) {
     case OfficeApp.Excel:
       return "xl/webextensions/webextension.xml";
@@ -267,34 +210,21 @@ function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
 }
 
 function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
-  if (
-    app === OfficeApp.Excel ||
-    app === OfficeApp.PowerPoint ||
-    app === OfficeApp.Project ||
-    app === OfficeApp.Word
-  ) {
+  if (app === OfficeApp.Excel || app === OfficeApp.PowerPoint || app === OfficeApp.Project || app === OfficeApp.Word) {
     return true;
   }
   return false;
 }
 
-function hasOfficeVersion(
-  targetVersion: string,
-  currentVersion: string
-): boolean {
+function hasOfficeVersion(targetVersion: string, currentVersion: string): boolean {
   return semver.gte(currentVersion, targetVersion);
 }
 
 async function getOutlookVersion(): Promise<string | undefined> {
   try {
-    const key = new registry.RegistryKey(
-      `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`
-    );
-    const outlookInstallVersion: string | undefined =
-      await registry.getStringValue(key, "ClientVersionToReport");
-    const outlookSmallerVersion = outlookInstallVersion
-      ?.split(`.`, 3)
-      .join(`.`);
+    const key = new registry.RegistryKey(`HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`);
+    const outlookInstallVersion: string | undefined = await registry.getStringValue(key, "ClientVersionToReport");
+    const outlookSmallerVersion = outlookInstallVersion?.split(`.`, 3).join(`.`);
 
     return outlookSmallerVersion;
   } catch (err) {
@@ -306,10 +236,7 @@ async function getOutlookExePath(): Promise<string | undefined> {
   try {
     const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
     const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
-    const outlookExePath: string | undefined = await registry.getStringValue(
-      key,
-      ""
-    );
+    const outlookExePath: string | undefined = await registry.getStringValue(key, "");
 
     return outlookExePath;
   } catch (err) {
@@ -323,10 +250,7 @@ async function getOutlookExePath(): Promise<string | undefined> {
  * appending a period and a numeric suffix, starting from 2.
  * @param tryToDelete If true, first try to delete the file if it exists.
  */
-function makePathUnique(
-  originalPath: string,
-  tryToDelete: boolean = false
-): string {
+function makePathUnique(originalPath: string, tryToDelete: boolean = false): string {
   let currentPath = originalPath;
   let parsedPath = null;
   let suffix = 1;
@@ -350,10 +274,7 @@ function makePathUnique(
         parsedPath = path.parse(originalPath);
       }
 
-      currentPath = path.join(
-        parsedPath.dir,
-        `${parsedPath.name}.${suffix}${parsedPath.ext}`
-      );
+      currentPath = path.join(parsedPath.dir, `${parsedPath.name}.${suffix}${parsedPath.ext}`);
     }
   }
 
@@ -384,18 +305,12 @@ export async function sideloadAddIn(
 
     if (app) {
       if (appsInManifest.indexOf(app) < 0) {
-        throw new ExpectedError(
-          `The Office Add-in manifest does not support ${getOfficeAppName(
-            app
-          )}.`
-        );
+        throw new ExpectedError(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
       }
     } else {
       switch (appsInManifest.length) {
         case 0:
-          throw new ExpectedError(
-            "The manifest does not support any Office apps."
-          );
+          throw new ExpectedError("The manifest does not support any Office apps.");
         case 1:
           app = appsInManifest[0];
           break;
@@ -416,9 +331,7 @@ export async function sideloadAddIn(
     switch (appType) {
       case AppType.Desktop:
         if (!isSideloadingSupportedForDesktopHost(app)) {
-          throw new ExpectedError(
-            `Sideload to the ${getOfficeAppName(app)} app is not supported.`
-          );
+          throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
         }
         await registerAddIn(manifestPath);
         // for Outlook, open Outlook.exe; for other Office apps, open the document
@@ -436,28 +349,17 @@ export async function sideloadAddIn(
         break;
       case AppType.Web: {
         if (!document) {
-          throw new ExpectedError(
-            `For sideload to web, you need to specify a document url.`
-          );
+          throw new ExpectedError(`For sideload to web, you need to specify a document url.`);
         }
         if (!isSideloadingSupportedForWebHost(app)) {
-          throw new ExpectedError(
-            `Sideload to the ${getOfficeAppName(app)} web app is not supported.`
-          );
+          throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
         }
         const manifestFileName: string = path.basename(manifestPath);
-        sideloadFile = await generateSideloadUrl(
-          manifestFileName,
-          manifest,
-          document,
-          isTest
-        );
+        sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
         break;
       }
       default:
-        throw new ExpectedError(
-          "Sideload is not supported for the specified app type."
-        );
+        throw new ExpectedError("Sideload is not supported for the specified app type.");
     }
 
     if (sideloadFile) {

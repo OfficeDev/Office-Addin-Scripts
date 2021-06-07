@@ -3,12 +3,7 @@
 
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
-import {
-  ManifestInfo,
-  OfficeApp,
-  parseOfficeApp,
-  readManifestFile,
-} from "office-addin-manifest";
+import { ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
   getAppcontainerNameFromManifestPath,
@@ -24,26 +19,16 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global process, console */
 
-export async function appcontainer(
-  manifestPath: string,
-  command: commander.Command
-) {
+export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
     try {
       if (command.loopback) {
         try {
           const askForConfirmation: boolean = command.yes !== true;
-          const allowed = await ensureLoopbackIsEnabled(
-            manifestPath,
-            askForConfirmation
-          );
-          console.log(
-            allowed ? "Loopback is allowed." : "Loopback is not allowed."
-          );
+          const allowed = await ensureLoopbackIsEnabled(manifestPath, askForConfirmation);
+          console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
-          throw new Error(
-            `Unable to allow loopback for the appcontainer. \n${err}`
-          );
+          throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
         }
       } else if (command.preventLoopback) {
         try {
@@ -57,13 +42,9 @@ export async function appcontainer(
         try {
           const name = await getAppcontainerNameFromManifestPath(manifestPath);
           const allowed = await isLoopbackExemptionForAppcontainer(name);
-          console.log(
-            allowed ? "Loopback is allowed." : "Loopback is not allowed."
-          );
+          console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
-          throw new Error(
-            `Unable to determine if appcontainer allows loopback. \n${err}`
-          );
+          throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
         }
       }
       usageDataObject.reportSuccess("appcontainer");
@@ -92,10 +73,7 @@ export async function clear(manifestPath: string) {
   }
 }
 
-export async function debugging(
-  manifestPath: string,
-  command: commander.Command
-) {
+export async function debugging(manifestPath: string, command: commander.Command) {
   try {
     if (command.enable) {
       await enableDebugging(manifestPath, command);
@@ -111,35 +89,11 @@ export async function debugging(
   }
 }
 
-function displaySourceBundleUrl(
-  components: devSettings.SourceBundleUrlComponents
-) {
-  console.log(
-    `host: ${
-      components.host !== undefined
-        ? `"${components.host}"`
-        : '"localhost" (default)'
-    }`
-  );
-  console.log(
-    `port: ${
-      components.port !== undefined
-        ? `"${components.port}"`
-        : '"8081" (default)'
-    }`
-  );
-  console.log(
-    `path: ${
-      components.path !== undefined ? `"${components.path}"` : "(default)"
-    }`
-  );
-  console.log(
-    `extension: ${
-      components.extension !== undefined
-        ? `"${components.extension}"`
-        : '".bundle" (default)'
-    }`
-  );
+function displaySourceBundleUrl(components: devSettings.SourceBundleUrlComponents) {
+  console.log(`host: ${components.host !== undefined ? `"${components.host}"` : '"localhost" (default)'}`);
+  console.log(`port: ${components.port !== undefined ? `"${components.port}"` : '"8081" (default)'}`);
+  console.log(`path: ${components.path !== undefined ? `"${components.path}"` : "(default)"}`);
+  console.log(`extension: ${components.extension !== undefined ? `"${components.extension}"` : '".bundle" (default)'}`);
   console.log();
   console.log(`Source bundle url: ${components.url}`);
   console.log();
@@ -189,21 +143,13 @@ export async function disableRuntimeLogging() {
   }
 }
 
-export async function enableDebugging(
-  manifestPath: string,
-  command: commander.Command
-) {
+export async function enableDebugging(manifestPath: string, command: commander.Command) {
   try {
     const manifest = await readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
-    await devSettings.enableDebugging(
-      manifest.id!,
-      true,
-      toDebuggingMethod(command.debugMethod),
-      command.openDevTools
-    );
+    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod), command.openDevTools);
 
     console.log("Debugging has been enabled.");
     usageDataObject.reportSuccess("enableDebugging()");
@@ -247,8 +193,7 @@ export async function getSourceBundleUrl(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    const components: devSettings.SourceBundleUrlComponents =
-      await devSettings.getSourceBundleUrl(manifest.id!);
+    const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(manifest.id!);
 
     displaySourceBundleUrl(components);
     usageDataObject.reportSuccess("getSourceBundleUrl()");
@@ -266,9 +211,7 @@ export async function isDebuggingEnabled(manifestPath: string) {
 
     const enabled: boolean = await devSettings.isDebuggingEnabled(manifest.id!);
 
-    console.log(
-      enabled ? "Debugging is enabled." : "Debugging is not enabled."
-    );
+    console.log(enabled ? "Debugging is enabled." : "Debugging is not enabled.");
     usageDataObject.reportSuccess("isDebuggingEnabled()");
   } catch (err) {
     usageDataObject.reportException("isDebuggingEnabled()", err);
@@ -282,13 +225,9 @@ export async function isLiveReloadEnabled(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    const enabled: boolean = await devSettings.isLiveReloadEnabled(
-      manifest.id!
-    );
+    const enabled: boolean = await devSettings.isLiveReloadEnabled(manifest.id!);
 
-    console.log(
-      enabled ? "Live reload is enabled." : "Live reload is not enabled."
-    );
+    console.log(enabled ? "Live reload is enabled." : "Live reload is not enabled.");
     usageDataObject.reportSuccess("isLiveReloadEnabled()");
   } catch (err) {
     usageDataObject.reportException("isLiveReloadEnabled()", err);
@@ -300,11 +239,7 @@ export async function isRuntimeLoggingEnabled() {
   try {
     const path = await devSettings.getRuntimeLoggingPath();
 
-    console.log(
-      path
-        ? `Runtime logging is enabled. File: ${path}`
-        : "Runtime logging is not enabled."
-    );
+    console.log(path ? `Runtime logging is enabled. File: ${path}` : "Runtime logging is not enabled.");
     usageDataObject.reportSuccess("isRuntimeLoggingEnabled()");
   } catch (err) {
     usageDataObject.reportException("isRuntimeLoggingEnabled()", err);
@@ -312,10 +247,7 @@ export async function isRuntimeLoggingEnabled() {
   }
 }
 
-export async function liveReload(
-  manifestPath: string,
-  command: commander.Command
-) {
+export async function liveReload(manifestPath: string, command: commander.Command) {
   try {
     if (command.enable) {
       await enableLiveReload(manifestPath);
@@ -335,9 +267,7 @@ function parseStringCommandOption(optionValue: any): string | undefined {
   return typeof optionValue === "string" ? optionValue : undefined;
 }
 
-export function parseWebViewType(
-  webViewString?: string
-): devSettings.WebViewType | undefined {
+export function parseWebViewType(webViewString?: string): devSettings.WebViewType | undefined {
   switch (webViewString ? webViewString.toLowerCase() : undefined) {
     case "ie":
     case "ie11":
@@ -360,9 +290,7 @@ export function parseWebViewType(
     case undefined:
       return undefined;
     default:
-      throw new ExpectedError(
-        `Please select a valid web view type instead of '${webViewString}'.`
-      );
+      throw new ExpectedError(`Please select a valid web view type instead of '${webViewString}'.`);
   }
 }
 
@@ -379,9 +307,7 @@ export async function register(
   }
 }
 
-export async function registered(
-  command: commander.Command /* eslint-disable-line no-unused-vars */
-) {
+export async function registered(command: commander.Command /* eslint-disable-line no-unused-vars */) {
   try {
     const registeredAddins = await devSettings.getRegisterAddIns();
 
@@ -413,8 +339,7 @@ export async function registered(
 export async function runtimeLogging(command: commander.Command) {
   try {
     if (command.enable) {
-      const path: string | undefined =
-        typeof command.enable === "string" ? command.enable : undefined;
+      const path: string | undefined = typeof command.enable === "string" ? command.enable : undefined;
       await enableRuntimeLogging(path);
     } else if (command.disable) {
       await disableRuntimeLogging();
@@ -428,22 +353,12 @@ export async function runtimeLogging(command: commander.Command) {
   }
 }
 
-export async function sideload(
-  manifestPath: string,
-  type: string | undefined,
-  command: commander.Command
-) {
+export async function sideload(manifestPath: string, type: string | undefined, command: commander.Command) {
   try {
-    const app: OfficeApp | undefined = command.app
-      ? parseOfficeApp(command.app)
-      : undefined;
+    const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
     const canPrompt = true;
-    const document: string | undefined = command.document
-      ? command.document
-      : undefined;
-    const appType: AppType | undefined = parseAppType(
-      type || process.env.npm_package_config_app_platform_to_debug
-    );
+    const document: string | undefined = command.document ? command.document : undefined;
+    const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
 
     await sideloadAddIn(manifestPath, app, canPrompt, appType, document);
     usageDataObject.reportSuccess("sideload");
@@ -453,22 +368,14 @@ export async function sideload(
   }
 }
 
-export async function setSourceBundleUrl(
-  manifestPath: string,
-  command: commander.Command
-) {
+export async function setSourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
     const manifest = await readManifestFile(manifestPath);
     const host = parseStringCommandOption(command.host);
     const port = parseStringCommandOption(command.port);
     const path = parseStringCommandOption(command.path);
     const extension = parseStringCommandOption(command.extension);
-    const components = new devSettings.SourceBundleUrlComponents(
-      host,
-      port,
-      path,
-      extension
-    );
+    const components = new devSettings.SourceBundleUrlComponents(host, port, path, extension);
 
     validateManifestId(manifest);
 
@@ -483,10 +390,7 @@ export async function setSourceBundleUrl(
   }
 }
 
-export async function sourceBundleUrl(
-  manifestPath: string,
-  command: commander.Command
-) {
+export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
     if (
       command.host !== undefined ||
@@ -517,9 +421,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
       // preferred debug method
       return devSettings.DebuggingMethod.Direct;
     default:
-      throw new ExpectedError(
-        `Please provide a valid debug method instead of '${text}'.`
-      );
+      throw new ExpectedError(`Please provide a valid debug method instead of '${text}'.`);
   }
 }
 
@@ -542,9 +444,7 @@ export async function unregister(
 
 function validateManifestId(manifest: ManifestInfo) {
   if (!manifest.id) {
-    throw new ExpectedError(
-      `The manifest file doesn't contain the id of the Office Add-in.`
-    );
+    throw new ExpectedError(`The manifest file doesn't contain the id of the Office Add-in.`);
   }
 }
 
@@ -564,9 +464,7 @@ export async function webView(manifestPath: string, webViewString?: string) {
 
     const webViewTypeName = devSettings.toWebViewTypeName(webViewType);
     console.log(
-      webViewTypeName
-        ? `The web view type is set to ${webViewTypeName}.`
-        : "The web view type has not been set."
+      webViewTypeName ? `The web view type is set to ${webViewTypeName}.` : "The web view type has not been set."
     );
     usageDataObject.reportSuccess("webView");
   } catch (err) {

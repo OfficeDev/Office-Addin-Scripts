@@ -5,20 +5,12 @@ import chalk from "chalk";
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as manifestInfo from "./manifestInfo";
-import {
-  ManifestValidation,
-  ManifestValidationIssue,
-  ManifestValidationProduct,
-  validateManifest,
-} from "./validate";
+import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
 import { usageDataObject } from "./defaults";
 
 /* global console, process */
 
-function getCommandOptionString(
-  option: string | boolean,
-  defaultValue?: string
-): string | undefined {
+function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
   // when the option is provided with a value, it will be of type "string", return the specified value;
   // when the option is provided without a value, it will be of type "boolean", return undefined.
@@ -36,10 +28,7 @@ export async function info(manifestPath: string) {
   }
 }
 
-function logManifestInfo(
-  manifestPath: string,
-  manifest: manifestInfo.ManifestInfo
-) {
+function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestInfo) {
   console.log(`Manifest: ${manifestPath}`);
   console.log(`  Id: ${manifest.id || ""}`);
   console.log(`  Name: ${manifest.displayName || ""}`);
@@ -49,14 +38,10 @@ function logManifestInfo(
   if (manifest.alternateId) {
     console.log(`  AlternateId: ${manifest.alternateId}`);
   }
-  console.log(
-    `  AppDomains: ${manifest.appDomains ? manifest.appDomains.join(", ") : ""}`
-  );
+  console.log(`  AppDomains: ${manifest.appDomains ? manifest.appDomains.join(", ") : ""}`);
   console.log(`  Default Locale: ${manifest.defaultLocale || ""}`);
   console.log(`  Description: ${manifest.description || ""}`);
-  console.log(
-    `  High Resolution Icon Url: ${manifest.highResolutionIconUrl || ""}`
-  );
+  console.log(`  High Resolution Icon Url: ${manifest.highResolutionIconUrl || ""}`);
   console.log(`  Hosts: ${manifest.hosts ? manifest.hosts.join(", ") : ""}`);
   console.log(`  Icon Url: ${manifest.iconUrl || ""}`);
   console.log(`  Permissions: ${manifest.permissions || ""}`);
@@ -64,21 +49,13 @@ function logManifestInfo(
 
   if (manifest.defaultSettings) {
     console.log("  Default Settings:");
-    console.log(
-      `    Requested Height: ${manifest.defaultSettings.requestedHeight || ""}`
-    );
-    console.log(
-      `    Requested Width: ${manifest.defaultSettings.requestedWidth || ""}`
-    );
-    console.log(
-      `    Source Location: ${manifest.defaultSettings.sourceLocation || ""}`
-    );
+    console.log(`    Requested Height: ${manifest.defaultSettings.requestedHeight || ""}`);
+    console.log(`    Requested Width: ${manifest.defaultSettings.requestedWidth || ""}`);
+    console.log(`    Source Location: ${manifest.defaultSettings.sourceLocation || ""}`);
   }
 }
 
-function logManifestValidationErrors(
-  errors: ManifestValidationIssue[] | undefined
-) {
+function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefined) {
   if (errors) {
     let errorNumber = 1;
     for (const currentError of errors) {
@@ -89,9 +66,7 @@ function logManifestValidationErrors(
   }
 }
 
-function logManifestValidationInfos(
-  infos: ManifestValidationIssue[] | undefined
-) {
+function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined) {
   if (infos) {
     console.log(chalk.bold.blue(`\nAdditional information: `));
     for (const currentInfo of infos) {
@@ -101,9 +76,7 @@ function logManifestValidationInfos(
   }
 }
 
-function logManifestValidationWarnings(
-  warnings: ManifestValidationIssue[] | undefined
-) {
+function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | undefined) {
   if (warnings) {
     let warningNumber = 1;
     for (const currentWarning of warnings) {
@@ -115,10 +88,7 @@ function logManifestValidationWarnings(
 }
 
 function logManifestValidationIssue(issue: ManifestValidationIssue) {
-  console.log(
-    `${issue.title}: ${issue.content}` +
-      (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``)
-  );
+  console.log(`${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``));
 
   if (issue.code) {
     console.log(`  - Details: ${issue.code}`);
@@ -131,15 +101,9 @@ function logManifestValidationIssue(issue: ManifestValidationIssue) {
   }
 }
 
-function logManifestValidationSupportedProducts(
-  products: ManifestValidationProduct[] | undefined
-) {
+function logManifestValidationSupportedProducts(products: ManifestValidationProduct[] | undefined) {
   if (products) {
-    const productTitles = new Set(
-      products
-        .filter((product) => product.title)
-        .map((product) => product.title)
-    );
+    const productTitles = new Set(products.filter((product) => product.title).map((product) => product.title));
 
     if (productTitles.size > 0) {
       console.log(
@@ -162,15 +126,9 @@ export async function modify(manifestPath: string, command: commander.Command) {
   try {
     // if the --guid command option is provided without a value, use "" to specify to change to a random guid value.
     const guid: string | undefined = getCommandOptionString(command.guid, "");
-    const displayName: string | undefined = getCommandOptionString(
-      command.displayName
-    );
+    const displayName: string | undefined = getCommandOptionString(command.displayName);
 
-    const manifest = await manifestInfo.modifyManifestFile(
-      manifestPath,
-      guid,
-      displayName
-    );
+    const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("modify");
   } catch (err) {
@@ -200,9 +158,7 @@ export async function validate(
 
       if (validation.isValid) {
         if (validation.report.addInDetails) {
-          logManifestValidationSupportedProducts(
-            validation.report.addInDetails.supportedProducts
-          );
+          logManifestValidationSupportedProducts(validation.report.addInDetails.supportedProducts);
         }
       }
     }

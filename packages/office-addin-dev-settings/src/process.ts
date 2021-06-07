@@ -6,10 +6,7 @@ import { ChildProcess, ExecException } from "child_process";
 
 /* global process, console */
 
-export async function startProcess(
-  commandLine: string,
-  verbose: boolean = false
-): Promise<void> {
+export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     if (verbose) {
       console.log(`Starting: ${commandLine}`);
@@ -32,10 +29,7 @@ export async function startProcess(
   });
 }
 
-export function startDetachedProcess(
-  commandLine: string,
-  verbose: boolean = false
-): ChildProcess {
+export function startDetachedProcess(commandLine: string, verbose: boolean = false): ChildProcess {
   if (verbose) {
     console.log(`Starting: ${commandLine}`);
   }

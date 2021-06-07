@@ -8,10 +8,7 @@ import { defaultPort, TestServer } from "./testServer";
 /* global console */
 
 export async function start(command: commnder.Command) {
-  const testServerPort: number =
-    command.port !== undefined
-      ? parseTestServerPort(command.port)
-      : defaultPort;
+  const testServerPort: number = command.port !== undefined ? parseTestServerPort(command.port) : defaultPort;
   const testServer = new TestServer(testServerPort);
   const serverStarted: boolean = await testServer.startTestServer();
 
@@ -23,10 +20,7 @@ export async function start(command: commnder.Command) {
 }
 
 function parseTestServerPort(optionValue: any): number {
-  const testServerPort = parseNumber(
-    optionValue,
-    "--dev-server-port should specify a number."
-  );
+  const testServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
 
   if (testServerPort !== undefined) {
     if (testServerPort < 0 || testServerPort > 65535) {

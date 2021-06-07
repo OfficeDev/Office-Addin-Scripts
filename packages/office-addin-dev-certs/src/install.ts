@@ -12,10 +12,7 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global process, console, __dirname */
 
-function getInstallCommand(
-  caCertificatePath: string,
-  machine: boolean = false
-): string {
+function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
   switch (process.platform) {
     case "win32": {
       const script = path.resolve(__dirname, "..\\scripts\\install.ps1");
@@ -69,9 +66,7 @@ export async function installCaCertificate(
   const command = getInstallCommand(caCertificatePath, machine);
 
   try {
-    console.log(
-      `Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`
-    );
+    console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
     // If the certificate is already installed by another instance skip it.
     if (!isCaCertificateInstalled()) {
       execSync(command, { stdio: "pipe" });
@@ -80,8 +75,6 @@ export async function installCaCertificate(
       `You now have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`
     );
   } catch (error) {
-    throw new Error(
-      `Unable to install the CA certificate. ${error.stderr.toString()}`
-    );
+    throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
   }
 }

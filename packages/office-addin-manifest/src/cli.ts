@@ -16,10 +16,7 @@ commander.command("info <manifest-path>").action(commands.info);
 
 commander
   .command("modify <manifest-path>")
-  .option(
-    "-g,--guid [guid]",
-    "Change the guid. A random guid is used if one is not provided."
-  )
+  .option("-g,--guid [guid]", "Change the guid. A random guid is used if one is not provided.")
   .option("-d, --displayName <name>", "Change the display name.")
   .action(commands.modify);
 

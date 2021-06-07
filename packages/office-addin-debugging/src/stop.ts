@@ -18,9 +18,7 @@ export async function stopDebugging(manifestPath: string) {
     const manifestInfo = await readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
-      throw new ExpectedError(
-        "Manifest does not contain the id for the Office Add-in."
-      );
+      throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");
     }
 
     // clear dev settings

@@ -15,30 +15,19 @@ commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
   .command("install")
-  .option(
-    "--machine",
-    "Install the CA certificate for all users. You must be an Administrator."
-  )
+  .option("--machine", "Install the CA certificate for all users. You must be an Administrator.")
   .option(
     "--days <days>",
     `Specifies the validity of CA certificate in days. Default: ${defaults.daysUntilCertificateExpires}`
   )
-  .description(
-    `Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`
-  )
+  .description(`Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`)
   .action(commands.install);
 
-commander
-  .command("verify")
-  .description(`Verify the CA certificate.`)
-  .action(commands.verify);
+commander.command("verify").description(`Verify the CA certificate.`).action(commands.verify);
 
 commander
   .command("uninstall")
-  .option(
-    "--machine",
-    "Uninstall the CA certificate for all users. You must be an Administrator."
-  )
+  .option("--machine", "Uninstall the CA certificate for all users. You must be an Administrator.")
   .description(`Uninstall the certificate.`)
   .action(commands.uninstall);
 

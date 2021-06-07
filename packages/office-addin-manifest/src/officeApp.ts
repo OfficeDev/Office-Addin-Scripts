@@ -18,17 +18,13 @@ export enum OfficeApp {
 }
 
 // initialized once since this list won't change
-const officeApps: OfficeApp[] = Object.keys(OfficeApp).map<OfficeApp>((key) =>
-  parseOfficeApp(key)
-);
+const officeApps: OfficeApp[] = Object.keys(OfficeApp).map<OfficeApp>((key) => parseOfficeApp(key));
 
 /**
  * Get the Office app for the manifest Host name
  * @param host Host name
  */
-export function getOfficeAppForManifestHost(
-  host: string
-): OfficeApp | undefined {
+export function getOfficeAppForManifestHost(host: string): OfficeApp | undefined {
   switch (host.toLowerCase()) {
     case "document":
       return OfficeApp.Word;
@@ -129,9 +125,7 @@ export function parseOfficeApps(input: string): OfficeApp[] {
   if (input.trim().toLowerCase() === "all") {
     return getOfficeApps();
   } else {
-    return input
-      .split(",")
-      .map<OfficeApp>((appString) => parseOfficeApp(appString));
+    return input.split(",").map<OfficeApp>((appString) => parseOfficeApp(appString));
   }
 }
 

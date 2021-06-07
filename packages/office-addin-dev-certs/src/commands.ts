@@ -38,18 +38,14 @@ export async function install(command: commander.Command) {
   }
 }
 
-export async function verify(
-  command: commander.Command /* eslint-disable-line no-unused-vars */
-) {
+export async function verify(command: commander.Command /* eslint-disable-line no-unused-vars */) {
   try {
     if (await verifyCertificates()) {
       console.log(
         `You have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`
       );
     } else {
-      console.log(
-        `You need to install certificates for trusted access to https://localhost.`
-      );
+      console.log(`You need to install certificates for trusted access to https://localhost.`);
     }
     usageDataObject.reportSuccess("verify");
   } catch (err) {

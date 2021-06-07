@@ -85,15 +85,9 @@ export function readDevServerProcessId(): number | undefined {
     id = parseNumber(process.env.OfficeAddinDevServerProcessId);
   } else if (fs.existsSync(processIdFilePath)) {
     const devServerProperties = readDebuggingInfo(processIdFilePath);
-    if (
-      devServerProperties.devServer &&
-      devServerProperties.devServer.processId
-    ) {
+    if (devServerProperties.devServer && devServerProperties.devServer.processId) {
       const pid = devServerProperties.devServer.processId;
-      id = parseNumber(
-        pid.toString(),
-        `Invalid process id found in ${processIdFilePath}`
-      );
+      id = parseNumber(pid.toString(), `Invalid process id found in ${processIdFilePath}`);
     }
   }
   return id;

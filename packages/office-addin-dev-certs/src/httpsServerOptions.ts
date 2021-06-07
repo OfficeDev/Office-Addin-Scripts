@@ -24,9 +24,7 @@ export async function getHttpsServerOptions(): Promise<IHttpsServerOptions> {
   }
 
   try {
-    httpsServerOptions.cert = fs.readFileSync(
-      defaults.localhostCertificatePath
-    );
+    httpsServerOptions.cert = fs.readFileSync(defaults.localhostCertificatePath);
   } catch (err) {
     throw new Error(`Unable to read the certificate file.\n${err}`);
   }

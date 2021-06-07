@@ -9,10 +9,8 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global process */
 
-export const EdgeBrowserAppcontainerName: string =
-  "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
-export const EdgeWebViewAppcontainerName: string =
-  "Microsoft.win32webviewhost_cw5n1h2txyewy";
+export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
+export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
 export const EdgeBrowserName: string = "Microsoft Edge Web Browser";
 export const EdgeWebViewName: string = "Microsoft Edge WebView";
 
@@ -21,9 +19,7 @@ export const EdgeWebViewName: string = "Microsoft Edge WebView";
  * @param name Appcontainer name
  * @throws Error if platform does not support appcontainers.
  */
-export function addLoopbackExemptionForAppcontainer(
-  name: string
-): Promise<void> {
+export function addLoopbackExemptionForAppcontainer(name: string): Promise<void> {
   if (!isAppcontainerSupported()) {
     throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
@@ -54,9 +50,7 @@ export function isAppcontainerSupported() {
  * @param name Appcontainer name
  * @throws Error if platform does not support appcontainers.
  */
-export function isLoopbackExemptionForAppcontainer(
-  name: string
-): Promise<boolean> {
+export function isLoopbackExemptionForAppcontainer(name: string): Promise<boolean> {
   if (!isAppcontainerSupported()) {
     throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
@@ -81,10 +75,7 @@ export function isLoopbackExemptionForAppcontainer(
  * @param sourceLocation Source location of the Office Add-in.
  * @param isFromStore True if installed from the Store; false otherwise.
  */
-export function getAppcontainerName(
-  sourceLocation: string,
-  isFromStore = false
-): string {
+export function getAppcontainerName(sourceLocation: string, isFromStore = false): string {
   const url: URL = new URL(sourceLocation);
   const origin: string = url.origin;
   const addinType: number = isFromStore ? 0 : 1; // 0 if from Office Add-in store, 1 otherwise.
@@ -107,9 +98,7 @@ export async function getUserConfirmation(name: string): Promise<boolean> {
   return (answers as any).didUserConfirm;
 }
 
-export async function getAppcontainerNameFromManifestPath(
-  manifestPath: string
-): Promise<string> {
+export async function getAppcontainerNameFromManifestPath(manifestPath: string): Promise<string> {
   switch (manifestPath.toLowerCase()) {
     case "edgewebview":
       return EdgeWebViewAppcontainerName;
@@ -141,10 +130,7 @@ export async function ensureLoopbackIsEnabled(
   let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (!isEnabled) {
-    if (
-      !askForConfirmation ||
-      (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))
-    ) {
+    if (!askForConfirmation || (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))) {
       await addLoopbackExemptionForAppcontainer(name);
       isEnabled = true;
     }
@@ -157,18 +143,12 @@ export async function ensureLoopbackIsEnabled(
  * Returns the name of the appcontainer used to run an Office Add-in.
  * @param manifestPath Path of the manifest file.
  */
-export async function getAppcontainerNameFromManifest(
-  manifestPath: string
-): Promise<string> {
+export async function getAppcontainerNameFromManifest(manifestPath: string): Promise<string> {
   const manifest = await readManifestFile(manifestPath);
-  const sourceLocation = manifest.defaultSettings
-    ? manifest.defaultSettings.sourceLocation
-    : undefined;
+  const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
 
   if (sourceLocation === undefined) {
-    throw new ExpectedError(
-      `The source location could not be retrieved from the manifest.`
-    );
+    throw new ExpectedError(`The source location could not be retrieved from the manifest.`);
   }
 
   return getAppcontainerName(sourceLocation, false);
@@ -179,9 +159,7 @@ export async function getAppcontainerNameFromManifest(
  * @param name Appcontainer name
  * @throws Error if platform doesn't support appcontainers.
  */
-export function removeLoopbackExemptionForAppcontainer(
-  name: string
-): Promise<void> {
+export function removeLoopbackExemptionForAppcontainer(name: string): Promise<void> {
   if (!isAppcontainerSupported()) {
     throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }

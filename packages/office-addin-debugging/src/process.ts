@@ -4,17 +4,11 @@
 import { ChildProcess } from "child_process";
 import * as devSettings from "office-addin-dev-settings";
 
-export async function startProcess(
-  commandLine: string,
-  verbose: boolean = false
-): Promise<void> {
+export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
   await devSettings.startProcess(commandLine, verbose);
 }
 
-export function startDetachedProcess(
-  commandLine: string,
-  verbose: boolean = false
-): ChildProcess {
+export function startDetachedProcess(commandLine: string, verbose: boolean = false): ChildProcess {
   return devSettings.startDetachedProcess(commandLine, verbose);
 }
 

@@ -14,17 +14,9 @@ commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
   .command("appcontainer <manifest-path>")
-  .description(
-    "Display or configure the appcontainer used to run the Office Add-in."
-  )
-  .option(
-    "--loopback",
-    `Allow access to loopback addresses such as "localhost".`
-  )
-  .option(
-    "--prevent-loopback",
-    `Prevent access to loopback addresses such as "localhost".`
-  )
+  .description("Display or configure the appcontainer used to run the Office Add-in.")
+  .option("--loopback", `Allow access to loopback addresses such as "localhost".`)
+  .option("--prevent-loopback", `Prevent access to loopback addresses such as "localhost".`)
   .option("-y,--yes", "Provide approval without any prompts.")
   .action(commands.appcontainer);
 
@@ -37,10 +29,7 @@ commander
   .command("debugging <manifest-path>")
   .option("--enable", `Enable debugging for the add-in.`)
   .option("--disable", "Disable debugging for the add-in.")
-  .option(
-    "--debug-method <method>",
-    "Specify the debug method: 'direct' or 'proxy'."
-  )
+  .option("--debug-method <method>", "Specify the debug method: 'direct' or 'proxy'.")
   .option("--open-dev-tools", "Open the web browser dev tools (if supported).")
   .description("Configure debugging for the Office Add-in.")
   .action(commands.debugging);
@@ -72,14 +61,8 @@ commander
 commander
   .command("sideload <manifest-path> [app-type]")
   .description("Launch Office with the Office Add-in loaded.")
-  .option(
-    "-a,--app <app>",
-    `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`
-  )
-  .option(
-    "-d,--document <document>",
-    `The file path or url of the Office document to open.`
-  )
+  .option("-a,--app <app>", `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`)
+  .option("-d,--document <document>", `The file path or url of the Office document to open.`)
   .action(commands.sideload)
   .on("--help", () => {
     console.log("\n[app-type] specifies the type of Office app::\n");
@@ -90,19 +73,10 @@ commander
 commander
   .command("source-bundle-url <manifest-path>")
   .description("Specify values for components of the source bundle url.")
-  .option(
-    "-h,--host <host>",
-    `The host name to use, or "" to use the default ('localhost').`
-  )
-  .option(
-    "-p,--port <port>",
-    `The port number to use, or "" to use the default (8081).`
-  )
+  .option("-h,--host <host>", `The host name to use, or "" to use the default ('localhost').`)
+  .option("-p,--port <port>", `The port number to use, or "" to use the default (8081).`)
   .option("--path <path>", `The path to use, or "" to use the default.`)
-  .option(
-    "-e,--extension <extension>",
-    `The extension to use, or "" to use the default (".bundle").`
-  )
+  .option("-e,--extension <extension>", `The extension to use, or "" to use the default (".bundle").`)
   .action(commands.sourceBundleUrl);
 
 commander
@@ -112,9 +86,7 @@ commander
 
 commander
   .command("webview <manifest-path> [web-view-type]")
-  .description(
-    "Specify the type of web view to use when debugging. Windows only."
-  )
+  .description("Specify the type of web view to use when debugging. Windows only.")
   .action(commands.webView)
   .on("--help", () => {
     console.log("\nFor [web-view-type], choose one of the following values:\n");

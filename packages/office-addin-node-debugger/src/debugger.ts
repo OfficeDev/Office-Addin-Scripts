@@ -23,9 +23,7 @@ export function run(
   const websocketRetryTimeout: number = 500;
 
   function connectToDebuggerProxy(): void {
-    var ws = new WebSocket(
-      `ws://${host}:${port}/debugger-proxy?role=${role}&name=${debuggerName}`
-    );
+    var ws = new WebSocket(`ws://${host}:${port}/debugger-proxy?role=${role}&name=${debuggerName}`);
     var worker: child.ChildProcess;
 
     function createJSRuntime(): void {
@@ -79,9 +77,7 @@ export function run(
     ws.onclose = (e) => {
       shutdownJSRuntime();
       if (e.reason) {
-        console.log(
-          `Web socket closed because the following reason: ${e.reason}`
-        );
+        console.log(`Web socket closed because the following reason: ${e.reason}`);
       }
       setTimeout(connectToDebuggerProxy, websocketRetryTimeout);
     };

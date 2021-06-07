@@ -38,17 +38,14 @@ export class AuthRouter {
         const tokenURLSegment: string = "oauth2/v2.0/token";
 
         try {
-          const tokenResponse = await fetch(
-            `${stsDomain}/${tenant}/${tokenURLSegment}`,
-            {
-              method: "POST",
-              body: form.default(formParams),
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-            }
-          );
+          const tokenResponse = await fetch(`${stsDomain}/${tenant}/${tokenURLSegment}`, {
+            method: "POST",
+            body: form.default(formParams),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          });
           const json = await tokenResponse.json();
           res.send(json);
 

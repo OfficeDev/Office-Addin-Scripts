@@ -45,13 +45,9 @@ export class SSOService {
 
   private async getSecret(isTest: boolean = false): Promise<void> {
     const manifestInfo = await manifest.readManifestFile(this.manifestPath);
-    const appSecret = getSecretFromCredentialStore(
-      manifestInfo.displayName,
-      isTest
-    );
+    const appSecret = getSecretFromCredentialStore(manifestInfo.displayName, isTest);
     if (appSecret === "") {
-      const errorMessage: string =
-        "Call to getSecretFromCredentialStore returned empty string";
+      const errorMessage: string = "Call to getSecretFromCredentialStore returned empty string";
       throw new Error(errorMessage);
     }
     process.env.secret = appSecret;
@@ -64,9 +60,7 @@ export class SSOService {
   public async startServer(app, port): Promise<boolean> {
     try {
       const options = await devCerts.getHttpsServerOptions();
-      this.server = https
-        .createServer(options, app)
-        .listen(port, () => console.log(`Server running on ${port}`));
+      this.server = https.createServer(options, app).listen(port, () => console.log(`Server running on ${port}`));
       return Promise.resolve(true);
     } catch (err) {
       const errorMessage: string = `Unable to start test server on port ${port}: \n${err}`;

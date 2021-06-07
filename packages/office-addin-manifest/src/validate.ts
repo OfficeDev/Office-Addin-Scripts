@@ -61,9 +61,7 @@ export class ManifestValidation {
   }
 }
 
-export async function validateManifest(
-  manifestPath: string
-): Promise<ManifestValidation> {
+export async function validateManifest(manifestPath: string): Promise<ManifestValidation> {
   try {
     const validation: ManifestValidation = new ManifestValidation();
 
@@ -85,9 +83,7 @@ export async function validateManifest(
         }
       );
     } catch (err) {
-      throw new Error(
-        `Unable to contact the manifest validation service.\n${err}`
-      );
+      throw new Error(`Unable to contact the manifest validation service.\n${err}`);
     }
 
     const text = await response.text();

@@ -34,8 +34,6 @@ export function parseAppType(text: string | undefined): AppType | undefined {
     case undefined:
       return undefined;
     default:
-      throw new ExpectedError(
-        `Please select a valid app type instead of '${text}'.`
-      );
+      throw new ExpectedError(`Please select a valid app type instead of '${text}'.`);
   }
 }

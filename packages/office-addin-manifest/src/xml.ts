@@ -11,10 +11,7 @@ export type Xml = any;
  * @example Given the the following xml, the attribute name "DefaultValue" will return the value "abc".
  *   <First DefaultValue="abc">1</First>
  */
-export function getXmlAttributeValue(
-  xml: Xml,
-  name: string
-): string | undefined {
+export function getXmlAttributeValue(xml: Xml, name: string): string | undefined {
   try {
     return xml.$[name];
   } catch (err) {
@@ -133,11 +130,7 @@ export function getXmlElementsAttributeValue(
  *     <Item>2</Item>
  *   </Current>
  */
-export function getXmlElementsValue(
-  xml: Xml,
-  name: string,
-  itemElementName: string
-): string[] {
+export function getXmlElementsValue(xml: Xml, name: string, itemElementName: string): string[] {
   const values: string[] = [];
 
   getXmlElements(xml, name).forEach((xmlElement) => {
@@ -195,10 +188,6 @@ export function setXmlElementAttributeValue(
  * @param elementName Element name
  * @param elementValue Element value
  */
-export function setXmlElementValue(
-  xml: Xml,
-  elementName: string,
-  elementValue: any
-) {
+export function setXmlElementValue(xml: Xml, elementName: string, elementValue: any) {
   xml[elementName] = elementValue;
 }
