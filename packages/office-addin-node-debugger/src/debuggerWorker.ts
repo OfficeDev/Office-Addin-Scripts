@@ -41,6 +41,7 @@ process.on("message", (message) => {
       shouldQueueMessages = true;
 
       function evalJS(js: string): void {
+        /* eslint-disable no-eval */
         try {
           eval(
             js
