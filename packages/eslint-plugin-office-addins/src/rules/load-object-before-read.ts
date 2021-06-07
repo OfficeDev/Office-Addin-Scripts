@@ -41,6 +41,16 @@ export = {
       return false;
     }
 
+    function isGetFunction(node: TSESTree.Identifier): boolean {
+      const functionName = node.name;
+      if (functionName === "getSelectedRange"
+      || functionName === "getItem" 
+      || functionName === "getRange") {
+        return true;
+      }
+      return false;
+    }
+
     function wasCreatedByGetFunction(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let getFunctionFound = false;
@@ -49,10 +59,7 @@ export = {
             && reference.identifier.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
             && reference.identifier.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
             && reference.identifier.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-              const functionName = reference.identifier.parent.init.callee.property.name;
-              if(functionName === "getSelectedRange"
-                || functionName === "getItem" 
-                || functionName === "getRange") {
+              if(isGetFunction(reference.identifier.parent.init.callee.property)) {
                 getFunctionFound = true;
               }
           }
