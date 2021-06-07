@@ -78,7 +78,7 @@ export = {
       return loadFound;
     }
 
-    function findVariablesInScope(scope: any) {
+    function findLoadBeforeRead(scope: any) {
       scope.references.forEach((reference: Reference) => {
         const variable = reference.resolved;
 
@@ -95,12 +95,12 @@ export = {
             data: {name: reference.identifier.name, loadValue: getValueThatHadToBeLoaded(reference)}
         });
       });
-      scope.childScopes.forEach(findVariablesInScope);
+      scope.childScopes.forEach(findLoadBeforeRead);
     }
 
     return {
       Program() {
-        findVariablesInScope(context.getScope());
+        findLoadBeforeRead(context.getScope());
       }
     }
   },
