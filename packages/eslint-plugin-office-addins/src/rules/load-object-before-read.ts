@@ -4,6 +4,8 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { BooleanArraySupportOption } from "prettier";
+import { stringify } from "querystring";
 
 export = {
   name: "load-object-before-read",
@@ -46,19 +48,16 @@ export = {
         || functionName === "getRange");
     }
 
-    function wasCreatedByGetFunction(referenceNode: Reference): boolean {
-      const variable = referenceNode.resolved;
+    function isAGetFunction2(node: TSESTree.Node): boolean {
       let getFunctionFound = false;
-      variable?.references.forEach((reference: Reference) => {
-          if(reference.identifier.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
-            && reference.identifier.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
-            && reference.identifier.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
-            && reference.identifier.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-              if(isGetFunction(reference.identifier.parent.init.callee.property)) {
-                getFunctionFound = true;
-              }
+      if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
+        && node.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
+        && node.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+          if(isGetFunction(node.parent.init.callee.property)) {
+            getFunctionFound = true;
           }
-        });
+      }
       return getFunctionFound;
     }
 
@@ -81,20 +80,43 @@ export = {
     }
 
     function findLoadBeforeRead(scope: Scope) {
-      scope.references.forEach((reference: Reference) => {
-        const variable = reference.resolved;
+      scope.variables.forEach((variable: Variable) => {
+        let loadLocation: Map <string, number>;
+        let getFound: boolean = false;
+        variable.references.forEach((reference: Reference) => {
+          if (reference.init
+            || !variable) {
+            return;
+          }
 
-        if (reference.init
+          if (isLoadFunction(reference.identifier)) {
+            loadLocation.set(getLoadedPropertyName(reference.identifier), reference.identifier.range[1]);
+            return;
+          }
+
+          if (isAGetFunction2(reference.identifier)) {
+            getFound = true;
+            return;
+          }
+
+          // If reference came after load 
+          const propertyName: string = getPropertyThatHadToBeLoaded(reference.identifier) ?? "";
+          if (reference.identifier.range[1] > (loadLocation.get(propertyName) ?? undefined)) {
+
+          }
+          /*if (reference.init
             || !variable
             || !wasCreatedByGetFunction(reference)
             || isLoadFunction(reference.identifier)
-            || isLoaded(reference)){
+            || isLoaded(reference)) {
             return;
-        }
-        context.report({
+          }*/
+
+          context.report({
             node: reference.identifier,
             messageId: "loadBeforeRead",
             data: {name: reference.identifier.name, loadValue: getPropertyThatHadToBeLoaded(reference.identifier)}
+          });
         });
       });
       scope.childScopes.forEach(findLoadBeforeRead);
