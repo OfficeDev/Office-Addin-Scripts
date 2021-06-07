@@ -32,10 +32,10 @@ export = {
       return undefined;
     }
 
-    function isLoadFunction(reference: Reference): boolean {
-      if(reference.identifier.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && reference.identifier.parent.property.type === TSESTree.AST_NODE_TYPES.Identifier
-        && reference.identifier.parent.property.name === "load") {
+    function isLoadFunction(node: TSESTree.Node): boolean {
+      if(node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.parent.property.type === TSESTree.AST_NODE_TYPES.Identifier
+        && node.parent.property.name === "load") {
         return true;
       }
       return false;
@@ -92,7 +92,7 @@ export = {
         if (reference.init
             || !variable
             || !wasCreatedByGetFunction(reference)
-            || isLoadFunction(reference)
+            || isLoadFunction(reference.identifier)
             || isLoaded(reference)){
             return;
         }
