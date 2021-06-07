@@ -3,7 +3,7 @@
 
 import * as fs from "fs";
 import * as util from "util";
-import * as uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
 import { usageDataObject } from "./defaults";
@@ -143,7 +143,7 @@ async function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
 function setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void {
   if (typeof guid !== "undefined") {
     if (!guid || guid === "random") {
-      guid = uuid();
+      guid = uuidv4();
     }
     xmlMethods.setXmlElementValue(xml, "Id", guid);
   }
