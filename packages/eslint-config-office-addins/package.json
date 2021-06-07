@@ -4,12 +4,11 @@
   "description": "Provides an eslint configuration for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "lint": "office-addin-lint check",
     "lint:fix": "office-addin-lint fix",
     "prettier": "office-addin-lint prettier",
-    "test": "echo \"No tests\"",
-    "tsc": "tsc -p tsconfig.json"
+    "test": "echo \"No tests\""
   },
   "keywords": [
     "eslint"

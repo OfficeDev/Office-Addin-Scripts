@@ -10,11 +10,10 @@
   "author": "OfficeDev",
   "main": "lib/main.js",
   "scripts": {
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "lint": "eslint src/**/*.{ts,tsx,js,jsx} --rulesdir lib/rules/",
     "lint:fix": "eslint src/**/*.{ts,tsx,js,jsx} --rulesdir lib/rules/ --fix",
-    "test": "jest",
-    "tsc": "tsc -p tsconfig.json"
+    "test": "jest"
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^4.20.0",
