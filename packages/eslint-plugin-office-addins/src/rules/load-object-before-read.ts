@@ -41,24 +41,35 @@ export = {
         && node.parent.property.name === "load");
     }
 
-    function isGetFunction(node: TSESTree.Identifier): boolean {
+    function callsAGetAPIFunction(node: TSESTree.Identifier): boolean {
       const functionName = node.name;
       return (functionName === "getSelectedRange"
         || functionName === "getItem" 
         || functionName === "getRange");
     }
 
-    function isAGetFunction2(node: TSESTree.Node): boolean {
-      let getFunctionFound = false;
+    function isAGetVariableDeclaration(node: TSESTree.Node): boolean {
       if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
         && node.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
         && node.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
         && node.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-          if(isGetFunction(node.parent.init.callee.property)) {
-            getFunctionFound = true;
+          if(callsAGetAPIFunction(node.parent.init.callee.property)) {
+            return true;
           }
       }
-      return getFunctionFound;
+      return false;
+    }
+
+    function isAGetAssignmentExpression(node: TSESTree.Node): boolean {
+      if(node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression
+        && node.parent.right.type === TSESTree.AST_NODE_TYPES.CallExpression
+        && node.parent.right.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.parent.right.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+          if(callsAGetAPIFunction(node.parent.right.callee.property)) {
+            return true;
+          }
+      }
+      return false;
     }
 
     function getLoadedPropertyName(node: TSESTree.Node): string {
@@ -79,30 +90,33 @@ export = {
             return;
           }
 
-          if (isLoadFunction(reference.identifier)) {
-            loadLocation.set(getLoadedPropertyName(reference.identifier), reference.identifier.range[1]);
+          const node: TSESTree.Node = reference.identifier;
+          if (isLoadFunction(node)) {
+            loadLocation.set(getLoadedPropertyName(node), node.range[1]);
             return;
           }
 
-          if (isAGetFunction2(reference.identifier)) {
+          if (isAGetVariableDeclaration(node)
+              || isAGetAssignmentExpression(node)) {
             getFound = true;
             return;
           }
 
           // If reference came after load 
-          const propertyName: string | undefined = getPropertyThatHadToBeLoaded(reference.identifier);
+          const propertyName: string | undefined = getPropertyThatHadToBeLoaded(node);
           if (!propertyName) {
             return;
           }
+
           if (loadLocation.has(propertyName)
-            && (reference.identifier.range[1] > (loadLocation.get(propertyName) ?? 0)) ) {
+            && (node.range[1] > (loadLocation.get(propertyName) ?? 0))) {
               return;
           }
 
           context.report({
-            node: reference.identifier,
+            node: node,
             messageId: "loadBeforeRead",
-            data: {name: reference.identifier.name, loadValue: propertyName}
+            data: {name: node.name, loadValue: propertyName}
           });
         });
       });

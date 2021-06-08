@@ -29,7 +29,7 @@ ruleTester.run('load-object-before-read', rule, {
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load('values');
         if(selectedRange.values === [2]){}`
-    },/*
+    },
     {
       code: `
         var selectedRange;
@@ -51,7 +51,7 @@ ruleTester.run('load-object-before-read', rule, {
       myRange.load('address');
       console.log(myRange.address);
       console.log(myRange.values);`
-    },*/
+    },
   ],
   invalid: [
     {
@@ -97,20 +97,20 @@ ruleTester.run('load-object-before-read', rule, {
         var selectedRange = context.workbook.getSelectedRange();
         var test = selectedRange.values;`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
-    },/*
+    },
     {
       code: `
         var myRange;
         myRange = context.workbook.worksheets.getSelectedRange();
-        var test = selectedRange.values;`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
+        var test = myRange.values;`,
+      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
-        var test = selectedRange.values;`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
-    },*/
+        var test = myRange.values;`,
+      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]
+    },
   ]
 });
