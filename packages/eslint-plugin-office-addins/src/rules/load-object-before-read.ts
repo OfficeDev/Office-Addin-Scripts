@@ -61,6 +61,14 @@ export = {
       return getFunctionFound;
     }
 
+    function getLoadedPropertyName(node: TSESTree.Node): string {
+      if(node.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+        && node.parent.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
+          return node.parent.parent.arguments[0].value as string;
+        }
+      return "error in getLoadedPropertyName";
+    }
+
     function isLoaded(referenceNode: Reference): boolean {
       const variable = referenceNode.resolved;
       let loadFound = false;
@@ -81,7 +89,7 @@ export = {
 
     function findLoadBeforeRead(scope: Scope) {
       scope.variables.forEach((variable: Variable) => {
-        let loadLocation: Map <string, number>;
+        let loadLocation: Map <string, number> = new Map<string, number>();
         let getFound: boolean = false;
         variable.references.forEach((reference: Reference) => {
           if (reference.init
@@ -101,16 +109,10 @@ export = {
 
           // If reference came after load 
           const propertyName: string = getPropertyThatHadToBeLoaded(reference.identifier) ?? "";
-          if (reference.identifier.range[1] > (loadLocation.get(propertyName) ?? undefined)) {
-
+          if (loadLocation.has(propertyName)
+            && (reference.identifier.range[1] > (loadLocation.get(propertyName) ?? 0)) ) {
+              return;
           }
-          /*if (reference.init
-            || !variable
-            || !wasCreatedByGetFunction(reference)
-            || isLoadFunction(reference.identifier)
-            || isLoaded(reference)) {
-            return;
-          }*/
 
           context.report({
             node: reference.identifier,
