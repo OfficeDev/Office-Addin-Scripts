@@ -7,7 +7,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 
 ruleTester.run('load-object-before-read', rule, {
   valid: [ 
-    /*{
+    {
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -17,7 +17,7 @@ ruleTester.run('load-object-before-read', rule, {
           .then(function () {
             console.log (myRange.address);   // ok
           });`
-    },*/
+    },
     {
       code: `
         var property = worksheet.getItem("sheet");
@@ -54,7 +54,7 @@ ruleTester.run('load-object-before-read', rule, {
     },*/
   ],
   invalid: [
-    /*{
+    {
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -66,7 +66,7 @@ ruleTester.run('load-object-before-read', rule, {
             console.log (myRange.values);  // not ok as it was not loaded
           });`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" } }]
-    },*/
+    },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();

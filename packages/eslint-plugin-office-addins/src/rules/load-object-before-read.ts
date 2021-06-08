@@ -69,24 +69,6 @@ export = {
       return "error in getLoadedPropertyName";
     }
 
-    function isLoaded(referenceNode: Reference): boolean {
-      const variable = referenceNode.resolved;
-      let loadFound = false;
-      const valueRead = getPropertyThatHadToBeLoaded(referenceNode.identifier);
-
-      variable?.references.forEach((reference: Reference) => {
-        if(reference === referenceNode) return;
-        if(reference.identifier.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
-          && reference.identifier.parent.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal
-          && reference.identifier.parent.parent.arguments[0].value === valueRead
-          && reference.identifier.range[1] < referenceNode.identifier.range[1]) {
-          loadFound = true;
-        }
-      });
-
-      return loadFound;
-    }
-
     function findLoadBeforeRead(scope: Scope) {
       scope.variables.forEach((variable: Variable) => {
         let loadLocation: Map <string, number> = new Map<string, number>();
@@ -108,7 +90,10 @@ export = {
           }
 
           // If reference came after load 
-          const propertyName: string = getPropertyThatHadToBeLoaded(reference.identifier) ?? "";
+          const propertyName: string | undefined = getPropertyThatHadToBeLoaded(reference.identifier);
+          if (!propertyName) {
+            return;
+          }
           if (loadLocation.has(propertyName)
             && (reference.identifier.range[1] > (loadLocation.get(propertyName) ?? 0)) ) {
               return;
@@ -117,7 +102,7 @@ export = {
           context.report({
             node: reference.identifier,
             messageId: "loadBeforeRead",
-            data: {name: reference.identifier.name, loadValue: getPropertyThatHadToBeLoaded(reference.identifier)}
+            data: {name: reference.identifier.name, loadValue: propertyName}
           });
         });
       });
