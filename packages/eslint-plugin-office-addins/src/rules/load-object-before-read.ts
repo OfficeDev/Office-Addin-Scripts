@@ -4,6 +4,7 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { isConstructorDeclaration } from "typescript";
 
 export = {
   name: "load-object-before-read",
@@ -46,6 +47,13 @@ export = {
         || functionName === "getRange");
     }
 
+    function isVariableDeclaration(node: TSESTree.Node): boolean {
+      if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator) {
+          return true;
+      }
+      return false;
+    }
+
     function isGetVariableDeclaration(node: TSESTree.Node): boolean {
       if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
         && node.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
@@ -54,6 +62,13 @@ export = {
           if(callsGetAPIFunction(node.parent.init.callee.property)) {
             return true;
           }
+      }
+      return false;
+    }
+
+    function isAssignmentExpression(node: TSESTree.Node): boolean {
+      if(node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression) {
+          return true;
       }
       return false;
     }
@@ -83,16 +98,19 @@ export = {
         let loadLocation: Map <string, number> = new Map<string, number>();
         let getFound: boolean = false;
         variable.references.forEach((reference: Reference) => {
-          if (!variable) {
-            return;
-          }
-
           const node: TSESTree.Node = reference.identifier;
-          if (isGetVariableDeclaration(node)
-              || isGetAssignmentExpression(node)) {
-            getFound = true;
-            return;
-          }
+            if (isVariableDeclaration(node)
+              || isAssignmentExpression(node)) {
+
+              if (isGetVariableDeclaration(node)
+                || isGetAssignmentExpression(node)) {
+                  getFound = true;
+                  return;
+              } else {
+                getFound = false;
+              }
+            }
+          
           if(!getFound) {
             return;
           }

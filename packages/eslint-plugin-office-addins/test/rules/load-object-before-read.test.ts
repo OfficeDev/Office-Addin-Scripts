@@ -59,6 +59,19 @@ ruleTester.run('load-object-before-read', rule, {
         var test = myRange.values;
         var myRange = context.workbook.worksheets.getSelectedRange();`
     },
+    {
+      code: `
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        myRange = context.notAGetFunction;
+        myRange.load('values');
+        var test = myRange.values;`
+    },
+    {
+      code: `
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        myRange = context.notAGetFunction;
+        var test = myRange.values;`
+    },
   ],
   invalid: [
     {
@@ -118,6 +131,6 @@ ruleTester.run('load-object-before-read', rule, {
         myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
         var test = myRange.values;`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]
-    },
+    }
   ]
 });
