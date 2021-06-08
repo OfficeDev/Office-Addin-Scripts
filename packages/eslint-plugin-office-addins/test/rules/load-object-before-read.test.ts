@@ -46,11 +46,18 @@ ruleTester.run('load-object-before-read', rule, {
     },
     {
       code: `
-      var myRange = context.workbook.worksheets.getSelectedRange();
-      myRange.load('values');
-      myRange.load('address');
-      console.log(myRange.address);
-      console.log(myRange.values);`
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        myRange.load('values');
+        myRange.load('address');
+        console.log(myRange.address);
+        console.log(myRange.values);`
+    },
+    {
+      code: `
+        var myRange = context.thisIsNotAGetFunction();
+        myRange.load('values')
+        var test = myRange.values;
+        var myRange = context.workbook.worksheets.getSelectedRange();`
     },
   ],
   invalid: [

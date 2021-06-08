@@ -4,8 +4,6 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { BooleanArraySupportOption } from "prettier";
-import { stringify } from "querystring";
 
 export = {
   name: "load-object-before-read",
@@ -41,31 +39,31 @@ export = {
         && node.parent.property.name === "load");
     }
 
-    function callsAGetAPIFunction(node: TSESTree.Identifier): boolean {
+    function callsGetAPIFunction(node: TSESTree.Identifier): boolean {
       const functionName = node.name;
       return (functionName === "getSelectedRange"
         || functionName === "getItem" 
         || functionName === "getRange");
     }
 
-    function isAGetVariableDeclaration(node: TSESTree.Node): boolean {
+    function isGetVariableDeclaration(node: TSESTree.Node): boolean {
       if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
         && node.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
         && node.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
         && node.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-          if(callsAGetAPIFunction(node.parent.init.callee.property)) {
+          if(callsGetAPIFunction(node.parent.init.callee.property)) {
             return true;
           }
       }
       return false;
     }
 
-    function isAGetAssignmentExpression(node: TSESTree.Node): boolean {
+    function isGetAssignmentExpression(node: TSESTree.Node): boolean {
       if(node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression
         && node.parent.right.type === TSESTree.AST_NODE_TYPES.CallExpression
         && node.parent.right.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
         && node.parent.right.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-          if(callsAGetAPIFunction(node.parent.right.callee.property)) {
+          if(callsGetAPIFunction(node.parent.right.callee.property)) {
             return true;
           }
       }
@@ -85,20 +83,22 @@ export = {
         let loadLocation: Map <string, number> = new Map<string, number>();
         let getFound: boolean = false;
         variable.references.forEach((reference: Reference) => {
-          if (reference.init
-            || !variable) {
+          if (!variable) {
             return;
           }
 
           const node: TSESTree.Node = reference.identifier;
-          if (isLoadFunction(node)) {
-            loadLocation.set(getLoadedPropertyName(node), node.range[1]);
+          if (isGetVariableDeclaration(node)
+              || isGetAssignmentExpression(node)) {
+            getFound = true;
+            return;
+          }
+          if(!getFound) {
             return;
           }
 
-          if (isAGetVariableDeclaration(node)
-              || isAGetAssignmentExpression(node)) {
-            getFound = true;
+          if (isLoadFunction(node)) {
+            loadLocation.set(getLoadedPropertyName(node), node.range[1]);
             return;
           }
 
