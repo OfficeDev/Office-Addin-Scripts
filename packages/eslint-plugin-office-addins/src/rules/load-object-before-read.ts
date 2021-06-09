@@ -41,10 +41,7 @@ export = {
     }
 
     function callsGetAPIFunction(node: TSESTree.Identifier): boolean {
-      const functionName = node.name;
-      return (functionName === "getSelectedRange"
-        || functionName === "getItem" 
-        || functionName === "getRange");
+      return (node.name.startsWith("get"));
     }
 
     function isVariableDeclaration(node: TSESTree.Node): boolean {
