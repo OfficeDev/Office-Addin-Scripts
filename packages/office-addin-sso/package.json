@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/cors": "2.8.4",
+    "@types/es6-promise": "^3.3.0",
     "@types/express": "4.16.0",
     "@types/jquery": "^3.3.34",
     "@types/mocha": "^5.2.7",
