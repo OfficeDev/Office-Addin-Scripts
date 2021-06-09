@@ -247,16 +247,16 @@ export = {
         let getFound: boolean = false;
         variable.references.forEach((reference: Reference) => {
           const node: TSESTree.Node = reference.identifier;
-            if (isVariableDeclaration(node)
-              || isAssignmentExpression(node)) {
-              if (isGetVariableDeclaration(node)
-                || isGetAssignmentExpression(node)) {
-                  getFound = true;
-                  return;
-              } else {
-                getFound = false;
-              }
+          if (isVariableDeclaration(node)
+            || isAssignmentExpression(node)) {
+            if (isGetVariableDeclaration(node)
+              || isGetAssignmentExpression(node)) {
+                getFound = true;
+                return;
+            } else {
+              getFound = false;
             }
+          }
           
           if(!getFound) {
             return;
