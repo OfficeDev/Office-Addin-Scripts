@@ -5,6 +5,8 @@ import * as fs from "fs";
 import * as ts from "typescript";
 import XRegExp = require("xregexp");
 
+/* global console */
+
 export interface ICustomFunctionsMetadata {
   functions: IFunction[];
 }
@@ -90,7 +92,6 @@ const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction ta
 const HELPURL_PARAM = "helpurl";
 const VOLATILE = "volatile";
 const STREAMING = "streaming";
-const RETURN = "return";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
@@ -99,7 +100,7 @@ const TYPE_MAPPINGS_SIMPLE = {
   [ts.SyntaxKind.NumberKeyword]: "number",
   [ts.SyntaxKind.StringKeyword]: "string",
   [ts.SyntaxKind.BooleanKeyword]: "boolean",
-  [ts.SyntaxKind.AnyKeyword]: "any"
+  [ts.SyntaxKind.AnyKeyword]: "any",
 };
 
 const TYPE_MAPPINGS = {
@@ -111,23 +112,7 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.TupleType]: "any",
   [ts.SyntaxKind.EnumKeyword]: "any",
   [ts.SyntaxKind.ObjectKeyword]: "any",
-  [ts.SyntaxKind.VoidKeyword]: "any"
-};
-
-const TYPE_MAPPINGS_COMMENT = {
-  ["number"]: "number",
-  ["string"]: "string",
-  ["boolean"]: "boolean",
-  ["any"]: "any",
-  ["number[]"]: "number",
-  ["number[][]"]: "number",
-  ["number[][][]"]: "number",
-  ["string[]"]: "string",
-  ["string[][]"]: "string",
-  ["string[][][]"]: "string",
-  ["boolean[]"]: "boolean",
-  ["boolean[][]"]: "boolean",
-  ["boolean[][][]"]: "boolean"
+  [ts.SyntaxKind.VoidKeyword]: "any",
 };
 
 const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
@@ -138,12 +123,12 @@ const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
   ["customfunctions.streaminginvocation<string>"]: "string",
   ["customfunctions.streaminginvocation<number>"]: "number",
   ["customfunctions.streaminginvocation<boolean>"]: "boolean",
-  ["customfunctions.streaminginvocation<any>"]: "any"
+  ["customfunctions.streaminginvocation<any>"]: "any",
 };
 
 const TYPE_CUSTOM_FUNCTION_CANCELABLE = {
   ["customfunctions.cancelablehandler"]: 1,
-  ["customfunctions.cancelableinvocation"]: 2
+  ["customfunctions.cancelableinvocation"]: 2,
 };
 const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
@@ -161,18 +146,18 @@ export async function generateCustomFunctionsMetadata(
   const generateResults: IGenerateResult = {
     metadataJson: "",
     associate: [],
-    errors: []
+    errors: [],
   };
 
   if (fs.existsSync(inputFile)) {
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
-    parseTreeResult.extras.forEach(extra => extra.errors.forEach(err => generateResults.errors.push(err)));
+    parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
 
     if (generateResults.errors.length > 0) {
       if (wantConsoleOutput) {
         console.error("Errors in file: " + inputFile);
-        generateResults.errors.forEach(err => console.error(err));
+        generateResults.errors.forEach((err) => console.error(err));
       }
     } else {
       generateResults.metadataJson = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
@@ -191,7 +176,7 @@ export async function generateCustomFunctionsMetadata(
  * @param sourceFileName source code file name or path
  * @param parseTreeOptions options to enable or disable
  */
-export function parseTree(sourceCode: string, sourceFileName: string, parseTreeOptions?: IOptions): IParseTreeResult {
+export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
   const associate: IAssociate[] = [];
   const functions: IFunction[] = [];
   const extras: IFunctionExtras[] = [];
@@ -207,7 +192,7 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
   const parseTreeResult: IParseTreeResult = {
     associate,
     extras,
-    functions
+    functions,
   };
   return parseTreeResult;
 
@@ -236,7 +221,7 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
         if (isCustomFunction(functionDeclaration)) {
           const extra: IFunctionExtras = {
             errors: functionErrors,
-            javascriptFunctionName: functionName
+            javascriptFunctionName: functionName,
           };
           const idName = getTagComment(functionDeclaration, CUSTOM_FUNCTION);
           const idNameArray = idName.split(" ");
@@ -260,7 +245,7 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
             jsDocParamInfo,
             jsDocParamOptionalInfo,
             jsDocParamTypeInfo,
-            parametersToParse
+            parametersToParse,
           };
           const parameters = getParameters(parameterItems);
 
@@ -313,10 +298,16 @@ export function parseTree(sourceCode: string, sourceFileName: string, parseTreeO
             name,
             options,
             parameters,
-            result
+            result,
           };
 
-          if (!options.cancelable && !options.requiresAddress && !options.stream && !options.volatile && !options.requiresParameterAddresses) {
+          if (
+            !options.cancelable &&
+            !options.requiresAddress &&
+            !options.stream &&
+            !options.volatile &&
+            !options.requiresParameterAddresses
+          ) {
             delete functionMetadata.options;
           } else {
             if (!options.cancelable) {
@@ -478,16 +469,15 @@ function getOptions(
     requiresAddress: isAddressRequired(func),
     stream: isStreaming(func, isStreamingFunction),
     volatile: isVolatile(func),
-    requiresParameterAddresses: isRequiresParameterAddresses(func)
+    requiresParameterAddresses: isRequiresParameterAddresses(func),
   };
 
   if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
-    let errorParam:string = optionsItem.requiresAddress? "@requiresAddress":"@requiresParameterAddresses";
+    let errorParam: string = optionsItem.requiresAddress ? "@requiresAddress" : "@requiresParameterAddresses";
 
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
-      const errorString =
-      `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
+      const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
 
@@ -519,7 +509,7 @@ function getResults(
   let resultDim = "scalar";
   const defaultResultItem: IFunctionResult = {
     dimensionality: resultDim,
-    type: resultType
+    type: resultType,
   };
 
   const lastParameterPosition = getPosition(lastParameter);
@@ -535,7 +525,7 @@ function getResults(
       resultType = TYPE_CUSTOM_FUNCTIONS_STREAMING[ptype.toLocaleLowerCase()];
       const paramResultItem: IFunctionResult = {
         dimensionality: resultDim,
-        type: resultType
+        type: resultType,
       };
 
       if (paramResultItem.dimensionality === "scalar") {
@@ -618,7 +608,7 @@ function getResults(
 
   const resultItem: IFunctionResult = {
     dimensionality: resultDim,
-    type: resultType
+    type: resultType,
   };
 
   // Only return dimensionality = matrix.  Default assumed scalar
@@ -641,7 +631,7 @@ function getResults(
  */
 function getParameters(parameterItem: IGetParametersArguments): IFunctionParameter[] {
   const parameterMetadata: IFunctionParameter[] = [];
-  const parameters = parameterItem.parametersToParse
+  parameterItem.parametersToParse
     .map((p: ts.ParameterDeclaration) => {
       const parameterPosition = getPosition(p);
       // Get type node of parameter from typescript
@@ -668,7 +658,7 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
         name,
         optional: getParamOptional(p, parameterItem.jsDocParamOptionalInfo),
         repeating: isRepeatingParameter(typeNode),
-        type: ptype
+        type: ptype,
       };
 
       // Only return dimensionality = matrix.  Default assumed scalar
@@ -693,7 +683,7 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
 
       parameterMetadata.push(pMetadataItem);
     })
-    .filter(meta => meta);
+    .filter((meta) => meta);
 
   return parameterMetadata;
 }
@@ -815,28 +805,6 @@ function isStreaming(node: ts.Node, streamFunction: boolean): boolean {
  */
 function isCancelableTag(node: ts.Node, cancelableFunction: boolean): boolean {
   return cancelableFunction || hasTag(node, CANCELABLE);
-}
-
-/**
- * Returns return type of function from comments
- * @param node - jsDocs node
- */
-function getReturnType(node: ts.Node): string {
-  let type = "any";
-  ts.getJSDocTags(node).forEach((tag: ts.JSDocTag) => {
-    if (containsTag(tag, RETURN)) {
-      // @ts-ignore
-      if (tag.typeExpression) {
-        // @ts-ignore
-        type = tag.typeExpression
-          .getFullText()
-          // @ts-ignore
-          .slice(1, tag.typeExpression.getFullText().length - 1)
-          .toLowerCase();
-      }
-    }
-  });
-  return type;
 }
 
 /**
@@ -1025,7 +993,7 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
     if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
       let arrayType: IArrayType = {
         dimensionality: 0,
-        type: ts.SyntaxKind.AnyKeyword
+        type: ts.SyntaxKind.AnyKeyword,
       };
       if (ts.isTypeReferenceNode(t)) {
         const array = t as ts.TypeReferenceNode;
@@ -1057,7 +1025,7 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
 function getArrayDimensionalityAndType(node: ts.TypeNode): IArrayType {
   let array: IArrayType = {
     dimensionality: 0,
-    type: ts.SyntaxKind.AnyKeyword
+    type: ts.SyntaxKind.AnyKeyword,
   };
   if (ts.isArrayTypeNode(node)) {
     array = getArrayDimensionalityAndTypeForArrayTypeNode(node);
@@ -1074,7 +1042,7 @@ function getArrayDimensionalityAndType(node: ts.TypeNode): IArrayType {
 function getArrayDimensionalityAndTypeForArrayTypeNode(node: ts.TypeNode): IArrayType {
   const array: IArrayType = {
     dimensionality: 1,
-    type: ts.SyntaxKind.AnyKeyword
+    type: ts.SyntaxKind.AnyKeyword,
   };
 
   let nodeCheck = (node as ts.ArrayTypeNode).elementType;
@@ -1095,7 +1063,7 @@ function getArrayDimensionalityAndTypeForArrayTypeNode(node: ts.TypeNode): IArra
 function getArrayDimensionalityAndTypeForReferenceNode(node: ts.TypeReferenceNode): IArrayType {
   const array: IArrayType = {
     dimensionality: 0,
-    type: ts.SyntaxKind.AnyKeyword
+    type: ts.SyntaxKind.AnyKeyword,
   };
 
   if (node.typeArguments && node.typeArguments.length === 1) {
@@ -1146,14 +1114,6 @@ function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { 
     optional = jsDocParamOptionalInfo[name];
   }
   return optional;
-}
-
-/**
- * This function will return `true` for `Array<[object]>` and `false` otherwise.
- * @param a - TypeReferenceNode
- */
-function validateArray(a: ts.TypeReferenceNode) {
-  return a.typeName.getText() === "Array" && a.typeArguments && a.typeArguments.length === 1;
 }
 
 /**

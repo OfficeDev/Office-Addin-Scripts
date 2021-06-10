@@ -1,9 +1,8 @@
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import { logErrorMessage, parseNumber } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-cli";
 import { ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
@@ -15,15 +14,17 @@ import {
 import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
-import { usageDataObject } from './defaults';
+import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
+
+/* global process, console */
 
 export async function appcontainer(manifestPath: string, command: commander.Command) {
   if (isAppcontainerSupported()) {
     try {
       if (command.loopback) {
         try {
-          const askForConfirmation: boolean = (command.yes !== true);
+          const askForConfirmation: boolean = command.yes !== true;
           const allowed = await ensureLoopbackIsEnabled(manifestPath, askForConfirmation);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
@@ -112,7 +113,7 @@ export async function disableDebugging(manifestPath: string) {
     usageDataObject.reportException("disableDebugging()", err);
     logErrorMessage(err);
   }
-}    
+}
 
 export async function disableLiveReload(manifestPath: string) {
   try {
@@ -210,16 +211,14 @@ export async function isDebuggingEnabled(manifestPath: string) {
 
     const enabled: boolean = await devSettings.isDebuggingEnabled(manifest.id!);
 
-    console.log(enabled
-      ? "Debugging is enabled."
-      : "Debugging is not enabled.");
-      usageDataObject.reportSuccess("isDebuggingEnabled()");
+    console.log(enabled ? "Debugging is enabled." : "Debugging is not enabled.");
+    usageDataObject.reportSuccess("isDebuggingEnabled()");
   } catch (err) {
     usageDataObject.reportException("isDebuggingEnabled()", err);
     logErrorMessage(err);
   }
 }
-  
+
 export async function isLiveReloadEnabled(manifestPath: string) {
   try {
     const manifest = await readManifestFile(manifestPath);
@@ -228,23 +227,19 @@ export async function isLiveReloadEnabled(manifestPath: string) {
 
     const enabled: boolean = await devSettings.isLiveReloadEnabled(manifest.id!);
 
-    console.log(enabled
-      ? "Live reload is enabled."
-      : "Live reload is not enabled.");
+    console.log(enabled ? "Live reload is enabled." : "Live reload is not enabled.");
     usageDataObject.reportSuccess("isLiveReloadEnabled()");
   } catch (err) {
     usageDataObject.reportException("isLiveReloadEnabled()", err);
     logErrorMessage(err);
   }
 }
-  
+
 export async function isRuntimeLoggingEnabled() {
   try {
     const path = await devSettings.getRuntimeLoggingPath();
 
-    console.log(path
-      ? `Runtime logging is enabled. File: ${path}`
-      : "Runtime logging is not enabled.");
+    console.log(path ? `Runtime logging is enabled. File: ${path}` : "Runtime logging is not enabled.");
     usageDataObject.reportSuccess("isRuntimeLoggingEnabled()");
   } catch (err) {
     usageDataObject.reportException("isRuntimeLoggingEnabled()", err);
@@ -253,7 +248,7 @@ export async function isRuntimeLoggingEnabled() {
 }
 
 export async function liveReload(manifestPath: string, command: commander.Command) {
-  try{
+  try {
     if (command.enable) {
       await enableLiveReload(manifestPath);
     } else if (command.disable) {
@@ -269,7 +264,7 @@ export async function liveReload(manifestPath: string, command: commander.Comman
 }
 
 function parseStringCommandOption(optionValue: any): string | undefined {
-  return (typeof(optionValue) === "string") ? optionValue : undefined;
+  return typeof optionValue === "string" ? optionValue : undefined;
 }
 
 export function parseWebViewType(webViewString?: string): devSettings.WebViewType | undefined {
@@ -299,7 +294,10 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
   }
 }
 
-export async function register(manifestPath: string, command: commander.Command) {
+export async function register(
+  manifestPath: string,
+  command: commander.Command /* eslint-disable-line no-unused-vars */
+) {
   try {
     await devSettings.registerAddIn(manifestPath);
     usageDataObject.reportSuccess("register");
@@ -309,7 +307,7 @@ export async function register(manifestPath: string, command: commander.Command)
   }
 }
 
-export async function registered(command: commander.Command) {
+export async function registered(command: commander.Command /* eslint-disable-line no-unused-vars */) {
   try {
     const registeredAddins = await devSettings.getRegisterAddIns();
 
@@ -341,7 +339,7 @@ export async function registered(command: commander.Command) {
 export async function runtimeLogging(command: commander.Command) {
   try {
     if (command.enable) {
-      const path: string | undefined = (typeof(command.enable) === "string") ? command.enable : undefined;
+      const path: string | undefined = typeof command.enable === "string" ? command.enable : undefined;
       await enableRuntimeLogging(path);
     } else if (command.disable) {
       await disableRuntimeLogging();
@@ -394,7 +392,12 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
 
 export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
-    if (command.host !== undefined || command.port !== undefined || command.path !== undefined || command.extension !== undefined) {
+    if (
+      command.host !== undefined ||
+      command.port !== undefined ||
+      command.path !== undefined ||
+      command.extension !== undefined
+    ) {
       await setSourceBundleUrl(manifestPath, command);
     } else {
       await getSourceBundleUrl(manifestPath);
@@ -404,21 +407,6 @@ export async function sourceBundleUrl(manifestPath: string, command: commander.C
     usageDataObject.reportException("sourceBundleUrl", err);
     logErrorMessage(err);
   }
-}
-
-function parseDevServerPort(optionValue: any): number | undefined {
-  const devServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
-
-  if (devServerPort !== undefined) {
-      if (!Number.isInteger(devServerPort)) {
-          throw new ExpectedError("--dev-server-port should be an integer.");
-      }
-      if ((devServerPort < 0) || (devServerPort > 65535)) {
-          throw new ExpectedError("--dev-server-port should be between 0 and 65535.");
-      }
-  }
-
-  return devServerPort;
 }
 
 function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
@@ -437,7 +425,10 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
   }
 }
 
-export async function unregister(manifestPath: string, command: commander.Command) {
+export async function unregister(
+  manifestPath: string,
+  command: commander.Command /* eslint-disable-line no-unused-vars */
+) {
   try {
     if (manifestPath === "all") {
       await devSettings.unregisterAllAddIns();
@@ -467,15 +458,15 @@ export async function webView(manifestPath: string, webViewString?: string) {
     if (webViewString === undefined) {
       webViewType = await devSettings.getWebView(manifest.id!);
     } else {
-      webViewType = parseWebViewType(webViewString)
+      webViewType = parseWebViewType(webViewString);
       await devSettings.setWebView(manifest.id!, webViewType);
     }
 
     const webViewTypeName = devSettings.toWebViewTypeName(webViewType);
-    console.log(webViewTypeName
-      ? `The web view type is set to ${webViewTypeName}.`
-      : "The web view type has not been set.");
-      usageDataObject.reportSuccess("webView");
+    console.log(
+      webViewTypeName ? `The web view type is set to ${webViewTypeName}.` : "The web view type has not been set."
+    );
+    usageDataObject.reportSuccess("webView");
   } catch (err) {
     usageDataObject.reportException("webView", err);
     logErrorMessage(err);

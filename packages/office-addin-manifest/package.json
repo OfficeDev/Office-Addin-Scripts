@@ -6,6 +6,9 @@
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
     "test": "mocha -r ts-node/register test/**/*.ts",
     "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\""
   },
@@ -40,9 +43,9 @@
     "copy-dir": "^0.4.0",
     "fs-extra": "^7.0.0",
     "mocha": "^7.1.1",
+    "office-addin-lint": "^1.2.2",
     "rimraf": "^3.0.2",
     "ts-node": "^8.8.1",
-    "tslint": "^6.1.0",
     "typescript": "^3.8.3",
     "validator": "^10.11.0"
   },
@@ -53,5 +56,6 @@
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
+  "prettier": "office-addin-prettier-config",
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }
