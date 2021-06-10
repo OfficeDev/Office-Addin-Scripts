@@ -195,38 +195,22 @@ export = {
       return getFunctions.has(node.name);
     }
 
-    function isVariableDeclaration(node: TSESTree.Node): boolean {
-      if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator) {
-          return true;
-      }
-      return false;
-    }
-
-    function isGetVariableDeclaration(node: TSESTree.Node): boolean {
-      if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
-        && node.parent.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
-        && node.parent.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && node.parent.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-          if(callsGetAPIFunction(node.parent.init.callee.property)) {
+    function isGetVariableDeclaration(node: TSESTree.VariableDeclarator): boolean {
+      if(node.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
+        && node.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+          if(callsGetAPIFunction(node.init.callee.property)) {
             return true;
           }
       }
       return false;
     }
 
-    function isAssignmentExpression(node: TSESTree.Node): boolean {
-      if(node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression) {
-          return true;
-      }
-      return false;
-    }
-
-    function isGetAssignmentExpression(node: TSESTree.Node): boolean {
-      if(node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression
-        && node.parent.right.type === TSESTree.AST_NODE_TYPES.CallExpression
-        && node.parent.right.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && node.parent.right.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-          if(callsGetAPIFunction(node.parent.right.callee.property)) {
+    function isGetAssignmentExpression(node: TSESTree.AssignmentExpression): boolean {
+      if(node.right.type === TSESTree.AST_NODE_TYPES.CallExpression
+        && node.right.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.right.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+          if(callsGetAPIFunction(node.right.callee.property)) {
             return true;
           }
       }
@@ -247,12 +231,20 @@ export = {
         let getFound: boolean = false;
         variable.references.forEach((reference: Reference) => {
           const node: TSESTree.Node = reference.identifier;
-          if (isVariableDeclaration(node)
-            || isAssignmentExpression(node)) {
-            if (isGetVariableDeclaration(node)
-              || isGetAssignmentExpression(node)) {
-                getFound = true;
-                return;
+
+          if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator) {
+            if (isGetVariableDeclaration(node.parent)) {
+              getFound = true;
+              return;
+            } else {
+              getFound = false;
+            }
+          }
+
+          if(node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression) {
+            if (isGetAssignmentExpression(node.parent)) {
+              getFound = true;
+              return;
             } else {
               getFound = false;
             }
