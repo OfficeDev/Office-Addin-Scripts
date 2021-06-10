@@ -4,6 +4,7 @@ import { ExpectedError } from "office-addin-usage-data";
  * The type of Office application.
  */
 export enum AppType {
+  /* eslint-disable no-unused-vars */
   /**
    * Office application for Windows or Mac
    */
@@ -31,9 +32,8 @@ export function parseAppType(text: string | undefined): AppType | undefined {
     case "web":
       return AppType.Web;
     case undefined:
-      return undefined
+      return undefined;
     default:
       throw new ExpectedError(`Please select a valid app type instead of '${text}'.`);
   }
 }
-

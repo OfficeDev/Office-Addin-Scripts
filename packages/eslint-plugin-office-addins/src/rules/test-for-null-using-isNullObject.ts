@@ -156,7 +156,9 @@ export = {
     }
 
     return {
-      "Program:exit"(programNode: TSESTree.Node) {
+      "Program:exit"(
+        programNode: TSESTree.Node /* eslint-disable-line no-unused-vars */
+      ) {
         findNullObjectNullTests(context.getScope());
       },
     };

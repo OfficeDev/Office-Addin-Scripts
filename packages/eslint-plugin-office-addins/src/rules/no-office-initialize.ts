@@ -14,8 +14,7 @@ export = {
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
       recommended: <false | "error" | "warn">false,
-      url:
-        "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
+      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
     },
     schema: [],
   },

@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
 import { writeFileSync } from "fs";
 import { logErrorMessage } from "office-addin-cli";
-import { generateCustomFunctionsMetadata }  from "./generate";
+import { generateCustomFunctionsMetadata } from "./generate";
+
+/* global console */
 
 export async function generate(inputPath: string, outputPath: string) {
   try {
@@ -14,7 +15,7 @@ export async function generate(inputPath: string, outputPath: string) {
     const results = await generateCustomFunctionsMetadata(inputPath);
     if (results.errors.length > 0) {
       console.error("Errors found:");
-      results.errors.forEach(err => console.log(err));
+      results.errors.forEach((err) => console.log(err));
     } else {
       if (outputPath) {
         try {

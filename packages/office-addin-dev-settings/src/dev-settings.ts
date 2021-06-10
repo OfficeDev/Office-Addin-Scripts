@@ -7,13 +7,15 @@ import * as fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
 import { ExpectedError } from "office-addin-usage-data";
-import { platform } from "os";
+
+/* global process */
 
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
 export { toWebViewTypeName } from "./dev-settings-windows";
 
 export enum DebuggingMethod {
+  /* eslint-disable no-unused-vars */
   Direct,
   Proxy,
   /** @deprecated use Proxy */
@@ -21,6 +23,7 @@ export enum DebuggingMethod {
 }
 
 export enum WebViewType {
+  /* eslint-disable no-unused-vars */
   Default = "Default",
   IE = "IE",
   Edge = "Edge",
@@ -44,10 +47,10 @@ export class SourceBundleUrlComponents {
   public extension?: string;
 
   public get url(): string {
-    const host = (this.host !== undefined) ? this.host : "localhost";
-    const port = (this.port !== undefined) ? this.port : "8081";
-    const path = (this.path !== undefined) ? this.path : "{path}";
-    const extension = (this.extension !== undefined) ? this.extension : ".bundle";
+    const host = this.host !== undefined ? this.host : "localhost";
+    const port = this.port !== undefined ? this.port : "8081";
+    const path = this.path !== undefined ? this.path : "{path}";
+    const extension = this.extension !== undefined ? this.extension : ".bundle";
 
     return `http://${host}${host && port ? ":" : ""}${port}/${path}${extension}`;
   }
@@ -64,8 +67,8 @@ export async function clearDevSettings(addinId: string): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.clearDevSettings(addinId);
-  default:
-    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
+    default:
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
@@ -81,12 +84,17 @@ export async function disableRuntimeLogging(): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.disableRuntimeLogging();
-  default:
-    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
+    default:
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
-export async function enableDebugging(addinId: string, enable: boolean = true, method: DebuggingMethod = DebuggingMethod.Direct, openDevTools = false): Promise<void> {
+export async function enableDebugging(
+  addinId: string,
+  enable: boolean = true,
+  method: DebuggingMethod = DebuggingMethod.Direct,
+  openDevTools = false
+): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.enableDebugging(addinId, enable, method, openDevTools);
@@ -99,14 +107,14 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.enableLiveReload(addinId, enable);
-  default:
-    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
+    default:
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
 export async function enableRuntimeLogging(path?: string): Promise<string> {
   switch (process.platform) {
-    case "win32":
+    case "win32": {
       if (!path) {
         const tempDir = process.env.TEMP;
         if (!tempDir) {
@@ -126,22 +134,25 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
         const file = fs.openSync(path, "a+");
         fs.closeSync(file);
       } catch (err) {
-        throw new ExpectedError(pathExists
-          ? `You need to specify the path to a writable file. Unable to write to: "${path}".`
-          : `You need to specify the path where the file can be written. Unable to write to: "${path}".`);
+        throw new ExpectedError(
+          pathExists
+            ? `You need to specify the path to a writable file. Unable to write to: "${path}".`
+            : `You need to specify the path where the file can be written. Unable to write to: "${path}".`
+        );
       }
 
       await devSettingsWindows.enableRuntimeLogging(path);
       return path;
-  default:
-    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
+    }
+    default:
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 }
 
 /**
  * Returns the manifest paths for the add-ins that are registered
  */
-export async function getRegisterAddIns(): Promise<RegisteredAddin[]>  {
+export async function getRegisterAddIns(): Promise<RegisteredAddin[]> {
   switch (process.platform) {
     case "darwin":
       return devSettingsMac.getRegisteredAddIns();
@@ -217,10 +228,11 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
 
 export async function registerAddIn(manifestPath: string): Promise<void> {
   switch (process.platform) {
-    case "win32":
+    case "win32": {
       const manifest = await readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
       return devSettingsWindows.registerAddIn(manifest.id || "", realManifestPath);
+    }
     case "darwin":
       return devSettingsMac.registerAddIn(manifestPath);
     default:
@@ -240,7 +252,7 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
 export async function setWebView(addinId: string, webViewType: WebViewType | undefined) {
   switch (process.platform) {
     case "win32":
-      return devSettingsWindows.setWebView(addinId, webViewType);;
+      return devSettingsWindows.setWebView(addinId, webViewType);
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
@@ -250,10 +262,11 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
   switch (process.platform) {
     case "darwin":
       return devSettingsMac.unregisterAddIn(manifestPath);
-    case "win32":
+    case "win32": {
       const manifest = await readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
       return devSettingsWindows.unregisterAddIn(manifest.id || "", realManifestPath);
+    }
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }

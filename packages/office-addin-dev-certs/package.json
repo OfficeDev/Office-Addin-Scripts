@@ -4,12 +4,14 @@
   "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
-    "tsc": "tsc -p tsconfig.json",
-    "tsc-watch": "tsc -p tsconfig.json -w",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
+    "start": "rimraf lib && concurrently \"npm run watch\"",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "tsc -p tsconfig.json -w"
   },
   "author": "Office Dev",
   "license": "MIT",
@@ -45,10 +47,10 @@
     "@types/node": "^12.12.34",
     "concurrently": "^6.0.0",
     "mocha": "^7.1.1",
+    "office-addin-lint": "^1.2.2",
     "rimraf": "^3.0.2",
     "sinon": "^7.5.0",
     "ts-node": "^8.8.1",
-    "tslint": "^6.1.0",
     "typescript": "^3.8.3"
   },
   "repository": {
@@ -58,5 +60,6 @@
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
+  "prettier": "office-addin-prettier-config",
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }

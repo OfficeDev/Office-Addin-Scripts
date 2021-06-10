@@ -12,16 +12,23 @@ export class RegistryKey {
   }
 
   constructor(path: string) {
-    if (!path) { throw new ExpectedError("Please provide a registry key path."); }
+    if (!path) {
+      throw new ExpectedError("Please provide a registry key path.");
+    }
 
     const index = path.indexOf("\\");
 
-    if (index <= 0) { throw new ExpectedError(`The registry key path is not valid: "${path}".`); }
+    if (index <= 0) {
+      throw new ExpectedError(`The registry key path is not valid: "${path}".`);
+    }
 
     const hive = path.substring(0, index);
     const subpath = path.substring(index);
 
-    this.winreg = new winreg({ hive: normalizeRegistryHive(hive), key: subpath });
+    this.winreg = new winreg({
+      hive: normalizeRegistryHive(hive),
+      key: subpath,
+    });
   }
 }
 
@@ -61,7 +68,9 @@ async function addValue(key: RegistryKey, value: string, type: string, data: str
   return new Promise<void>((resolve, reject) => {
     const onError = (err: any) => {
       if (err) {
-        reject(new Error(`Unable to set registry value "${value}" to "${data}" (${type}) for key "${key.path}".\n${err}`));
+        reject(
+          new Error(`Unable to set registry value "${value}" to "${data}" (${type}) for key "${key.path}".\n${err}`)
+        );
       } else {
         resolve();
       }
@@ -174,17 +183,17 @@ export async function doesValueExist(key: RegistryKey, value: string): Promise<b
 export async function getNumberValue(key: RegistryKey, value: string): Promise<number | undefined> {
   const registryValue: RegistryValue | undefined = await getValue(key, value);
 
-  return (registryValue && registryValue.isNumberType) ? parseInt(registryValue.data, undefined) : undefined;
+  return registryValue && registryValue.isNumberType ? parseInt(registryValue.data, undefined) : undefined;
 }
 
 export async function getStringValue(key: RegistryKey, value: string): Promise<string | undefined> {
   const registryValue: RegistryValue | undefined = await getValue(key, value);
 
-  return (registryValue && registryValue.isStringType) ? registryValue.data : undefined;
+  return registryValue && registryValue.isStringType ? registryValue.data : undefined;
 }
 
 export async function getValue(key: RegistryKey, value: string): Promise<RegistryValue | undefined> {
-  return new Promise<RegistryValue | undefined>((resolve, reject) => {
+  return new Promise<RegistryValue | undefined>((resolve) => {
     const onError = (err: any, item?: winreg.RegistryItem) => {
       if (err) {
         resolve(undefined);
@@ -207,7 +216,7 @@ export async function getValues(key: RegistryKey): Promise<RegistryValue[]> {
       if (err) {
         reject(err);
       } else {
-        resolve(items.map(item => new RegistryValue(key.path, item.name, item.type, item.value)));
+        resolve(items.map((item) => new RegistryValue(key.path, item.name, item.type, item.value)));
       }
     };
 
@@ -221,7 +230,7 @@ export async function getValues(key: RegistryKey): Promise<RegistryValue[]> {
 
 export function isNumberType(registryType: string) {
   // NOTE: REG_QWORD is not included as a number type since it cannot be returned as a "number".
-  return (registryType === RegistryTypes.REG_DWORD);
+  return registryType === RegistryTypes.REG_DWORD;
 }
 
 export function isStringType(registryType: string) {

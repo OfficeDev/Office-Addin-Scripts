@@ -83,8 +83,7 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
     const manifestFileName = path.basename(manifestPath);
     const sideloadFileName = `${manifest.id!}.${manifestFileName}`;
-    if ((registeredFileName === manifestFileName)
-      || (registeredFileName === sideloadFileName)) {
+    if (registeredFileName === manifestFileName || registeredFileName === sideloadFileName) {
       fs.unlinkSync(registeredAddIn.manifestPath);
     }
   }
