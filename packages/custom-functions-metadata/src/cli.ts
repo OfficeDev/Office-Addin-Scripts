@@ -7,6 +7,8 @@ import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as commands from "./commands";
 
+/* global process */
+
 commander.name("custom-functions-metadata");
 commander.version(process.env.npm_package_version || "(version not available)");
 
@@ -16,7 +18,7 @@ commander
   .action(commands.generate);
 
 // if the command is not known, display an error
-commander.on("command:*", function() {
+commander.on("command:*", function () {
   logErrorMessage(`The command syntax is not valid.\n`);
   process.exitCode = 1;
   commander.help();

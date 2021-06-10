@@ -7,6 +7,8 @@ import { readManifestFile } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global process */
+
 export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
 export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
 export const EdgeBrowserName: string = "Microsoft Edge Web Browser";
@@ -40,7 +42,7 @@ export function addLoopbackExemptionForAppcontainer(name: string): Promise<void>
  * @returns True if platform supports using appcontainer; false otherwise.
  */
 export function isAppcontainerSupported() {
-  return (process.platform === "win32");
+  return process.platform === "win32";
 }
 
 /**
@@ -120,12 +122,15 @@ export function getDisplayNameFromManifestPath(manifestPath: string): string {
   }
 }
 
-export async function ensureLoopbackIsEnabled(manifestPath: string, askForConfirmation: boolean = true): Promise<boolean> {
+export async function ensureLoopbackIsEnabled(
+  manifestPath: string,
+  askForConfirmation: boolean = true
+): Promise<boolean> {
   const name = await getAppcontainerNameFromManifestPath(manifestPath);
   let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (!isEnabled) {
-    if (!askForConfirmation || await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath))) {
+    if (!askForConfirmation || (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))) {
       await addLoopbackExemptionForAppcontainer(name);
       isEnabled = true;
     }

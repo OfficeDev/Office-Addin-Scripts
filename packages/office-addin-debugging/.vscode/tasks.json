@@ -6,7 +6,7 @@
     {
       "label": "Watch",
       "type": "npm",
-      "script": "tsc-watch",
+      "script": "watch",
       "problemMatcher": []
     },
     {

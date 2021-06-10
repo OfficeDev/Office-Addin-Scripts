@@ -18,10 +18,12 @@
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
   },
   "scripts": {
-    "tsc": "tsc -p tsconfig.json",
-    "tsc-watch": "tsc -p tsconfig.json -w",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "test": "echo \"No tests.\""
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
+    "test": "echo \"No tests.\"",
+    "watch": "tsc -p tsconfig.json -w"
   },
   "dependencies": {
     "custom-functions-metadata": "^1.0.54",
@@ -33,8 +35,8 @@
     "@types/loader-utils": "^2.0.2",
     "@types/node": "^12.12.34",
     "concurrently": "^6.0.0",
+    "office-addin-lint": "^1.2.2",
     "rimraf": "^3.0.2",
-    "tslint": "^6.1.0",
     "typescript": "^3.8.3"
   },
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"

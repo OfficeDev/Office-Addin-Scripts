@@ -4,6 +4,8 @@
 import * as path from "path";
 import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
+/* global require, __dirname */
+
 const eslintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
 const eslintDir = path.parse(eslintPath).dir;
@@ -14,7 +16,7 @@ const eslintTestConfigPath = path.resolve(__dirname, "../config/.eslintrc.test.j
 
 function execCommand(command: string) {
   const execSync = require("child_process").execSync;
-  const child = execSync(command, { stdio: "inherit" });
+  execSync(command, { stdio: "inherit" });
 }
 
 function normalizeFilePath(filePath: string): string {
@@ -22,7 +24,7 @@ function normalizeFilePath(filePath: string): string {
 }
 
 function getEsLintBaseCommand(useTestConfig: boolean = false): string {
-  const configFilePath = useTestConfig ? eslintTestConfigPath : eslintConfigPath
+  const configFilePath = useTestConfig ? eslintTestConfigPath : eslintConfigPath;
   const eslintBaseCommand: string = `node ${eslintFilePath} -c ${configFilePath} --resolve-plugins-relative-to ${__dirname}`;
   return eslintBaseCommand;
 }

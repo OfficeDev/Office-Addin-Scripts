@@ -1,3 +1,5 @@
+/* global module */
+
 import rules from "./rules";
 
 module.exports = {
@@ -14,7 +16,7 @@ module.exports = {
         },
         project: "./tsconfig.json",
       },
-      extends: ["eslint:recommended"],
+      extends: ["eslint:recommended", "prettier"],
       rules: {
         "prettier/prettier": ["error", { endOfLine: "auto" }],
         "no-eval": "error",

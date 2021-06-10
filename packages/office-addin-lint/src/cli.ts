@@ -8,6 +8,8 @@ import { logErrorMessage } from "office-addin-cli";
 import * as commands from "./commands";
 import * as defaults from "./defaults";
 
+/* global process */
+
 commander.name("office-addin-lint");
 commander.version(process.env.npm_package_version || "(version not available)");
 

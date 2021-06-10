@@ -4,9 +4,11 @@
   "description": "Provide eslint and prettier integration",
   "main": "./lib/main.js",
   "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
-    "tsc": "tsc -p tsconfig.json",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "lint": "node lib/cli.js check",
+    "lint:fix": "node lib/cli.js fix",
+    "prettier": "node lib/cli.js prettier",
     "test": "mocha -r ts-node/register test/src/*.ts"
   },
   "author": "Office Dev",
@@ -57,27 +59,10 @@
   "prettier": "office-addin-prettier-config",
   "eslintConfig": {
     "plugins": [
-      "prettier",
-      "@typescript-eslint"
+      "office-addins"
     ],
-    "rules": {
-      "prettier/prettier": "error",
-      "no-eval": "error",
-      "no-delete-var": "warn",
-      "no-octal": "warn",
-      "no-inner-declarations": "warn"
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 6,
-      "sourceType": "module",
-      "ecmaFeatures": {
-        "jsx": true
-      },
-      "project": "./tsconfig.json"
-    },
     "extends": [
-      "prettier"
+      "plugin:office-addins/recommended"
     ]
   },
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"

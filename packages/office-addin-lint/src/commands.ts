@@ -7,6 +7,8 @@ import * as defaults from "./defaults";
 import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
 import { usageDataObject } from "./defaults";
 
+/* global process */
+
 /**
  * Determines path to files to run lint against. Priority order follows:
  * 1 --files option passed through cli

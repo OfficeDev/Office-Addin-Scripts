@@ -10,17 +10,20 @@
   "author": "OfficeDev",
   "main": "lib/main.js",
   "scripts": {
-    "tsc": "tsc -p tsconfig.json",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "lint": "eslint src/**/*.{ts,tsx,js,jsx} --rulesdir lib/rules/",
+    "lint:fix": "eslint src/**/*.{ts,tsx,js,jsx} --rulesdir lib/rules/ --fix",
     "test": "jest"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.23.0",
     "@typescript-eslint/experimental-utils": "^4.23.0",
     "requireindex": "~1.1.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
+    "@types/es6-promise": "^3.3.0",
     "@types/node": "^12.12.34",
     "concurrently": "^6.0.0",
     "jest": "^26.6.3",

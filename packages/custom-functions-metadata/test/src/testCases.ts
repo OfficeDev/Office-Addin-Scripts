@@ -38,7 +38,6 @@ describe("test cases", function() {
                     // add an expression in the file and it will be skipped if not true
                     const skip: string | undefined = readFileIfExists(path.resolve(testCaseDirPath, "skip"));
                     if (skip !== undefined) {
-                        // tslint:disable-next-line: no-eval
                         const skipResult = eval(skip);
                         if (!skipResult) {
                             this.skip();
@@ -52,7 +51,6 @@ describe("test cases", function() {
 
                         // add a file named "debugger" to break on the test case
                         if (fs.existsSync(path.resolve(testCaseDirPath, "debugger"))) {
-                            // tslint:disable-next-line: no-debugger
                             debugger;
                         }
 
