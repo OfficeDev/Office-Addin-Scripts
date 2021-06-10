@@ -177,18 +177,18 @@ export = {
       "getDocument",
     ]);
 
-    function getPropertyThatHadToBeLoaded(node: TSESTree.Node): string | undefined {
-      if(node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && node.parent?.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-        return node.parent.property.name;
+    function getPropertyThatHadToBeLoaded(node: TSESTree.Node | undefined): string | undefined {
+      if(node
+        && node.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+        return node.property.name;
       }
       return undefined;
     }
 
-    function isLoadFunction(node: TSESTree.Node): boolean {
-      return (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && node.parent.property.type === TSESTree.AST_NODE_TYPES.Identifier
-        && node.parent.property.name === "load");
+    function isLoadFunction(node: TSESTree.MemberExpression): boolean {
+      return (node.property.type === TSESTree.AST_NODE_TYPES.Identifier
+        && node.property.name === "load");
     }
 
     function callsGetAPIFunction(node: TSESTree.Identifier): boolean {
@@ -217,10 +217,10 @@ export = {
       return false;
     }
 
-    function getLoadedPropertyName(node: TSESTree.Node): string {
-      if(node.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
-        && node.parent.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
-          return node.parent.parent.arguments[0].value as string;
+    function getLoadedPropertyName(node: TSESTree.MemberExpression): string {
+      if(node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+        && node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
+          return node.parent.arguments[0].value as string;
         }
       return "error in getLoadedPropertyName";
     }
@@ -253,14 +253,17 @@ export = {
           if(!getFound) {
             return;
           }
-
-          if (isLoadFunction(node)) {
-            loadLocation.set(getLoadedPropertyName(node), node.range[1]);
-            return;
+          
+          if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
+            if (isLoadFunction(node.parent)) {
+              loadLocation.set(getLoadedPropertyName(node.parent), node.range[1]);
+              return;
+            }
           }
+          
 
           // If reference came after load 
-          const propertyName: string | undefined = getPropertyThatHadToBeLoaded(node);
+          const propertyName: string | undefined = getPropertyThatHadToBeLoaded(node.parent);
           if (!propertyName) {
             return;
           }
