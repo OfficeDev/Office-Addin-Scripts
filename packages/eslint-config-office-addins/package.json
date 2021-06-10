@@ -16,6 +16,10 @@
   "dependencies": {
     "eslint-plugin-office-addins": "^0.2.2"
   },
+  "peerDependencies": {
+    "eslint": "^7.0.0",
+    "prettier": "^2.1.2"
+  },
   "devDependencies": {
     "@types/node": "^12.12.34",
     "@types/es6-promise": "^3.3.0",
