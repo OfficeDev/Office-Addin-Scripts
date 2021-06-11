@@ -177,13 +177,16 @@ export = {
       "getDocument",
     ]);
 
-    function findPropertyThatHadToBeLoaded(node: TSESTree.Node | undefined): string | undefined {
-      if(node
-        && node.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && node.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-        return node.property.name;
+    function findPropertyThatHadToBeLoaded(node: TSESTree.Node | undefined): string {
+      let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
+      while(node) {
+        if(node.type === TSESTree.AST_NODE_TYPES.MemberExpression
+          && node.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+          propertyName += node.property.name + "/";
+        }
+        node = node.parent;
       }
-      return undefined;
+      return propertyName.slice(0, -1);
     }
 
     function isLoadFunction(node: TSESTree.MemberExpression): boolean {
@@ -257,12 +260,11 @@ export = {
             }
           }
 
-          
-          const propertyName: string | undefined = findPropertyThatHadToBeLoaded(node.parent);
+          const propertyName: string | undefined = findPropertyThatHadToBeLoaded(node.parent);     
           if (!propertyName) { // There is no property
             return;
           }
-
+          
           if (loadLocation.has(propertyName) // If reference came after load, return
             && (node.range[1] > (loadLocation.get(propertyName) ?? 0))) {
               return;

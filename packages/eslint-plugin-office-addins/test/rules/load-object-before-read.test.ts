@@ -7,7 +7,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 
 ruleTester.run('load-object-before-read', rule, {
   valid: [ 
-    {
+    /*{
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -74,14 +74,20 @@ ruleTester.run('load-object-before-read', rule, {
     },
     {
       code: `
-        var range = worksheet.getRange("A1")
+        var range = worksheet.getRange("A1");
         range.format.fill.color = "red";
         range.numberFormat = "0.00%";
         range.values = [[1]];`
+    },*/
+    {
+      code: `
+        var range = worksheet.getRange("A1");
+        range.load("format/fill/size");
+        console.log(range.format.fill.size);`
     },
   ],
   invalid: [
-    {
+    /*{
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -139,5 +145,12 @@ ruleTester.run('load-object-before-read', rule, {
         var test = myRange.values;`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]
     },
+    {
+      code: `
+        var range = worksheet.getRange("A1");
+        range.load(range/format/fill/size);
+        console.log(range.format.fill.color);`,
+      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "values" }  }]
+    },*/
   ]
 });
