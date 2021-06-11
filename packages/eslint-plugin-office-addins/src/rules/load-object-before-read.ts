@@ -214,6 +214,10 @@ export = {
       return "error in getLoadedPropertyName";
     }
 
+    function isInsideWriteStatement(node: TSESTree.Node): boolean {
+
+    }
+
     function findLoadBeforeRead(scope: Scope) {
       scope.variables.forEach((variable: Variable) => {
         let loadLocation: Map <string, number> = new Map<string, number>();
@@ -237,26 +241,30 @@ export = {
             }
           }
           
-          if(!getFound) {
+          if(!getFound) { // If reference was not related to a previous get
             return;
           }
           
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
-            if (isLoadFunction(node.parent)) {
+            if (isLoadFunction(node.parent)) { // In case it is a load function
               loadLocation.set(getLoadedPropertyName(node.parent), node.range[1]);
               return;
             }
           }
 
-          // If reference came after load 
+          
           const propertyName: string | undefined = findPropertyThatHadToBeLoaded(node.parent);
-          if (!propertyName) {
+          if (!propertyName) { // There is no property
             return;
           }
 
-          if (loadLocation.has(propertyName)
+          if (loadLocation.has(propertyName) // If reference came after load, return
             && (node.range[1] > (loadLocation.get(propertyName) ?? 0))) {
               return;
+          }
+
+          if (isInsideWriteStatement(node)) { // Return in case it a write, ie, not read statment
+            return;
           }
 
           context.report({

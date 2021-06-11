@@ -72,6 +72,13 @@ ruleTester.run('load-object-before-read', rule, {
         myRange = context.notAGetFunction;
         var test = myRange.values;`
     },
+    {
+      code: `
+        var range = worksheet.getRange("A1")
+        range.format.fill.color = "red";
+        range.numberFormat = "0.00%";
+        range.values = [[1]];`
+    },
   ],
   invalid: [
     {
@@ -131,6 +138,6 @@ ruleTester.run('load-object-before-read', rule, {
         myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
         var test = myRange.values;`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]
-    }
+    },
   ]
 });
