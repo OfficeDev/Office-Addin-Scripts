@@ -177,7 +177,7 @@ export = {
       "getDocument",
     ]);
 
-    function getPropertyThatHadToBeLoaded(node: TSESTree.Node | undefined): string | undefined {
+    function findPropertyThatHadToBeLoaded(node: TSESTree.Node | undefined): string | undefined {
       if(node
         && node.type === TSESTree.AST_NODE_TYPES.MemberExpression
         && node.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
@@ -195,22 +195,11 @@ export = {
       return getFunctions.has(node.name);
     }
 
-    function isGetVariableDeclaration(node: TSESTree.VariableDeclarator): boolean {
-      if(node.init?.type === TSESTree.AST_NODE_TYPES.CallExpression
-        && node.init.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && node.init.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-          if(callsGetAPIFunction(node.init.callee.property)) {
-            return true;
-          }
-      }
-      return false;
-    }
-
-    function isGetAssignmentExpression(node: TSESTree.AssignmentExpression): boolean {
-      if(node.right.type === TSESTree.AST_NODE_TYPES.CallExpression
-        && node.right.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
-        && node.right.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
-          if(callsGetAPIFunction(node.right.callee.property)) {
+    function isGetFunction(node: TSESTree.Expression): boolean {
+      if(node.type == TSESTree.AST_NODE_TYPES.CallExpression
+        && node.callee.type === TSESTree.AST_NODE_TYPES.MemberExpression
+        && node.callee.property.type === TSESTree.AST_NODE_TYPES.Identifier) {
+          if(callsGetAPIFunction(node.callee.property)) {
             return true;
           }
       }
@@ -233,20 +222,18 @@ export = {
           const node: TSESTree.Node = reference.identifier;
 
           if(node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator) {
-            if (isGetVariableDeclaration(node.parent)) {
+            getFound = false; // In case of reassignment
+            if (node.parent.init && isGetFunction(node.parent.init)) {
               getFound = true;
               return;
-            } else {
-              getFound = false;
             }
           }
 
           if(node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression) {
-            if (isGetAssignmentExpression(node.parent)) {
+            getFound = false; // In case of reassignment
+            if (isGetFunction(node.parent.right)) {
               getFound = true;
               return;
-            } else {
-              getFound = false;
             }
           }
           
@@ -260,10 +247,9 @@ export = {
               return;
             }
           }
-          
 
           // If reference came after load 
-          const propertyName: string | undefined = getPropertyThatHadToBeLoaded(node.parent);
+          const propertyName: string | undefined = findPropertyThatHadToBeLoaded(node.parent);
           if (!propertyName) {
             return;
           }
