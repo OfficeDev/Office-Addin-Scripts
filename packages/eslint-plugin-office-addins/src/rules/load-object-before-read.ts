@@ -215,7 +215,12 @@ export = {
     }
 
     function isInsideWriteStatement(node: TSESTree.Node): boolean {
-
+      while(node.parent) {
+        node = node.parent;
+        if (node.type === TSESTree.AST_NODE_TYPES.AssignmentExpression)
+          return true;
+      }
+      return false;
     }
 
     function findLoadBeforeRead(scope: Scope) {
