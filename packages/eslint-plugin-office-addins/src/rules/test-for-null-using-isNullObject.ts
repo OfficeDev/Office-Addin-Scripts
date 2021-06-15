@@ -111,11 +111,11 @@ export = {
         for (let ref = 0; ref < references.length; ref++) {
           const reference = references[ref];
 
-          if (isNullObjectNode(reference.identifier.parent)) {
+          if (isNullObjectNode(reference.identifier.parent as TSESTree.Node)) {
             nullObjectCall = true;
           }
 
-          if (isInNullTest(reference.identifier)) {
+          if (isInNullTest(reference.identifier as TSESTree.Identifier)) {
             nullTests.push(reference);
           }
         }
@@ -129,7 +129,7 @@ export = {
               fix: function (fixer: RuleFixer) {
                 var ruleFix: RuleFix;
                 if (
-                  isInBinaryNullTest(reference.identifier) &&
+                  isInBinaryNullTest(reference.identifier as TSESTree.Identifier) &&
                   reference.identifier.parent
                 ) {
                   let newTest = reference.identifier.name + ".isNullObject";
