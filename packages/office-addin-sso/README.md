@@ -9,7 +9,7 @@ This package provides the ability to register an application in Azure Active Dir
 #
 
 ### configure
-Configure an application in Azure Active Active Directory with neccessary permissions and scopes to allow for making GraphApi calls on behalf of the logged-in user.
+Configure an application in Azure Active Active Directory with necessary permissions and scopes to allow for making GraphApi calls on behalf of the logged-in user.
 
 Syntax:
 
