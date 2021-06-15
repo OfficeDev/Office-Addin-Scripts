@@ -22,7 +22,7 @@ describe("Unit Tests", function () {
     });
     describe("addSecretToCredentialStore()/getSecretFromCredentialStore()", function () {
         this.timeout(10000);
-        it("Add secret and retrive secret from credential store", function () {
+        it("Add secret and retrieve secret from credential store", function () {
             ssoData.addSecretToCredentialStore(ssoAppName, secret, true /* isTest */);
             const retrievedSecret: string = ssoData.getSecretFromCredentialStore(ssoAppName, true /* isTest */).trim();
             assert.strictEqual(secret, retrievedSecret);
