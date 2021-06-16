@@ -38,6 +38,7 @@ export class SSOService {
       usageDataObject.reportSuccess("startSsoService()");
       return Promise.resolve(true);
     } catch (err) {
+      console.error(`Failed to start SSO server. ${err}`);
       usageDataObject.reportException("startSsoService()", err);
       return Promise.reject(false);
     }
@@ -47,7 +48,7 @@ export class SSOService {
     const manifestInfo = await manifest.readManifestFile(this.manifestPath);
     const appSecret = getSecretFromCredentialStore(manifestInfo.displayName, isTest);
     if (appSecret === "") {
-      const errorMessage: string = "Call to getSecretFromCredentialStore returned empty string";
+      const errorMessage: string = `Credential store does not have secret for '${manifestInfo.displayName}'.`;
       throw new Error(errorMessage);
     }
     process.env.secret = appSecret;
