@@ -177,7 +177,7 @@ export = {
       "getDocument",
     ]);
 
-    function findPropertyThatHadToBeLoaded(node: TSESTree.Node | undefined): string {
+    function findPropertiesRead(node: TSESTree.Node | undefined): string {
       let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
       while(node) {
         if(node.type === TSESTree.AST_NODE_TYPES.MemberExpression
@@ -209,12 +209,12 @@ export = {
       return false;
     }
 
-    function getLoadedPropertyName(node: TSESTree.MemberExpression): string {
+    function getPropertyName(node: TSESTree.MemberExpression): string {
       if(node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
         && node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
           return node.parent.arguments[0].value as string;
         }
-      return "error in getLoadedPropertyName";
+      return "error in getPropertyName";
     }
 
     function isInsideWriteStatement(node: TSESTree.Node): boolean {
@@ -255,12 +255,12 @@ export = {
           
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
             if (isLoadFunction(node.parent)) { // In case it is a load function
-              loadLocation.set(getLoadedPropertyName(node.parent), node.range[1]);
+              loadLocation.set(getPropertyName(node.parent), node.range[1]);
               return;
             }
           }
 
-          const propertyName: string | undefined = findPropertyThatHadToBeLoaded(node.parent);     
+          const propertyName: string | undefined = findPropertiesRead(node.parent);     
           if (!propertyName) { // There is no property
             return;
           }
