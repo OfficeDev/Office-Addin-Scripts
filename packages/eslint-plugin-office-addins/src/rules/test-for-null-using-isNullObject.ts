@@ -1,4 +1,7 @@
-import { TSESTree, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
+import {
+  TSESTree,
+  AST_NODE_TYPES,
+} from "@typescript-eslint/experimental-utils";
 import {
   Reference,
   Scope,
@@ -129,20 +132,11 @@ export = {
               data: { name: identifier.name },
               fix: function (fixer: RuleFixer) {
                 var ruleFix: RuleFix;
-                if (
-                  isInBinaryNullTest(identifier) &&
-                  identifier.parent
-                ) {
+                if (isInBinaryNullTest(identifier) && identifier.parent) {
                   let newTest = identifier.name + ".isNullObject";
-                  ruleFix = fixer.replaceText(
-                    (identifier.parent),
-                    newTest
-                  );
+                  ruleFix = fixer.replaceText(identifier.parent, newTest);
                 } else {
-                  ruleFix = fixer.insertTextAfter(
-                    identifier,
-                    ".isNullObject"
-                  );
+                  ruleFix = fixer.insertTextAfter(identifier, ".isNullObject");
                 }
                 return ruleFix;
               },
