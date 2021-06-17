@@ -1,6 +1,7 @@
 import { TSESTree, AST_NODE_TYPES } from "@typescript-eslint/experimental-utils";
 import {
   Reference,
+  Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import {
@@ -98,7 +99,7 @@ export = {
       return false;
     }
 
-    function findNullObjectNullTests(scope: any): void {
+    function findNullObjectNullTests(scope: Scope): void {
       const variables = scope.variables;
       const childScopes = scope.childScopes;
 
