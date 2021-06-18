@@ -1,6 +1,6 @@
 
 # Office-Addin-Scripts
-
+ 
 These packages provide functionality which can be used to perform tasks related to Office Add-ins. The packages export functions which can be imported and used in Node scripts. Many of the packages also provide a command-line interface (CLI), allowing them to be used directly from a Command Prompt / Terminal window.
 
 The [Yo Office](https://github.com/OfficeDev/generator-office) templates provide a starting point for developing an Office Add-in. These scripts are used in the templates to provide for basic developer tasks such as debugging. 
