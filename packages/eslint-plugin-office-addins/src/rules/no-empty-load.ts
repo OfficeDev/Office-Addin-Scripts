@@ -6,11 +6,11 @@ export = {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
       emptyLoad:
-        "Calling an empty load can slow down your add-in",
+        "Calling load without any argument can slow down your add-in",
     },
     docs: {
       description:
-        "Calling an empty load can cause load unneeded data and slow down your add-in",
+        "Calling load without any argument can cause load unneeded data and slow down your add-in",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
