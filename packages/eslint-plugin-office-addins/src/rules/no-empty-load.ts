@@ -21,11 +21,11 @@ export = {
   },
   create: function (context: any) {
     return {
-      "CallExpression[callee.property.name='run'] :matches(ForStatement, ForInStatement, WhileStatement, DoWhileStatement, ForOfStatement) CallExpression[callee.object.name='context'][callee.property.name='sync']"(
+      "CallExpression[callee.property.name='load']:not([arguments>Literal])"(
         node: TSESTree.CallExpression
       ) {
         context.report({
-          node: node.callee,
+          node: node,
           messageId: "emptyLoad",
         });
       },
