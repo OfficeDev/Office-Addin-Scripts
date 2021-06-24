@@ -1,4 +1,7 @@
-import { TSESTree, AST_NODE_TYPES } from "@typescript-eslint/typescript-estree";
+import {
+  TSESTree,
+  AST_NODE_TYPES,
+} from "@typescript-eslint/experimental-utils";
 import {
   Reference,
   Scope,
@@ -96,42 +99,33 @@ export = {
         const variable: Variable = variables[i];
         const references: Reference[] = variable.references;
         let nullObjectCall: boolean = false;
-        const nullTests: Reference[] = [];
+        const nullTests: TSESTree.Identifier[] = [];
 
         for (let ref = 0; ref < references.length; ref++) {
-          const reference = references[ref];
+          const identifier: TSESTree.Identifier = references[ref].identifier;
 
-          if (isNullObjectNode(reference.identifier.parent)) {
+          if (isNullObjectNode(identifier.parent)) {
             nullObjectCall = true;
           }
 
-          if (isInNullTest(reference.identifier)) {
-            nullTests.push(reference);
+          if (isInNullTest(identifier)) {
+            nullTests.push(identifier);
           }
         }
 
         if (nullObjectCall === true && nullTests.length > 0) {
-          nullTests.forEach((reference) => {
+          nullTests.forEach((identifier) => {
             context.report({
-              node: reference.identifier,
+              node: identifier,
               messageId: "useIsNullObject",
-              data: { name: reference.identifier.name },
+              data: { name: identifier.name },
               fix: function (fixer: RuleFixer) {
                 var ruleFix: RuleFix;
-                if (
-                  isInBinaryNullTest(reference.identifier) &&
-                  reference.identifier.parent
-                ) {
-                  let newTest = reference.identifier.name + ".isNullObject";
-                  ruleFix = fixer.replaceText(
-                    reference.identifier.parent,
-                    newTest
-                  );
+                if (isInBinaryNullTest(identifier) && identifier.parent) {
+                  let newTest = identifier.name + ".isNullObject";
+                  ruleFix = fixer.replaceText(identifier.parent, newTest);
                 } else {
-                  ruleFix = fixer.insertTextAfter(
-                    reference.identifier,
-                    ".isNullObject"
-                  );
+                  ruleFix = fixer.insertTextAfter(identifier, ".isNullObject");
                 }
                 return ruleFix;
               },

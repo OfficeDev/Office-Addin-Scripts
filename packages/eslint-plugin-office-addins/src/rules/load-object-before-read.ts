@@ -1,4 +1,4 @@
-import { TSESTree } from "@typescript-eslint/typescript-estree";
+import { TSESTree } from "@typescript-eslint/experimental-utils";
 import {
   Reference,
   Scope,
@@ -26,6 +26,7 @@ export = {
     schema: [],
   },
   create: function (context: any) {
+
     function findPropertiesRead(node: TSESTree.Node | undefined): string {
       let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
       while (node) {
