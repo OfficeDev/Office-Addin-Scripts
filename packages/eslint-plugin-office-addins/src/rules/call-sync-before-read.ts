@@ -28,7 +28,7 @@ export = {
   },
   create: function (context: any) {
     const apiReferences: OfficeApiReference[] = [];
-    const proxyVariables: Variable[] = [];
+    const proxyVariables: Set<Variable> = new Set<Variable>();
 
     type OfficeApiReference = {
       operation: "Read" | "Load" | "Write" | "Sync";
@@ -61,14 +61,14 @@ export = {
           isGetFunction(reference.writeExpr) &&
           reference.resolved
         ) {
-          proxyVariables.push(reference.resolved);
+          proxyVariables.add(reference.resolved);
           apiReferences.push({ operation: "Write", reference: reference });
         } else if (isContextSyncIdentifier(reference.identifier)) {
           apiReferences.push({ operation: "Sync", reference: reference });
         } else if (
           reference.isRead() &&
           reference.resolved &&
-          proxyVariables.includes(reference.resolved)
+          proxyVariables.has(reference.resolved)
         ) {
           if (isLoadReference(reference.identifier)) {
             apiReferences.push({ operation: "Load", reference: reference });
@@ -82,24 +82,24 @@ export = {
     }
 
     function findReadBeforeSync(): void {
-      const needSync: Variable[] = [];
+      const needSync: Set<Variable> = new Set<Variable>();
 
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
         const reference = apiReference.reference;
 
         if (operation === "Write" && reference.resolved) {
-          needSync.push(reference.resolved);
+          needSync.add(reference.resolved);
         }
 
         if (operation === "Sync") {
-          needSync.length = 0;
+          needSync.clear();
         }
 
         if (
           operation === "Read" &&
           reference.resolved &&
-          needSync.includes(reference.resolved)
+          needSync.has(reference.resolved)
         ) {
           const node = reference.identifier;
           context.report({
