@@ -78,9 +78,7 @@ export = {
         }
       });
 
-      for (var i = 0; i < scope.childScopes.length; i++) {
-        findReferences(scope.childScopes[i]);
-      }
+      scope.childScopes.forEach(findReferences);
     }
 
     function findReadBeforeSync(): void {
