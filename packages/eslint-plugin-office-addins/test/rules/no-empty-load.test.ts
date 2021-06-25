@@ -24,6 +24,11 @@ ruleTester.run('no-empty-load', rule, {
         property.load('G2');
         var variableName = property.G2;`
     },
+    {
+      code: `
+        const notProxyObject = anotherObject.thisIsNotAGetFunction();
+        notProxyObject.load();`
+    },
   ],
   invalid: [
     {
@@ -40,10 +45,10 @@ ruleTester.run('no-empty-load', rule, {
         console.log(myRange.values);`,
       errors: [{ messageId: "emptyLoad"}]
     },
-    {
+    /*{
       code: `
         context.workbook.worksheets.getSelectedRange().load()`,
       errors: [{ messageId: "emptyLoad"}]
-    },
+    },*/
   ]
 });
