@@ -45,10 +45,5 @@ ruleTester.run('no-empty-load', rule, {
         console.log(myRange.values);`,
       errors: [{ messageId: "emptyLoad"}]
     },
-    /*{
-      code: `
-        context.workbook.worksheets.getSelectedRange().load()`,
-      errors: [{ messageId: "emptyLoad"}]
-    },*/
   ]
 });
