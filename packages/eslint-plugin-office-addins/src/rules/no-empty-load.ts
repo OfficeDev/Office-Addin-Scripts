@@ -26,12 +26,12 @@ export = {
   },
   create: function (context: any) {
     function isEmptyLoad(node: TSESTree.MemberExpression): boolean {
-      if (isLoadFunction(node)) {
-        if (node.parent?.type == TSESTree.AST_NODE_TYPES.CallExpression) {
-          if (node.parent.arguments.length === 0) {
-            return true;
-          }
-        }
+      if (
+        isLoadFunction(node) &&
+        node.parent?.type == TSESTree.AST_NODE_TYPES.CallExpression &&
+        node.parent.arguments.length === 0
+      ) {
+        return true;
       }
       return false;
     }
