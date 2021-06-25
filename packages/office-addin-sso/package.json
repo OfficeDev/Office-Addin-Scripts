@@ -46,7 +46,7 @@
     "@types/morgan": "1.7.35",
     "concurrently": "^6.0.0",
     "cpy-cli": "^3.1.1",
-    "mocha": "^7.1.1",
+    "mocha": "^8.4.0",
     "office-addin-cli": "^1.1.3",
     "office-addin-dev-certs": "^1.5.21",
     "office-addin-manifest": "^1.5.25",
