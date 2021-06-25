@@ -26,14 +26,11 @@ export = {
   },
   create: function (context: any) {
     function isEmptyLoad(node: TSESTree.MemberExpression): boolean {
-      if (
+      return (
         isLoadFunction(node) &&
         node.parent?.type == TSESTree.AST_NODE_TYPES.CallExpression &&
         node.parent.arguments.length === 0
-      ) {
-        return true;
-      }
-      return false;
+      );
     }
 
     function findEmptyLoad(scope: Scope) {
@@ -43,20 +40,17 @@ export = {
           const node: TSESTree.Node = reference.identifier;
 
           if (
-            node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
+            reference.isWrite() &&
+            reference.writeExpr &&
+            isGetFunction(reference.writeExpr) &&
+            reference.resolved
           ) {
             getFound = false; // In case of reassignment
-            if (node.parent.init && isGetFunction(node.parent.init)) {
-              getFound = true;
-              return;
-            }
-          }
-
-          if (
-            node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression
-          ) {
-            getFound = false; // In case of reassignment
-            if (isGetFunction(node.parent.right)) {
+            if (
+              reference.writeExpr &&
+              reference.resolved &&
+              isGetFunction(reference.writeExpr)
+            ) {
               getFound = true;
               return;
             }
@@ -72,7 +66,7 @@ export = {
             isEmptyLoad(node.parent)
           ) {
             context.report({
-              node: node,
+              node: node.parent,
               messageId: "emptyLoad",
             });
           }
