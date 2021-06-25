@@ -116,9 +116,9 @@ export = {
         programNode: TSESTree.Node /* eslint-disable-line no-unused-vars */
       ) {
         findReferences(context.getScope());
-        apiReferences.sort((a, b) => {
+        apiReferences.sort((left, right) => {
           return (
-            a.reference.identifier.range[1] - b.reference.identifier.range[1]
+            left.reference.identifier.range[1] - right.reference.identifier.range[1]
           );
         });
         findReadBeforeSync();
