@@ -41,8 +41,7 @@ export = {
 
           if (
             reference.isWrite() &&
-            reference.writeExpr &&
-            isGetFunction(reference.writeExpr)
+            reference.writeExpr
           ) {
             getFound = false; // In case of reassignment
             if (isGetFunction(reference.writeExpr)) {

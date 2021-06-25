@@ -29,6 +29,12 @@ ruleTester.run('no-empty-load', rule, {
         const notProxyObject = anotherObject.thisIsNotAGetFunction();
         notProxyObject.load();`
     },
+    {
+      code: `
+        var selectedRange = context.workbook.getSelectedRange();
+        selectedRange = "new variable";
+        selectedRange.load()`
+    },
   ],
   invalid: [
     {
