@@ -39,7 +39,7 @@
     "@types/node-fetch": "^2.5.10",
     "@types/xregexp": "^3.0.30",
     "concurrently": "^6.0.0",
-    "mocha": "^7.1.1",
+    "mocha": "^8.4.0",
     "office-addin-lint": "^1.2.2",
     "office-addin-prettier-config": "^1.0.16",
     "rimraf": "^3.0.2",
