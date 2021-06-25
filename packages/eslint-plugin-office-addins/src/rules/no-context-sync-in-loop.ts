@@ -21,7 +21,7 @@ export = {
   },
   create: function (context: any) {
     return {
-      "CallExpression[callee.property.name='run'] :matches(ForStatement, ForInStatement, WhileStatement, DoWhileStatement, ForOfStatement) CallExpression[callee.object.name='context'][callee.property.name='sync']"(
+      ":matches(ForStatement, ForInStatement, WhileStatement, DoWhileStatement, ForOfStatement) CallExpression[callee.object.name='context'][callee.property.name='sync']"(
         node: TSESTree.CallExpression
       ) {
         context.report({

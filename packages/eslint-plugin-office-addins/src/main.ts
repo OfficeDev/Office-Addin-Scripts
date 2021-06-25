@@ -47,6 +47,7 @@ module.exports = {
       plugins: ["office-addins"],
       extends: ["plugin:office-addins/recommended"],
       rules: {
+        "office-addins/call-sync-before-read": "error",
         "office-addins/load-object-before-read": "error",
         "office-addins/no-context-sync-in-loop": "warn",
         "office-addins/no-empty-load": "warn",
