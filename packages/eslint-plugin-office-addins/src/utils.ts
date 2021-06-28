@@ -1,5 +1,9 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
-import { Reference } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import {
+  Reference,
+  Scope,
+  Variable,
+} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 
 const getFunctions: Set<string> = new Set([
   "getAbsoluteResizedRange",
@@ -196,4 +200,41 @@ export function isLoadReference(node: TSESTree.Identifier) {
     node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
     isLoadFunction(node.parent)
   );
+}
+
+let proxyVariables: Set<Variable>;
+let apiReferences: OfficeApiReference[];
+export function findReferences(scope: Scope): OfficeApiReference[] {
+  proxyVariables = new Set<Variable>();
+  apiReferences = [];
+  findReferencesAuxiliar(scope);
+  return apiReferences;
+}
+
+function findReferencesAuxiliar(scope: Scope): void {
+  scope.references.forEach((reference) => {
+    if (
+      reference.isWrite() &&
+      reference.writeExpr &&
+      isGetFunction(reference.writeExpr) &&
+      reference.resolved
+    ) {
+      proxyVariables.add(reference.resolved);
+      apiReferences.push({ operation: "Write", reference: reference });
+    } else if (isContextSyncIdentifier(reference.identifier)) {
+      apiReferences.push({ operation: "Sync", reference: reference });
+    } else if (
+      reference.isRead() &&
+      reference.resolved &&
+      proxyVariables.has(reference.resolved)
+    ) {
+      if (isLoadReference(reference.identifier)) {
+        apiReferences.push({ operation: "Load", reference: reference });
+      } else {
+        apiReferences.push({ operation: "Read", reference: reference });
+      }
+    }
+  });
+
+  scope.childScopes.forEach(findReferencesAuxiliar);
 }

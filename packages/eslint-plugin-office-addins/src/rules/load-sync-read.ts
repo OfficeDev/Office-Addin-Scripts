@@ -1,14 +1,6 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
-import {
-  Scope,
-  Variable,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import {
-  isGetFunction,
-  isContextSyncIdentifier,
-  OfficeApiReference,
-  isLoadReference,
-} from "../utils";
+import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { findReferences, OfficeApiReference } from "../utils";
 
 export = {
   name: "load-sync-read",
@@ -30,36 +22,7 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    const apiReferences: OfficeApiReference[] = [];
-    const proxyVariables: Set<Variable> = new Set<Variable>();
-
-    function findReferences(scope: Scope): void {
-      scope.references.forEach((reference) => {
-        if (
-          reference.isWrite() &&
-          reference.writeExpr &&
-          isGetFunction(reference.writeExpr) &&
-          reference.resolved
-        ) {
-          proxyVariables.add(reference.resolved);
-          apiReferences.push({ operation: "Write", reference: reference });
-        } else if (isContextSyncIdentifier(reference.identifier)) {
-          apiReferences.push({ operation: "Sync", reference: reference });
-        } else if (
-          reference.isRead() &&
-          reference.resolved &&
-          proxyVariables.has(reference.resolved)
-        ) {
-          if (isLoadReference(reference.identifier)) {
-            apiReferences.push({ operation: "Load", reference: reference });
-          } else {
-            apiReferences.push({ operation: "Read", reference: reference });
-          }
-        }
-      });
-
-      scope.childScopes.forEach(findReferences);
-    }
+    let apiReferences: OfficeApiReference[] = [];
 
     function findReadBeforeSync(): void {
       const needSync: Set<Variable> = new Set<Variable>();
@@ -95,7 +58,7 @@ export = {
       Program(
         programNode: TSESTree.Node /* eslint-disable-line no-unused-vars */
       ) {
-        findReferences(context.getScope());
+        apiReferences = findReferences(context.getScope());
         apiReferences.sort((left, right) => {
           return (
             left.reference.identifier.range[1] -
