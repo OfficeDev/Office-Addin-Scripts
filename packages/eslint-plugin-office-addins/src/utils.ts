@@ -1,4 +1,5 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { Reference } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 
 const getFunctions: Set<string> = new Set([
   "getAbsoluteResizedRange",
@@ -171,5 +172,28 @@ export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
   return (
     node.property.type === TSESTree.AST_NODE_TYPES.Identifier &&
     node.property.name === "load"
+  );
+}
+
+export function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
+  return (
+    node.name === "context" &&
+    node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+    node.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression &&
+    node.parent?.property.type === TSESTree.AST_NODE_TYPES.Identifier &&
+    node.parent?.property.name === "sync"
+  );
+}
+
+export type OfficeApiReference = {
+  operation: "Read" | "Load" | "Write" | "Sync";
+  reference: Reference;
+};
+
+export function isLoadReference(node: TSESTree.Identifier) {
+  return (
+    node.parent &&
+    node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+    isLoadFunction(node.parent)
   );
 }

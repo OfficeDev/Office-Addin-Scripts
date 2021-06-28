@@ -1,4 +1,14 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
+import {
+  Scope,
+  Variable,
+} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import {
+  isGetFunction,
+  isContextSyncIdentifier,
+  OfficeApiReference,
+  isLoadReference,
+} from "../utils";
 
 export = {
   name: "load-sync-read",
@@ -9,7 +19,8 @@ export = {
         "Call load on '{{name}}' for '{{loadValue}}' followed by context.sync() before reading the object or its properties",
     },
     docs: {
-      description: "Always call load on an object followed by a sync before reading it or one of its properties.",
+      description:
+        "Always call load on an object followed by a sync before reading it or one of its properties.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
@@ -19,14 +30,79 @@ export = {
     schema: [],
   },
   create: function (context: any) {
+    const apiReferences: OfficeApiReference[] = [];
+    const proxyVariables: Set<Variable> = new Set<Variable>();
+
+    function findReferences(scope: Scope): void {
+      scope.references.forEach((reference) => {
+        if (
+          reference.isWrite() &&
+          reference.writeExpr &&
+          isGetFunction(reference.writeExpr) &&
+          reference.resolved
+        ) {
+          proxyVariables.add(reference.resolved);
+          apiReferences.push({ operation: "Write", reference: reference });
+        } else if (isContextSyncIdentifier(reference.identifier)) {
+          apiReferences.push({ operation: "Sync", reference: reference });
+        } else if (
+          reference.isRead() &&
+          reference.resolved &&
+          proxyVariables.has(reference.resolved)
+        ) {
+          if (isLoadReference(reference.identifier)) {
+            apiReferences.push({ operation: "Load", reference: reference });
+          } else {
+            apiReferences.push({ operation: "Read", reference: reference });
+          }
+        }
+      });
+
+      scope.childScopes.forEach(findReferences);
+    }
+
+    function findReadBeforeSync(): void {
+      const needSync: Set<Variable> = new Set<Variable>();
+
+      apiReferences.forEach((apiReference) => {
+        const operation = apiReference.operation;
+        const reference = apiReference.reference;
+
+        if (operation === "Write" && reference.resolved) {
+          needSync.add(reference.resolved);
+        }
+
+        if (operation === "Sync") {
+          needSync.clear();
+        }
+
+        if (
+          operation === "Read" &&
+          reference.resolved &&
+          needSync.has(reference.resolved)
+        ) {
+          const node = reference.identifier;
+          context.report({
+            node: node,
+            messageId: "loadSyncRead",
+            data: { name: node.name },
+          });
+        }
+      });
+    }
+
     return {
-      "AssignmentExpression[left.object.name='Office'][left.property.name='initialize']"(
-        node: TSESTree.AssignmentExpression
+      Program(
+        programNode: TSESTree.Node /* eslint-disable-line no-unused-vars */
       ) {
-        context.report({
-          node: node,
-          messageId: "loadSyncRead",
+        findReferences(context.getScope());
+        apiReferences.sort((left, right) => {
+          return (
+            left.reference.identifier.range[1] -
+            right.reference.identifier.range[1]
+          );
         });
+        findReadBeforeSync();
       },
     };
   },

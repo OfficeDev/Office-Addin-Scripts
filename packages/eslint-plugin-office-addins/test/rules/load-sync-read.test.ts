@@ -7,7 +7,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 
 ruleTester.run('load-sync-read', rule, {
   valid: [ 
-    {
+    /*{
       code: `
         var sheetName = 'Sheet1';
         var rangeAddress = 'A1:B2';
@@ -34,10 +34,10 @@ ruleTester.run('load-sync-read', rule, {
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange = "new variable";
         selectedRange.load()`
-    },
+    },*/
   ],
   invalid: [
-    {
+    /*{
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load()`,
@@ -50,6 +50,6 @@ ruleTester.run('load-sync-read', rule, {
         myRange.load();
         console.log(myRange.values);`,
       errors: [{ messageId: "loadSyncRead"}]
-    },
+    },*/
   ]
 });

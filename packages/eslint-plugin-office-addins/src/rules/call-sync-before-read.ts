@@ -1,13 +1,14 @@
+import { TSESTree } from "@typescript-eslint/experimental-utils";
 import {
-  AST_NODE_TYPES,
-  TSESTree,
-} from "@typescript-eslint/experimental-utils";
-import {
-  Reference,
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { isGetFunction, isLoadFunction } from "../utils";
+import {
+  isGetFunction,
+  isContextSyncIdentifier,
+  OfficeApiReference,
+  isLoadReference,
+} from "../utils";
 
 export = {
   name: "call-sync-before-read",
@@ -29,29 +30,6 @@ export = {
   create: function (context: any) {
     const apiReferences: OfficeApiReference[] = [];
     const proxyVariables: Set<Variable> = new Set<Variable>();
-
-    type OfficeApiReference = {
-      operation: "Read" | "Load" | "Write" | "Sync";
-      reference: Reference;
-    };
-
-    function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
-      return (
-        node.name === "context" &&
-        node.parent?.type === AST_NODE_TYPES.MemberExpression &&
-        node.parent?.parent?.type === AST_NODE_TYPES.CallExpression &&
-        node.parent?.property.type === AST_NODE_TYPES.Identifier &&
-        node.parent?.property.name === "sync"
-      );
-    }
-
-    function isLoadReference(node: TSESTree.Identifier) {
-      return (
-        node.parent &&
-        node.parent.type === AST_NODE_TYPES.MemberExpression &&
-        isLoadFunction(node.parent)
-      );
-    }
 
     function findReferences(scope: Scope): void {
       scope.references.forEach((reference) => {
