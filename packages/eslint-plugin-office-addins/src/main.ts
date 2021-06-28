@@ -49,6 +49,7 @@ module.exports = {
       rules: {
         "office-addins/call-sync-before-read": "error",
         "office-addins/load-object-before-read": "error",
+        "office-addins/load-sync-read": "error",
         "office-addins/no-context-sync-in-loop": "warn",
         "office-addins/no-empty-load": "warn",
         "office-addins/no-office-initialize": "warn",
