@@ -1,11 +1,11 @@
 import { ESLintUtils } from '@typescript-eslint/experimental-utils'
-import rule from '../../src/rules/load-sync-read';
+import rule from '../../src/rules/call-sync-after-load';
 
 const ruleTester = new ESLintUtils.RuleTester({
   parser: '@typescript-eslint/parser',
 });
 
-ruleTester.run('load-sync-read', rule, {
+ruleTester.run('call-sync-after-load', rule, {
   valid: [ 
     {
       code: `
@@ -22,7 +22,7 @@ ruleTester.run('load-sync-read', rule, {
         await context.sync();
         property.load("values");
         console.log(property.values);`,
-      errors: [{ messageId: "loadSyncRead", data: { name: "property" }}]
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property" }}]
     },
   ]
 });

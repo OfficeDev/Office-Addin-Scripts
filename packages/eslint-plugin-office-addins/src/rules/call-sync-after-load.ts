@@ -3,11 +3,11 @@ import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-s
 import { findReferences, OfficeApiReference } from "../utils";
 
 export = {
-  name: "load-sync-read",
+  name: "call-sync-after-load",
   meta: {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
-      loadSyncRead:
+      callSyncAfterLoad:
         "Call load on '{{name}}' for '{{loadValue}}' followed by context.sync() before reading the object or its properties",
     },
     docs: {
@@ -56,7 +56,7 @@ export = {
           const node = reference.identifier;
           context.report({
             node: node,
-            messageId: "loadSyncRead",
+            messageId: "callSyncAfterLoad",
             data: { name: node.name },
           });
         }
