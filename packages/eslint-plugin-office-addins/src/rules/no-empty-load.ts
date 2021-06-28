@@ -39,12 +39,9 @@ export = {
         variable.references.forEach((reference: Reference) => {
           const node: TSESTree.Node = reference.identifier;
 
-          if (
-            reference.isWrite() &&
-            reference.writeExpr
-          ) {
+          if (reference.isWrite()) {
             getFound = false; // In case of reassignment
-            if (isGetFunction(reference.writeExpr)) {
+            if (reference.writeExpr && isGetFunction(reference.writeExpr)) {
               getFound = true;
               return;
             }
