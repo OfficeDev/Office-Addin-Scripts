@@ -38,11 +38,7 @@ export = {
           needSync.clear();
         }
 
-        if (
-          operation === "Read" &&
-          variable &&
-          needSync.has(variable)
-        ) {
+        if (operation === "Read" && variable && needSync.has(variable)) {
           const node = reference.identifier;
           context.report({
             node: node,

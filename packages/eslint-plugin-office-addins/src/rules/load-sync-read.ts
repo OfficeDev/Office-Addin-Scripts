@@ -1,5 +1,5 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
-import { Reference, Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { findReferences, OfficeApiReference } from "../utils";
 
 export = {
@@ -32,7 +32,7 @@ export = {
         const operation = apiReference.operation;
         const reference = apiReference.reference;
         const variable = reference.resolved;
-        
+
         if (operation === "Write" && variable) {
           needLoadAndSync.add(variable);
         }
