@@ -26,7 +26,6 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-
     function findPropertiesRead(node: TSESTree.Node | undefined): string {
       let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
       while (node) {

@@ -118,7 +118,8 @@ export = {
         findReferences(context.getScope());
         apiReferences.sort((left, right) => {
           return (
-            left.reference.identifier.range[1] - right.reference.identifier.range[1]
+            left.reference.identifier.range[1] -
+            right.reference.identifier.range[1]
           );
         });
         findReadBeforeSync();
