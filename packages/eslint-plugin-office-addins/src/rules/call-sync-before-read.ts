@@ -28,9 +28,10 @@ export = {
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
         const reference = apiReference.reference;
+        const variable = reference.resolved;
 
-        if (operation === "Write" && reference.resolved) {
-          needSync.add(reference.resolved);
+        if (operation === "Write" && variable) {
+          needSync.add(variable);
         }
 
         if (operation === "Sync") {
@@ -39,8 +40,8 @@ export = {
 
         if (
           operation === "Read" &&
-          reference.resolved &&
-          needSync.has(reference.resolved)
+          variable &&
+          needSync.has(variable)
         ) {
           const node = reference.identifier;
           context.report({

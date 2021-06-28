@@ -1,5 +1,5 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
-import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { Reference, Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { findReferences, OfficeApiReference } from "../utils";
 
 export = {
@@ -24,15 +24,24 @@ export = {
   create: function (context: any) {
     let apiReferences: OfficeApiReference[] = [];
 
-    function findReadBeforeSync(): void {
+    function findReadLoadSync(): void {
       const needSync: Set<Variable> = new Set<Variable>();
+      const needLoadAndSync: Set<Variable> = new Set<Variable>();
 
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
         const reference = apiReference.reference;
+        const variable = reference.resolved;
+        
+        if (operation === "Write" && variable) {
+          needLoadAndSync.add(variable);
+        }
 
-        if (operation === "Write" && reference.resolved) {
-          needSync.add(reference.resolved);
+        if (operation === "Load" && variable) {
+          if (needLoadAndSync.has(variable)) {
+            needLoadAndSync.delete(variable);
+            needSync.add(variable);
+          }
         }
 
         if (operation === "Sync") {
@@ -41,8 +50,8 @@ export = {
 
         if (
           operation === "Read" &&
-          reference.resolved &&
-          needSync.has(reference.resolved)
+          variable &&
+          (needSync.has(variable) || needLoadAndSync.has(variable))
         ) {
           const node = reference.identifier;
           context.report({
@@ -65,7 +74,7 @@ export = {
             right.reference.identifier.range[1]
           );
         });
-        findReadBeforeSync();
+        findReadLoadSync();
       },
     };
   },
