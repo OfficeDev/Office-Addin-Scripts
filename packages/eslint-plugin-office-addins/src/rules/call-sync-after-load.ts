@@ -8,11 +8,11 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call load on '{{name}}' for '{{loadValue}}' followed by context.sync() before reading the object or its properties",
+        "Call context.sync() after calling load on '{{name}}' property on the '{{loadValue}}' and before reading properties",
     },
     docs: {
       description:
-        "Always call load on an object followed by a sync before reading it or one of its properties.",
+        "Always call load on an object followed by a context.sync() before reading it or one of its properties.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
