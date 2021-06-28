@@ -22,7 +22,7 @@ ruleTester.run('call-sync-after-load', rule, {
         await context.sync();
         property.load("values");
         console.log(property.values);`,
-      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property" }}]
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "values" }}]
     },
   ]
 });

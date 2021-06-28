@@ -238,3 +238,17 @@ function findReferencesAuxiliar(scope: Scope): void {
 
   scope.childScopes.forEach(findReferencesAuxiliar);
 }
+
+export function findPropertiesRead(node: TSESTree.Node | undefined): string {
+  let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
+  while (node) {
+    if (
+      node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+      node.property.type === TSESTree.AST_NODE_TYPES.Identifier
+    ) {
+      propertyName += node.property.name + "/";
+    }
+    node = node.parent;
+  }
+  return propertyName.slice(0, -1);
+}

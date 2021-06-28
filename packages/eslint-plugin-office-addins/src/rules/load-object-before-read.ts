@@ -4,7 +4,7 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { isGetFunction, isLoadFunction } from "../utils";
+import { findPropertiesRead, isGetFunction, isLoadFunction } from "../utils";
 
 export = {
   name: "load-object-before-read",
@@ -26,20 +26,6 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    function findPropertiesRead(node: TSESTree.Node | undefined): string {
-      let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
-      while (node) {
-        if (
-          node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-          node.property.type === TSESTree.AST_NODE_TYPES.Identifier
-        ) {
-          propertyName += node.property.name + "/";
-        }
-        node = node.parent;
-      }
-      return propertyName.slice(0, -1);
-    }
-
     function getPropertyName(node: TSESTree.MemberExpression): string {
       if (
         node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression &&

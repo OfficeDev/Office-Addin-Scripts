@@ -1,6 +1,6 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { findReferences, OfficeApiReference } from "../utils";
+import { findPropertiesRead, findReferences, OfficeApiReference } from "../utils";
 
 export = {
   name: "call-sync-after-load",
@@ -48,6 +48,12 @@ export = {
           needSync.clear();
         }
 
+
+        const propertyName: string | undefined = findPropertiesRead(
+          reference.identifier.parent
+        );
+
+
         if (
           operation === "Read" &&
           variable &&
@@ -57,7 +63,7 @@ export = {
           context.report({
             node: node,
             messageId: "callSyncAfterLoad",
-            data: { name: node.name },
+            data: { name: node.name, loadValue: propertyName },
           });
         }
       });
