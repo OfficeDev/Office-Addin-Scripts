@@ -24,7 +24,7 @@ export = {
   create: function (context: any) {
     let apiReferences: OfficeApiReference[] = [];
 
-    function findReadLoadSync(): void {
+    function findLoadBeforeSync(): void {
       const needSync: Set<Variable> = new Set<Variable>();
       const needLoadAndSync: Set<Variable> = new Set<Variable>();
 
@@ -80,7 +80,7 @@ export = {
             right.reference.identifier.range[1]
           );
         });
-        findReadLoadSync();
+        findLoadBeforeSync();
       },
     };
   },
