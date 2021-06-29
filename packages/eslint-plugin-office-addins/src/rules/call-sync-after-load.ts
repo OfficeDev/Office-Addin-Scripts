@@ -1,6 +1,7 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import {
+  getPropertyNameInLoad,
   findPropertiesRead,
   findReferences,
   OfficeApiReference,
@@ -26,11 +27,25 @@ export = {
     schema: [],
   },
   create: function (context: any) {
+    type VariableProperty = {
+      variable: string;
+      property: string;
+    };
+
+    class VariablePropertySet extends Set{
+      add(variableProperty: VariableProperty) {
+        return super.add(JSON.stringify(variableProperty));
+      }
+      has(variableProperty: VariableProperty) {
+        return super.has(JSON.stringify(variableProperty));
+      }
+    }
+
     let apiReferences: OfficeApiReference[] = [];
 
     function findLoadBeforeSync(): void {
-      const needSync: Set<Variable> = new Set<Variable>();
-      const needLoadAndSync: Set<Variable> = new Set<Variable>();
+      const needSync: VariablePropertySet = new VariablePropertySet();
+      const variablesGet: Set<Variable> = new Set<Variable>();
 
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
@@ -38,35 +53,35 @@ export = {
         const variable = reference.resolved;
 
         if (operation === "Write" && variable) {
-          needLoadAndSync.add(variable);
+          variablesGet.add(variable);
         }
 
-        if (operation === "Load" && variable) {
-          if (needLoadAndSync.has(variable)) {
-            needLoadAndSync.delete(variable);
-            needSync.add(variable);
-          }
+        if (operation === "Load" && variable && variablesGet.has(variable)) {
+          const propertyName: string = getPropertyNameInLoad(reference.identifier.parent);
+          needSync.add({variable: variable.name, property: propertyName});
         }
 
         if (operation === "Sync") {
           needSync.clear();
         }
 
-        const propertyName: string | undefined = findPropertiesRead(
-          reference.identifier.parent
-        );
-
         if (
           operation === "Read" &&
           variable &&
-          (needSync.has(variable) || needLoadAndSync.has(variable))
+          variablesGet.has(variable)
         ) {
-          const node = reference.identifier;
-          context.report({
-            node: node,
-            messageId: "callSyncAfterLoad",
-            data: { name: node.name, loadValue: propertyName },
-          });
+          const propertyName: string = findPropertiesRead(
+            reference.identifier.parent
+          );
+
+          if (needSync.has({variable: variable.name, property: propertyName })) {
+            const node = reference.identifier;
+            context.report({
+              node: node,
+              messageId: "callSyncAfterLoad",
+              data: { name: node.name, loadValue: propertyName },
+            });
+          }
         }
       });
     }

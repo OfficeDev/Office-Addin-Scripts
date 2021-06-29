@@ -252,3 +252,15 @@ export function findPropertiesRead(node: TSESTree.Node | undefined): string {
   }
   return propertyName.slice(0, -1);
 }
+
+export function getPropertyNameInLoad(node: TSESTree.Node | undefined): string {
+  if (
+    node &&
+    node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+    node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression &&
+    node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal
+  ) {
+    return node.parent.arguments[0].value as string;
+  }
+  return "error in getPropertyNameInLoad";
+}
