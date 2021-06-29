@@ -204,14 +204,14 @@ export function isLoadReference(node: TSESTree.Identifier) {
 
 let proxyVariables: Set<Variable>;
 let apiReferences: OfficeApiReference[];
-export function findReferences(scope: Scope): OfficeApiReference[] {
+export function findOfficeApiReferences(scope: Scope): OfficeApiReference[] {
   proxyVariables = new Set<Variable>();
   apiReferences = [];
-  findReferencesAuxiliar(scope);
+  findOfficeApiReferencesAux(scope);
   return apiReferences;
 }
 
-function findReferencesAuxiliar(scope: Scope): void {
+function findOfficeApiReferencesAux(scope: Scope): void {
   scope.references.forEach((reference) => {
     if (
       reference.isWrite() &&
@@ -236,7 +236,7 @@ function findReferencesAuxiliar(scope: Scope): void {
     }
   });
 
-  scope.childScopes.forEach(findReferencesAuxiliar);
+  scope.childScopes.forEach(findOfficeApiReferencesAux);
 }
 
 export function findPropertiesRead(node: TSESTree.Node | undefined): string {

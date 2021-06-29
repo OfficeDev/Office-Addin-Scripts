@@ -1,5 +1,5 @@
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { findReferences, OfficeApiReference } from "../utils";
+import { findOfficeApiReferences, OfficeApiReference } from "../utils";
 
 export = {
   name: "call-sync-before-read",
@@ -50,7 +50,7 @@ export = {
 
     return {
       Program() {
-        apiReferences = findReferences(context.getScope());
+        apiReferences = findOfficeApiReferences(context.getScope());
         apiReferences.sort((left, right) => {
           return (
             left.reference.identifier.range[1] -
