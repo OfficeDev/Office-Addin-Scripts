@@ -1,13 +1,5 @@
-import {
-  AST_NODE_TYPES,
-  TSESTree,
-} from "@typescript-eslint/experimental-utils";
-import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { isGetFunction, isLoadFunction } from "../utils";
+import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { findOfficeApiReferences, OfficeApiReference } from "../utils";
 
 export = {
   name: "call-sync-before-read",
@@ -27,59 +19,7 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    const apiReferences: OfficeApiReference[] = [];
-    const proxyVariables: Set<Variable> = new Set<Variable>();
-
-    type OfficeApiReference = {
-      operation: "Read" | "Load" | "Write" | "Sync";
-      reference: Reference;
-    };
-
-    function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
-      return (
-        node.name === "context" &&
-        node.parent?.type === AST_NODE_TYPES.MemberExpression &&
-        node.parent?.parent?.type === AST_NODE_TYPES.CallExpression &&
-        node.parent?.property.type === AST_NODE_TYPES.Identifier &&
-        node.parent?.property.name === "sync"
-      );
-    }
-
-    function isLoadReference(node: TSESTree.Identifier) {
-      return (
-        node.parent &&
-        node.parent.type === AST_NODE_TYPES.MemberExpression &&
-        isLoadFunction(node.parent)
-      );
-    }
-
-    function findReferences(scope: Scope): void {
-      scope.references.forEach((reference) => {
-        if (
-          reference.isWrite() &&
-          reference.writeExpr &&
-          isGetFunction(reference.writeExpr) &&
-          reference.resolved
-        ) {
-          proxyVariables.add(reference.resolved);
-          apiReferences.push({ operation: "Write", reference: reference });
-        } else if (isContextSyncIdentifier(reference.identifier)) {
-          apiReferences.push({ operation: "Sync", reference: reference });
-        } else if (
-          reference.isRead() &&
-          reference.resolved &&
-          proxyVariables.has(reference.resolved)
-        ) {
-          if (isLoadReference(reference.identifier)) {
-            apiReferences.push({ operation: "Load", reference: reference });
-          } else {
-            apiReferences.push({ operation: "Read", reference: reference });
-          }
-        }
-      });
-
-      scope.childScopes.forEach(findReferences);
-    }
+    let apiReferences: OfficeApiReference[] = [];
 
     function findReadBeforeSync(): void {
       const needSync: Set<Variable> = new Set<Variable>();
@@ -87,20 +27,17 @@ export = {
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
         const reference = apiReference.reference;
+        const variable = reference.resolved;
 
-        if (operation === "Write" && reference.resolved) {
-          needSync.add(reference.resolved);
+        if (operation === "Write" && variable) {
+          needSync.add(variable);
         }
 
         if (operation === "Sync") {
           needSync.clear();
         }
 
-        if (
-          operation === "Read" &&
-          reference.resolved &&
-          needSync.has(reference.resolved)
-        ) {
+        if (operation === "Read" && variable && needSync.has(variable)) {
           const node = reference.identifier;
           context.report({
             node: node,
@@ -112,10 +49,8 @@ export = {
     }
 
     return {
-      Program(
-        programNode: TSESTree.Node /* eslint-disable-line no-unused-vars */
-      ) {
-        findReferences(context.getScope());
+      Program() {
+        apiReferences = findOfficeApiReferences(context.getScope());
         apiReferences.sort((left, right) => {
           return (
             left.reference.identifier.range[1] -

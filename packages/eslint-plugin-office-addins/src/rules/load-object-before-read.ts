@@ -4,7 +4,12 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { isGetFunction, isLoadFunction } from "../utils";
+import {
+  getPropertyNameInLoad,
+  findPropertiesRead,
+  isGetFunction,
+  isLoadFunction,
+} from "../utils";
 
 export = {
   name: "load-object-before-read",
@@ -26,30 +31,6 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    function findPropertiesRead(node: TSESTree.Node | undefined): string {
-      let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
-      while (node) {
-        if (
-          node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-          node.property.type === TSESTree.AST_NODE_TYPES.Identifier
-        ) {
-          propertyName += node.property.name + "/";
-        }
-        node = node.parent;
-      }
-      return propertyName.slice(0, -1);
-    }
-
-    function getPropertyName(node: TSESTree.MemberExpression): string {
-      if (
-        node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression &&
-        node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal
-      ) {
-        return node.parent.arguments[0].value as string;
-      }
-      return "error in getPropertyName";
-    }
-
     function isInsideWriteStatement(node: TSESTree.Node): boolean {
       while (node.parent) {
         node = node.parent;
@@ -97,7 +78,10 @@ export = {
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
             if (isLoadFunction(node.parent)) {
               // In case it is a load function
-              loadLocation.set(getPropertyName(node.parent), node.range[1]);
+              loadLocation.set(
+                getPropertyNameInLoad(node.parent),
+                node.range[1]
+              );
               return;
             }
           }
