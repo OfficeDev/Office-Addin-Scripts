@@ -14,10 +14,10 @@
     "eslint"
   ],
   "dependencies": {
+    "eslint": "^7.0.0",
     "eslint-plugin-office-addins": "^0.2.2"
   },
   "peerDependencies": {
-    "eslint": "^7.0.0",
     "prettier": "^2.1.2"
   },
   "devDependencies": {
