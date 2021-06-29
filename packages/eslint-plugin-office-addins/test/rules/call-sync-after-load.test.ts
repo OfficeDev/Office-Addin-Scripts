@@ -18,8 +18,8 @@ ruleTester.run('call-sync-after-load', rule, {
       code: `
         var fakeGet = worksheet.notAGetFunction("props");
         await context.sync();
-        property.load("props");
-        console.log(property.props);`
+        fakeGet.load("props");
+        console.log(fakeGet.props);`
     }
   ],
   invalid: [
