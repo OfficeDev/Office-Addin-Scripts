@@ -14,6 +14,15 @@ ruleTester.run('call-sync-after-load', rule, {
         await context.sync();
         console.log(property.values);`
     },
+    {
+      code: `
+        var property = worksheet.getItem("sheet");
+        property.load("values");
+        await context.sync();
+        console.log(property.values);
+        property.load("length");
+        console.log(property.length);`
+    },
   ],
   invalid: [
     {

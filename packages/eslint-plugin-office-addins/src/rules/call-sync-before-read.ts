@@ -50,9 +50,7 @@ export = {
     }
 
     return {
-      Program(
-        programNode: TSESTree.Node /* eslint-disable-line no-unused-vars */
-      ) {
+      Program() {
         apiReferences = findReferences(context.getScope());
         apiReferences.sort((left, right) => {
           return (

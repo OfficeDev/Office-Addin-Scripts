@@ -12,7 +12,7 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call context.sync() after calling load on '{{name}}' property on the '{{loadValue}}' and before reading properties",
+        "Call context.sync() after calling load on '{{name}}' property on the '{{loadValue}}' and before reading property",
     },
     docs: {
       description:
@@ -72,9 +72,7 @@ export = {
     }
 
     return {
-      Program(
-        programNode: TSESTree.Node /* eslint-disable-line no-unused-vars */
-      ) {
+      Program() {
         apiReferences = findReferences(context.getScope());
         apiReferences.sort((left, right) => {
           return (
