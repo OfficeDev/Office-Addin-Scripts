@@ -1,4 +1,3 @@
-import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import {
   getPropertyNameInLoad,
   findPropertiesRead,
@@ -44,18 +43,13 @@ export = {
 
     function findLoadBeforeSync(): void {
       const needSync: VariablePropertySet = new VariablePropertySet();
-      const variablesGet: Set<Variable> = new Set<Variable>();
 
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
         const reference = apiReference.reference;
         const variable = reference.resolved;
 
-        if (operation === "Write" && variable) {
-          variablesGet.add(variable);
-        }
-
-        if (operation === "Load" && variable && variablesGet.has(variable)) {
+        if (operation === "Load" && variable) {
           const propertyName: string = getPropertyNameInLoad(
             reference.identifier.parent
           );
@@ -66,7 +60,7 @@ export = {
           needSync.clear();
         }
 
-        if (operation === "Read" && variable && variablesGet.has(variable)) {
+        if (operation === "Read" && variable) {
           const propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );

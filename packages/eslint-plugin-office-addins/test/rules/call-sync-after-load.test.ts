@@ -14,6 +14,13 @@ ruleTester.run('call-sync-after-load', rule, {
         await context.sync();
         console.log(property.values);`
     },
+    {
+      code: `
+        var fakeGet = worksheet.notAGetFunction("props");
+        await context.sync();
+        property.load("props");
+        console.log(property.props);`
+    }
   ],
   invalid: [
     {
