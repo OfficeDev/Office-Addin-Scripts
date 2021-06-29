@@ -1,4 +1,3 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { findReferences, OfficeApiReference } from "../utils";
 

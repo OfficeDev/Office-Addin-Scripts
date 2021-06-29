@@ -7,22 +7,13 @@ const ruleTester = new ESLintUtils.RuleTester({
 
 ruleTester.run('call-sync-after-load', rule, {
   valid: [ 
-    /*{
+    {
       code: `
         var property = worksheet.getItem("sheet");
         property.load("values");
         await context.sync();
         console.log(property.values);`
     },
-    {
-      code: `
-        var property = worksheet.getItem("sheet");
-        property.load("values");
-        await context.sync();
-        console.log(property.values);
-        property.load("length");
-        console.log(property.length);`
-    },*/
   ],
   invalid: [
     {
@@ -33,13 +24,15 @@ ruleTester.run('call-sync-after-load', rule, {
         console.log(property.values);`,
       errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "values" }}]
     },
-    /*{
+    {
       code: `
-        var item = worksheet.getItem("sheet");
-        item.load("address");
+        var property = worksheet.getItem("sheet");
+        property.load("values");
         await context.sync();
-        console.log(item.image);`,
-      errors: [{ messageId: "callSyncAfterLoad", data: { name: "item", loadValue: "image" }}]
-    },*/
+        console.log(property.values);
+        property.load("length");
+        console.log(property.length);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "length" }}]
+    },
   ]
 });

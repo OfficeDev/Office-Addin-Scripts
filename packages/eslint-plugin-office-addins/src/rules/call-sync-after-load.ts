@@ -1,4 +1,3 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import {
   getPropertyNameInLoad,
@@ -13,7 +12,7 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call context.sync() after calling load on '{{name}}' property on the '{{loadValue}}' and before reading property",
+        "Call context.sync() after calling load '{{name}}' on '{{loadValue}}' and before reading property",
     },
     docs: {
       description:
@@ -32,7 +31,7 @@ export = {
       property: string;
     };
 
-    class VariablePropertySet extends Set{
+    class VariablePropertySet extends Set {
       add(variableProperty: VariableProperty) {
         return super.add(JSON.stringify(variableProperty));
       }
@@ -57,24 +56,24 @@ export = {
         }
 
         if (operation === "Load" && variable && variablesGet.has(variable)) {
-          const propertyName: string = getPropertyNameInLoad(reference.identifier.parent);
-          needSync.add({variable: variable.name, property: propertyName});
+          const propertyName: string = getPropertyNameInLoad(
+            reference.identifier.parent
+          );
+          needSync.add({ variable: variable.name, property: propertyName });
         }
 
         if (operation === "Sync") {
           needSync.clear();
         }
 
-        if (
-          operation === "Read" &&
-          variable &&
-          variablesGet.has(variable)
-        ) {
+        if (operation === "Read" && variable && variablesGet.has(variable)) {
           const propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );
 
-          if (needSync.has({variable: variable.name, property: propertyName })) {
+          if (
+            needSync.has({ variable: variable.name, property: propertyName })
+          ) {
             const node = reference.identifier;
             context.report({
               node: node,

@@ -4,7 +4,12 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { getPropertyNameInLoad, findPropertiesRead, isGetFunction, isLoadFunction } from "../utils";
+import {
+  getPropertyNameInLoad,
+  findPropertiesRead,
+  isGetFunction,
+  isLoadFunction,
+} from "../utils";
 
 export = {
   name: "load-object-before-read",
@@ -73,7 +78,10 @@ export = {
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
             if (isLoadFunction(node.parent)) {
               // In case it is a load function
-              loadLocation.set(getPropertyNameInLoad(node.parent), node.range[1]);
+              loadLocation.set(
+                getPropertyNameInLoad(node.parent),
+                node.range[1]
+              );
               return;
             }
           }
