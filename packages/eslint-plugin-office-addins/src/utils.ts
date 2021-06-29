@@ -207,11 +207,11 @@ let apiReferences: OfficeApiReference[];
 export function findOfficeApiReferences(scope: Scope): OfficeApiReference[] {
   proxyVariables = new Set<Variable>();
   apiReferences = [];
-  findOfficeApiReferencesAux(scope);
+  findOfficeApiReferencesInScope(scope);
   return apiReferences;
 }
 
-function findOfficeApiReferencesAux(scope: Scope): void {
+function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.references.forEach((reference) => {
     if (
       reference.isWrite() &&
@@ -236,7 +236,7 @@ function findOfficeApiReferencesAux(scope: Scope): void {
     }
   });
 
-  scope.childScopes.forEach(findOfficeApiReferencesAux);
+  scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
 export function findPropertiesRead(node: TSESTree.Node | undefined): string {
