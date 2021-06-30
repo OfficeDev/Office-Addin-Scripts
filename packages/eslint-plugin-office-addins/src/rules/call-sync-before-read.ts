@@ -9,7 +9,7 @@ export = {
       callSync: "Call sync before trying to read '{{name}}'.",
     },
     docs: {
-      description: "",
+      description: "Always call load on an object followed by a context.sync() before reading it or one of its properties.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Possible Errors",
