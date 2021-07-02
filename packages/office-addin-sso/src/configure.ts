@@ -38,8 +38,8 @@ export async function createNewApplication(
 export async function grantAdminConsent(applicationJson: Object): Promise<void> {
   const azRestCommand: string = `az ad app permission admin-consent --id ${applicationJson["appId"]}`;
   let consented: boolean = await waitUntil(() => tryRunAzureCommand(azRestCommand), 10, 1000);
-  
-  if(!consented) {
+
+  if (!consented) {
     const errorMessage: string = `Unable to set grant admin consent.  See results of each attempts`;
     throw new Error(errorMessage);
   } else {
@@ -201,8 +201,8 @@ export async function setIdentifierUri(applicationJson: Object, port: string): P
     .replace("<App_Id>", applicationJson["appId"])
     .replace("{PORT}", port.toString());
   let identifierSet: boolean = await waitUntil(() => tryRunAzureCommand(azRestCommand), 10, 1000);
-  
-  if(!identifierSet) {
+
+  if (!identifierSet) {
     const errorMessage: string = `Unable to set identifierUri.  See results of each attempt`;
     throw new Error(errorMessage);
   } else {
@@ -214,8 +214,8 @@ export async function setSignInAudience(applicationJson: Object): Promise<void> 
   let azRestCommand: string = fs.readFileSync(defaults.azRestSetSigninAudienceCommandPath, "utf8");
   azRestCommand = azRestCommand.replace("<App_Object_ID>", applicationJson["id"]);
   let signInAudienceSet: boolean = await waitUntil(() => tryRunAzureCommand(azRestCommand), 10, 1000);
-  
-  if(!signInAudienceSet) {
+
+  if (!signInAudienceSet) {
     const errorMessage: string = `Unable to set signInAudience.  See results of each attempt`;
     throw new Error(errorMessage);
   } else {
@@ -321,15 +321,11 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
   }
 }
 
-async function waitUntil(
-  callback: () => Promise<boolean>,
-  retryCount: number,
-  retryDelay: number
-): Promise<boolean> {
+async function waitUntil(callback: () => Promise<boolean>, retryCount: number, retryDelay: number): Promise<boolean> {
   let done: boolean = false;
   let attempts: number = 0;
 
-  while (!done && attempts <=  retryCount) {
+  while (!done && attempts <= retryCount) {
     console.log(`    Attempt ${attempts + 1}`);
     await delay(retryDelay);
     done = await callback();
@@ -345,7 +341,7 @@ function delay(milliseconds: number): Promise<void> {
   });
 }
 
-async function tryRunAzureCommand(azureCommand: string){
+async function tryRunAzureCommand(azureCommand: string) {
   try {
     await promiseExecuteCommand(azureCommand);
     return true;
@@ -368,7 +364,7 @@ async function checkIsApplicationReady(appId: string): Promise<boolean> {
 }
 
 async function isApplicationReady(appId: string): Promise<boolean> {
-  // Check to see if the application is available 
+  // Check to see if the application is available
   let appReady: boolean = false;
   let counter: number = 0;
   while (appReady === false && counter <= 50) {
