@@ -11,16 +11,16 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      emptyLoad: "Calling load without any argument can slow down your add-in",
+      emptyLoad: "Calling load without any argument slows down your add-in.",
     },
     docs: {
       description:
-        "Calling load without any argument can cause load unneeded data and slow down your add-in",
+        "Calling load without any argument causes unneeded data to load and slows down your add-in.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model?view=powerpoint-js-1.1#calling-load-without-parameters-not-recommended",
+      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#calling-load-without-parameters-not-recommended",
     },
     schema: [],
   },

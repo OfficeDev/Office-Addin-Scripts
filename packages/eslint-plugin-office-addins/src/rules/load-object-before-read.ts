@@ -17,16 +17,16 @@ export = {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
       loadBeforeRead:
-        "An explicit load call on '{{name}}' for '{{loadValue}}' needs to be made before reading a proxy object",
+        "An explicit load call on '{{name}}' for property '{{loadValue}}' needs to be made before the property can be read.",
     },
     docs: {
       description:
-        "Before you can read the properties of a proxy object, you must explicitly load the properties",
+        "Before you can read the properties of a proxy object, you must explicitly load the properties.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Possible Errors",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model?view=powerpoint-js-1.1#load",
+      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
     },
     schema: [],
   },
