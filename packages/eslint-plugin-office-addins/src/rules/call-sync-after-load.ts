@@ -11,16 +11,16 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call context.sync() after calling load '{{name}}' on '{{loadValue}}' and before reading property",
+        "Call context.sync() after calling load on '{{name}}' for property '{{loadValue}}' and before reading the property.",
     },
     docs: {
       description:
-        "Always call load on an object followed by a context.sync() before reading it or one of its properties.",
+        "Always call context.sync() between loading one or more properties on objects and reading any of those properties.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model?view=powerpoint-js-1.1#load",
+      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
     },
     schema: [],
   },

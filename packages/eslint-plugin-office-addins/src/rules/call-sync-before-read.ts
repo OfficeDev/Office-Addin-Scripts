@@ -6,7 +6,7 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      callSync: "Call sync before trying to read '{{name}}'.",
+      callSync: "Call context.sync() before trying to read '{{name}}'.",
     },
     docs: {
       description: "Always call load on the object's properties followed by a context.sync() before reading them.",
@@ -14,7 +14,7 @@ export = {
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Possible Errors",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model?view=powerpoint-js-1.1#sync",
+      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#sync",
     },
     schema: [],
   },

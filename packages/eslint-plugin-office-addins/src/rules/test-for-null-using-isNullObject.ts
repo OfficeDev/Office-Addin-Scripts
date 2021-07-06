@@ -18,15 +18,15 @@ export = {
   meta: {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
-      useIsNullObject: "Test '{{name}}' for null using isNullObject.",
+      useIsNullObject: "Test the isNullObject property of '{{name}}'.",
     },
     docs: {
-      description: "",
+      description: "Do not test the truthiness of an object returned by an OrNullObject method or property. Test it's isNullObject property.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Possible Errors",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model?view=powerpoint-js-1.1#ornullobject-methods-and-properties",
+      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#ornullobject-methods-and-properties",
     },
     schema: [],
     fixable: <"code" | "whitespace">"code",
