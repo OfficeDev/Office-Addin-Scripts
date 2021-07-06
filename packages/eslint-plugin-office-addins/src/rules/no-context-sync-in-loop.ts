@@ -6,16 +6,16 @@ export = {
     type: <"problem" | "suggestion" | "layout">"problem",
     messages: {
       loopedSync:
-        "Calling context.sync() inside a loop can lead to bad performance",
+        "Calling context.sync() inside a loop can lead to poor performance",
     },
     docs: {
       description:
-        "Calling context.sync() inside of a loop dramatically increates the time the code runs the more iterations that are run",
+        "Calling context.sync() inside of a loop dramatically increases the time the code runs, proportional to the number of iterations.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/concepts/correlated-objects-pattern?view=powerpoint-js-1.1",
+      url: "https://docs.microsoft.com/office/dev/add-ins/concepts/correlated-objects-pattern",
     },
     schema: [],
   },

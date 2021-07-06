@@ -6,15 +6,15 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       noOfficeInitialize:
-        "Office.onReady() is preferred over Office.initialize",
+        "Office.onReady() is preferred over Office.initialize.",
     },
     docs: {
-      description: "Office.onReady() is more flexible than Office.initalize",
+      description: "Office.onReady() is more flexible than Office.initialize.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
+      url: "https://docs.microsoft.com/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
     },
     schema: [],
   },
