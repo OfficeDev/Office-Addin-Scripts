@@ -43,6 +43,8 @@ export = {
 
     function findLoadBeforeSync(): void {
       const needSync: VariablePropertySet = new VariablePropertySet();
+      const wasLoaded: VariablePropertySet = new VariablePropertySet();
+      let hasSync = false;
 
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
@@ -54,9 +56,11 @@ export = {
             reference.identifier.parent
           );
           needSync.add({ variable: variable.name, property: propertyName });
+          wasLoaded.add({ variable: variable.name, property: propertyName });
         }
 
         if (operation === "Sync") {
+          hasSync = true;
           needSync.clear();
         }
 
@@ -64,9 +68,11 @@ export = {
           const propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );
-
+          const variableProperty: VariableProperty = { variable: variable.name, property: propertyName };
           if (
-            needSync.has({ variable: variable.name, property: propertyName })
+            needSync.has(variableProperty) 
+            && wasLoaded.has(variableProperty) 
+            && hasSync
           ) {
             const node = reference.identifier;
             context.report({
