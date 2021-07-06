@@ -3,7 +3,7 @@ import {
   findPropertiesRead,
   findOfficeApiReferences,
   OfficeApiReference,
-} from "../utils";
+} from "../utils/utils";
 
 export = {
   name: "call-sync-after-load",

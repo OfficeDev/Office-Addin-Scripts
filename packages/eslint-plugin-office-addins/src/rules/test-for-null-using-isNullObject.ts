@@ -11,7 +11,7 @@ import {
   RuleFix,
   RuleFixer,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint";
-import { isGetOrNullObjectFunction } from "../utils";
+import { isGetOrNullObjectFunction } from "../utils/getFunction";
 
 export = {
   name: "test-for-null-using-isNullObject",
@@ -21,7 +21,8 @@ export = {
       useIsNullObject: "Test the isNullObject property of '{{name}}'.",
     },
     docs: {
-      description: "Do not test the truthiness of an object returned by an OrNullObject method or property. Test it's isNullObject property.",
+      description:
+        "Do not test the truthiness of an object returned by an OrNullObject method or property. Test it's isNullObject property.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Possible Errors",

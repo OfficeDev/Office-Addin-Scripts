@@ -7,9 +7,9 @@ import {
 import {
   getPropertyNameInLoad,
   findPropertiesRead,
-  isGetFunction,
   isLoadFunction,
-} from "../utils";
+} from "../utils/utils";
+import { isGetFunction } from "../utils/getFunction";
 
 export = {
   name: "load-object-before-read",
