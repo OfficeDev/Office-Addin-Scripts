@@ -68,11 +68,14 @@ export = {
           const propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );
-          const variableProperty: VariableProperty = { variable: variable.name, property: propertyName };
+          const variableProperty: VariableProperty = {
+            variable: variable.name,
+            property: propertyName,
+          };
           if (
-            needSync.has(variableProperty) 
-            && wasLoaded.has(variableProperty) 
-            && hasSync
+            needSync.has(variableProperty) &&
+            wasLoaded.has(variableProperty) &&
+            hasSync
           ) {
             const node = reference.identifier;
             context.report({
