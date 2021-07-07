@@ -1,5 +1,5 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
-const getJson = require("./data/getFunctions.json");
+import * as getJson from "./data/getFunctions.json";
 
 const getFunctions: Set<string> = new Set<string>(getJson.getFunctions);
 const getOrNullObjectFunctions: Set<string> = new Set<string>(

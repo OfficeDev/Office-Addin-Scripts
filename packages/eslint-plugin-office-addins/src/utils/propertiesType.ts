@@ -1,4 +1,4 @@
-const propertiesTypeJson = require("./data/propertiesType.json");
+import * as propertiesTypeJson from "./data/propertiesType.json";
 
 export enum PropertyType {
   navigational,

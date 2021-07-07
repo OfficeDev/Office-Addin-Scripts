@@ -15,6 +15,8 @@
     "no-eval": "error",
     "no-delete-var": "warn",
     "no-octal": "warn",
-    "no-inner-declarations": "warn"
+    "no-inner-declarations": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error"
   }
 }
