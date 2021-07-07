@@ -1,40 +1,24 @@
-const metadata = require('./metadata.json');
+const propertiesTypeJson = require("./data/propertiesType.json");
 
 enum PropertyType {
-    navigational,
-    scalar,
-    notProperty,
-};
-
-const navigationProperties: Set<string> = new Set<string> ();
-const scalarProperties: Set<string> = new Set<string> ();
-
-
-metadata.classes.forEach((classe: any) => {
-    classe.properties.forEach((property: any) => {
-        if (property.navigational === true) {
-            navigationProperties.add(property.name);
-        } else if (property.navigational === false) {
-            scalarProperties.add(property.name);
-        }
-    });
-});
-
-export function getPropertyType(propertyName: string): PropertyType {
-    if (navigationProperties.has(propertyName)) {
-        return PropertyType.navigational;
-    } else if (scalarProperties.has(propertyName)) {
-        return PropertyType.scalar;
-    } else {
-        return PropertyType.notProperty;
-    }
+  navigational,
+  scalar,
+  undefined, // Can be scalar or navigational. Depends of the context.
+  notProperty,
 }
 
-console.log(navigationProperties.size);
-console.log(scalarProperties.size);
+const navigationProperties: Set<string> = new Set<string>(propertiesTypeJson.navigational);
+const scalarProperties: Set<string> = new Set<string>(propertiesTypeJson.scalar);
+const undefinedProperties: Set<string> = new Set<string>(propertiesTypeJson.undefined); 
 
-navigationProperties.forEach(property => {
-    if(scalarProperties.has(property)) {
-        console.log(property);
-    }
-})
+export function getPropertyType(propertyName: string): PropertyType {
+  if (navigationProperties.has(propertyName)) {
+    return PropertyType.navigational;
+  } else if (scalarProperties.has(propertyName)) {
+    return PropertyType.scalar;
+  } else if (undefinedProperties.has(propertyName)) {
+    return PropertyType.undefined;
+  } else {
+    return PropertyType.notProperty;
+  }
+}
