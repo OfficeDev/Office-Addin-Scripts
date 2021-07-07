@@ -6,6 +6,7 @@ import {
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { isLoadFunction, getPropertyNameInLoad } from "../utils/utils";
 import { isGetFunction } from "../utils/getFunction";
+import { getPropertyType, PropertyType } from "../utils/propertiesType";
 
 export = {
   name: "no-navigational-load",
@@ -27,15 +28,22 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    function isNavigationalLoad(
+    function trimPropertyName(propertyName: string): string {
+      return propertyName.split("/").pop() ?? "";
+    }
+
+    function isNotScalarLoad(
       node: TSESTree.MemberExpression,
       propertyName: string
     ): boolean {
-      return (
-        isLoadFunction(node) &&
-        node.parent?.type == TSESTree.AST_NODE_TYPES.CallExpression &&
-        node.parent.arguments.length === 0
+      const propertyType: PropertyType = getPropertyType(
+        trimPropertyName(propertyName)
       );
+
+      //if(propertyType !== PropertyType.scalar) {
+      //  return false;
+      //}
+      return isLoadFunction(node) && propertyType !== PropertyType.scalar;
     }
 
     function findNavigationalLoad(scope: Scope) {
@@ -61,7 +69,7 @@ export = {
             const propertyName: string = getPropertyNameInLoad(
               reference.identifier.parent
             );
-            if (isNavigationalLoad(node.parent, propertyName)) {
+            if (isNotScalarLoad(node.parent, propertyName)) {
               context.report({
                 node: node.parent,
                 messageId: "navigationalLoad",

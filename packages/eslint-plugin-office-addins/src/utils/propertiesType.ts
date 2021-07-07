@@ -1,6 +1,6 @@
 const propertiesTypeJson = require("./data/propertiesType.json");
 
-enum PropertyType {
+export enum PropertyType {
   navigational,
   scalar,
   undefined, // Can be scalar or navigational. Depends of the context.
