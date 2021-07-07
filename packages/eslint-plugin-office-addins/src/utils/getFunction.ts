@@ -2,7 +2,9 @@ import { TSESTree } from "@typescript-eslint/experimental-utils";
 const getJson = require("./data/getFunctions.json");
 
 const getFunctions: Set<string> = new Set<string>(getJson.getFunctions);
-const getOrNullObjectFunctions: Set<string> = new Set<string>(getJson.getOrNullObjectFunctions);
+const getOrNullObjectFunctions: Set<string> = new Set<string>(
+  getJson.getOrNullObjectFunctions
+);
 
 export function isGetFunction(node: TSESTree.Node): boolean {
   return (

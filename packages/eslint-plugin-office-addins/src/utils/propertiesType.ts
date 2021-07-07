@@ -7,9 +7,15 @@ enum PropertyType {
   notProperty,
 }
 
-const navigationProperties: Set<string> = new Set<string>(propertiesTypeJson.navigational);
-const scalarProperties: Set<string> = new Set<string>(propertiesTypeJson.scalar);
-const undefinedProperties: Set<string> = new Set<string>(propertiesTypeJson.undefined); 
+const navigationProperties: Set<string> = new Set<string>(
+  propertiesTypeJson.navigational
+);
+const scalarProperties: Set<string> = new Set<string>(
+  propertiesTypeJson.scalar
+);
+const undefinedProperties: Set<string> = new Set<string>(
+  propertiesTypeJson.undefined
+);
 
 export function getPropertyType(propertyName: string): PropertyType {
   if (navigationProperties.has(propertyName)) {
