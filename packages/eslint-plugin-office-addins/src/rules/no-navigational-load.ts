@@ -40,9 +40,6 @@ export = {
         trimPropertyName(propertyName)
       );
 
-      //if(propertyType !== PropertyType.scalar) {
-      //  return false;
-      //}
       return isLoadFunction(node) && propertyType !== PropertyType.scalar;
     }
 
