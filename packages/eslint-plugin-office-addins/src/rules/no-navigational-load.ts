@@ -23,7 +23,7 @@ export = {
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Best Practices",
       recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/en-us/office/dev/add-ins/develop/application-specific-api-model#scalar-and-navigation-properties",
+      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#scalar-and-navigation-properties",
     },
     schema: [],
   },
