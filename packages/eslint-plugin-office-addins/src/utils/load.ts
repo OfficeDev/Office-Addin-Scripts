@@ -2,19 +2,7 @@ import {
   AST_NODE_TYPES,
   TSESTree,
 } from "@typescript-eslint/experimental-utils";
-
-function findTopLevelExpression(
-  node: TSESTree.MemberExpression
-): TSESTree.MemberExpression {
-  while (
-    node.parent &&
-    node.parent.type === AST_NODE_TYPES.MemberExpression
-  ) {
-    node = node.parent;
-  }
-
-  return node;
-}
+import { findTopLevelExpression } from "./utils";
 
 export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
   node = findTopLevelExpression(node);

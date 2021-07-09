@@ -1,4 +1,6 @@
+import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { findTopLevelExpression } from "../utils/utils";
 import { findOfficeApiReferences, OfficeApiReference } from "../utils/utils";
 
 export = {
@@ -22,6 +24,21 @@ export = {
   create: function (context: any) {
     let apiReferences: OfficeApiReference[] = [];
 
+    function checkPropertyRead(node: TSESTree.MemberExpression): boolean {
+      const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
+      switch(topExpression.parent?.type) {
+        case TSESTree.AST_NODE_TYPES.BinaryExpression:
+        case TSESTree.AST_NODE_TYPES.UnaryExpression:
+        case TSESTree.AST_NODE_TYPES.VariableDeclarator:
+        case TSESTree.AST_NODE_TYPES.CallExpression:
+          return true;
+        case TSESTree.AST_NODE_TYPES.AssignmentExpression:
+          return topExpression.parent.right === topExpression;
+        default:
+          return false;
+      }
+    }
+
     function findReadBeforeSync(): void {
       const needSync: Set<Variable> = new Set<Variable>();
 
@@ -38,13 +55,22 @@ export = {
           needSync.clear();
         }
 
-        if (operation === "Read" && variable && needSync.has(variable)) {
-          const node = reference.identifier;
-          context.report({
-            node: node,
-            messageId: "callSync",
-            data: { name: node.name },
-          });
+        if (
+          operation === "Read" && 
+          variable && 
+          needSync.has(variable)
+        ) {
+          const node: TSESTree.Node = reference.identifier;
+          if(
+            node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+            checkPropertyRead(node.parent)
+          ) {
+            context.report({
+              node: node,
+              messageId: "callSync",
+              data: { name: node.name },
+            });
+          }
         }
       });
     }

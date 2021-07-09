@@ -17,6 +17,19 @@ export function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
   );
 }
 
+export function findTopLevelExpression(
+  node: TSESTree.MemberExpression
+): TSESTree.MemberExpression {
+  while (
+    node.parent &&
+    node.parent.type === AST_NODE_TYPES.MemberExpression
+  ) {
+    node = node.parent;
+  }
+
+  return node;
+}
+
 export type OfficeApiReference = {
   operation: "Get" | "Load" | "Sync" | "Read";
   reference: Reference;
