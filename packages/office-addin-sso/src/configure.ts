@@ -24,6 +24,10 @@ export async function createNewApplication(
     const rePort = new RegExp("{PORT}", "g");
     azRestCommand = azRestCommand.replace(reName, ssoAppName).replace(rePort, port);
     const applicationJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */);
+
+    if (applicationJson) {
+      await isApplicationReady(applicationJson["appId"]);
+    }
     return applicationJson;
   } catch (err) {
     const errorMessage: string = `Unable to register new application: \n${err}`;
@@ -31,37 +35,15 @@ export async function createNewApplication(
   }
 }
 
-async function applicationReady(applicationJson: Object): Promise<boolean> {
-  try {
-    const azRestCommand: string = `az ad app show --id ${applicationJson["appId"]}`;
-    const appJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */, true /* expectError */);
-    return appJson !== "";
-  } catch (err) {
-    const errorMessage: string = `Unable to get application info: \n${err}`;
+export async function grantAdminConsent(applicationJson: Object): Promise<void> {
+  const azRestCommand: string = `az ad app permission admin-consent --id ${applicationJson["appId"]}`;
+  let consented: boolean = await waitUntil(() => tryRunAzureCommand(azRestCommand), 10, 1000);
+
+  if (!consented) {
+    const errorMessage: string = `Unable to set grant admin consent.  See results of each attempts`;
     throw new Error(errorMessage);
-  }
-}
-
-export async function grantAdminContent(applicationJson: Object): Promise<void> {
-  try {
-    // Check to see if the application is available before granting admin consent
-    let appReady: boolean = false;
-    let counter: number = 0;
-    while (appReady === false && counter <= 50) {
-      appReady = await applicationReady(applicationJson);
-      counter++;
-    }
-
-    if (counter > 50) {
-      // Application does not appear to be ready to grant admin consent
-      return;
-    }
-
-    const azRestCommand: string = `az ad app permission admin-consent --id ${applicationJson["appId"]}`;
-    await promiseExecuteCommand(azRestCommand);
-  } catch (err) {
-    const errorMessage: string = `Unable to set grant admin consent: \n${err}`;
-    throw new Error(errorMessage);
+  } else {
+    console.log("Consent granted");
   }
 }
 
@@ -213,27 +195,31 @@ export async function setApplicationSecret(applicationJson: Object): Promise<str
 }
 
 export async function setIdentifierUri(applicationJson: Object, port: string): Promise<void> {
-  try {
-    let azRestCommand: string = await fs.readFileSync(defaults.azRestSetIdentifierUriCommmandPath, "utf8");
-    azRestCommand = azRestCommand
-      .replace("<App_Object_ID>", applicationJson["id"])
-      .replace("<App_Id>", applicationJson["appId"])
-      .replace("{PORT}", port.toString());
-    await promiseExecuteCommand(azRestCommand);
-  } catch (err) {
-    const errorMessage: string = `Unable to set identifierUri: \n${err}`;
+  let azRestCommand: string = await fs.readFileSync(defaults.azRestSetIdentifierUriCommmandPath, "utf8");
+  azRestCommand = azRestCommand
+    .replace("<App_Object_ID>", applicationJson["id"])
+    .replace("<App_Id>", applicationJson["appId"])
+    .replace("{PORT}", port.toString());
+  let identifierSet: boolean = await waitUntil(() => tryRunAzureCommand(azRestCommand), 10, 1000);
+
+  if (!identifierSet) {
+    const errorMessage: string = `Unable to set identifierUri.  See results of each attempt`;
     throw new Error(errorMessage);
+  } else {
+    console.log("Itendifier Set");
   }
 }
 
 export async function setSignInAudience(applicationJson: Object): Promise<void> {
-  try {
-    let azRestCommand: string = fs.readFileSync(defaults.azRestSetSigninAudienceCommandPath, "utf8");
-    azRestCommand = azRestCommand.replace("<App_Object_ID>", applicationJson["id"]);
-    await promiseExecuteCommand(azRestCommand);
-  } catch (err) {
-    const errorMessage: string = `Unable to set signInAudience: \n${err}`;
+  let azRestCommand: string = fs.readFileSync(defaults.azRestSetSigninAudienceCommandPath, "utf8");
+  azRestCommand = azRestCommand.replace("<App_Object_ID>", applicationJson["id"]);
+  let signInAudienceSet: boolean = await waitUntil(() => tryRunAzureCommand(azRestCommand), 10, 1000);
+
+  if (!signInAudienceSet) {
+    const errorMessage: string = `Unable to set signInAudience.  See results of each attempt`;
     throw new Error(errorMessage);
+  } else {
+    console.log("Sign In Audience Set");
   }
 }
 
@@ -333,4 +319,57 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
     usageDataObject.reportException("setOutlookTenantReplyUrls()", errorMessage);
     throw new Error(errorMessage);
   }
+}
+
+async function waitUntil(callback: () => Promise<boolean>, retryCount: number, retryDelay: number): Promise<boolean> {
+  let done: boolean = false;
+  let attempts: number = 0;
+
+  while (!done && attempts <= retryCount) {
+    console.log(`    Attempt ${attempts + 1}`);
+    await delay(retryDelay);
+    done = await callback();
+    attempts++;
+  }
+
+  return done;
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+async function tryRunAzureCommand(azureCommand: string) {
+  try {
+    await promiseExecuteCommand(azureCommand);
+    return true;
+  } catch (err) {
+    const errorMessage: string = `    Failed to run ${azureCommand}: \n${err}`;
+    console.log(errorMessage);
+    return false;
+  }
+}
+
+async function checkIsApplicationReady(appId: string): Promise<boolean> {
+  try {
+    const azRestCommand: string = `az ad app show --id ${appId}`;
+    const appJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */, true /* expectError */);
+    return appJson !== "";
+  } catch (err) {
+    const errorMessage: string = `Unable to get application info: \n${err}`;
+    throw new Error(errorMessage);
+  }
+}
+
+async function isApplicationReady(appId: string): Promise<boolean> {
+  // Check to see if the application is available
+  let appReady: boolean = false;
+  let counter: number = 0;
+  while (appReady === false && counter <= 50) {
+    appReady = await checkIsApplicationReady(appId);
+    counter++;
+  }
+  return appReady;
 }
