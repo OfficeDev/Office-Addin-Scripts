@@ -41,6 +41,7 @@ export function getLoadArgument(node: TSESTree.Node | undefined): string {
   if (
     node &&
     node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+    isLoadFunction(node) &&
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
     if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
