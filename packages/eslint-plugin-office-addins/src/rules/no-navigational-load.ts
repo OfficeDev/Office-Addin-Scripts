@@ -28,19 +28,18 @@ export = {
     schema: [],
   },
   create: function (context: any) {
-    function trimPropertyName(propertyName: string): string {
-      return propertyName.split("/").pop() ?? "";
-    }
+    function isLoadingValidPropeties(propertyName: string): boolean {
+      const properties = propertyName.split("/");
+      const lastProperty = properties.pop();
+      if (!lastProperty) return false;
 
-    function isNotScalarLoad(
-      node: TSESTree.MemberExpression,
-      propertyName: string
-    ): boolean {
-      const propertyType: PropertyType = getPropertyType(
-        trimPropertyName(propertyName)
-      );
+      for (const property of properties) {
+        if (getPropertyType(property) !== PropertyType.navigational) {
+          return false;
+        }
+      }
 
-      return isLoadFunction(node) && propertyType !== PropertyType.scalar;
+      return getPropertyType(lastProperty) === PropertyType.scalar;
     }
 
     function findNavigationalLoad(scope: Scope) {
@@ -69,7 +68,7 @@ export = {
             const propertyName: string = getLiteralArgumentName(
               reference.identifier.parent
             );
-            if (isNotScalarLoad(node.parent, propertyName)) {
+            if (!isLoadingValidPropeties(propertyName)) {
               context.report({
                 node: node.parent,
                 messageId: "navigationalLoad",
