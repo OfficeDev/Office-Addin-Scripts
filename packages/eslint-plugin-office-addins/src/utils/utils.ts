@@ -5,13 +5,7 @@ import {
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { isGetFunction } from "./getFunction";
-
-export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
-  return (
-    node.property.type === TSESTree.AST_NODE_TYPES.Identifier &&
-    node.property.name === "load"
-  );
-}
+import { isLoadReference } from "./load";
 
 export function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
   return (
@@ -27,14 +21,6 @@ export type OfficeApiReference = {
   operation: "Read" | "Load" | "Write" | "Sync";
   reference: Reference;
 };
-
-export function isLoadReference(node: TSESTree.Identifier) {
-  return (
-    node.parent &&
-    node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-    isLoadFunction(node.parent)
-  );
-}
 
 let proxyVariables: Set<Variable>;
 let apiReferences: OfficeApiReference[];
@@ -85,18 +71,4 @@ export function findPropertiesRead(node: TSESTree.Node | undefined): string {
     node = node.parent;
   }
   return propertyName.slice(0, -1);
-}
-
-export function getLiteralArgumentName(
-  node: TSESTree.Node | undefined
-): string {
-  if (
-    node &&
-    node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-    node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression &&
-    node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal
-  ) {
-    return node.parent.arguments[0].value as string;
-  }
-  throw new Error("error in getLiteralArgumentName function.");
 }

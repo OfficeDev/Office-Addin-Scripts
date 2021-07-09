@@ -41,6 +41,12 @@ ruleTester.run('no-navigational-load', rule, {
                 myRange.load('notAProperty');
                 var test = myRange.notAProperty;`
     	},
+		{
+			code: `
+                var range = context.workbook.getRange();
+                range.load({borders: { fill: { color: true } } });
+                if (myRange.borders.fill.color);`
+    	},
 	],
 	invalid: [
 		{
@@ -68,5 +74,11 @@ ruleTester.run('no-navigational-load', rule, {
                 console.log(range.borders.fill); // Navigational`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "borders/fill" } }]
 		},
+		/*{
+			code: `
+                var range = worksheet.getRange("A1");
+                range.load({borders: { fill: true } });`,
+			errors: [{ messageId: "navigationalLoad", data: { loadValue: "borders/fill" } }]
+		},*/
 	]
 });

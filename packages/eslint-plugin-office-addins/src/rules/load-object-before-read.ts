@@ -4,11 +4,8 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import {
-  getLiteralArgumentName,
-  findPropertiesRead,
-  isLoadFunction,
-} from "../utils/utils";
+import { getLoadArgument, isLoadFunction } from "../utils/load";
+import { findPropertiesRead } from "../utils/utils";
 import { isGetFunction } from "../utils/getFunction";
 
 export = {
@@ -78,10 +75,7 @@ export = {
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
             if (isLoadFunction(node.parent)) {
               // In case it is a load function
-              loadLocation.set(
-                getLiteralArgumentName(node.parent),
-                node.range[1]
-              );
+              loadLocation.set(getLoadArgument(node.parent), node.range[1]);
               return;
             }
           }
