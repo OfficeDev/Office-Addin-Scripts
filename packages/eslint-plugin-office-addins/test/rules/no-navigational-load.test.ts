@@ -10,8 +10,8 @@ ruleTester.run('no-navigational-load', rule, {
 		{
 			code: `
                 var range = worksheet.getRange("A1");
-                range.load("font/fill/size");
-                console.log(range.font.fill.size);`
+                range.load("borders/fill/size");
+                console.log(range.borders.fill.size);`
 		},
 		{
 			code: `
@@ -64,9 +64,9 @@ ruleTester.run('no-navigational-load', rule, {
 		{
 			code: `
                 var range = worksheet.getRange("A1");
-                range.load("font/fill");
-                console.log(range.font.fill); // Navigational`,
-			errors: [{ messageId: "navigationalLoad", data: { loadValue: "font/fill" } }]
+                range.load("borders/fill");
+                console.log(range.borders.fill); // Navigational`,
+			errors: [{ messageId: "navigationalLoad", data: { loadValue: "borders/fill" } }]
 		},
 	]
 });
