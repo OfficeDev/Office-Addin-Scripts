@@ -3,16 +3,19 @@ import {
   TSESTree,
 } from "@typescript-eslint/experimental-utils";
 
-function findMemberExpresionBeforeLoad(node: TSESTree.Node | undefined): TSESTree.MemberExpression {
-  if (node &&
-    node.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
-      while (node.parent && 
-        node.parent.type === AST_NODE_TYPES.MemberExpression) {
-        node = node.parent;
-      }
-    } else {
-      throw "Error in findMemberExpresionBeforeLoad";
+function findMemberExpresionBeforeLoad(
+  node: TSESTree.Node | undefined
+): TSESTree.MemberExpression {
+  if (node && node.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
+    while (
+      node.parent &&
+      node.parent.type === AST_NODE_TYPES.MemberExpression
+    ) {
+      node = node.parent;
     }
+  } else {
+    throw "Error in findMemberExpresionBeforeLoad";
+  }
 
   return node;
 }
