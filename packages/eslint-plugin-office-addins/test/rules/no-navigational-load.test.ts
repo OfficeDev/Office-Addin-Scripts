@@ -45,7 +45,13 @@ ruleTester.run('no-navigational-load', rule, {
 			code: `
                 var range = context.workbook.getRange();
                 range.load({borders: { fill: { color: true } } });
-                if (myRange.borders.fill.color);`
+                if (range.borders.fill.color);`
+    	},
+		{
+			code: `
+                var range = context.workbook.getRange();
+                range.borders.fill.load("color");
+                console.log(range.borders.fill.color);`
     	},
 	],
 	invalid: [
@@ -79,6 +85,13 @@ ruleTester.run('no-navigational-load', rule, {
                 var range = worksheet.getRange("A1");
                 range.load({borders: { fill: true } });`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "borders/fill" } }]
+		},
+		{
+			code: `
+                var range = context.workbook.getRange();
+                range.borders.load("fill");
+                console.log(range.borders.fill);`,
+			errors: [{ messageId: "navigationalLoad", data: { loadValue: "fill" } }]
 		},
 	]
 });
