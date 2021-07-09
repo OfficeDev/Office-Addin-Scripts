@@ -18,7 +18,7 @@ export function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
 }
 
 export type OfficeApiReference = {
-  operation: "Read" | "Load" | "Write" | "Sync";
+  operation: "Get" | "Load" | "Sync" | "Read";
   reference: Reference;
 };
 
@@ -40,7 +40,7 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
       reference.resolved
     ) {
       proxyVariables.add(reference.resolved);
-      apiReferences.push({ operation: "Write", reference: reference });
+      apiReferences.push({ operation: "Get", reference: reference });
     } else if (isContextSyncIdentifier(reference.identifier)) {
       apiReferences.push({ operation: "Sync", reference: reference });
     } else if (
