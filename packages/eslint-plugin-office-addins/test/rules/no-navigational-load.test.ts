@@ -9,57 +9,64 @@ ruleTester.run('no-navigational-load', rule, {
 	valid: [ 
 		{
 			code: `
-				var range = worksheet.getRange("A1");
-				range.load("format/fill/size");
-				console.log(range.format.fill.size);`
+                var range = worksheet.getRange("A1");
+                range.load("font/fill/size");
+                console.log(range.font.fill.size);`
 		},
 		{
 			code: `
-				var sheetName = 'Sheet1';
-				var rangeAddress = 'A1:B2';
-				var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
-				myRange.load('address');
-				context.sync()
-						.then(function () {
-						console.log (myRange.address);   // ok
-						});`
+                var sheetName = 'Sheet1';
+                var rangeAddress = 'A1:B2';
+                var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
+                myRange.load('address');
+                context.sync()
+                        .then(function () {
+                        console.log (myRange.address);   // ok
+                        });`
 		},
 		{
 			code: `
-				var selectedRange = context.workbook.getSelectedRange();
-				selectedRange.load('text'); // Scalar`
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load('text'); // Scalar`
 		},
 		{
 			code: `
-				var selectedRange = context.workbook.getSelectedRange();
-				selectedRange.load('values');
-				if(selectedRange.values === [2]){}`
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load('values');
+                if(selectedRange.values === [2]){}`
 		},
 		{
 			code: `
-				var myRange = context.workbook.worksheets.notAGet();
-				myRange.load('notAProperty');
-				var test = myRange.notAProperty;`
+                var myRange = context.workbook.worksheets.notAGet();
+                myRange.load('notAProperty');
+                var test = myRange.notAProperty;`
     	},
 	],
 	invalid: [
 		{
 			code: `
-				var property = worksheet.getItem("sheet");
-				property.load('thisIsNotAProperty'); //Not a property`,
+                var property = worksheet.getItem("sheet");
+                property.load('thisIsNotAProperty'); //Not a property`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "thisIsNotAProperty" } }]
 		},
 		{
 			code: `
-				var property = worksheet.getItem("sheet");
-				property.load('styles'); // Navigational`,
+                var property = worksheet.getItem("sheet");
+                property.load('styles'); // Navigational`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "styles" } }]
 		},
 		{
 			code: `
-				var range = worksheet.getRange("A1");
-				range.load('fill'); // Navigational`,
+                var range = worksheet.getRange("A1");
+                range.load('fill'); // Navigational`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "fill" } }]
+		},
+		{
+			code: `
+                var range = worksheet.getRange("A1");
+                range.load("font/fill");
+                console.log(range.font.fill); // Navigational`,
+			errors: [{ messageId: "navigationalLoad", data: { loadValue: "font/fill" } }]
 		},
 	]
 });
