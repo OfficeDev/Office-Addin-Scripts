@@ -1,4 +1,7 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { 
+  AST_NODE_TYPES,
+  TSESTree 
+} from "@typescript-eslint/experimental-utils";
 import {
   Reference,
   Scope,
@@ -10,9 +13,9 @@ import { isLoadReference } from "./load";
 export function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
   return (
     node.name === "context" &&
-    node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-    node.parent?.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression &&
-    node.parent?.property.type === TSESTree.AST_NODE_TYPES.Identifier &&
+    node.parent?.type === AST_NODE_TYPES.MemberExpression &&
+    node.parent?.parent?.type === AST_NODE_TYPES.CallExpression &&
+    node.parent?.property.type === AST_NODE_TYPES.Identifier &&
     node.parent?.property.name === "sync"
   );
 }
@@ -76,8 +79,8 @@ export function findPropertiesRead(node: TSESTree.Node | undefined): string {
   let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
   while (node) {
     if (
-      node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-      node.property.type === TSESTree.AST_NODE_TYPES.Identifier
+      node.type === AST_NODE_TYPES.MemberExpression &&
+      node.property.type === AST_NODE_TYPES.Identifier
     ) {
       propertyName += node.property.name + "/";
     }
