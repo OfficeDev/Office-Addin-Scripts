@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-excel-custom-functions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ESLint rules that report usage of Office Api Code in Shared App",
   "author": "Artur Tarasenko <artarase@microsoft.com>",
   "license": "MIT",
@@ -50,8 +50,8 @@
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
-    "office-addin-lint": "^1.3.0",
-    "office-addin-usage-data": "^1.3.0",
+    "office-addin-lint": "^1.3.1",
+    "office-addin-usage-data": "^1.3.1",
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
     "semantic-release": "^17.3.7",
