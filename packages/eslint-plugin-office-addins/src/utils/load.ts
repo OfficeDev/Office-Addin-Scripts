@@ -3,25 +3,21 @@ import {
   TSESTree,
 } from "@typescript-eslint/experimental-utils";
 
-function findMemberExpresionBeforeLoad(
-  node: TSESTree.Node | undefined
+function findTopLevelExpression(
+  node: TSESTree.MemberExpression
 ): TSESTree.MemberExpression {
-  if (node && node.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
-    while (
-      node.parent &&
-      node.parent.type === AST_NODE_TYPES.MemberExpression
-    ) {
-      node = node.parent;
-    }
-  } else {
-    throw "Error in findMemberExpresionBeforeLoad";
+  while (
+    node.parent &&
+    node.parent.type === AST_NODE_TYPES.MemberExpression
+  ) {
+    node = node.parent;
   }
 
   return node;
 }
 
 export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
-  node = findMemberExpresionBeforeLoad(node);
+  node = findTopLevelExpression(node);
 
   return (
     node.parent?.type === AST_NODE_TYPES.CallExpression &&
@@ -57,8 +53,8 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
-export function getLoadArgument(node: TSESTree.Node | undefined): string {
-  node = findMemberExpresionBeforeLoad(node);
+export function getLoadArgument(node: TSESTree.MemberExpression): string {
+  node = findTopLevelExpression(node);
 
   if (
     isLoadFunction(node) &&

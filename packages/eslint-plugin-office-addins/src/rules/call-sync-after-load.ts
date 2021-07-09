@@ -1,3 +1,5 @@
+import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { Reference } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { getLoadArgument } from "../utils/load";
 import {
   findPropertiesRead,
@@ -46,13 +48,16 @@ export = {
 
       apiReferences.forEach((apiReference) => {
         const operation = apiReference.operation;
-        const reference = apiReference.reference;
+        const reference: Reference = apiReference.reference;
+        const identifier: TSESTree.Node = reference.identifier;
         const variable = reference.resolved;
 
-        if (operation === "Load" && variable) {
-          const propertyName: string = getLoadArgument(
-            reference.identifier.parent
-          );
+        if (
+          operation === "Load" && 
+          variable && 
+          identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
+        ) {
+          const propertyName: string = getLoadArgument(identifier.parent);
           needSync.add({ variable: variable.name, property: propertyName });
         }
 
