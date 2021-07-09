@@ -1,4 +1,7 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
+import {
+  AST_NODE_TYPES,
+  TSESTree,
+} from "@typescript-eslint/experimental-utils";
 
 export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
   return (
@@ -16,9 +19,22 @@ export function isLoadReference(node: TSESTree.Identifier) {
 }
 
 function composeObjectExpressionPropertyIntoString(
-  property: TSESTree.ObjectExpression
+  objectExpression: TSESTree.ObjectExpression
 ): string {
-  return "keffjfkdj";
+  let composedProperty: string = "";
+  objectExpression.properties.forEach((property) => {
+    if (property.type === AST_NODE_TYPES.Property) {
+      if (property.key.type === AST_NODE_TYPES.Identifier) {
+        composedProperty += property.key.name;
+      }
+      if (property.value.type === AST_NODE_TYPES.ObjectExpression) {
+        composedProperty +=
+          "/" + composeObjectExpressionPropertyIntoString(property.value);
+      }
+    }
+  });
+
+  return composedProperty;
 }
 
 export function getLoadArgument(node: TSESTree.Node | undefined): string {
