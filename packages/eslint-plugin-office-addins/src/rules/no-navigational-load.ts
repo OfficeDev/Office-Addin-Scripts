@@ -4,7 +4,7 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { isLoadFunction, getPropertyNameInLoad } from "../utils/utils";
+import { isLoadFunction, getLiteralArgumentName } from "../utils/utils";
 import { isGetFunction } from "../utils/getFunction";
 import { getPropertyType, PropertyType } from "../utils/propertiesType";
 
@@ -62,8 +62,11 @@ export = {
             return;
           }
 
-          if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
-            const propertyName: string = getPropertyNameInLoad(
+          if (
+            node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+            isLoadFunction(node.parent)
+          ) {
+            const propertyName: string = getLiteralArgumentName(
               reference.identifier.parent
             );
             if (isNotScalarLoad(node.parent, propertyName)) {

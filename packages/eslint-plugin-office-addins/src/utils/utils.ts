@@ -87,7 +87,9 @@ export function findPropertiesRead(node: TSESTree.Node | undefined): string {
   return propertyName.slice(0, -1);
 }
 
-export function getPropertyNameInLoad(node: TSESTree.Node | undefined): string {
+export function getLiteralArgumentName(
+  node: TSESTree.Node | undefined
+): string {
   if (
     node &&
     node.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
@@ -96,5 +98,5 @@ export function getPropertyNameInLoad(node: TSESTree.Node | undefined): string {
   ) {
     return node.parent.arguments[0].value as string;
   }
-  return "error in getPropertyNameInLoad";
+  throw new Error("error in getLiteralArgumentName function.");
 }

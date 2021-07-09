@@ -5,7 +5,7 @@ import {
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import {
-  getPropertyNameInLoad,
+  getLiteralArgumentName,
   findPropertiesRead,
   isLoadFunction,
 } from "../utils/utils";
@@ -79,7 +79,7 @@ export = {
             if (isLoadFunction(node.parent)) {
               // In case it is a load function
               loadLocation.set(
-                getPropertyNameInLoad(node.parent),
+                getLiteralArgumentName(node.parent),
                 node.range[1]
               );
               return;

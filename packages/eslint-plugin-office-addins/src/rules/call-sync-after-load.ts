@@ -1,5 +1,5 @@
 import {
-  getPropertyNameInLoad,
+  getLiteralArgumentName,
   findPropertiesRead,
   findOfficeApiReferences,
   OfficeApiReference,
@@ -50,7 +50,7 @@ export = {
         const variable = reference.resolved;
 
         if (operation === "Load" && variable) {
-          const propertyName: string = getPropertyNameInLoad(
+          const propertyName: string = getLiteralArgumentName(
             reference.identifier.parent
           );
           needSync.add({ variable: variable.name, property: propertyName });
