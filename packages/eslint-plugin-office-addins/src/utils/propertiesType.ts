@@ -3,7 +3,7 @@ import * as propertiesTypeJson from "./data/propertiesType.json";
 export enum PropertyType {
   navigational,
   scalar,
-  undefined, // Can be scalar or navigational. Depends of the context.
+  ambiguous, // Can be scalar or navigational. Depends of the context.
   notProperty,
 }
 
@@ -13,8 +13,8 @@ const navigationProperties: Set<string> = new Set<string>(
 const scalarProperties: Set<string> = new Set<string>(
   propertiesTypeJson.scalar
 );
-const undefinedProperties: Set<string> = new Set<string>(
-  propertiesTypeJson.undefined
+const ambiguousProperties: Set<string> = new Set<string>(
+  propertiesTypeJson.ambiguous
 );
 
 export function getPropertyType(propertyName: string): PropertyType {
@@ -22,8 +22,8 @@ export function getPropertyType(propertyName: string): PropertyType {
     return PropertyType.navigational;
   } else if (scalarProperties.has(propertyName)) {
     return PropertyType.scalar;
-  } else if (undefinedProperties.has(propertyName)) {
-    return PropertyType.undefined;
+  } else if (ambiguousProperties.has(propertyName)) {
+    return PropertyType.ambiguous;
   } else {
     return PropertyType.notProperty;
   }

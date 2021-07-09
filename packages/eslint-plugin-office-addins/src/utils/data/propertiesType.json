@@ -579,7 +579,7 @@
     "serviceId",
     "supportedRefreshModes"
   ],
-  "undefined": [
+  "ambiguous": [
     "comment",
     "comments",
     "format",
