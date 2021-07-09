@@ -1,9 +1,9 @@
+import { getLoadArgument } from "../utils/load";
 import {
-  getPropertyNameInLoad,
   findPropertiesRead,
   findOfficeApiReferences,
   OfficeApiReference,
-} from "../utils";
+} from "../utils/utils";
 
 export = {
   name: "call-sync-after-load",
@@ -50,7 +50,7 @@ export = {
         const variable = reference.resolved;
 
         if (operation === "Load" && variable) {
-          const propertyName: string = getPropertyNameInLoad(
+          const propertyName: string = getLoadArgument(
             reference.identifier.parent
           );
           needSync.add({ variable: variable.name, property: propertyName });

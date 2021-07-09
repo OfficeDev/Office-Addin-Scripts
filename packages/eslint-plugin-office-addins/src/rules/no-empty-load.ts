@@ -4,7 +4,8 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { isGetFunction, isLoadFunction } from "../utils";
+import { isGetFunction } from "../utils/getFunction";
+import { isLoadFunction } from "../utils/load";
 
 export = {
   name: "no-empty-load",

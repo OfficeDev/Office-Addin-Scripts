@@ -1,5 +1,5 @@
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { findOfficeApiReferences, OfficeApiReference } from "../utils";
+import { findOfficeApiReferences, OfficeApiReference } from "../utils/utils";
 
 export = {
   name: "call-sync-before-read",
@@ -9,7 +9,8 @@ export = {
       callSync: "Call context.sync() before trying to read '{{name}}'.",
     },
     docs: {
-      description: "Always call load on the object's properties followed by a context.sync() before reading them.",
+      description:
+        "Always call load on the object's properties followed by a context.sync() before reading them.",
       category: <
         "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
       >"Possible Errors",
