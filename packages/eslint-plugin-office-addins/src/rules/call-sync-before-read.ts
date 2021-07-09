@@ -29,7 +29,7 @@ export = {
         const reference = apiReference.reference;
         const variable = reference.resolved;
 
-        if (operation === "Write" && variable) {
+        if (operation === "Get" && variable) {
           needSync.add(variable);
         }
 
