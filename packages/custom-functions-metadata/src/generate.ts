@@ -739,9 +739,9 @@ function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
 /**
  * If a node contains the named tag, returns the tag comment, otherwise returns "".
  */
-function getTagComment(node: ts.Node, tagName: string) {
+function getTagComment(node: ts.Node, tagName: string): string {
   const tag = findTag(node, tagName);
-  return tag && tag.comment ? tag.comment : "";
+  return tag && tag.comment ? tag.comment.toString() : "";
 }
 
 /**
@@ -816,7 +816,8 @@ function getJSDocParams(node: ts.Node): { [key: string]: string } {
 
   ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach((tag: ts.JSDocTag) => {
     if (tag.comment) {
-      const comment = (tag.comment.startsWith("-") ? tag.comment.slice(1) : tag.comment).trim();
+      const tagComment = tag.comment.toString();
+      const comment = (tagComment.startsWith("-") ? tagComment.slice(1) : tagComment).trim();
       // @ts-ignore
       jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = comment;
     } else {
