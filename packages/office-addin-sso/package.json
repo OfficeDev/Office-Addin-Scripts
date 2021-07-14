@@ -52,8 +52,8 @@
     "office-addin-manifest": "^1.6.1",
     "office-addin-test-helpers": "^1.1.1",
     "rimraf": "^3.0.2",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.1.5"
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
   },
   "repository": {
     "type": "git",
