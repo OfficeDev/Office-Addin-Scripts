@@ -27,7 +27,7 @@
     "office-addin-prettier-config": "^1.1.0",
     "prettier": "^2.1.2",
     "requireindex": "~1.1.0",
-    "typescript": "^3.8.3"
+    "typescript": "^4.3.5"
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
