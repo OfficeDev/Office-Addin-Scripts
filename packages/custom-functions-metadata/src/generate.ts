@@ -741,7 +741,7 @@ function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
  */
 function getTagComment(node: ts.Node, tagName: string): string {
   const tag = findTag(node, tagName);
-  return tag && tag.comment ? tag.comment.toString() : "";
+  return tag?.comment?.toString() || "";
 }
 
 /**
