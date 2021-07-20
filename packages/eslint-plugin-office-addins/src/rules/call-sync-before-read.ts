@@ -24,7 +24,7 @@ export = {
   create: function (context: any) {
     let apiReferences: OfficeApiReference[] = [];
 
-    function checkPropertyRead(node: TSESTree.MemberExpression): boolean {
+    function checkPropertyIsRead(node: TSESTree.MemberExpression): boolean {
       const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
       switch(topExpression.parent?.type) {
         case TSESTree.AST_NODE_TYPES.AssignmentExpression:
@@ -58,7 +58,7 @@ export = {
           const node: TSESTree.Node = reference.identifier;
           if(
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-            checkPropertyRead(node.parent)
+            checkPropertyIsRead(node.parent)
           ) {
             context.report({
               node: node,
