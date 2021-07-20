@@ -27,15 +27,10 @@ export = {
     function checkPropertyRead(node: TSESTree.MemberExpression): boolean {
       const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
       switch(topExpression.parent?.type) {
-        case TSESTree.AST_NODE_TYPES.BinaryExpression:
-        case TSESTree.AST_NODE_TYPES.UnaryExpression:
-        case TSESTree.AST_NODE_TYPES.VariableDeclarator:
-        case TSESTree.AST_NODE_TYPES.CallExpression:
-          return true;
         case TSESTree.AST_NODE_TYPES.AssignmentExpression:
           return topExpression.parent.right === topExpression;
         default:
-          return false;
+          return true;
       }
     }
 

@@ -57,6 +57,26 @@ ruleTester.run('call-sync-before-read', rule, {
         }
       })`
     },
+    {
+      code: `
+      Excel.run(function (context) {
+        var dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
+        if (true) {
+          dataSheet.position = 1;  // Write is OK
+        }
+        await context.sync();
+      });`
+    },
+    {
+      code: `
+      var range = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
+      range.format.fill.color = "yellow";`
+    },
+    {
+      code: `
+      var range = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
+      range.format.font.load('color');`
+    },
   ],
   invalid: [
     {
@@ -103,7 +123,6 @@ ruleTester.run('call-sync-before-read', rule, {
       });`,
       errors: [
         { messageId: "callSync", data: { name: "dataSheet" } },
-        { messageId: "callSync", data: { name: "dataSheet" } },
       ]
     },
     {
@@ -111,11 +130,27 @@ ruleTester.run('call-sync-before-read', rule, {
       Excel.run(function (context) {
         var dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
         if (true) {
-          dataSheet.position = 1;
+          var pos = dataSheet.position;
         }
         await context.sync();
       });`,
       errors: [ { messageId: "callSync", data: { name: "dataSheet" } } ]
+    },
+    {
+      code: `
+      var range = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
+      range.format.fill.color == "yellow";`,
+      errors: [ { messageId: "callSync", data: { name: "range" } } ]
+    },
+    {
+      code: `
+      var range = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
+      var value = range.format.fill.color;
+      value = range.format.fill.color;`,
+      errors: [ 
+        { messageId: "callSync", data: { name: "range" } },
+        { messageId: "callSync", data: { name: "range" } } 
+      ]
     },
   ]
 });
