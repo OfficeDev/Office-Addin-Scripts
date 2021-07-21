@@ -240,19 +240,16 @@ describe("Appcontainer", async function() {
       });
       it("undefined source location", async function() {
         const manifest = {defaultSettings: ""};
-        const readManifestFile = sinon.fake.returns(manifest);
+        const readManifestFile = sinon.fake.resolves(manifest);
         sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
-        try {
-          await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
-          assert.strictEqual(0, 1); // expecting exception
-        } catch (err) {
-          assert.strictEqual(err.toString().includes("The source location could not be retrieved from the manifest."), true);
-        }
+        assert.rejects(() => {
+          return appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html"); 
+        }, "The source location could not be retrieved from the manifest.");
       });
       it("valid source location", async function() {
         const sourceLocation = {sourceLocation: "https://localhost"};
         const manifest = {defaultSettings: sourceLocation};
-        const readManifestFile = sinon.fake.returns(manifest);
+        const readManifestFile = sinon.fake.resolves(manifest);
         sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
         const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost");
         assert.strictEqual(appcontainerName, "1_https___localhost04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
