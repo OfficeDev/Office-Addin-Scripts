@@ -1,4 +1,6 @@
+import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { findTopLevelExpression } from "../utils/utils";
 import { findOfficeApiReferences, OfficeApiReference } from "../utils/utils";
 
 export = {
@@ -22,6 +24,16 @@ export = {
   create: function (context: any) {
     let apiReferences: OfficeApiReference[] = [];
 
+    function checkPropertyIsRead(node: TSESTree.MemberExpression): boolean {
+      const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
+      switch(topExpression.parent?.type) {
+        case TSESTree.AST_NODE_TYPES.AssignmentExpression:
+          return topExpression.parent.right === topExpression;
+        default:
+          return true;
+      }
+    }
+
     function findReadBeforeSync(): void {
       const needSync: Set<Variable> = new Set<Variable>();
 
@@ -30,7 +42,7 @@ export = {
         const reference = apiReference.reference;
         const variable = reference.resolved;
 
-        if (operation === "Write" && variable) {
+        if (operation === "Get" && variable) {
           needSync.add(variable);
         }
 
@@ -38,13 +50,22 @@ export = {
           needSync.clear();
         }
 
-        if (operation === "Read" && variable && needSync.has(variable)) {
-          const node = reference.identifier;
-          context.report({
-            node: node,
-            messageId: "callSync",
-            data: { name: node.name },
-          });
+        if (
+          operation === "Read" && 
+          variable && 
+          needSync.has(variable)
+        ) {
+          const node: TSESTree.Node = reference.identifier;
+          if(
+            node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+            checkPropertyIsRead(node.parent)
+          ) {
+            context.report({
+              node: node,
+              messageId: "callSync",
+              data: { name: node.name },
+            });
+          }
         }
       });
     }

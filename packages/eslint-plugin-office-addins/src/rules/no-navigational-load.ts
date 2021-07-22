@@ -65,9 +65,7 @@ export = {
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             isLoadFunction(node.parent)
           ) {
-            const propertyName: string = getLoadArgument(
-              reference.identifier.parent
-            );
+            const propertyName: string = getLoadArgument(node.parent);
             if (!isLoadingValidPropeties(propertyName)) {
               context.report({
                 node: node.parent,
