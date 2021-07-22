@@ -3,7 +3,7 @@
 
 import * as chalk from "chalk";
 import { parseNumber } from "office-addin-cli";
-import { ManifestInfo, readManifestFile } from "office-addin-manifest";
+import { ManifestInfo, OfficeAddinManifest } from "office-addin-manifest";
 import { usageDataObject } from "./defaults";
 import * as configure from "./configure";
 import { SSOService } from "./server";
@@ -46,7 +46,7 @@ export async function configureSSO(manifestPath: string) {
   const userJson: Object = await configure.logIntoAzure();
   if (Object.keys(userJson).length >= 1) {
     console.log("Login was successful!");
-    const manifestInfo: ManifestInfo = await readManifestFile(manifestPath);
+    const manifestInfo: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     // Register application in Azure
     console.log("Registering new application in Azure");

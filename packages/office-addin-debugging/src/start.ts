@@ -6,7 +6,7 @@ import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
 import * as os from "os";
 import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
-import { OfficeApp, readManifestFile } from "office-addin-manifest";
+import { OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
 import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
@@ -292,7 +292,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     console.log(enableDebugging ? "Debugging is being started..." : "Starting without debugging...");
     console.log(`App type: ${appType}`);
 
-    const manifestInfo = await readManifestFile(manifestPath);
+    const manifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
       throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");

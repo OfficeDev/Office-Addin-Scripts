@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
-import { readManifestFile } from "office-addin-manifest";
+import { OfficeAddinManifest } from "office-addin-manifest";
 import * as fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
@@ -229,7 +229,7 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
 export async function registerAddIn(manifestPath: string): Promise<void> {
   switch (process.platform) {
     case "win32": {
-      const manifest = await readManifestFile(manifestPath);
+      const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
       return devSettingsWindows.registerAddIn(manifest.id || "", realManifestPath);
     }
@@ -263,7 +263,7 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
     case "darwin":
       return devSettingsMac.unregisterAddIn(manifestPath);
     case "win32": {
-      const manifest = await readManifestFile(manifestPath);
+      const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
       return devSettingsWindows.unregisterAddIn(manifest.id || "", realManifestPath);
     }

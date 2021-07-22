@@ -3,7 +3,7 @@
 
 import * as fs from "fs-extra";
 import * as junk from "junk";
-import { getOfficeApps, getOfficeAppsForManifestHosts, OfficeApp, readManifestFile } from "office-addin-manifest";
+import { getOfficeApps, getOfficeAppsForManifestHosts, OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import * as os from "os";
 import * as path from "path";
 import { RegisteredAddin } from "./dev-settings";
@@ -18,7 +18,7 @@ export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
     if (sideloadDirectory && fs.existsSync(sideloadDirectory)) {
       for (const fileName of fs.readdirSync(sideloadDirectory).filter(junk.not)) {
         const manifestPath = fs.realpathSync(path.join(sideloadDirectory, fileName));
-        const manifest = await readManifestFile(manifestPath);
+        const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
         registeredAddins.push(new RegisteredAddin(manifest.id || "", manifestPath));
       }
     }
@@ -40,7 +40,7 @@ function getSideloadDirectory(app: OfficeApp): string | undefined {
 
 export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp[]) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     if (!officeApps) {
       officeApps = getOfficeAppsForManifestHosts(manifest.hosts);
@@ -71,7 +71,7 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
 }
 
 export async function unregisterAddIn(manifestPath: string): Promise<void> {
-  const manifest = await readManifestFile(manifestPath);
+  const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
   if (!manifest.id) {
     throw new ExpectedError("The manifest file doesn't contain the id of the Office Add-in.");
