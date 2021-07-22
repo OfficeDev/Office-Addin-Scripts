@@ -37,6 +37,8 @@ export class ManifestInfo {
   public defaultSettings?: DefaultSettings;
 }
 
+export namespace OfficeAddinManifest {
+
 function parseManifest(xml: Xml): ManifestInfo {
   const manifest: ManifestInfo = new ManifestInfo();
   const officeApp: Xml = xml.OfficeApp;
@@ -170,4 +172,6 @@ async function writeManifestData(manifestPath: string, manifestData: any): Promi
   } catch (err) {
     throw new Error(`Unable to write to file. ${manifestPath} \n${err}`);
   }
+}
+
 }

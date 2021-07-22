@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { clearDevSettings, unregisterAddIn } from "office-addin-dev-settings";
-import { readManifestFile } from "office-addin-manifest";
+import { OfficeAddinManifest } from "office-addin-manifest";
 import * as debugInfo from "./debugInfo";
 import { stopProcess } from "./process";
 import { usageDataObject } from "./defaults";
@@ -15,7 +15,7 @@ export async function stopDebugging(manifestPath: string) {
     console.log("Debugging is being stopped...");
 
     const isWindowsPlatform = process.platform === "win32";
-    const manifestInfo = await readManifestFile(manifestPath);
+    const manifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
       throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");

@@ -8,7 +8,7 @@ import * as path from "path";
 import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
-import * as manifestInfo from "../src/manifestInfo";
+import { OfficeAddinManifest } from "../src/manifestInfo";
 import {
   getOfficeAppForManifestHost,
   getOfficeAppName,
@@ -402,7 +402,7 @@ describe("Unit Tests", function() {
   describe("manifestInfo.ts", function() {
     describe("readManifestInfo()", function() {
       it("should read the manifest info", async function() {
-        const info = await manifestInfo.readManifestFile("test/manifests/TaskPane.manifest.xml");
+        const info = await OfficeAddinManifest.readManifestFile("test/manifests/TaskPane.manifest.xml");
 
         assert.strictEqual(info.allowSnapshot, undefined);
         assert.strictEqual(info.alternateId, undefined);
@@ -433,14 +433,14 @@ describe("Unit Tests", function() {
       it("should throw an error if there is a bad xml end tag", async function() {
           let result;
           try {
-            await manifestInfo.readManifestFile("test/manifests/invalid/incorrect-end-tag.manifest.xml");
+            await OfficeAddinManifest.readManifestFile("test/manifests/invalid/incorrect-end-tag.manifest.xml");
           } catch (err) {
             result = err;
           }
           assert.equal(result.message, "Unable to parse the manifest file: test/manifests/invalid/incorrect-end-tag.manifest.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
       });
       it ("should handle OfficeApp with no info", async function() {
-        const info = await manifestInfo.readManifestFile("test/manifests/invalid/officeapp-empty.manifest.xml");
+        const info = await OfficeAddinManifest.readManifestFile("test/manifests/invalid/officeapp-empty.manifest.xml");
 
         assert.strictEqual(info.allowSnapshot, undefined);
         assert.strictEqual(info.alternateId, undefined);
@@ -460,7 +460,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.version, undefined);
       });
       it("should handle a missing description", async function() {
-        const info = await manifestInfo.readManifestFile("test/manifests/invalid/no-description.manifest.xml");
+        const info = await OfficeAddinManifest.readManifestFile("test/manifests/invalid/no-description.manifest.xml");
 
         assert.strictEqual(info.defaultLocale, "en-US");
         assert.strictEqual(info.description, undefined);
@@ -482,7 +482,7 @@ describe("Unit Tests", function() {
         // call modify, specifying guid and displayName  parameters
         const testGuid = uuidv1();
         const testDisplayName = "TestDisplayName";
-        const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, testGuid, testDisplayName);
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifest, testGuid, testDisplayName);
 
         // verify guid displayName updated
         assert.strictEqual(updatedInfo.id, testGuid);
@@ -490,10 +490,10 @@ describe("Unit Tests", function() {
       });
       it(`should handle specifying "random" form guid parameter`, async function() {
         // get original manifest info and create copy of manifest that we can overwrite in this test
-        const originalInfo = await manifestInfo.readManifestFile(testManifest);
+        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifest);
 
         // call modify, specifying "random" parameter
-        const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, "random", undefined);
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifest, "random", undefined);
 
         // verify guid updated, that it"s a valid guid and that the displayName is not updated
         assert.notStrictEqual(updatedInfo.id, originalInfo.id);
@@ -502,11 +502,11 @@ describe("Unit Tests", function() {
       });
       it("should handle specifying displayName only", async function() {
         // get original manifest info and create copy of manifest that we can overwrite in this test
-        const originalInfo = await manifestInfo.readManifestFile(testManifest);
+        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifest);
 
         // call  modify, specifying a displayName parameter
         const testDisplayName = "TestDisplayName";
-        const updatedInfo = await manifestInfo.modifyManifestFile(testManifest, undefined, testDisplayName);
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifest, undefined, testDisplayName);
 
         // verify displayName updated and guid not updated
         assert.notStrictEqual(updatedInfo.displayName, originalInfo.displayName);
@@ -516,7 +516,7 @@ describe("Unit Tests", function() {
       it("should handle not specifying either a guid or displayName", async function() {
         let result;
         try {
-          await manifestInfo.modifyManifestFile(testManifest);
+          await OfficeAddinManifest.modifyManifestFile(testManifest);
         } catch (err) {
           result = err.message;
         }
@@ -529,7 +529,7 @@ describe("Unit Tests", function() {
         const testDisplayName = "TestDisplayName";
         let result;
         try {
-          await manifestInfo.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
+          await OfficeAddinManifest.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
         } catch (err) {
           result = err.message;
         }

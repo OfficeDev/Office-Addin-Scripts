@@ -6,7 +6,7 @@ import * as defaults from "./defaults";
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
-import { modifyManifestFile } from "office-addin-manifest";
+import { OfficeAddinManifest } from "office-addin-manifest";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global process */
@@ -168,7 +168,7 @@ async function updateProjectManifest(applicationId: string, port: string, manife
       const rePort = new RegExp("{PORT}", "g");
       const updatedManifestContent: string = manifestContent.replace(re, applicationId).replace(rePort, port);
       await fs.writeFileSync(manifestPath, updatedManifestContent);
-      await modifyManifestFile(manifestPath, "random");
+      await OfficeAddinManifest.modifyManifestFile(manifestPath, "random");
       return true;
     } else {
       const errorMessage: string = "Manifest does not exist at specified location";
