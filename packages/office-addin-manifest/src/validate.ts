@@ -3,7 +3,7 @@
 
 import { createReadStream } from "fs";
 import fetch from "node-fetch";
-import { readManifestFile } from "./manifestInfo";
+import { OfficeAddinManifest} from "./manifestInfo";
 import { usageDataObject } from "./defaults";
 
 export class ManifestValidationDetails {
@@ -66,7 +66,7 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
     const validation: ManifestValidation = new ManifestValidation();
 
     // read the manifest file to ensure the file path is valid
-    await readManifestFile(manifestPath);
+    await OfficeAddinManifest.readManifestFile(manifestPath);
 
     const stream = await createReadStream(manifestPath);
     let response;

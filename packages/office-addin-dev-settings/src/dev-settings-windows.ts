@@ -3,7 +3,7 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
-import { getOfficeAppsForManifestHosts, ManifestInfo, OfficeApp, readManifestFile } from "office-addin-manifest";
+import { getOfficeAppsForManifestHosts, ManifestInfo, OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
@@ -168,7 +168,7 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 }
 
 export async function registerAddIn(addinId: string, manifestPath: string) {
-  const manifest: ManifestInfo = await readManifestFile(manifestPath);
+  const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
   if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
     enableOutlookSideloading(manifestPath);

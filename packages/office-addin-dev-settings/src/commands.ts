@@ -3,7 +3,7 @@
 
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
-import { ManifestInfo, OfficeApp, parseOfficeApp, readManifestFile } from "office-addin-manifest";
+import { ManifestInfo, OfficeApp, parseOfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
   getAppcontainerNameFromManifestPath,
@@ -59,7 +59,7 @@ export async function appcontainer(manifestPath: string, command: commander.Comm
 
 export async function clear(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -101,7 +101,7 @@ function displaySourceBundleUrl(components: devSettings.SourceBundleUrlComponent
 
 export async function disableDebugging(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -117,7 +117,7 @@ export async function disableDebugging(manifestPath: string) {
 
 export async function disableLiveReload(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -145,7 +145,7 @@ export async function disableRuntimeLogging() {
 
 export async function enableDebugging(manifestPath: string, command: commander.Command) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -161,7 +161,7 @@ export async function enableDebugging(manifestPath: string, command: commander.C
 
 export async function enableLiveReload(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -189,7 +189,7 @@ export async function enableRuntimeLogging(path?: string) {
 
 export async function getSourceBundleUrl(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -205,7 +205,7 @@ export async function getSourceBundleUrl(manifestPath: string) {
 
 export async function isDebuggingEnabled(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -221,7 +221,7 @@ export async function isDebuggingEnabled(manifestPath: string) {
 
 export async function isLiveReloadEnabled(manifestPath: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
@@ -317,7 +317,7 @@ export async function registered(command: commander.Command /* eslint-disable-li
 
         if (!id && addin.manifestPath) {
           try {
-            const manifest = await readManifestFile(addin.manifestPath);
+            const manifest = await OfficeAddinManifest.readManifestFile(addin.manifestPath);
             id = manifest.id || "";
           } catch (err) {
             // ignore errors
@@ -370,7 +370,7 @@ export async function sideload(manifestPath: string, type: string | undefined, c
 
 export async function setSourceBundleUrl(manifestPath: string, command: commander.Command) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
     const host = parseStringCommandOption(command.host);
     const port = parseStringCommandOption(command.port);
     const path = parseStringCommandOption(command.path);
@@ -450,7 +450,7 @@ function validateManifestId(manifest: ManifestInfo) {
 
 export async function webView(manifestPath: string, webViewString?: string) {
   try {
-    const manifest = await readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
     let webViewType: devSettings.WebViewType | undefined;

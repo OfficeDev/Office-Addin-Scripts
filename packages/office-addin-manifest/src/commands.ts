@@ -4,7 +4,7 @@
 import chalk from "chalk";
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
-import * as manifestInfo from "./manifestInfo";
+import { OfficeAddinManifest, ManifestInfo } from "./manifestInfo";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
 import { usageDataObject } from "./defaults";
 
@@ -19,7 +19,7 @@ function getCommandOptionString(option: string | boolean, defaultValue?: string)
 
 export async function info(manifestPath: string) {
   try {
-    const manifest = await manifestInfo.readManifestFile(manifestPath);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("info");
   } catch (err) {
@@ -28,7 +28,7 @@ export async function info(manifestPath: string) {
   }
 }
 
-function logManifestInfo(manifestPath: string, manifest: manifestInfo.ManifestInfo) {
+function logManifestInfo(manifestPath: string, manifest: ManifestInfo) {
   console.log(`Manifest: ${manifestPath}`);
   console.log(`  Id: ${manifest.id || ""}`);
   console.log(`  Name: ${manifest.displayName || ""}`);
@@ -128,7 +128,7 @@ export async function modify(manifestPath: string, command: commander.Command) {
     const guid: string | undefined = getCommandOptionString(command.guid, "");
     const displayName: string | undefined = getCommandOptionString(command.displayName);
 
-    const manifest = await manifestInfo.modifyManifestFile(manifestPath, guid, displayName);
+    const manifest = await OfficeAddinManifest.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("modify");
   } catch (err) {

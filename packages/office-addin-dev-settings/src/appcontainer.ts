@@ -3,7 +3,7 @@
 
 import * as childProcess from "child_process";
 import inquirer = require("inquirer");
-import { readManifestFile } from "office-addin-manifest";
+import { OfficeAddinManifest } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 import { ExpectedError } from "office-addin-usage-data";
 
@@ -144,7 +144,7 @@ export async function ensureLoopbackIsEnabled(
  * @param manifestPath Path of the manifest file.
  */
 export async function getAppcontainerNameFromManifest(manifestPath: string): Promise<string> {
-  const manifest = await readManifestFile(manifestPath);
+  const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
   const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
 
   if (sourceLocation === undefined) {

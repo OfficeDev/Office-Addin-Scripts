@@ -10,7 +10,7 @@ import {
   getOfficeAppsForManifestHosts,
   ManifestInfo,
   OfficeApp,
-  readManifestFile,
+  OfficeAddinManifest,
 } from "office-addin-manifest";
 import open = require("open");
 import semver = require("semver");
@@ -299,7 +299,7 @@ export async function sideloadAddIn(
       appType = AppType.Desktop;
     }
 
-    const manifest: ManifestInfo = await readManifestFile(manifestPath);
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 

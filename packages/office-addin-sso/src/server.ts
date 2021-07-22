@@ -4,7 +4,7 @@
 */
 import * as https from "https";
 import * as devCerts from "office-addin-dev-certs";
-import * as manifest from "office-addin-manifest";
+import { OfficeAddinManifest } from "office-addin-manifest";
 import { App } from "./app";
 import { getSecretFromCredentialStore } from "./ssoDataSettings";
 import { usageDataObject } from "./defaults";
@@ -45,7 +45,7 @@ export class SSOService {
   }
 
   private async getSecret(isTest: boolean = false): Promise<void> {
-    const manifestInfo = await manifest.readManifestFile(this.manifestPath);
+    const manifestInfo = await OfficeAddinManifest.readManifestFile(this.manifestPath);
     const appSecret = getSecretFromCredentialStore(manifestInfo.displayName, isTest);
     if (appSecret === "") {
       const errorMessage: string = `Credential store does not have secret for '${manifestInfo.displayName}'.`;

@@ -2,12 +2,8 @@
 // Licensed under the MIT license.
 
 import * as assert from "assert";
-import * as commander from "commander";
 import * as fsextra from "fs-extra";
-import * as inquirer from "inquirer";
-import * as mocha from "mocha";
-import * as officeAddinManifest from "office-addin-manifest";
-import { OfficeApp } from "office-addin-manifest";
+import { OfficeApp, ManifestInfo, OfficeAddinManifest, AddInType } from "office-addin-manifest";
 import * as os from "os";
 import * as fspath from "path";
 import * as sinon from "sinon";
@@ -241,7 +237,7 @@ describe("Appcontainer", async function() {
       it("undefined source location", async function() {
         const manifest = {defaultSettings: ""};
         const readManifestFile = sinon.fake.returns(manifest);
-        sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
+        sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
         try {
           await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
           assert.strictEqual(0, 1); // expecting exception
@@ -253,7 +249,7 @@ describe("Appcontainer", async function() {
         const sourceLocation = {sourceLocation: "https://localhost"};
         const manifest = {defaultSettings: sourceLocation};
         const readManifestFile = sinon.fake.returns(manifest);
-        sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
+        sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
         const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost");
         assert.strictEqual(appcontainerName, "1_https___localhost04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
       });
@@ -552,21 +548,21 @@ describe("Sideload to Desktop", function() {
   const manifestsFolder = fspath.resolve("test/files/manifests");
   const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
   it("Verify pathToWrite not undefined", async function() {
-    const manifest = await officeAddinManifest.readManifestFile(manifestPath);
-    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(officeAddinManifest.OfficeApp.Excel, manifest);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
+    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(OfficeApp.Excel, manifest);
     assert.notStrictEqual(pathToWrite, undefined);
   });
   it("Specify document - veriy pathToWrite not undefined", async function() {
-    const manifest = await officeAddinManifest.readManifestFile(manifestPath);
-    const document: string | undefined = devSettingsSideload.getTemplatePath(officeAddinManifest.OfficeApp.Excel, officeAddinManifest.AddInType.TaskPane);
-    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(officeAddinManifest.OfficeApp.Excel, manifest, document);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
+    const document: string | undefined = devSettingsSideload.getTemplatePath(OfficeApp.Excel, AddInType.TaskPane);
+    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(OfficeApp.Excel, manifest, document);
     assert.notStrictEqual(pathToWrite, undefined);
   });
   it("Sideload unsupported host (expect error)'", async function() {
     let error;
     const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */, AppType.Desktop, undefined /* document */);
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Project, true /* canPrompt */, AppType.Desktop, undefined /* document */);
     } catch (err) {
       error = err;
     }
@@ -582,13 +578,13 @@ describe("Sideload to web", function() {
   const manifestsFolder = fspath.resolve("test/files/manifests");
   let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
   it("Get sideload url with query params", async function() {
-    const manifest: officeAddinManifest.ManifestInfo = await officeAddinManifest.readManifestFile(manifestPath);
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const manifestFileName = fspath.basename(manifestPath)
     const generatedUrl: string | undefined = await devSettingsSideload.generateSideloadUrl(manifestFileName, manifest, docurl);
     assert.strictEqual(generatedUrl, expectedUrl);
   });
   it("Get sideload url with query params when isTest equals 'true'", async function() {
-    const manifest: officeAddinManifest.ManifestInfo = await officeAddinManifest.readManifestFile(manifestPath);
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const manifestFileName = fspath.basename(manifestPath)
     const generatedUrl: string | undefined = await devSettingsSideload.generateSideloadUrl(manifestFileName, manifest, docurl, true /* isTest */);
     const expectedTestQueryParam: string = "&wdaddintest=true";
@@ -599,7 +595,7 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */, AppType.Web, docurl);
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web, docurl);
     } catch (err) {
       error = err;
     }
@@ -610,7 +606,7 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */, AppType.Web);
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web);
     } catch (err) {
       error = err;
     }
@@ -621,7 +617,7 @@ describe("Sideload to web", function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Outlook, true /* canPrompt */, AppType.Web, docurl);
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Outlook, true /* canPrompt */, AppType.Web, docurl);
     } catch (err) {
       error = err;
     }
