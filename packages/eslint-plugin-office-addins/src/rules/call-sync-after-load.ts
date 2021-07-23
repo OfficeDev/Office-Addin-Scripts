@@ -53,8 +53,8 @@ export = {
         const variable = reference.resolved;
 
         if (
-          operation === "Load" && 
-          variable && 
+          operation === "Load" &&
+          variable &&
           identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
         ) {
           const propertyName: string = getLoadArgument(identifier.parent);
