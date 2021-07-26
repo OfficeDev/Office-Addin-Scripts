@@ -1,4 +1,4 @@
-import * as propertiesTypeJson from "./data/propertiesType.json";
+import * as propertiesJson from "./data/properties.json";
 
 export enum PropertyType {
   navigational,
@@ -8,13 +8,11 @@ export enum PropertyType {
 }
 
 const navigationProperties: Set<string> = new Set<string>(
-  propertiesTypeJson.navigational
+  propertiesJson.navigational
 );
-const scalarProperties: Set<string> = new Set<string>(
-  propertiesTypeJson.scalar
-);
+const scalarProperties: Set<string> = new Set<string>(propertiesJson.scalar);
 const ambiguousProperties: Set<string> = new Set<string>(
-  propertiesTypeJson.ambiguous
+  propertiesJson.ambiguous
 );
 
 export function getPropertyType(propertyName: string): PropertyType {
