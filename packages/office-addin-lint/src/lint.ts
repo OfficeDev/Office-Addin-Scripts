@@ -2,69 +2,91 @@
 // Licensed under the MIT license.
 
 import * as path from "path";
-import { usageDataObject } from "./defaults"
+import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
-const esLintPath = require.resolve("eslint");
+/* global require, __dirname */
+
+const eslintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
-const esLintDir = path.parse(esLintPath).dir;
-const esLintFilePath = path.resolve(esLintDir, "../bin/eslint.js");
+const eslintDir = path.parse(eslintPath).dir;
+const eslintFilePath = path.resolve(eslintDir, "../bin/eslint.js");
 const prettierFilePath = path.resolve(prettierPath, "../bin-prettier.js");
-const esLintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
+const eslintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
+const eslintTestConfigPath = path.resolve(__dirname, "../config/.eslintrc.test.json");
 
 function execCommand(command: string) {
   const execSync = require("child_process").execSync;
-  const child = execSync(command, { stdio: "inherit" });
+  execSync(command, { stdio: "inherit" });
 }
 
-function getEsLintBaseCommand(): string {
-  const eslintBaseCommand: string = `node ${esLintFilePath} -c ${esLintConfigPath} --resolve-plugins-relative-to ${__dirname}`;
+function normalizeFilePath(filePath: string): string {
+  return filePath.replace(/ /g, "\\ "); // Converting space to '\\'
+}
+
+function getEsLintBaseCommand(useTestConfig: boolean = false): string {
+  const configFilePath = useTestConfig ? eslintTestConfigPath : eslintConfigPath;
+  const eslintBaseCommand: string = `node ${eslintFilePath} -c ${configFilePath} --resolve-plugins-relative-to ${__dirname}`;
   return eslintBaseCommand;
 }
 
-export function getLintCheckCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} ${files}`;
+export function getLintCheckCommand(files: string, useTestConfig: boolean = false): string {
+  const eslintCommand: string = `${getEsLintBaseCommand(useTestConfig)} ${normalizeFilePath(files)}`;
   return eslintCommand;
 }
 
-export function performLintCheck(files: string) {
+export function performLintCheck(files: string, useTestConfig: boolean = false) {
   try {
-    const command = getLintCheckCommand(files);
+    const command = getLintCheckCommand(files, useTestConfig);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintCheck");
+    usageDataObject.reportSuccess("performLintCheck()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
-    usageDataObject.sendUsageDataException("performLintCheck", err);
+    if (err.status && err.status == ESLintExitCode.HasLintError) {
+      usageDataObject.reportExpectedException("performLintCheck()", err, { exitCode: ESLintExitCode.HasLintError });
+    } else {
+      usageDataObject.reportException("performLintCheck()", err);
+    }
     throw err;
   }
 }
 
-export function getLintFixCommand(files: string): string {
-  const eslintCommand: string = `${getEsLintBaseCommand()} --fix ${files}`;
+export function getLintFixCommand(files: string, useTestConfig: boolean = false): string {
+  const eslintCommand: string = `${getEsLintBaseCommand(useTestConfig)} --fix ${normalizeFilePath(files)}`;
   return eslintCommand;
 }
 
-export function performLintFix(files: string) {
-  try{
-    const command = getLintFixCommand(files);
+export function performLintFix(files: string, useTestConfig: boolean = false) {
+  try {
+    const command = getLintFixCommand(files, useTestConfig);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("performLintFix");
+    usageDataObject.reportSuccess("performLintFix()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err) {
-    usageDataObject.sendUsageDataException("performLintFix", err);
+    if (err.status && err.status == ESLintExitCode.HasLintError) {
+      usageDataObject.reportExpectedException("performLintFix()", err, { exitCode: ESLintExitCode.HasLintError });
+    } else {
+      usageDataObject.reportException("performLintFix()", err);
+    }
     throw err;
   }
 }
 
 export function getPrettierCommand(files: string): string {
-  const prettierFixCommand: string = `node ${prettierFilePath} --parser typescript --write ${files}`;
+  const prettierFixCommand: string = `node ${prettierFilePath} --parser typescript --write ${normalizeFilePath(files)}`;
   return prettierFixCommand;
 }
 
 export function makeFilesPrettier(files: string) {
-  try{
+  try {
     const command = getPrettierCommand(files);
     execCommand(command);
-    usageDataObject.sendUsageDataSuccessEvent("makeFilesPrettier");
+    usageDataObject.reportSuccess("makeFilesPrettier()", { exitCode: PrettierExitCode.NoFormattingProblems });
   } catch (err) {
-    usageDataObject.sendUsageDataException("makeFilesPrettier", err);
+    if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
+      usageDataObject.reportExpectedException("makeFilesPrettier()", err, {
+        exitCode: PrettierExitCode.HasFormattingProblem,
+      });
+    } else {
+      usageDataObject.reportException("makeFilesPrettier()", err);
+    }
     throw err;
   }
 }

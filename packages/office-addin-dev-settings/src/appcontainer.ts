@@ -3,8 +3,11 @@
 
 import * as childProcess from "child_process";
 import inquirer = require("inquirer");
-import { readManifestFile } from "office-addin-manifest";
+import { OfficeAddinManifest } from "office-addin-manifest";
 import { URL } from "whatwg-url";
+import { ExpectedError } from "office-addin-usage-data";
+
+/* global process */
 
 export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
 export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
@@ -18,7 +21,7 @@ export const EdgeWebViewName: string = "Microsoft Edge WebView";
  */
 export function addLoopbackExemptionForAppcontainer(name: string): Promise<void> {
   if (!isAppcontainerSupported()) {
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 
   return new Promise((resolve, reject) => {
@@ -39,7 +42,7 @@ export function addLoopbackExemptionForAppcontainer(name: string): Promise<void>
  * @returns True if platform supports using appcontainer; false otherwise.
  */
 export function isAppcontainerSupported() {
-  return (process.platform === "win32");
+  return process.platform === "win32";
 }
 
 /**
@@ -49,7 +52,7 @@ export function isAppcontainerSupported() {
  */
 export function isLoopbackExemptionForAppcontainer(name: string): Promise<boolean> {
   if (!isAppcontainerSupported()) {
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 
   return new Promise((resolve, reject) => {
@@ -119,12 +122,15 @@ export function getDisplayNameFromManifestPath(manifestPath: string): string {
   }
 }
 
-export async function ensureLoopbackIsEnabled(manifestPath: string, askForConfirmation: boolean = true): Promise<boolean> {
+export async function ensureLoopbackIsEnabled(
+  manifestPath: string,
+  askForConfirmation: boolean = true
+): Promise<boolean> {
   const name = await getAppcontainerNameFromManifestPath(manifestPath);
   let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (!isEnabled) {
-    if (!askForConfirmation || await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath))) {
+    if (!askForConfirmation || (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))) {
       await addLoopbackExemptionForAppcontainer(name);
       isEnabled = true;
     }
@@ -138,11 +144,11 @@ export async function ensureLoopbackIsEnabled(manifestPath: string, askForConfir
  * @param manifestPath Path of the manifest file.
  */
 export async function getAppcontainerNameFromManifest(manifestPath: string): Promise<string> {
-  const manifest = await readManifestFile(manifestPath);
+  const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
   const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
 
   if (sourceLocation === undefined) {
-    throw new Error(`The source location could not be retrieved from the manifest.`);
+    throw new ExpectedError(`The source location could not be retrieved from the manifest.`);
   }
 
   return getAppcontainerName(sourceLocation, false);
@@ -155,7 +161,7 @@ export async function getAppcontainerNameFromManifest(manifestPath: string): Pro
  */
 export function removeLoopbackExemptionForAppcontainer(name: string): Promise<void> {
   if (!isAppcontainerSupported()) {
-    throw new Error(`Platform not supported: ${process.platform}.`);
+    throw new ExpectedError(`Platform not supported: ${process.platform}.`);
   }
 
   return new Promise((resolve, reject) => {
