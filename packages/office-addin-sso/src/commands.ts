@@ -20,7 +20,7 @@ export async function configureSSO(manifestPath: string) {
     return;
   } else if (applicationDataConfigured(manifestPath)) {
     console.log(
-      chalk.yellow("Project has already been at least partially configured.  Can't setup new configuration completely.")
+      chalk.yellow("Project was already previously updated and will require manual steps when done.")
     );
     const question = {
       message: `Continue anyway?`,
@@ -28,7 +28,7 @@ export async function configureSSO(manifestPath: string) {
       type: "confirm",
     };
     const answer = await inquirer.prompt([question]);
-    if (!(answer as any).didUserConfirm) {
+    if (!answer.didUserConfirm) {
       return;
     }
   }
