@@ -25,8 +25,9 @@ export = {
     let apiReferences: OfficeApiReference[] = [];
 
     function checkPropertyIsRead(node: TSESTree.MemberExpression): boolean {
-      const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
-      switch(topExpression.parent?.type) {
+      const topExpression: TSESTree.MemberExpression =
+        findTopLevelExpression(node);
+      switch (topExpression.parent?.type) {
         case TSESTree.AST_NODE_TYPES.AssignmentExpression:
           return topExpression.parent.right === topExpression;
         default:
@@ -50,13 +51,9 @@ export = {
           needSync.clear();
         }
 
-        if (
-          operation === "Read" && 
-          variable && 
-          needSync.has(variable)
-        ) {
+        if (operation === "Read" && variable && needSync.has(variable)) {
           const node: TSESTree.Node = reference.identifier;
-          if(
+          if (
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             checkPropertyIsRead(node.parent)
           ) {
