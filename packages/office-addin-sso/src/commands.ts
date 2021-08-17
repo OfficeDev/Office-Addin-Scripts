@@ -7,8 +7,9 @@ import { ManifestInfo, OfficeAddinManifest } from "office-addin-manifest";
 import { usageDataObject } from "./defaults";
 import * as configure from "./configure";
 import { SSOService } from "./server";
-import { addSecretToCredentialStore, writeApplicationData } from "./ssoDataSettings";
+import { addSecretToCredentialStore, writeApplicationData, applicationDataConfigured } from "./ssoDataSettings";
 import { ExpectedError } from "office-addin-usage-data";
+import inquirer = require("inquirer");
 
 /* global process, console */
 
@@ -17,6 +18,19 @@ export async function configureSSO(manifestPath: string) {
   if (process.platform !== "win32" && process.platform !== "darwin") {
     console.log(chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`));
     return;
+  } else if (applicationDataConfigured(manifestPath)) {
+    console.log(
+      chalk.yellow("Project has already been at least partially configured.  Can't setup new configuration completely.")
+    );
+    const question = {
+      message: `Continue anyway?`,
+      name: "didUserConfirm",
+      type: "confirm",
+    };
+    const answer = await inquirer.prompt([question]);
+    if (!(answer as any).didUserConfirm) {
+      return;
+    }
   }
 
   const port: number = parseDevServerPort(process.env.npm_package_config_dev_server_port) || 3000;
