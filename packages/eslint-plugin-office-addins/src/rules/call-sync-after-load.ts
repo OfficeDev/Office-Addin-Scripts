@@ -6,6 +6,7 @@ import {
   findOfficeApiReferences,
   OfficeApiReference,
 } from "../utils/utils";
+import { usageDataObject } from "../defaults";
 
 export = {
   name: "call-sync-after-load",
@@ -86,14 +87,20 @@ export = {
 
     return {
       Program() {
-        apiReferences = findOfficeApiReferences(context.getScope());
-        apiReferences.sort((left, right) => {
-          return (
-            left.reference.identifier.range[1] -
-            right.reference.identifier.range[1]
-          );
-        });
-        findLoadBeforeSync();
+        try {
+          apiReferences = findOfficeApiReferences(context.getScope());
+          apiReferences.sort((left, right) => {
+            return (
+              left.reference.identifier.range[1] -
+              right.reference.identifier.range[1]
+            );
+          });
+          findLoadBeforeSync();
+          usageDataObject.reportSuccess("call-sync-after-load");
+        } catch (err: any) {
+          usageDataObject.reportException("call-sync-after-load", err);
+          throw err;
+        }
       },
     };
   },
