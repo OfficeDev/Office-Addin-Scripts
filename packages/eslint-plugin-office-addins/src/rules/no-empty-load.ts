@@ -6,6 +6,7 @@ import {
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { isGetFunction } from "../utils/getFunction";
 import { isLoadFunction } from "../utils/load";
+import { usageDataObject } from "../defaults";
 
 export = {
   name: "no-empty-load",
@@ -61,6 +62,7 @@ export = {
               node: node.parent,
               messageId: "emptyLoad",
             });
+            usageDataObject.reportSuccess("no-empty-load", {type: "reported"});
           }
         });
       });
@@ -69,7 +71,13 @@ export = {
 
     return {
       Program() {
-        findEmptyLoad(context.getScope());
+        try {
+          findEmptyLoad(context.getScope());
+          usageDataObject.reportSuccess("no-empty-load", {type: "enabled"});
+        } catch (err: any) {
+          usageDataObject.reportException("no-empty-load", err);
+          throw err;
+        }
       },
     };
   },

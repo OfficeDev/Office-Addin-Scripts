@@ -1,4 +1,5 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { usageDataObject } from "../defaults";
 
 export = {
   name: "no-office-initialize",
@@ -27,7 +28,8 @@ export = {
           node: node,
           messageId: "noOfficeInitialize",
         });
-      },
+        usageDataObject.reportSuccess("no-office-initialize", {type: "reported"});
+      }
     };
   },
 };

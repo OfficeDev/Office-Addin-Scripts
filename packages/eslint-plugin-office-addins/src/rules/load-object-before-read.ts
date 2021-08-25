@@ -7,6 +7,7 @@ import {
 import { getLoadArgument, isLoadFunction } from "../utils/load";
 import { findPropertiesRead } from "../utils/utils";
 import { isGetFunction } from "../utils/getFunction";
+import { usageDataObject } from "../defaults";
 
 export = {
   name: "load-object-before-read",
@@ -105,6 +106,7 @@ export = {
             messageId: "loadBeforeRead",
             data: { name: node.name, loadValue: propertyName },
           });
+          usageDataObject.reportSuccess("load-object-before-read", {type: "reported"});
         });
       });
       scope.childScopes.forEach(findLoadBeforeRead);
@@ -112,7 +114,13 @@ export = {
 
     return {
       Program() {
-        findLoadBeforeRead(context.getScope());
+        try {
+          findLoadBeforeRead(context.getScope());
+          usageDataObject.reportSuccess("load-object-before-read", {type: "enabled"});
+        } catch (err: any) {
+          usageDataObject.reportException("load-object-before-read", err);
+          throw err;
+        }
       },
     };
   },

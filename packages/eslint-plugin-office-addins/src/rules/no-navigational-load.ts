@@ -7,6 +7,7 @@ import {
 import { isGetFunction } from "../utils/getFunction";
 import { getLoadArgument, isLoadFunction } from "../utils/load";
 import { getPropertyType, PropertyType } from "../utils/propertiesType";
+import { usageDataObject } from "../defaults";
 
 export = {
   name: "no-navigational-load",
@@ -72,6 +73,7 @@ export = {
                 messageId: "navigationalLoad",
                 data: { name: node.name, loadValue: propertyName },
               });
+              usageDataObject.reportSuccess("no-navigational-load", {type: "reported"});
             }
           }
         });
@@ -81,7 +83,13 @@ export = {
 
     return {
       Program() {
-        findNavigationalLoad(context.getScope());
+        try {
+          findNavigationalLoad(context.getScope());
+          usageDataObject.reportSuccess("no-navigational-load", {type: "enabled"});
+        } catch (err: any) {
+          usageDataObject.reportException("no-navigational-load", err);
+          throw err;
+        }
       },
     };
   },

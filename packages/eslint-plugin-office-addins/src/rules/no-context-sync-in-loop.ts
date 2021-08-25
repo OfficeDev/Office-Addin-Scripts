@@ -1,4 +1,5 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { usageDataObject } from "../defaults";
 
 export = {
   name: "no-context-sync-in-loop",
@@ -28,7 +29,8 @@ export = {
           node: node.callee,
           messageId: "loopedSync",
         });
-      },
+        usageDataObject.reportSuccess("no-context-sync-in-loop", {type: "reported"});
+      }
     };
   },
 };

@@ -12,6 +12,7 @@ import {
   RuleFixer,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint";
 import { isGetOrNullObjectFunction } from "../utils/getFunction";
+import { usageDataObject } from "../defaults";
 
 export = {
   name: "test-for-null-using-isNullObject",
@@ -131,6 +132,7 @@ export = {
                 return ruleFix;
               },
             });
+            usageDataObject.reportSuccess("test-for-null-using-isNullObject", {type: "reported"});
           });
         }
       }
@@ -142,7 +144,13 @@ export = {
 
     return {
       "Program:exit"() {
-        findNullObjectNullTests(context.getScope());
+        try {
+          findNullObjectNullTests(context.getScope());
+          usageDataObject.reportSuccess("test-for-null-using-isNullObject", {type: "enabled"});
+        } catch (err: any) {
+          usageDataObject.reportException("test-for-null-using-isNullObject", err);
+          throw err;
+        }
       },
     };
   },
