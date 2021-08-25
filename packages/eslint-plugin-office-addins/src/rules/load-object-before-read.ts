@@ -114,7 +114,11 @@ export = {
 
     return {
       Program() {
-        findLoadBeforeRead(context.getScope());
+        try {
+          findLoadBeforeRead(context.getScope());
+        } catch(err: any) {
+          usageDataObject.reportException("load-object-before-read", err);
+        }
       },
     };
   },

@@ -88,14 +88,18 @@ export = {
 
     return {
       Program() {
-        apiReferences = findOfficeApiReferences(context.getScope());
-        apiReferences.sort((left, right) => {
-          return (
-            left.reference.identifier.range[1] -
-            right.reference.identifier.range[1]
-          );
-        });
-        findLoadBeforeSync();
+        try {
+          apiReferences = findOfficeApiReferences(context.getScope());
+          apiReferences.sort((left, right) => {
+            return (
+              left.reference.identifier.range[1] -
+              right.reference.identifier.range[1]
+            );
+          });
+          findLoadBeforeSync();
+        } catch(err: any) {
+          usageDataObject.reportException("call-sync-after-load", err);
+        }
       },
     };
   },

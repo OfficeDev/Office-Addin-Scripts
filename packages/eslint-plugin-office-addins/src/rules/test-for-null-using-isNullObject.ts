@@ -144,7 +144,11 @@ export = {
 
     return {
       "Program:exit"() {
-        findNullObjectNullTests(context.getScope());
+        try {
+          findNullObjectNullTests(context.getScope());
+        } catch(err: any) {
+          usageDataObject.reportException("test-for-null-using-isNullObject", err);
+        }
       },
     };
   },

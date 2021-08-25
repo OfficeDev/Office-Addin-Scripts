@@ -71,7 +71,11 @@ export = {
 
     return {
       Program() {
-        findEmptyLoad(context.getScope());
+        try {
+          findEmptyLoad(context.getScope());
+        } catch(err: any) {
+          usageDataObject.reportException("no-empty-load", err);
+        }
       },
     };
   },
