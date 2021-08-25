@@ -29,9 +29,7 @@ export = {
           node: node.callee,
           messageId: "loopedSync",
         });
-        usageDataObject.reportSuccess("no-context-sync-in-loop", {
-          type: "reported",
-        });
+        usageDataObject.reportSuccess("no-context-sync-in-loop");
       },
     };
   },

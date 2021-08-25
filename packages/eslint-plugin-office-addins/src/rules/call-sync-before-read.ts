@@ -63,9 +63,7 @@ export = {
               messageId: "callSync",
               data: { name: node.name },
             });
-            usageDataObject.reportSuccess("call-sync-before-read", {
-              type: "reported",
-            });
+            usageDataObject.reportSuccess("call-sync-before-read");
           }
         }
       });
@@ -73,22 +71,14 @@ export = {
 
     return {
       Program() {
-        try {
-          apiReferences = findOfficeApiReferences(context.getScope());
-          apiReferences.sort((left, right) => {
-            return (
-              left.reference.identifier.range[1] -
-              right.reference.identifier.range[1]
-            );
-          });
-          findReadBeforeSync();
-          usageDataObject.reportSuccess("call-sync-before-read", {
-            type: "enabled",
-          });
-        } catch (err: any) {
-          usageDataObject.reportException("call-sync-before-read", err);
-          throw err;
-        }
+        apiReferences = findOfficeApiReferences(context.getScope());
+        apiReferences.sort((left, right) => {
+          return (
+            left.reference.identifier.range[1] -
+            right.reference.identifier.range[1]
+          );
+        });
+        findReadBeforeSync();
       },
     };
   },

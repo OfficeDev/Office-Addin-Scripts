@@ -62,9 +62,7 @@ export = {
               node: node.parent,
               messageId: "emptyLoad",
             });
-            usageDataObject.reportSuccess("no-empty-load", {
-              type: "reported",
-            });
+            usageDataObject.reportSuccess("no-empty-load");
           }
         });
       });
@@ -73,13 +71,7 @@ export = {
 
     return {
       Program() {
-        try {
-          findEmptyLoad(context.getScope());
-          usageDataObject.reportSuccess("no-empty-load", { type: "enabled" });
-        } catch (err: any) {
-          usageDataObject.reportException("no-empty-load", err);
-          throw err;
-        }
+        findEmptyLoad(context.getScope());
       },
     };
   },

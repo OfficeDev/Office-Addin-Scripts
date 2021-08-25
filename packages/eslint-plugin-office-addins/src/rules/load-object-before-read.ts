@@ -106,9 +106,7 @@ export = {
             messageId: "loadBeforeRead",
             data: { name: node.name, loadValue: propertyName },
           });
-          usageDataObject.reportSuccess("load-object-before-read", {
-            type: "reported",
-          });
+          usageDataObject.reportSuccess("load-object-before-read");
         });
       });
       scope.childScopes.forEach(findLoadBeforeRead);
@@ -116,15 +114,7 @@ export = {
 
     return {
       Program() {
-        try {
-          findLoadBeforeRead(context.getScope());
-          usageDataObject.reportSuccess("load-object-before-read", {
-            type: "enabled",
-          });
-        } catch (err: any) {
-          usageDataObject.reportException("load-object-before-read", err);
-          throw err;
-        }
+        findLoadBeforeRead(context.getScope());
       },
     };
   },
