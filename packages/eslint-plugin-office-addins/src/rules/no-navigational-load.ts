@@ -73,7 +73,9 @@ export = {
                 messageId: "navigationalLoad",
                 data: { name: node.name, loadValue: propertyName },
               });
-              usageDataObject.reportSuccess("no-navigational-load", {type: "reported"});
+              usageDataObject.reportSuccess("no-navigational-load", {
+                type: "reported",
+              });
             }
           }
         });
@@ -85,7 +87,9 @@ export = {
       Program() {
         try {
           findNavigationalLoad(context.getScope());
-          usageDataObject.reportSuccess("no-navigational-load", {type: "enabled"});
+          usageDataObject.reportSuccess("no-navigational-load", {
+            type: "enabled",
+          });
         } catch (err: any) {
           usageDataObject.reportException("no-navigational-load", err);
           throw err;

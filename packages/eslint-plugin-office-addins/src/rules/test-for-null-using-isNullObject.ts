@@ -132,7 +132,9 @@ export = {
                 return ruleFix;
               },
             });
-            usageDataObject.reportSuccess("test-for-null-using-isNullObject", {type: "reported"});
+            usageDataObject.reportSuccess("test-for-null-using-isNullObject", {
+              type: "reported",
+            });
           });
         }
       }
@@ -146,9 +148,14 @@ export = {
       "Program:exit"() {
         try {
           findNullObjectNullTests(context.getScope());
-          usageDataObject.reportSuccess("test-for-null-using-isNullObject", {type: "enabled"});
+          usageDataObject.reportSuccess("test-for-null-using-isNullObject", {
+            type: "enabled",
+          });
         } catch (err: any) {
-          usageDataObject.reportException("test-for-null-using-isNullObject", err);
+          usageDataObject.reportException(
+            "test-for-null-using-isNullObject",
+            err
+          );
           throw err;
         }
       },

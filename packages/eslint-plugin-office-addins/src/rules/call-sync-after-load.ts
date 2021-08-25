@@ -80,7 +80,9 @@ export = {
               messageId: "callSyncAfterLoad",
               data: { name: node.name, loadValue: propertyName },
             });
-            usageDataObject.reportSuccess("call-sync-after-load", {type: "reported"});
+            usageDataObject.reportSuccess("call-sync-after-load", {
+              type: "reported",
+            });
           }
         }
       });
@@ -97,7 +99,9 @@ export = {
             );
           });
           findLoadBeforeSync();
-          usageDataObject.reportSuccess("call-sync-after-load", {type: "enabled"});
+          usageDataObject.reportSuccess("call-sync-after-load", {
+            type: "enabled",
+          });
         } catch (err: any) {
           usageDataObject.reportException("call-sync-after-load", err);
           throw err;

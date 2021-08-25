@@ -63,7 +63,9 @@ export = {
               messageId: "callSync",
               data: { name: node.name },
             });
-            usageDataObject.reportSuccess("call-sync-before-read", {type: "reported"});
+            usageDataObject.reportSuccess("call-sync-before-read", {
+              type: "reported",
+            });
           }
         }
       });
@@ -80,7 +82,9 @@ export = {
             );
           });
           findReadBeforeSync();
-          usageDataObject.reportSuccess("call-sync-before-read", {type: "enabled"});
+          usageDataObject.reportSuccess("call-sync-before-read", {
+            type: "enabled",
+          });
         } catch (err: any) {
           usageDataObject.reportException("call-sync-before-read", err);
           throw err;

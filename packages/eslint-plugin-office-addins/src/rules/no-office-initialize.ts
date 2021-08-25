@@ -28,8 +28,10 @@ export = {
           node: node,
           messageId: "noOfficeInitialize",
         });
-        usageDataObject.reportSuccess("no-office-initialize", {type: "reported"});
-      }
+        usageDataObject.reportSuccess("no-office-initialize", {
+          type: "reported",
+        });
+      },
     };
   },
 };
