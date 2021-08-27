@@ -34,7 +34,6 @@
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "concurrently": "^6.0.2",
     "eslint": "7.28.0",
-    "eslint-plugin-office-addins": "^1.0.0",
     "eslint-plugin-prettier": "^3.4.0",
     "mocha": "^8.4.0",
     "office-addin-prettier-config": "^1.1.0",
