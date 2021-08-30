@@ -1,0 +1,23 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint", "prettier"],
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "project": "./tsconfig.json"
+    },
+    "extends": ["eslint:recommended"],
+    "rules": {
+      "prettier/prettier": ["error", { "endOfLine": "auto" }],
+      "no-eval": "error",
+      "no-delete-var": "warn",
+      "no-octal": "warn",
+      "no-inner-declarations": "warn",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "error"
+    }
+  }
+  

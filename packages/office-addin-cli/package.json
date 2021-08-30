@@ -31,6 +31,7 @@
     "@types/node-fetch": "^2.5.10",
     "@types/sinon": "^7.5.2",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.30.0",
     "concurrently": "^6.0.0",
     "eslint": "7.28.0",
     "eslint-plugin-prettier": "^3.4.0",
