@@ -116,7 +116,7 @@ export = {
       Program() {
         try {
           findLoadBeforeRead(context.getScope());
-        } catch(err: any) {
+        } catch (err: any) {
           usageDataObject.reportException("load-object-before-read", err);
         }
       },

@@ -80,7 +80,7 @@ export = {
             );
           });
           findReadBeforeSync();
-        } catch(err: any) {
+        } catch (err: any) {
           usageDataObject.reportException("call-sync-before-read", err);
         }
       },

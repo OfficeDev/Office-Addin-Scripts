@@ -97,7 +97,7 @@ export = {
             );
           });
           findLoadBeforeSync();
-        } catch(err: any) {
+        } catch (err: any) {
           usageDataObject.reportException("call-sync-after-load", err);
         }
       },

@@ -73,7 +73,7 @@ export = {
       Program() {
         try {
           findEmptyLoad(context.getScope());
-        } catch(err: any) {
+        } catch (err: any) {
           usageDataObject.reportException("no-empty-load", err);
         }
       },

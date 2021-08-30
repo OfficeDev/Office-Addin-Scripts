@@ -85,7 +85,7 @@ export = {
       Program() {
         try {
           findNavigationalLoad(context.getScope());
-        } catch(err: any) {
+        } catch (err: any) {
           usageDataObject.reportException("no-navigational-load", err);
         }
       },
