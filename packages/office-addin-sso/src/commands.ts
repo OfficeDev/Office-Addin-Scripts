@@ -20,7 +20,7 @@ export async function configureSSO(manifestPath: string) {
     return;
   } else if (applicationDataConfigured(manifestPath)) {
     console.log(
-      chalk.yellow("Project was already previously updated and will require manual steps when done.")
+      chalk.yellow("Project was already previously updated.")
     );
     const question = {
       message: `Continue anyway?`,
