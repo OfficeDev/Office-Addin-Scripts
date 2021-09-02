@@ -15,6 +15,7 @@ const eslintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
 const eslintTestConfigPath = path.resolve(__dirname, "../config/.eslintrc.test.json");
 
 function execCommand(command: string) {
+  console.log(`> ${command}`);
   const execSync = require("child_process").execSync;
   execSync(command, { stdio: "inherit" });
 }
@@ -25,12 +26,12 @@ function normalizeFilePath(filePath: string): string {
 
 function getEsLintBaseCommand(useTestConfig: boolean = false): string {
   const configFilePath = useTestConfig ? eslintTestConfigPath : eslintConfigPath;
-  const eslintBaseCommand: string = `node ${eslintFilePath} -c ${configFilePath} --resolve-plugins-relative-to ${__dirname}`;
+  const eslintBaseCommand: string = `node "${eslintFilePath}" -c "${configFilePath}" --resolve-plugins-relative-to "${__dirname}"`;
   return eslintBaseCommand;
 }
 
 export function getLintCheckCommand(files: string, useTestConfig: boolean = false): string {
-  const eslintCommand: string = `${getEsLintBaseCommand(useTestConfig)} ${normalizeFilePath(files)}`;
+  const eslintCommand: string = `${getEsLintBaseCommand(useTestConfig)} "${normalizeFilePath(files)}"`;
   return eslintCommand;
 }
 
