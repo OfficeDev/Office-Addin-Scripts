@@ -15,7 +15,6 @@ const eslintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
 const eslintTestConfigPath = path.resolve(__dirname, "../config/.eslintrc.test.json");
 
 function execCommand(command: string) {
-  console.log(`> ${command}`);
   const execSync = require("child_process").execSync;
   execSync(command, { stdio: "inherit" });
 }
