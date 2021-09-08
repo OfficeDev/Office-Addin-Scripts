@@ -77,6 +77,16 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
   }
 }
 
+function envFileConfigured(envFilePath: string = defaults.envDataFilePath): boolean {
+  if (fs.existsSync(envFilePath)) {
+    const appDataContent = fs.readFileSync(envFilePath, "utf8");
+    // Check to see if the fallbackauthdialog file has already been updated and return if it has.
+    return !appDataContent.includes("{CLIENT_ID}") && !appDataContent.includes("{PORT}");
+  } else {
+    return false;
+  }
+}
+
 function updateEnvFile(applicationId: string, port: string, envFilePath: string = defaults.envDataFilePath): boolean {
   try {
     // Update .ENV file
@@ -97,6 +107,21 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
     const errorMessage: string = `Unable to write SSO application data to .env file: \n${err}`;
     throw new Error(errorMessage);
   }
+}
+
+function fallBackAuthDialogFileConfigured(isTest: boolean = false): boolean {
+  // get file contents
+  let srcFileContent = "";
+  if (fs.existsSync(defaults.fallbackAuthDialogTypescriptFilePath)) {
+    srcFileContent = fs.readFileSync(defaults.fallbackAuthDialogTypescriptFilePath, "utf8");
+  } else if (fs.existsSync(defaults.fallbackAuthDialogJavascriptFilePath)) {
+    srcFileContent = fs.readFileSync(defaults.fallbackAuthDialogJavascriptFilePath, "utf8");
+  } else if (isTest) {
+    srcFileContent = fs.readFileSync(defaults.testFallbackAuthDialogFilePath, "utf8");
+  }
+
+  // Check to see if the fallbackauthdialog file has already been updated and return if it has.
+  return !srcFileContent.includes("{PORT}");
 }
 
 function updateFallBackAuthDialogFile(
@@ -152,6 +177,18 @@ function updateFallBackAuthDialogFile(
   }
 }
 
+function projectManifestConfigured(manifestPath: string): boolean {
+  if (fs.existsSync(manifestPath)) {
+    // Update manifest with application guid and unique manifest id
+    const manifestContent: string = fs.readFileSync(manifestPath, "utf8");
+
+    // Check to see if the manifest has already been updated and return if it has
+    return !manifestContent.includes("{PORT}");
+  } else {
+    return false;
+  }
+}
+
 async function updateProjectManifest(applicationId: string, port: string, manifestPath: string): Promise<boolean> {
   try {
     if (fs.existsSync(manifestPath)) {
@@ -178,6 +215,19 @@ async function updateProjectManifest(applicationId: string, port: string, manife
     const errorMessage: string = `Unable to update manifest: \n${err}`;
     throw new Error(errorMessage);
   }
+}
+
+export function applicationDataConfigured(
+  manifestPath: string = defaults.manifestFilePath,
+  envFilePath: string = defaults.envDataFilePath,
+  isTest: boolean = false
+) {
+  const envFileUpdated: boolean = envFileConfigured(envFilePath);
+  const fallbackAuthDialogFileUpdated: boolean = fallBackAuthDialogFileConfigured(isTest);
+  const manifestUpdated: boolean = projectManifestConfigured(manifestPath);
+
+  // If one of them up updated then we are partially configured and can't successfully re-configure
+  return envFileUpdated || fallbackAuthDialogFileUpdated || manifestUpdated;
 }
 
 export async function writeApplicationData(
