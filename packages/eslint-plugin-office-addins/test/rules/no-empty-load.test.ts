@@ -40,13 +40,13 @@ ruleTester.run('no-empty-load', rule, {
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
-        selectedRange.load()`,
+        selectedRange.load();`,
       errors: [{ messageId: "emptyLoad"}]
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
-        selectedRange.load("")`,
+        selectedRange.load("");`,
       errors: [{ messageId: "emptyLoad"}]
     },
     {
