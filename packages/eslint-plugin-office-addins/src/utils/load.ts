@@ -48,14 +48,19 @@ export function getLoadArgument(node: TSESTree.MemberExpression): string {
     isLoadFunction(node) &&
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
-    if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
-      return node.parent.arguments[0].value as string;
-    } else if (
-      node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.ObjectExpression
-    ) {
-      return composeObjectExpressionPropertyIntoString(
-        node.parent.arguments[0]
-      );
+    if (node.parent.arguments.length === 0) {
+      return "";
+    } else {
+      if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
+        return node.parent.arguments[0].value as string;
+      } else if (
+        node.parent.arguments[0].type ===
+        TSESTree.AST_NODE_TYPES.ObjectExpression
+      ) {
+        return composeObjectExpressionPropertyIntoString(
+          node.parent.arguments[0]
+        );
+      }
     }
   }
   throw new Error("error in getLoadArgument function.");
