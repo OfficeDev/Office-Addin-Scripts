@@ -5,7 +5,7 @@ import {
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { isGetFunction } from "../utils/getFunction";
-import { isLoadFunction } from "../utils/load";
+import { getLoadArgument, isLoadFunction } from "../utils/load";
 
 export = {
   name: "no-empty-load",
@@ -27,11 +27,7 @@ export = {
   },
   create: function (context: any) {
     function isEmptyLoad(node: TSESTree.MemberExpression): boolean {
-      return (
-        isLoadFunction(node) &&
-        node.parent?.type == TSESTree.AST_NODE_TYPES.CallExpression &&
-        node.parent.arguments.length === 0
-      );
+      return isLoadFunction(node) && getLoadArgument(node) === "";
     }
 
     function findEmptyLoad(scope: Scope) {
