@@ -41,7 +41,9 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
-export function getLoadArgument(node: TSESTree.MemberExpression): string | undefined {
+export function getLoadArgument(
+  node: TSESTree.MemberExpression
+): string | undefined {
   node = findTopLevelExpression(node);
 
   if (

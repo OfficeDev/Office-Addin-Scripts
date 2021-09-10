@@ -75,7 +75,9 @@ export = {
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
             if (isLoadFunction(node.parent)) {
               // In case it is a load function
-              const loadArgument: string | undefined = getLoadArgument(node.parent);
+              const loadArgument: string | undefined = getLoadArgument(
+                node.parent
+              );
               if (loadArgument) {
                 loadLocation.set(loadArgument, node.range[1]);
               }

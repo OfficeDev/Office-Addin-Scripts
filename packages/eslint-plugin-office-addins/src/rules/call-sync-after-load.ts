@@ -57,7 +57,9 @@ export = {
           variable &&
           identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
         ) {
-          const propertyName: string | undefined = getLoadArgument(identifier.parent);
+          const propertyName: string | undefined = getLoadArgument(
+            identifier.parent
+          );
           if (propertyName) {
             needSync.add({ variable: variable.name, property: propertyName });
           }
