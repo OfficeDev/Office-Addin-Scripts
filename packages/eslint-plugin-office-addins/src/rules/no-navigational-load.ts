@@ -65,8 +65,8 @@ export = {
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             isLoadFunction(node.parent)
           ) {
-            const propertyName: string = getLoadArgument(node.parent);
-            if (!isLoadingValidPropeties(propertyName)) {
+            const propertyName: string | undefined = getLoadArgument(node.parent);
+            if (propertyName && !isLoadingValidPropeties(propertyName)) {
               context.report({
                 node: node.parent,
                 messageId: "navigationalLoad",

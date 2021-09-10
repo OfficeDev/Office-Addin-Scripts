@@ -41,7 +41,7 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
-export function getLoadArgument(node: TSESTree.MemberExpression): string {
+export function getLoadArgument(node: TSESTree.MemberExpression): string | undefined {
   node = findTopLevelExpression(node);
 
   if (
@@ -49,7 +49,7 @@ export function getLoadArgument(node: TSESTree.MemberExpression): string {
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
     if (node.parent.arguments.length === 0) {
-      return "";
+      return undefined;
     } else {
       if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
         return node.parent.arguments[0].value as string;

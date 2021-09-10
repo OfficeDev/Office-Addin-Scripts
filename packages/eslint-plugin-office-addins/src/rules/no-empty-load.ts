@@ -27,7 +27,7 @@ export = {
   },
   create: function (context: any) {
     function isEmptyLoad(node: TSESTree.MemberExpression): boolean {
-      return isLoadFunction(node) && getLoadArgument(node) === "";
+      return isLoadFunction(node) && !getLoadArgument(node);
     }
 
     function findEmptyLoad(scope: Scope) {
