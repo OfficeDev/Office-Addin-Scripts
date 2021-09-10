@@ -41,13 +41,18 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
-export function getLoadArgument(node: TSESTree.MemberExpression): string {
+export function getLoadArgument(
+  node: TSESTree.MemberExpression
+): string | undefined {
   node = findTopLevelExpression(node);
 
   if (
     isLoadFunction(node) &&
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
+    if (node.parent.arguments.length === 0) {
+      return undefined;
+    }
     if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
       return node.parent.arguments[0].value as string;
     } else if (
