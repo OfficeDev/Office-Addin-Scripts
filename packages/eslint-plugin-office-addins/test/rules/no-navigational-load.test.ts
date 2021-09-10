@@ -40,19 +40,19 @@ ruleTester.run('no-navigational-load', rule, {
                 var myRange = context.workbook.worksheets.notAGet();
                 myRange.load('notAProperty');
                 var test = myRange.notAProperty;`
-    	},
+		},
 		{
 			code: `
                 var range = context.workbook.getRange();
                 range.load({borders: { fill: { color: true } } });
                 if (range.borders.fill.color);`
-    	},
+		},
 		{
 			code: `
                 var range = context.workbook.getRange();
                 range.borders.fill.load("color");
                 console.log(range.borders.fill.color);`
-    	},
+		},
 		{
 			code: `
                 var selectedRange = context.workbook.getSelectedRange();
