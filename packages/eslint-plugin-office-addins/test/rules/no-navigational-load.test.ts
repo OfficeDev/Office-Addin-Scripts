@@ -53,6 +53,16 @@ ruleTester.run('no-navigational-load', rule, {
                 range.borders.fill.load("color");
                 console.log(range.borders.fill.color);`
     	},
+		{
+			code: `
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load(''); // Empty`
+		},
+		{
+			code: `
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load(); // Empty`
+		},
 	],
 	invalid: [
 		{
