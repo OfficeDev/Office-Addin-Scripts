@@ -52,17 +52,15 @@ export function getLoadArgument(
   ) {
     if (node.parent.arguments.length === 0) {
       return undefined;
-    } else {
-      if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
-        return node.parent.arguments[0].value as string;
-      } else if (
-        node.parent.arguments[0].type ===
-        TSESTree.AST_NODE_TYPES.ObjectExpression
-      ) {
-        return composeObjectExpressionPropertyIntoString(
-          node.parent.arguments[0]
-        );
-      }
+    }
+    if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
+      return node.parent.arguments[0].value as string;
+    } else if (
+      node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.ObjectExpression
+    ) {
+      return composeObjectExpressionPropertyIntoString(
+        node.parent.arguments[0]
+      );
     }
   }
   throw new Error("error in getLoadArgument function.");
