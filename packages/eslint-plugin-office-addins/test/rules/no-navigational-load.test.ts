@@ -15,6 +15,11 @@ ruleTester.run('no-navigational-load', rule, {
 		},
 		{
 			code: `
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load("format/font/name");`
+		},
+		{
+			code: `
                 var sheetName = 'Sheet1';
                 var rangeAddress = 'A1:B2';
                 var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
