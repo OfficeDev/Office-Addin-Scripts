@@ -34,12 +34,20 @@ export = {
       if (!lastProperty) return false;
 
       for (const property of properties) {
-        if (getPropertyType(property) !== PropertyType.navigational) {
+        const propertyType = getPropertyType(property);
+        if (
+          propertyType !== PropertyType.navigational &&
+          propertyType !== PropertyType.ambiguous
+        ) {
           return false;
         }
       }
 
-      return getPropertyType(lastProperty) === PropertyType.scalar;
+      const propertyType = getPropertyType(lastProperty);
+      return (
+        propertyType === PropertyType.scalar ||
+        propertyType === PropertyType.ambiguous
+      );
     }
 
     function findNavigationalLoad(scope: Scope) {
