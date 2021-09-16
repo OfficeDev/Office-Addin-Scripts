@@ -1,12 +1,12 @@
 import { usageDataObject } from "./defaults";
 
 export class OfficeJSMock {
-  constructor(json?: OfficeObject) {
+  constructor(object?: OfficeObject) {
     this.properties = new Map<string, OfficeJSMock>();
     this.loaded = false;
     this.resetValue(undefined);
-    if (json) {
-      this.populate(json);
+    if (object) {
+      this.populate(object);
     }
   }
 
@@ -111,17 +111,17 @@ export class OfficeJSMock {
     }
   }
 
-  private populate(json: OfficeObject) {
+  private populate(object: OfficeObject) {
     try {
-      Object.keys(json).forEach((property: string) => {
-        if (typeof json[property] === "object") {
+      Object.keys(object).forEach((property: string) => {
+        if (typeof object[property] === "object") {
           this.addMockObject(property);
-          this[property].populate(json[property]);
+          this[property].populate(object[property]);
           this[property].setName(property);
-        } else if (typeof json[property] === "function") {
-          this.addMockFunction(property, json[property]);
+        } else if (typeof object[property] === "function") {
+          this.addMockFunction(property, object[property]);
         } else {
-          this.setMock(property, json[property]);
+          this.setMock(property, object[property]);
         }
       });
       usageDataObject.reportSuccess("populate()");
