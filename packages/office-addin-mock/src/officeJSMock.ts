@@ -24,8 +24,8 @@ export class OfficeJSMock {
   }
 
   // Mock replacement of the load of Office.js API
-  load(property: string) {
-    this.loadMultipleProperties(property);
+  load(propertyArgument: string) {
+    this.loadMultipleProperties(propertyArgument);
   }
 
   // Adds a property of any type to OfficeJSMock
@@ -69,13 +69,13 @@ export class OfficeJSMock {
     properties
       .replace(/\s/g, "")
       .split(",")
-      .forEach((individualProperties: string) => {
-        this.loadNavigational(individualProperties);
+      .forEach((completeProperties: string) => {
+        this.loadNavigational(completeProperties);
       });
   }
 
-  private loadNavigational(propertyName: string) {
-    const properties: Array<string> = propertyName.split("/");
+  private loadNavigational(completePropertyName: string) {
+    const properties: Array<string> = completePropertyName.split("/");
     let navigationalOfficeJSMock: OfficeJSMock = this;
 
     // Iterating through navigational properties
@@ -96,19 +96,19 @@ export class OfficeJSMock {
     navigationalOfficeJSMock.loadScalar(scalarProperty);
   }
 
-  private loadScalar(propertyName: string) {
-    if (this.properties.has(propertyName)) {
-      this.properties.get(propertyName)?.loadCalled();
-      this.assignValue(propertyName);
+  private loadScalar(scalarPropertyName: string) {
+    if (this.properties.has(scalarPropertyName)) {
+      this.properties.get(scalarPropertyName)?.loadCalled();
+      this.assignValue(scalarPropertyName);
 
       this.properties
-        .get(propertyName)
+        .get(scalarPropertyName)
         ?.properties.forEach((property: OfficeJSMock) => {
           property.loadCalled();
         });
     } else {
       throw new Error(
-        `Property ${propertyName} needs to be present in object model before load is called.`
+        `Property ${scalarPropertyName} needs to be present in object model before load is called.`
       );
     }
   }
