@@ -15,7 +15,7 @@ export class OfficeJSMock {
     this[methodName] = functionality ? functionality : function () {};
   }
 
-  // Adds a OfficeJSMock to OfficeJSMock
+  // Adds an object to OfficeJSMock
   addMockObject(objectName: string) {
     const officeJSMock = new OfficeJSMock();
     officeJSMock.isMockObject = true;
@@ -23,7 +23,7 @@ export class OfficeJSMock {
     this[objectName] = this.properties.get(objectName);
   }
 
-  // load of Office.js API
+  // Mock replacement of the load of Office.js API
   load(property: string) {
     this.loadMultipleProperties(property);
   }
@@ -39,7 +39,7 @@ export class OfficeJSMock {
     this[propertyName] = this.properties.get(propertyName)?.value;
   }
 
-  // sync of Office.js API
+  // Mock replacement for the sync of Office.js API
   sync() {
     this.properties.forEach((property: OfficeJSMock, key: string) => {
       property.sync();
@@ -63,8 +63,8 @@ export class OfficeJSMock {
     this.value = `Error, context.sync() was not called`;
   }
 
-  private loadMultipleProperties(property: string) {
-    property
+  private loadMultipleProperties(properties: string) {
+    properties
       .replace(/\s/g, "")
       .split(",")
       .forEach((individualProperties: string) => {
