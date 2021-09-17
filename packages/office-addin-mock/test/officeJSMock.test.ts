@@ -32,6 +32,25 @@ describe("OfficeJSMock", function() {
 
       assert.strictEqual(officeJSMock.notAProperty, undefined);
     });
+    it("Multiple load calls", async function() {
+      const officeJSMock = new OfficeJSMock(testObject);
+
+      officeJSMock.range.load("color");
+      officeJSMock.sync();
+      assert.strictEqual(officeJSMock.range.color, "blue");
+
+      officeJSMock.range.load("color");
+      officeJSMock.sync();
+      assert.strictEqual(officeJSMock.range.color, "blue");
+
+      officeJSMock.range.load("color");
+      assert.strictEqual(officeJSMock.range.color, "blue");
+
+      officeJSMock.sync();
+      assert.strictEqual(officeJSMock.range.color, "blue");
+
+      assert.strictEqual(officeJSMock.notAProperty, undefined);
+    });
     it("Missing load", async function() {
       const officeJSMock = new OfficeJSMock(testObject);
       assert.strictEqual(officeJSMock.range.color, "Error, property was not loaded");
@@ -44,7 +63,7 @@ describe("OfficeJSMock", function() {
       assert.strictEqual(officeJSMock.range.color, "Error, context.sync() was not called");
       officeJSMock.sync();
       officeJSMock.range.load("color");
-      assert.strictEqual(officeJSMock.range.color, "Error, context.sync() was not called");
+      assert.strictEqual(officeJSMock.range.color, "blue");
     });
     it("Functions added", async function() {
       const officeJSMock = new OfficeJSMock(testObject);

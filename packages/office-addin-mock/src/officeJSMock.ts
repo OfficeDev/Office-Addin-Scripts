@@ -59,8 +59,10 @@ export class OfficeJSMock {
   }
 
   private loadCalled() {
-    this.loaded = true;
-    this.value = `Error, context.sync() was not called`;
+    if (!this.loaded) {
+      this.loaded = true;
+      this.value = `Error, context.sync() was not called`;
+    }
   }
 
   private loadMultipleProperties(properties: string) {
@@ -133,6 +135,7 @@ export class OfficeJSMock {
   private resetValue(value: unknown) {
     this.value = `Error, property was not loaded`;
     this.valueBeforeLoaded = value;
+    this.loaded = false;
   }
 
   private properties: Map<string, OfficeJSMock>;
