@@ -80,7 +80,7 @@ describe("OfficeJSMock", function() {
     });
   });
 
-  describe("Load", function() {
+  describe("Different ways to load properties", function() {
     it("Invalid load", async function() {
       const officeJSMock = new OfficeJSMock(testObject);
       assert.throws(() => officeJSMock.range.load("notAProperty"));
