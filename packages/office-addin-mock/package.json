@@ -1,7 +1,7 @@
 {
-  "name": "office-addin-unit-test",
-  "version": "1.0.0",
-  "description": "Provides unit testing utilities to help mock Office-js APIs",
+  "name": "office-addin-mock",
+  "version": "0.0.1",
+  "description": "Provides mocking support for Office-js APIs",
   "main": "./lib/main.js",
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
