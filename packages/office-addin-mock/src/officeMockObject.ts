@@ -139,17 +139,16 @@ export class OfficeMockObject {
     }
   }
 
-  private populate(object: OfficeObject) {
+  private populate(objectData: OfficeObject) {
     try {
-      Object.keys(object).forEach((property: string) => {
-        if (typeof object[property] === "object") {
+      Object.keys(objectData).forEach((property: string) => {
+        if (typeof objectData[property] === "object") {
           this.addMock(property);
-          this[property].populate(object[property]);
-          this[property].setName(property);
-        } else if (typeof object[property] === "function") {
-          this.addMockFunction(property, object[property]);
+          this[property].populate(objectData[property]);
+        } else if (typeof objectData[property] === "function") {
+          this.addMockFunction(property, objectData[property]);
         } else {
-          this.setMock(property, object[property]);
+          this.setMock(property, objectData[property]);
         }
       });
       usageDataObject.reportSuccess("populate()");

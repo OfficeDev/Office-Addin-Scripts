@@ -18,6 +18,17 @@ const testObject = {
   },
 }
 
+const contextMockData = {
+  workbook: {
+    range: {
+      address: "C2",
+    },
+    getSelectedRange: function () {
+      return this.range;
+    },
+  },
+};
+
 describe("Test OfficeMockObject class", function() {
   describe("Populate object", function() {
     it("Object structure created", async function() {
@@ -32,6 +43,15 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.font.size, 12);
 
       assert.strictEqual(officeMock.notAProperty, undefined);
+    });
+    it("Context mock created and working", async function() {
+      const contextMock = new OfficeMockObject(contextMockData);
+
+      const range = contextMock.workbook.getSelectedRange();
+      range.load("address");
+      await contextMock.sync();
+
+      assert.strictEqual(contextMock.workbook.range.address, "C2");
     });
     it("Multiple load calls", async function() {
       const officeMock = new OfficeMockObject(testObject);
