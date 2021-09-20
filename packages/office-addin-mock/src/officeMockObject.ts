@@ -15,7 +15,7 @@ export class OfficeMockObject {
   }
 
   /**
-   * Adds a function to OfficeJSMock. The function can be accessed by simply calling `this.methodName`
+   * Adds a function to OfficeMockObject. The function can be accessed by simply calling `this.methodName`
    * @param methodName Method name of the function to be added
    * @param functionality Function to be added to the object. A blank function will be added if no argument is provided (Optional)
    */
@@ -24,13 +24,13 @@ export class OfficeMockObject {
   }
 
   /**
-   * Adds an object to OfficeJSMock. The object can be accessed by simply calling `this.objectName`
+   * Adds a mock object to OfficeMockObject. The object can be accessed by simply calling `this.objectName`
    * @param objectName Object name of the object to be added
    */
   addMock(objectName: string) {
-    const officeJSMock = new OfficeMockObject();
-    officeJSMock.isMockObject = true;
-    this.properties.set(objectName, officeJSMock);
+    const officeMockObject = new OfficeMockObject();
+    officeMockObject.isMockObject = true;
+    this.properties.set(objectName, officeMockObject);
     this[objectName] = this.properties.get(objectName);
   }
 
@@ -49,15 +49,15 @@ export class OfficeMockObject {
   }
 
   /**
-   * Adds a property of any type to OfficeJSMock
+   * Adds a property of any type to OfficeMockObject
    * @param propertyName Property name to the property to be added
    * @param value Value this added property will have
    */
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
-      const officeJSMock = new OfficeMockObject();
-      officeJSMock.isMockObject = false;
-      this.properties.set(propertyName, officeJSMock);
+      const officeMockObject = new OfficeMockObject();
+      officeMockObject.isMockObject = false;
+      this.properties.set(propertyName, officeMockObject);
     }
     this.properties.get(propertyName)?.resetValue(value);
     this[propertyName] = this.properties.get(propertyName)?.value;
@@ -102,16 +102,16 @@ export class OfficeMockObject {
 
   private loadNavigational(completePropertyName: string) {
     const properties: Array<string> = completePropertyName.split("/");
-    let navigationalOfficeJSMock: OfficeMockObject = this;
+    let navigationalOfficeMockObject: OfficeMockObject = this;
 
     // Iterating through navigational properties
     for (let i = 0; i < properties.length - 1; i++) {
       const property = properties[i];
 
       const checkingUndefined =
-        navigationalOfficeJSMock.properties.get(property);
+        navigationalOfficeMockObject.properties.get(property);
       if (checkingUndefined) {
-        navigationalOfficeJSMock = checkingUndefined;
+        navigationalOfficeMockObject = checkingUndefined;
       } else {
         throw new Error(
           `Navigational property ${property} needs to be present in object model before load is called.`
@@ -119,7 +119,7 @@ export class OfficeMockObject {
       }
     }
     const scalarProperty: string = properties[properties.length - 1];
-    navigationalOfficeJSMock.loadScalar(scalarProperty);
+    navigationalOfficeMockObject.loadScalar(scalarProperty);
   }
 
   private loadScalar(scalarPropertyName: string) {
