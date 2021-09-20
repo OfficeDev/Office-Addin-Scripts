@@ -17,7 +17,7 @@ const testObject = {
   },
 }
 
-describe("OfficeJSMock", function() {
+describe("Test OfficeJSMock class", function() {
   describe("Populate with Object", function() {
     it("Object structure created", async function() {
       const officeJSMock = new OfficeJSMock(testObject);
