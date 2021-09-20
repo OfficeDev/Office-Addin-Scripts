@@ -16,7 +16,7 @@ export class OfficeJSMock {
   }
 
   // Adds an object to OfficeJSMock
-  addMockObject(objectName: string) {
+  addMock(objectName: string) {
     const officeJSMock = new OfficeJSMock();
     officeJSMock.isMockObject = true;
     this.properties.set(objectName, officeJSMock);
@@ -117,7 +117,7 @@ export class OfficeJSMock {
     try {
       Object.keys(object).forEach((property: string) => {
         if (typeof object[property] === "object") {
-          this.addMockObject(property);
+          this.addMock(property);
           this[property].populate(object[property]);
           this[property].setName(property);
         } else if (typeof object[property] === "function") {
