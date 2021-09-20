@@ -12,13 +12,14 @@ const testObject = {
       return this.color;
     },
     "font": {
-      "size": 12
+      "size": 12,
+      "type": "arial"
     }
   },
 }
 
 describe("Test OfficeJSMock class", function() {
-  describe("Populate with Object", function() {
+  describe("Populate object", function() {
     it("Object structure created", async function() {
       const officeJSMock = new OfficeJSMock(testObject);
 
@@ -109,6 +110,14 @@ describe("Test OfficeJSMock class", function() {
       officeJSMock.load("range/color, range/font/size");
       officeJSMock.sync();
       assert.strictEqual(officeJSMock.range.getColor(), "blue");
+      assert.strictEqual(officeJSMock.range.font.size, 12);
+    });
+    it("Comma separated load", async function() {
+      const officeJSMock = new OfficeJSMock(testObject);
+      officeJSMock.load(["range/color", "range/font/type", "range/font/size"]);
+      officeJSMock.sync();
+      assert.strictEqual(officeJSMock.range.getColor(), "blue");
+      assert.strictEqual(officeJSMock.range.font.type, "arial");
       assert.strictEqual(officeJSMock.range.font.size, 12);
     });
   });

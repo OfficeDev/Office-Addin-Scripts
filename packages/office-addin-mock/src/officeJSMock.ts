@@ -38,13 +38,14 @@ export class OfficeJSMock {
    * Mock replacement of the load of Office.js API
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
-  load(propertyArgument: string) {
-    propertyArgument
-      .replace(/\s/g, "")
-      .split(",")
-      .forEach((completeProperties: string) => {
-        this.loadNavigational(completeProperties);
+  load(propertyArgument: string | string[]) {
+    if (typeof propertyArgument === "string") {
+      this.loadMultipleProperties(propertyArgument);
+    } else {
+      propertyArgument.forEach((property: string) => {
+        this.loadMultipleProperties(property);
       });
+    }
   }
 
   /**
@@ -88,6 +89,15 @@ export class OfficeJSMock {
       this.loaded = true;
       this.value = `Error, context.sync() was not called`;
     }
+  }
+
+  private loadMultipleProperties(properties: string) {
+    properties
+      .replace(/\s/g, "")
+      .split(",")
+      .forEach((completeProperties: string) => {
+        this.loadNavigational(completeProperties);
+      });
   }
 
   private loadNavigational(completePropertyName: string) {
