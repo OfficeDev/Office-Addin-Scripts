@@ -99,6 +99,15 @@ describe("Test OfficeMockObject class", function() {
       officeMock.sync();
       assert.strictEqual(officeMock.range.getColor(), "yellow");
     });
+    it("Writting values", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+
+      officeMock.range.address = "C2";
+      assert.strictEqual(officeMock.range.address, "C2");
+  
+      officeMock.range.font.color = "blue";
+      assert.strictEqual(officeMock.range.font.color, "blue");
+    });
   });
 
   describe("Different ways to load properties", function() {
