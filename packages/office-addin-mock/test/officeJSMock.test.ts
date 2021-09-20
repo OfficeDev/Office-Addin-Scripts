@@ -6,14 +6,14 @@ import * as mocha from "mocha";
 import { OfficeMockObject } from "../src/main";
 
 const testObject = {
-  "range": {
-    "color": "blue",
-    "getColor": function() {
+  range: {
+    color: "blue",
+    getColor: function() {
       return this.color;
     },
-    "font": {
-      "size": 12,
-      "type": "arial"
+    font: {
+      size: 12,
+      type: "arial"
     }
   },
 }
