@@ -1,5 +1,9 @@
 import { usageDataObject } from "./defaults";
 
+/**
+ * Creates an office-js mockable object
+ * @param object Object structure to provide initial values for the mock object (Optional)
+ */
 export class OfficeJSMock {
   constructor(object?: OfficeObject) {
     this.properties = new Map<string, OfficeJSMock>();
@@ -10,12 +14,19 @@ export class OfficeJSMock {
     }
   }
 
-  // Adds a function to OfficeJSMock
+  /**
+   * Adds a function to OfficeJSMock. The function can be accessed by simply calling `this.methodName`
+   * @param methodName Method name of the function to be added
+   * @param functionality Function to be added to the object. A blank function will be added if no argument is provided (Optional)
+   */
   addMockFunction(methodName: string, functionality?: Function) {
     this[methodName] = functionality ? functionality : function () {};
   }
 
-  // Adds an object to OfficeJSMock
+  /**
+   * Adds an object to OfficeJSMock. The object can be accessed by simply calling `this.objectName`
+   * @param objectName Object name of the object to be added
+   */
   addMock(objectName: string) {
     const officeJSMock = new OfficeJSMock();
     officeJSMock.isMockObject = true;
@@ -23,17 +34,24 @@ export class OfficeJSMock {
     this[objectName] = this.properties.get(objectName);
   }
 
-  // Mock replacement of the load of Office.js API
+  /**
+   * Mock replacement of the load of Office.js API
+   * @param propertyArgument Argument of the load call. Will load any properties in the argument
+   */
   load(propertyArgument: string) {
     propertyArgument
-    .replace(/\s/g, "")
-    .split(",")
-    .forEach((completeProperties: string) => {
-      this.loadNavigational(completeProperties);
-    });
+      .replace(/\s/g, "")
+      .split(",")
+      .forEach((completeProperties: string) => {
+        this.loadNavigational(completeProperties);
+      });
   }
 
-  // Adds a property of any type to OfficeJSMock
+  /**
+   * Adds a property of any type to OfficeJSMock
+   * @param propertyName Property name to the property to be added
+   * @param value Value this added property will have
+   */
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
       const officeJSMock = new OfficeJSMock();
@@ -44,7 +62,9 @@ export class OfficeJSMock {
     this[propertyName] = this.properties.get(propertyName)?.value;
   }
 
-  // Mock replacement for the sync of Office.js API
+  /**
+   * Mock replacement for the sync of Office.js API
+   */
   sync() {
     this.properties.forEach((property: OfficeJSMock, key: string) => {
       property.sync();
