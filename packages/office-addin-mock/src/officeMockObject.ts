@@ -4,9 +4,9 @@ import { usageDataObject } from "./defaults";
  * Creates an office-js mockable object
  * @param object Object structure to provide initial values for the mock object (Optional)
  */
-export class OfficeJSMock {
+export class OfficeMockObject {
   constructor(object?: OfficeObject) {
-    this.properties = new Map<string, OfficeJSMock>();
+    this.properties = new Map<string, OfficeMockObject>();
     this.loaded = false;
     this.resetValue(undefined);
     if (object) {
@@ -28,7 +28,7 @@ export class OfficeJSMock {
    * @param objectName Object name of the object to be added
    */
   addMock(objectName: string) {
-    const officeJSMock = new OfficeJSMock();
+    const officeJSMock = new OfficeMockObject();
     officeJSMock.isMockObject = true;
     this.properties.set(objectName, officeJSMock);
     this[objectName] = this.properties.get(objectName);
@@ -55,7 +55,7 @@ export class OfficeJSMock {
    */
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
-      const officeJSMock = new OfficeJSMock();
+      const officeJSMock = new OfficeMockObject();
       officeJSMock.isMockObject = false;
       this.properties.set(propertyName, officeJSMock);
     }
@@ -67,7 +67,7 @@ export class OfficeJSMock {
    * Mock replacement for the sync of Office.js API
    */
   sync() {
-    this.properties.forEach((property: OfficeJSMock, key: string) => {
+    this.properties.forEach((property: OfficeMockObject, key: string) => {
       property.sync();
       this.assignValue(key);
     });
@@ -102,7 +102,7 @@ export class OfficeJSMock {
 
   private loadNavigational(completePropertyName: string) {
     const properties: Array<string> = completePropertyName.split("/");
-    let navigationalOfficeJSMock: OfficeJSMock = this;
+    let navigationalOfficeJSMock: OfficeMockObject = this;
 
     // Iterating through navigational properties
     for (let i = 0; i < properties.length - 1; i++) {
@@ -129,7 +129,7 @@ export class OfficeJSMock {
 
       this.properties
         .get(scalarPropertyName)
-        ?.properties.forEach((property: OfficeJSMock) => {
+        ?.properties.forEach((property: OfficeMockObject) => {
           property.loadCalled();
         });
     } else {
@@ -164,7 +164,7 @@ export class OfficeJSMock {
     this.loaded = false;
   }
 
-  private properties: Map<string, OfficeJSMock>;
+  private properties: Map<string, OfficeMockObject>;
   private loaded: boolean;
   private value: unknown;
   private valueBeforeLoaded: unknown;

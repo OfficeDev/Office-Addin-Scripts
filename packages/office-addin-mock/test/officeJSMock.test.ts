@@ -3,7 +3,7 @@
 
 import * as assert from "assert";
 import * as mocha from "mocha";
-import { OfficeJSMock } from "../src/main";
+import { OfficeMockObject } from "../src/main";
 
 const testObject = {
   "range": {
@@ -18,107 +18,107 @@ const testObject = {
   },
 }
 
-describe("Test OfficeJSMock class", function() {
+describe("Test OfficeMockObject class", function() {
   describe("Populate object", function() {
     it("Object structure created", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
+      const officeMock = new OfficeMockObject(testObject);
 
-      officeJSMock.range.load("color");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.color, "blue");
+      officeMock.range.load("color");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.color, "blue");
 
-      officeJSMock.range.font.load("size");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.font.size, 12);
+      officeMock.range.font.load("size");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.font.size, 12);
 
-      assert.strictEqual(officeJSMock.notAProperty, undefined);
+      assert.strictEqual(officeMock.notAProperty, undefined);
     });
     it("Multiple load calls", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
+      const officeMock = new OfficeMockObject(testObject);
 
-      officeJSMock.range.load("color");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.color, "blue");
+      officeMock.range.load("color");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.color, "blue");
 
-      officeJSMock.range.load("color");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.color, "blue");
+      officeMock.range.load("color");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.color, "blue");
 
-      officeJSMock.range.load("color");
-      assert.strictEqual(officeJSMock.range.color, "blue");
+      officeMock.range.load("color");
+      assert.strictEqual(officeMock.range.color, "blue");
 
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.color, "blue");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.color, "blue");
 
-      assert.strictEqual(officeJSMock.notAProperty, undefined);
+      assert.strictEqual(officeMock.notAProperty, undefined);
     });
     it("Missing load", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      assert.strictEqual(officeJSMock.range.color, "Error, property was not loaded");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.color, "Error, property was not loaded");
+      const officeMock = new OfficeMockObject(testObject);
+      assert.strictEqual(officeMock.range.color, "Error, property was not loaded");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.color, "Error, property was not loaded");
     });
     it("Missing sync", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      officeJSMock.range.load("color");
-      assert.strictEqual(officeJSMock.range.color, "Error, context.sync() was not called");
-      officeJSMock.sync();
-      officeJSMock.range.load("color");
-      assert.strictEqual(officeJSMock.range.color, "blue");
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.range.load("color");
+      assert.strictEqual(officeMock.range.color, "Error, context.sync() was not called");
+      officeMock.sync();
+      officeMock.range.load("color");
+      assert.strictEqual(officeMock.range.color, "blue");
     });
     it("Functions added", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      officeJSMock.range.load("color");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.getColor(), "blue");
-      officeJSMock.range.color = "green";
-      assert.strictEqual(officeJSMock.range.getColor(), "green");
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.range.load("color");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "blue");
+      officeMock.range.color = "green";
+      assert.strictEqual(officeMock.range.getColor(), "green");
 
-      officeJSMock.range.setMock("color", "yellow");
-      officeJSMock.range.load("color");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.getColor(), "yellow");
+      officeMock.range.setMock("color", "yellow");
+      officeMock.range.load("color");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "yellow");
     });
   });
 
   describe("Different ways to load properties", function() {
     it("Invalid load", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      assert.throws(() => officeJSMock.range.load("notAProperty"));
+      const officeMock = new OfficeMockObject(testObject);
+      assert.throws(() => officeMock.range.load("notAProperty"));
     });
     it("Load on navigation property", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      officeJSMock.load("range");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.getColor(), "blue");
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.load("range");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "blue");
     });
     it("Navigational load", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      officeJSMock.load("range/color");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.getColor(), "blue");
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.load("range/color");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "blue");
 
-      officeJSMock.load("range/font/size");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.font.size, 12);
+      officeMock.load("range/font/size");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.font.size, 12);
   
-      assert.throws(() => officeJSMock.load("range/notANavigational/size"));
-      assert.throws(() => officeJSMock.load("notANavigational/font/size"));
+      assert.throws(() => officeMock.load("range/notANavigational/size"));
+      assert.throws(() => officeMock.load("notANavigational/font/size"));
     });
     it("Multiple properties load", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      officeJSMock.load("range/color, range/font/size");
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.getColor(), "blue");
-      assert.strictEqual(officeJSMock.range.font.size, 12);
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.load("range/color, range/font/size");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "blue");
+      assert.strictEqual(officeMock.range.font.size, 12);
     });
     it("Comma separated load", async function() {
-      const officeJSMock = new OfficeJSMock(testObject);
-      officeJSMock.load(["range/color", "range/font/type", "range/font/size"]);
-      officeJSMock.sync();
-      assert.strictEqual(officeJSMock.range.getColor(), "blue");
-      assert.strictEqual(officeJSMock.range.font.type, "arial");
-      assert.strictEqual(officeJSMock.range.font.size, 12);
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.load(["range/color", "range/font/type", "range/font/size"]);
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "blue");
+      assert.strictEqual(officeMock.range.font.type, "arial");
+      assert.strictEqual(officeMock.range.font.size, 12);
     });
   });
 });
