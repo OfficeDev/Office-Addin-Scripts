@@ -1,9 +1,9 @@
 steps:
-script: |
-   echo Running Tests
-   
-   npm run test
-   
-   echo Done running tests
-   
-  displayName: 'Run Tests'
+   - script: |
+      echo Running Tests
+      
+      npm run test
+      
+      echo Done running tests
+      
+   displayName: 'Run Tests'
