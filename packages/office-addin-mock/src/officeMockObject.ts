@@ -29,7 +29,7 @@ export class OfficeMockObject {
    */
   addMock(objectName: string) {
     const officeMockObject = new OfficeMockObject();
-    officeMockObject.isTreatedLikeMockObject = true;
+    officeMockObject.isTreatedLikeObject = true;
     this.properties.set(objectName, officeMockObject);
     this[objectName] = this.properties.get(objectName);
   }
@@ -56,7 +56,7 @@ export class OfficeMockObject {
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
       const officeMockObject = new OfficeMockObject();
-      officeMockObject.isTreatedLikeMockObject = false;
+      officeMockObject.isTreatedLikeObject = false;
       this.properties.set(propertyName, officeMockObject);
     }
     this.properties.get(propertyName)?.resetValue(value);
@@ -77,7 +77,7 @@ export class OfficeMockObject {
   }
 
   private assignValue(propertyName: string) {
-    if (this.properties.get(propertyName)?.isTreatedLikeMockObject) {
+    if (this.properties.get(propertyName)?.isTreatedLikeObject) {
       this[propertyName] = this.properties.get(propertyName);
     } else {
       this[propertyName] = this.properties.get(propertyName)?.value;
@@ -108,9 +108,8 @@ export class OfficeMockObject {
     for (let i = 0; i < properties.length - 1; i++) {
       const property = properties[i];
 
-      const retrievedProperty:
-        | OfficeMockObject
-        | undefined = navigationalOfficeMockObject.properties.get(property);
+      const retrievedProperty: OfficeMockObject | undefined =
+        navigationalOfficeMockObject.properties.get(property);
       if (retrievedProperty) {
         navigationalOfficeMockObject = retrievedProperty;
       } else {
@@ -168,11 +167,12 @@ export class OfficeMockObject {
   private loaded: boolean;
   private value: unknown;
   private valueBeforeLoaded: unknown;
-  private isTreatedLikeMockObject: boolean | undefined;
+  private isTreatedLikeObject: boolean | undefined;
   /* eslint-disable-next-line */
   [key: string]: any;
 }
 
+// It represents the Object to be used when populating Office JS with data.
 class ObjectData {
   /* eslint-disable-next-line */
   [key: string]: any;
