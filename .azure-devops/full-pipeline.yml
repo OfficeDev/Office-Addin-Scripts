@@ -7,8 +7,13 @@ jobs:
     pool:
       name: OE-OfficeClientApps
     steps:
-      - template: ./steps/npm-install.yaml
+      - task: Npm@1
+        displayName: "Package level npm install"
+        inputs:
+          command: custom
+          customCommand: "npm run exec -- npm install"
       - template: ./steps/lint.yml
+      - template: ./steps/npm-install.yaml
       - template: ./steps/build.yaml
       - template: ./steps/devcerts.yml
       - template: ./steps/edgewebview.yml
