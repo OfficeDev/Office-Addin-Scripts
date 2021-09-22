@@ -5,6 +5,9 @@ import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
 import * as defaults from "./defaults";
 import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
+import { usageDataObject } from "./defaults";
+
+/* global process */
 
 /**
  * Determines path to files to run lint against. Priority order follows:
@@ -14,40 +17,56 @@ import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
  * @param command command options which can contain files
  */
 function getPathToFiles(command: commander.Command): string {
-  const pathToFiles: any = command.files
-    ? command.files
-    : process.env.npm_package_config_lint_files;
+  const pathToFiles: any = command.files ? command.files : process.env.npm_package_config_lint_files;
   return pathToFiles ? pathToFiles : defaults.lintFiles;
 }
 
 export async function lint(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    performLintCheck(pathToFiles);
+    const useTestConfig: boolean = command.test;
+    await performLintCheck(pathToFiles, useTestConfig);
+    usageDataObject.reportSuccess("lint");
   } catch (err) {
-    // no need to display an error since there will already be error output;
-    // just return a non-zero exit code
-    process.exitCode = 1;
+    if (typeof err.status == "number") {
+      process.exitCode = err.status;
+    } else {
+      process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      usageDataObject.reportException("lint", err);
+      logErrorMessage(err);
+    }
   }
 }
 
 export async function lintFix(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    performLintFix(pathToFiles);
+    const useTestConfig: boolean = command.test;
+    await performLintFix(pathToFiles, useTestConfig);
+    usageDataObject.reportSuccess("lintFix");
   } catch (err) {
-    // no need to display an error since there will already be error output;
-    // just return a non-zero exit code
-    process.exitCode = 1;
+    if (typeof err.status == "number") {
+      process.exitCode = err.status;
+    } else {
+      process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      usageDataObject.reportException("lintFix", err);
+      logErrorMessage(err);
+    }
   }
 }
 
 export async function prettier(command: commander.Command) {
   try {
     const pathToFiles: string = getPathToFiles(command);
-    makeFilesPrettier(pathToFiles);
+    await makeFilesPrettier(pathToFiles);
+    usageDataObject.reportSuccess("prettier");
   } catch (err) {
-    logErrorMessage(`Unable to make code prettier.\n${err}`);
-    process.exitCode = 1;
+    if (typeof err.status == "number") {
+      process.exitCode = err.status;
+    } else {
+      process.exitCode = defaults.PrettierExitCode.CommandFailed;
+      usageDataObject.reportException("prettier", err);
+      logErrorMessage(err);
+    }
   }
 }

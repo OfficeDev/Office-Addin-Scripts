@@ -12,6 +12,7 @@ import * as jsonData from "../src/usageDataSettings";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
+const errWithBackslash = new Error(`this error contains a file path:C:\\Users\\admin\\AppData\\Local\Temp\\excel file .xlsx`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
@@ -158,17 +159,26 @@ describe("Test office-addin-usage data-package", function() {
     });
   });
   describe("Test maskFilePaths method", () => {
-    it("should return a parsed file path error", () => {
+    it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
       const compareError = new Error();
       compareError.name = "TestData-test";
-      compareError.message = "this error contains a file path:C:index.js";
+      compareError.message = "this error contains a file path:C:\\index.js";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path:C:index.js";
+      compareError.stack = "this error contains a file path:C:\\.js";
       addInUsageData.maskFilePaths(err);
       assert.equal(compareError.name, err.name);
       assert.equal(compareError.message, err.message);
       assert.equal(err.stack.includes(compareError.stack), true);
+    });
+    it("should parse error file paths with backslashs", () => {
+      addInUsageData.setUsageDataOff();
+      const compareErrorWithBackslash = new Error();
+      compareErrorWithBackslash.message = "this error contains a file path:C:\\excel file .xlsx";
+      compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";;
+      addInUsageData.maskFilePaths(errWithBackslash);
+      assert.equal(compareErrorWithBackslash.message, errWithBackslash.message);
+      assert.equal(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
     });
   });
 
@@ -263,13 +273,23 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(JSON.stringify(jsonObject.usageDataInstances[usageDataObject.groupName]), JSON.stringify(jsonData.readUsageDataSettings(usageDataObject.groupName)));
     });
   });
-  describe("Test sendUsageDataSuccessEvent", () => {
+  describe("Test reportSuccess", () => {
     it("should send success events successfully", () => {
-      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent", {TestVal: 42, OtherTestVal: "testing"});
+      addInUsageData.reportSuccess("testMethod-reportSuccess", {TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
     it("should send success events successfully, even when there's no additional data", () => {
-      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent");
+      addInUsageData.reportSuccess("testMethod-reportSuccess");
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+  });
+  describe("Test reportExpectedException", () => {
+    it("should send successful fail events successfully", () => {
+      addInUsageData.reportExpectedException("testMethod-reportExpectedException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
+      assert.equal(addInUsageData.getEventsSent(), 1);
+    });
+    it("should send successful fail events successfully, even when there's no additional data", () => {
+      addInUsageData.reportExpectedException("testMethod-reportExpectedException", new Error("Test"));
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
@@ -283,13 +303,13 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
-  describe("Test sendUsageDataException", () => {
+  describe("Test reportException", () => {
     it("should send exceptions successfully", () => {
-      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
+      addInUsageData.reportException("testMethod-reportException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
     it("should send exceptions successfully, even when there's no data", () => {
-      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"));
+      addInUsageData.reportException("testMethod-reportException", new Error("Test"));
       assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
   });

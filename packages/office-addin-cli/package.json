@@ -1,15 +1,16 @@
 {
   "name": "office-addin-cli",
-  "version": "1.0.16",
+  "version": "1.2.3",
   "description": "A command-line interface for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
-    "tsc": "tsc -p tsconfig.json",
-    "tsc-watch": "tsc -p tsconfig.json -w",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "lint": "eslint src/**/*.{ts,tsx,js,jsx}",
+    "lint:fix": "eslint src/**/*.{ts,tsx,js,jsx} --fix",
+    "start": "rimraf lib && concurrently \"npm run watch\"",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "tsc -p tsconfig.json -w"
   },
   "author": "Office Dev",
   "license": "MIT",
@@ -20,21 +21,27 @@
     "Office"
   ],
   "dependencies": {
-    "commander": "^6.2.0",
-    "node-fetch": "^2.6.1"
+    "commander": "^6.2.1",
+    "node-fetch": "^2.6.1",
+    "read-package-json-fast": "^2.0.2"
   },
   "devDependencies": {
-    "@types/mocha": "^7.0.2",
-    "@types/node": "^12.12.34",
-    "@types/node-fetch": "^2.5.5",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.17.2",
+    "@types/node-fetch": "^2.5.10",
     "@types/sinon": "^7.5.2",
-    "concurrently": "^5.3.0",
-    "mocha": "^7.1.1",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "concurrently": "^6.0.0",
+    "eslint": "7.28.0",
+    "eslint-plugin-office-addins": "^1.0.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "mocha": "^8.4.0",
+    "office-addin-prettier-config": "^1.1.0",
+    "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
     "sinon": "^7.5.0",
-    "ts-node": "^8.8.1",
-    "tslint": "^6.1.0",
-    "typescript": "^3.8.3"
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
   },
   "repository": {
     "type": "git",
@@ -43,5 +50,6 @@
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
+  "prettier": "office-addin-prettier-config",
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }

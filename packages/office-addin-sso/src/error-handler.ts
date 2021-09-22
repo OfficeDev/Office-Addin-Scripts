@@ -26,15 +26,11 @@ export function handleClientSideErrors(error: any): boolean {
       return invokeFallBackDialog;
     case 13008:
       // Only seen in Office on the Web.
-      showMessage(
-        "Office is still working on the last operation. When it completes, try this operation again."
-      );
+      showMessage("Office is still working on the last operation. When it completes, try this operation again.");
       return invokeFallBackDialog;
     case 13010:
       // Only seen in Office on the Web.
-      showMessage(
-        "Follow the instructions to change your browser's zone configuration."
-      );
+      showMessage("Follow the instructions to change your browser's zone configuration.");
       return invokeFallBackDialog;
     default:
       // For all other errors, including 13000, 13003, 13005, 13007, 13012, and 50001, fall back

@@ -14,6 +14,7 @@ The function parameter types may be provided using the [@param](#param) tag in J
 * [@helpurl](#helpurl) url
 * [@param](#param) _{type}_ name description
 * [@requiresAddress](#requiresAddress)
+* [@requiresParameterAddresses](#requiresParameterAddresses)
 * [@returns](#returns) _{type}_
 * [@streaming](#streaming)
 * [@volatile](#volatile)
@@ -106,7 +107,7 @@ The last function parameter must be of type `CustomFunctions.Invocation` or a de
 
 Indicates that the address of the input parameters where the function is being evaluated should be provided. 
 
-The last function parameter must be of type `CustomFunctions.Invocation` or a derived type. When the function is called, the `parameterAddresses` property will contain address of each parameter.
+The last function parameter must be of type `CustomFunctions.Invocation` or a derived type. When the function is called, the `parameterAddresses` property will contain an array containing the address of each parameter.
 
 ---
 ### @returns

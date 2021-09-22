@@ -5,6 +5,7 @@
  * The Office apps which can host Office Add-ins.
  */
 export enum OfficeApp {
+  /* eslint-disable no-unused-vars */
   // the string values should be lowercase
   Excel = "excel",
   OneNote = "onenote",
@@ -17,7 +18,7 @@ export enum OfficeApp {
 }
 
 // initialized once since this list won't change
-const officeApps: OfficeApp[] = Object.keys(OfficeApp).map<OfficeApp>(key => parseOfficeApp(key));
+const officeApps: OfficeApp[] = Object.keys(OfficeApp).map<OfficeApp>((key) => parseOfficeApp(key));
 
 /**
  * Get the Office app for the manifest Host name
@@ -70,7 +71,7 @@ export function getOfficeAppName(app: OfficeApp): string {
  * @param apps Office apps
  */
 export function getOfficeAppNames(apps: OfficeApp[]): string[] {
-  return apps.map(app => getOfficeAppName(app));
+  return apps.map((app) => getOfficeAppName(app));
 }
 
 /**
@@ -88,7 +89,7 @@ export function getOfficeAppsForManifestHosts(hosts?: string[]): OfficeApp[] {
   const apps: OfficeApp[] = [];
 
   if (hosts) {
-    hosts.forEach(host => {
+    hosts.forEach((host) => {
       const app = getOfficeAppForManifestHost(host);
 
       if (app) {
@@ -124,7 +125,7 @@ export function parseOfficeApps(input: string): OfficeApp[] {
   if (input.trim().toLowerCase() === "all") {
     return getOfficeApps();
   } else {
-    return input.split(",").map<OfficeApp>(appString => parseOfficeApp(appString));
+    return input.split(",").map<OfficeApp>((appString) => parseOfficeApp(appString));
   }
 }
 

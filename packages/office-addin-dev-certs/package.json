@@ -1,15 +1,17 @@
 {
   "name": "office-addin-dev-certs",
-  "version": "1.5.9",
+  "version": "1.6.3",
   "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
-    "tsc": "tsc -p tsconfig.json",
-    "tsc-watch": "tsc -p tsconfig.json -w",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
+    "start": "rimraf lib && concurrently \"npm run watch\"",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "tsc -p tsconfig.json -w"
   },
   "author": "Office Dev",
   "license": "MIT",
@@ -34,22 +36,22 @@
     "commander": "^6.2.0",
     "fs-extra": "^7.0.1",
     "mkcert": "^1.4.0",
-    "office-addin-cli": "^1.0.16",
-    "office-addin-usage-data": "^1.0.20"
+    "office-addin-cli": "^1.2.3",
+    "office-addin-usage-data": "^1.3.3"
   },
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
     "@types/fs-extra": "^5.1.0",
     "@types/mkcert": "^1.2.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.34",
-    "concurrently": "^5.3.0",
-    "mocha": "^7.1.1",
+    "@types/node": "^14.17.2",
+    "concurrently": "^6.0.0",
+    "mocha": "^8.4.0",
+    "office-addin-lint": "^1.3.3",
     "rimraf": "^3.0.2",
     "sinon": "^7.5.0",
-    "ts-node": "^8.8.1",
-    "tslint": "^6.1.0",
-    "typescript": "^3.8.3"
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
   },
   "repository": {
     "type": "git",
@@ -58,5 +60,6 @@
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
+  "prettier": "office-addin-prettier-config",
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }
