@@ -27,7 +27,15 @@ ruleTester.run('call-sync-after-load', rule, {
         await context.sync();
         property.load("props");
         console.log(property.props);`
-    }
+    },
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("font/fill/color", "address");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
   ],
   invalid: [
     {
@@ -48,5 +56,12 @@ ruleTester.run('call-sync-after-load', rule, {
         console.log(property.length);`,
       errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "length" }}]
     },
+    {
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("font/fill/color", "address");
+			  console.log(range.font.fill.color);`,
+        errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "font/fill/color" }}]
+		},
   ]
 });

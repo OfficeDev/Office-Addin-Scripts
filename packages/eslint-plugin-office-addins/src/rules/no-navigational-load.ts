@@ -73,16 +73,18 @@ export = {
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             isLoadFunction(node.parent)
           ) {
-            const propertyName: string | undefined = getLoadArgument(
+            const propertiesNames: string[] | undefined = getLoadArgument(
               node.parent
             );
-            if (propertyName && !isLoadingValidPropeties(propertyName)) {
-              context.report({
-                node: node.parent,
-                messageId: "navigationalLoad",
-                data: { name: node.name, loadValue: propertyName },
-              });
-            }
+            propertiesNames?.forEach((propertyName: string) => {
+              if (propertyName && !isLoadingValidPropeties(propertyName)) {
+                context.report({
+                  node: node.parent,
+                  messageId: "navigationalLoad",
+                  data: { name: node.name, loadValue: propertyName },
+                });
+              }
+            });
           }
         });
       });

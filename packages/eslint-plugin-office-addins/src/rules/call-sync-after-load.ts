@@ -57,12 +57,12 @@ export = {
           variable &&
           identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
         ) {
-          const propertyName: string | undefined = getLoadArgument(
+          const propertiesNames: string[] | undefined = getLoadArgument(
             identifier.parent
           );
-          if (propertyName) {
+          propertiesNames?.forEach((propertyName: string) => {
             needSync.add({ variable: variable.name, property: propertyName });
-          }
+          });
         }
 
         if (operation === "Sync") {
