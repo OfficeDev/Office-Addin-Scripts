@@ -11,7 +11,7 @@ jobs:
         displayName: "Package level npm install"
         inputs:
           command: custom
-          customCommand: "npm run exec -- npm install"
+          customCommand: "run exec -- npm install"
       - template: ./steps/lint.yml
       - template: ./steps/npm-install.yaml
       - template: ./steps/build.yaml
