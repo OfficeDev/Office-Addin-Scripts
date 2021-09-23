@@ -19,9 +19,7 @@ export async function configureSSO(manifestPath: string) {
     console.log(chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`));
     return;
   } else if (applicationDataConfigured(manifestPath)) {
-    console.log(
-      chalk.yellow("Project was already previously updated.")
-    );
+    console.log(chalk.yellow("Project was already previously updated."));
     const question = {
       message: `Continue anyway?`,
       name: "didUserConfirm",

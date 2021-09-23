@@ -43,9 +43,8 @@ class CustomFunctionsMetadataPlugin {
         compilation.assets[this.options.output] = new sources.RawSource(
           generateResult.metadataJson
         );
-        CustomFunctionsMetadataPlugin.generateResults[
-          this.options.input
-        ] = generateResult;
+        CustomFunctionsMetadataPlugin.generateResults[this.options.input] =
+          generateResult;
       }
 
       NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(
