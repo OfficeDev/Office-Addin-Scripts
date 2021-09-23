@@ -14,7 +14,6 @@ jobs:
           customCommand: "run exec -- npm install"
       - template: ./steps/npm-install.yaml
       - template: ./steps/build.yaml
-      - template: ./steps/lint.yml
       - template: ./steps/devcerts.yml
       - template: ./steps/edgewebview.yml
       - template: ./steps/test.yml
