@@ -72,7 +72,7 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
-function isProperty(node: TSESTree.Node): boolean {
+export function isProperty(node: TSESTree.Node): boolean {
   if (node.parent && node.parent.type === AST_NODE_TYPES.CallExpression) {
     const callExpression: TSESTree.Node = node.parent;
 

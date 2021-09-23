@@ -1,7 +1,7 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { findTopLevelExpression } from "../utils/utils";
-import { findOfficeApiReferences, OfficeApiReference } from "../utils/utils";
+import { isProperty, findOfficeApiReferences, OfficeApiReference } from "../utils/utils";
 
 export = {
   name: "call-sync-before-read",
@@ -30,6 +30,8 @@ export = {
       switch (topExpression.parent?.type) {
         case TSESTree.AST_NODE_TYPES.AssignmentExpression:
           return topExpression.parent.right === topExpression;
+        case TSESTree.AST_NODE_TYPES.CallExpression:
+          return isProperty(node);
         default:
           return true;
       }
