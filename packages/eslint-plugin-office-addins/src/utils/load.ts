@@ -41,27 +41,30 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
-export function getLoadArgument(
-  node: TSESTree.MemberExpression
-): string | undefined {
+export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
   node = findTopLevelExpression(node);
 
   if (
     isLoadFunction(node) &&
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
-    if (node.parent.arguments.length === 0) {
-      return undefined;
-    }
-    if (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal) {
-      return node.parent.arguments[0].value as string;
-    } else if (
-      node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.ObjectExpression
-    ) {
-      return composeObjectExpressionPropertyIntoString(
-        node.parent.arguments[0]
-      );
-    }
+    let properties: string[] = [];
+    node.parent.arguments.forEach(
+      (argument: TSESTree.CallExpressionArgument) => {
+        if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
+          (argument.value as string)
+            .replace(/\s/g, "")
+            .split(",")
+            .forEach((property: string) => {
+              properties.push(property);
+            });
+        } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
+          properties.push(composeObjectExpressionPropertyIntoString(argument));
+        }
+      }
+    );
+
+    return properties;
   }
   throw new Error("error in getLoadArgument function.");
 }
