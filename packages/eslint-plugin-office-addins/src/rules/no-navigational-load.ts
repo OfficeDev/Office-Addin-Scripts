@@ -5,7 +5,7 @@ import {
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { isGetFunction } from "../utils/getFunction";
-import { getLoadArgument, isLoadFunction } from "../utils/load";
+import { parseLoadArguments, isLoadFunction } from "../utils/load";
 import { getPropertyType, PropertyType } from "../utils/propertiesType";
 
 export = {
@@ -73,10 +73,10 @@ export = {
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             isLoadFunction(node.parent)
           ) {
-            const propertiesNames: string[] | undefined = getLoadArgument(
+            const propertyNames: string[] | undefined = parseLoadArguments(
               node.parent
             );
-            propertiesNames?.forEach((propertyName: string) => {
+            propertyNames?.forEach((propertyName: string) => {
               if (propertyName && !isLoadingValidPropeties(propertyName)) {
                 context.report({
                   node: node.parent,

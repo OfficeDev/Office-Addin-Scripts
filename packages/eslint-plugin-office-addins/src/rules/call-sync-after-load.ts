@@ -1,6 +1,6 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Reference } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { getLoadArgument } from "../utils/load";
+import { parseLoadArguments } from "../utils/load";
 import {
   findPropertiesRead,
   findOfficeApiReferences,
@@ -57,10 +57,10 @@ export = {
           variable &&
           identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
         ) {
-          const propertiesNames: string[] | undefined = getLoadArgument(
+          const propertyNames: string[] | undefined = parseLoadArguments(
             identifier.parent
           );
-          propertiesNames?.forEach((propertyName: string) => {
+          propertyNames?.forEach((propertyName: string) => {
             needSync.add({ variable: variable.name, property: propertyName });
           });
         }

@@ -133,14 +133,5 @@ ruleTester.run('no-navigational-load', rule, {
 			  console.log(range.address);`,
 			  errors: [{ messageId: "navigationalLoad", data: { loadValue: "font/fill" } }]
 		},
-		{
-			code: `
-			  var range = worksheet.getSelectedRange();
-			  range.load("address", "font/fill");
-			  await context.sync();
-			  console.log(range.font.fill.color);
-			  console.log(range.address);`,
-			  errors: [{ messageId: "navigationalLoad", data: { loadValue: "font/fill" } }]
-		},
 	]
 });

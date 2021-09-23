@@ -41,7 +41,7 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
-export function getLoadArgument(
+export function parseLoadArguments(
   node: TSESTree.MemberExpression
 ): string[] | undefined {
   node = findTopLevelExpression(node);
@@ -60,25 +60,16 @@ export function getLoadArgument(
 
     let properties: string[] = [];
     node.parent.arguments.forEach(
-      (propertiesSeparatedByComma: TSESTree.CallExpressionArgument) => {
-        if (
-          propertiesSeparatedByComma.type === TSESTree.AST_NODE_TYPES.Literal
-        ) {
-          (propertiesSeparatedByComma.value as string)
+      (argument: TSESTree.CallExpressionArgument) => {
+        if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
+          (argument.value as string)
             .replace(/\s/g, "")
             .split(",")
             .forEach((property: string) => {
               properties.push(property);
             });
-        } else if (
-          propertiesSeparatedByComma.type ===
-          TSESTree.AST_NODE_TYPES.ObjectExpression
-        ) {
-          properties.push(
-            composeObjectExpressionPropertyIntoString(
-              propertiesSeparatedByComma
-            )
-          );
+        } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
+          properties.push(composeObjectExpressionPropertyIntoString(argument));
         }
       }
     );
