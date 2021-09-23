@@ -85,6 +85,14 @@ ruleTester.run('load-object-before-read', rule, {
         range.load("format/fill/size");
         console.log(range.format.fill.size);`
     },
+    {
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("font/fill/color", "address");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
   ],
   invalid: [
     {
@@ -152,5 +160,12 @@ ruleTester.run('load-object-before-read', rule, {
         console.log(range.format.fill.color);`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
     },
+    {
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  await context.sync();
+			  console.log(range.font.fill.color);`,
+        errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "font/fill/color" }  }]
+		},
   ]
 });
