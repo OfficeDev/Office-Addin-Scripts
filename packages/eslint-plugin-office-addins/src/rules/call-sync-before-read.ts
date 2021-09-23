@@ -2,7 +2,7 @@ import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { findTopLevelExpression } from "../utils/utils";
 import {
-  isProperty,
+  isCallingProperty,
   findOfficeApiReferences,
   OfficeApiReference,
 } from "../utils/utils";
@@ -35,7 +35,7 @@ export = {
         case TSESTree.AST_NODE_TYPES.AssignmentExpression:
           return topExpression.parent.right === topExpression;
         case TSESTree.AST_NODE_TYPES.CallExpression:
-          return isProperty(node);
+          return isCallingProperty(node);
         default:
           return true;
       }
