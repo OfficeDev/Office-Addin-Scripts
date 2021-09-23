@@ -77,13 +77,11 @@ export function isProperty(node: TSESTree.Node): boolean {
     const callExpression: TSESTree.Node = node.parent;
 
     let foundProperty = false;
-    callExpression.arguments.forEach(
-      (argument: TSESTree.CallExpressionArgument) => {
-        if (argument === node) {
-          foundProperty = true;
-        }
+    callExpression.arguments.forEach((argument) => {
+      if (argument === node) {
+        foundProperty = true;
       }
-    );
+    });
     return foundProperty;
   }
   return true;
