@@ -9,7 +9,7 @@ import * as fs from "fs";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global require, process */
+/* global require, process, console, setTimeout */
 
 require("dotenv").config();
 
