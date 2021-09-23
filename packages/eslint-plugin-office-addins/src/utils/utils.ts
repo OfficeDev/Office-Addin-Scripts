@@ -72,12 +72,30 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
+function isProperty(node: TSESTree.Node): boolean {
+  if (node.parent && node.parent.type === AST_NODE_TYPES.CallExpression) {
+    const callExpression: TSESTree.Node = node.parent;
+
+    let foundProperty = false;
+    callExpression.arguments.forEach(
+      (argument: TSESTree.CallExpressionArgument) => {
+        if (argument === node) {
+          foundProperty = true;
+        }
+      }
+    );
+    return foundProperty;
+  }
+  return true;
+}
+
 export function findPropertiesRead(node: TSESTree.Node | undefined): string {
   let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
   while (node) {
     if (
       node.type === AST_NODE_TYPES.MemberExpression &&
-      node.property.type === AST_NODE_TYPES.Identifier
+      node.property.type === AST_NODE_TYPES.Identifier &&
+      isProperty(node)
     ) {
       propertyName += node.property.name + "/";
     }

@@ -85,6 +85,18 @@ ruleTester.run('load-object-before-read', rule, {
         range.load("format/fill/size");
         console.log(range.format.fill.size);`
     },
+    {
+      code: `
+        var table = worksheet.getTables();
+        return context.sync().then(function () {
+          table.delete();
+        });`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.getCell(0,0);`
+    },
   ],
   invalid: [
     {
