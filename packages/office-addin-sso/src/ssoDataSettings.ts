@@ -62,7 +62,7 @@ export function getSecretFromCredentialStore(ssoAppName: string, isTest: boolean
       case "darwin": {
         const getSecretFromMacStoreCommand = `${isTest ? "" : "sudo"} security find-generic-password -a ${
           os.userInfo().username
-        } -s ${ssoAppName} -w`;
+        } -s "${ssoAppName}" -w`;
         return execSync(getSecretFromMacStoreCommand, {
           stdio: "pipe",
         }).toString();
