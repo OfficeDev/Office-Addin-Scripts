@@ -27,11 +27,9 @@ export = {
   },
   create: function (context: any) {
     function isEmptyLoad(node: TSESTree.MemberExpression): boolean {
-      // return isLoadFunction(node) && !parseLoadArguments(node);
-
       if (isLoadFunction(node)) {
-        const propertyNames: string[] | undefined = parseLoadArguments(node);
-        if (!propertyNames) {
+        const propertyNames: string[] = parseLoadArguments(node);
+        if (propertyNames.length === 0) {
           return true;
         }
 

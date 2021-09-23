@@ -75,10 +75,8 @@ export = {
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
             if (isLoadFunction(node.parent)) {
               // In case it is a load function
-              const propertyNames: string[] | undefined = parseLoadArguments(
-                node.parent
-              );
-              propertyNames?.forEach((propertyName: string) => {
+              const propertyNames: string[] = parseLoadArguments(node.parent);
+              propertyNames.forEach((propertyName: string) => {
                 loadLocation.set(propertyName, node.range[1]);
               });
               return;

@@ -57,10 +57,8 @@ export = {
           variable &&
           identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
         ) {
-          const propertyNames: string[] | undefined = parseLoadArguments(
-            identifier.parent
-          );
-          propertyNames?.forEach((propertyName: string) => {
+          const propertyNames: string[] = parseLoadArguments(identifier.parent);
+          propertyNames.forEach((propertyName: string) => {
             needSync.add({ variable: variable.name, property: propertyName });
           });
         }

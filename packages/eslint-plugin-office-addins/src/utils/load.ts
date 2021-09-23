@@ -41,23 +41,13 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
-export function parseLoadArguments(
-  node: TSESTree.MemberExpression
-): string[] | undefined {
+export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
   node = findTopLevelExpression(node);
 
   if (
     isLoadFunction(node) &&
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
-    if (
-      node.parent.arguments.length === 0 ||
-      (node.parent.arguments[0].type === TSESTree.AST_NODE_TYPES.Literal &&
-        (node.parent.arguments[0].value as string) === "")
-    ) {
-      return undefined;
-    }
-
     let properties: string[] = [];
     node.parent.arguments.forEach(
       (argument: TSESTree.CallExpressionArgument) => {

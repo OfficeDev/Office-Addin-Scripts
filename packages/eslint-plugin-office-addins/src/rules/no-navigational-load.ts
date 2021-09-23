@@ -73,10 +73,8 @@ export = {
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             isLoadFunction(node.parent)
           ) {
-            const propertyNames: string[] | undefined = parseLoadArguments(
-              node.parent
-            );
-            propertyNames?.forEach((propertyName: string) => {
+            const propertyNames: string[] = parseLoadArguments(node.parent);
+            propertyNames.forEach((propertyName: string) => {
               if (propertyName && !isLoadingValidPropeties(propertyName)) {
                 context.report({
                   node: node.parent,
