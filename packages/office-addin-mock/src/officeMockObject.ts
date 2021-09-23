@@ -29,7 +29,7 @@ export class OfficeMockObject {
    */
   addMock(objectName: string) {
     const officeMockObject = new OfficeMockObject();
-    officeMockObject.isTreatedLikeObject = true;
+    officeMockObject.isObject = true;
     this.properties.set(objectName, officeMockObject);
     this[objectName] = this.properties.get(objectName);
   }
@@ -56,7 +56,7 @@ export class OfficeMockObject {
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
       const officeMockObject = new OfficeMockObject();
-      officeMockObject.isTreatedLikeObject = false;
+      officeMockObject.isObject = false;
       this.properties.set(propertyName, officeMockObject);
     }
     this.properties.get(propertyName)?.resetValue(value);
@@ -64,20 +64,20 @@ export class OfficeMockObject {
   }
 
   /**
-   * Mock replacement for the sync of Office.js API
+   * Mock replacement for the sync method in the Office.js API
    */
   sync() {
     this.properties.forEach((property: OfficeMockObject, key: string) => {
       property.sync();
-      this.assignValue(key);
+      this.makePropertyCallable(key);
     });
     if (this.loaded) {
       this.value = this.valueBeforeLoaded;
     }
   }
 
-  private assignValue(propertyName: string) {
-    if (this.properties.get(propertyName)?.isTreatedLikeObject) {
+  private makePropertyCallable(propertyName: string) {
+    if (this.properties.get(propertyName)?.isObject) {
       this[propertyName] = this.properties.get(propertyName);
     } else {
       this[propertyName] = this.properties.get(propertyName)?.value;
@@ -125,7 +125,7 @@ export class OfficeMockObject {
   private loadScalar(scalarPropertyName: string) {
     if (this.properties.has(scalarPropertyName)) {
       this.properties.get(scalarPropertyName)?.loadCalled();
-      this.assignValue(scalarPropertyName);
+      this.makePropertyCallable(scalarPropertyName);
 
       this.properties
         .get(scalarPropertyName)
@@ -167,7 +167,7 @@ export class OfficeMockObject {
   private loaded: boolean;
   private value: unknown;
   private valueBeforeLoaded: unknown;
-  private isTreatedLikeObject: boolean | undefined;
+  private isObject: boolean | undefined;
   /* eslint-disable-next-line */
   [key: string]: any;
 }
