@@ -75,14 +75,9 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
 export function isCallingMethod(node: TSESTree.Node): boolean {
   if (node.parent && node.parent.type === AST_NODE_TYPES.CallExpression) {
     const callExpression: TSESTree.Node = node.parent;
-
-    let foundProperty = false;
-    callExpression.arguments.forEach((argument) => {
-      if (argument === node) {
-        foundProperty = true;
-      }
-    });
-    return !foundProperty;
+    if (callExpression.callee === node) {
+      return true;
+    }
   }
   return false;
 }
