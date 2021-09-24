@@ -31,6 +31,13 @@ export function findTopLevelExpression(
 }
 
 export type OfficeApiReference = {
+  /**
+   * Get: An OfficeJs object, which is created when calling a `get` type function
+   * Load: A reference to `object.load()` type call
+   * Method: The reference is calling a method. Ex: `object.methodCall()`
+   * Read: The reference value is being read and it is not a method
+   * Sync: A call to `context.sync()`
+   */
   operation: "Get" | "Load" | "Method" | "Read" | "Sync";
   reference: Reference;
 };
@@ -46,6 +53,7 @@ export function findOfficeApiReferences(scope: Scope): OfficeApiReference[] {
 
 function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.references.forEach((reference) => {
+    const node: TSESTree.Node = reference.identifier;
     if (
       reference.isWrite() &&
       reference.writeExpr &&
@@ -61,12 +69,11 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
       reference.resolved &&
       proxyVariables.has(reference.resolved)
     ) {
-      const node: TSESTree.Node = reference.identifier;
       if (isLoadReference(node)) {
         apiReferences.push({ operation: "Load", reference: reference });
       } else if (
         node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-        isCallingMethod(findTopLevelExpression(node.parent))
+        isCallingMethod(node.parent)
       ) {
         apiReferences.push({ operation: "Method", reference: reference });
       } else {
@@ -78,10 +85,12 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
-export function isCallingMethod(node: TSESTree.MemberExpression): boolean {
-  if (node.parent && node.parent.type === AST_NODE_TYPES.CallExpression) {
-    const callExpression: TSESTree.Node = node.parent;
-    if (callExpression.callee === node) {
+function isCallingMethod(node: TSESTree.MemberExpression): boolean {
+  const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
+
+  if (topExpression.parent?.type === AST_NODE_TYPES.CallExpression) {
+    const callExpression: TSESTree.Node = topExpression.parent;
+    if (callExpression.callee === topExpression) {
       return true;
     }
   }
