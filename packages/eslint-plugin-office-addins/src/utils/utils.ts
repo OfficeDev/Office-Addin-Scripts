@@ -31,7 +31,7 @@ export function findTopLevelExpression(
 }
 
 export type OfficeApiReference = {
-  operation: "Get" | "Load" | "Sync" | "Read";
+  operation: "Get" | "Load" | "Method" | "Read" | "Sync";
   reference: Reference;
 };
 
@@ -61,8 +61,14 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
       reference.resolved &&
       proxyVariables.has(reference.resolved)
     ) {
-      if (isLoadReference(reference.identifier)) {
+      const node: TSESTree.Node = reference.identifier;
+      if (isLoadReference(node)) {
         apiReferences.push({ operation: "Load", reference: reference });
+      } else if (
+        node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+        isCallingMethod(findTopLevelExpression(node.parent))
+      ) {
+        apiReferences.push({ operation: "Method", reference: reference });
       } else {
         apiReferences.push({ operation: "Read", reference: reference });
       }
