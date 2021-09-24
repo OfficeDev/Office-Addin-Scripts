@@ -68,6 +68,22 @@ ruleTester.run('no-navigational-load', rule, {
                 var selectedRange = context.workbook.getSelectedRange();
                 selectedRange.load(); // Empty`
 		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("font/fill/color, address");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("font/fill/color", "address");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
 	],
 	invalid: [
 		{
@@ -107,6 +123,15 @@ ruleTester.run('no-navigational-load', rule, {
                 range.borders.load("fill");
                 console.log(range.borders.fill);`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "fill" } }]
+		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("address, font/fill");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`,
+			  errors: [{ messageId: "navigationalLoad", data: { loadValue: "font/fill" } }]
 		},
 	]
 });
