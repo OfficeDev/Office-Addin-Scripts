@@ -71,10 +71,7 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
     ) {
       if (isLoadReference(node)) {
         apiReferences.push({ operation: "Load", reference: reference });
-      } else if (
-        node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-        isCallingMethod(node.parent)
-      ) {
+      } else if (isCallingMethod(node.parent)) {
         apiReferences.push({ operation: "Method", reference: reference });
       } else {
         apiReferences.push({ operation: "Read", reference: reference });
@@ -85,7 +82,10 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
-function isCallingMethod(node: TSESTree.MemberExpression): boolean {
+function isCallingMethod(node: TSESTree.Node | undefined): boolean {
+  if (!node || node.type !== TSESTree.AST_NODE_TYPES.MemberExpression) {
+    return false;
+  }
   const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
 
   if (topExpression.parent?.type === AST_NODE_TYPES.CallExpression) {
