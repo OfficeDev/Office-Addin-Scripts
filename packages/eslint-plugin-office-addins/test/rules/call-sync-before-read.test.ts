@@ -89,6 +89,13 @@ ruleTester.run('call-sync-before-read', rule, {
         var range = worksheet.getSelectedRange();
         range.getCell(0,0);`
     },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("font");
+        context.sync();
+        range.font.getColor();`
+    },
   ],
   invalid: [
     {

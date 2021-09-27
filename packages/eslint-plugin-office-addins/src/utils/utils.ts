@@ -71,7 +71,7 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
     ) {
       if (isLoadReference(node)) {
         apiReferences.push({ operation: "Load", reference: reference });
-      } else if (isCallingMethod(node.parent)) {
+      } else if (isCallingMethod(node)) {
         apiReferences.push({ operation: "Method", reference: reference });
       } else {
         apiReferences.push({ operation: "Read", reference: reference });
@@ -82,15 +82,18 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
-function isCallingMethod(node: TSESTree.Node | undefined): boolean {
-  if (!node || node.type !== TSESTree.AST_NODE_TYPES.MemberExpression) {
-    return false;
+function isCallingMethod(node: TSESTree.Node): boolean {
+  if (node.type !== TSESTree.AST_NODE_TYPES.MemberExpression) {
+    if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
+      node = node.parent;
+    } else {
+      return false;
+    }
   }
-  const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
 
-  if (topExpression.parent?.type === AST_NODE_TYPES.CallExpression) {
-    const callExpression: TSESTree.Node = topExpression.parent;
-    if (callExpression.callee === topExpression) {
+  if (node.parent?.type === AST_NODE_TYPES.CallExpression) {
+    const callExpression: TSESTree.Node = node.parent;
+    if (callExpression.callee === node) {
       return true;
     }
   }
