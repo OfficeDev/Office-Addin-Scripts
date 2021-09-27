@@ -1,6 +1,6 @@
 {
   "name": "office-addin-cli",
-  "version": "1.2.5",
+  "version": "1.2.4",
   "description": "A command-line interface for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -33,7 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "concurrently": "^6.0.0",
     "eslint": "7.28.0",
-    "eslint-plugin-office-addins": "^1.0.3",
+    "eslint-plugin-office-addins": "^1.0.2",
     "eslint-plugin-prettier": "^3.4.0",
     "mocha": "^8.4.0",
     "office-addin-prettier-config": "^1.1.0",

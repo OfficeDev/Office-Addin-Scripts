@@ -1,6 +1,6 @@
 {
   "name": "office-addin-sso",
-  "version": "1.1.5",
+  "version": "1.1.4",
   "description": "Configure SSO for Office Addin project and provide SSO authentication service.",
   "main": "./lib/main.js",
   "scripts": {
@@ -33,8 +33,8 @@
     "jquery": "^3.5.1",
     "morgan": "1.9.1",
     "node-fetch": "^2.6.1",
-    "office-addin-lint": "^1.3.5",
-    "office-addin-usage-data": "^1.3.5",
+    "office-addin-lint": "^1.3.4",
+    "office-addin-usage-data": "^1.3.4",
     "pug": "^3.0.2"
   },
   "devDependencies": {
@@ -47,10 +47,10 @@
     "concurrently": "^6.0.0",
     "cpy-cli": "^3.1.1",
     "mocha": "^8.4.0",
-    "office-addin-cli": "^1.2.5",
-    "office-addin-dev-certs": "^1.6.5",
-    "office-addin-manifest": "^1.6.5",
-    "office-addin-test-helpers": "^1.1.5",
+    "office-addin-cli": "^1.2.4",
+    "office-addin-dev-certs": "^1.6.4",
+    "office-addin-manifest": "^1.6.4",
+    "office-addin-test-helpers": "^1.1.4",
     "rimraf": "^3.0.2",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
