@@ -41,6 +41,18 @@ function composeObjectExpressionPropertyIntoString(
   return composedProperty;
 }
 
+function parseLoadStringArgument(argument: string): string[] {
+  let properties: string[] = [];
+  argument
+    .replace(/\s/g, "")
+    .split(",")
+    .forEach((property: string) => {
+      properties.push(property);
+    });
+
+  return properties;
+}
+
 export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
   node = findTopLevelExpression(node);
 
@@ -48,21 +60,27 @@ export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
     isLoadFunction(node) &&
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
+    const argument = node.parent.arguments[0];
+    if (!argument) return [];
+
     let properties: string[] = [];
-    node.parent.arguments.forEach(
-      (argument: TSESTree.CallExpressionArgument) => {
-        if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
-          (argument.value as string)
-            .replace(/\s/g, "")
-            .split(",")
-            .forEach((property: string) => {
-              properties.push(property);
-            });
-        } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
-          properties.push(composeObjectExpressionPropertyIntoString(argument));
+    if (argument.type === AST_NODE_TYPES.ArrayExpression) {
+      argument.elements.forEach((args) => {
+        if (args.type === TSESTree.AST_NODE_TYPES.Literal) {
+          properties = properties.concat(
+            parseLoadStringArgument(args.value as string)
+          );
         }
+      });
+    } else {
+      if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
+        properties = properties.concat(
+          parseLoadStringArgument(argument.value as string)
+        );
+      } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
+        properties.push(composeObjectExpressionPropertyIntoString(argument));
       }
-    );
+    }
 
     return properties;
   }
