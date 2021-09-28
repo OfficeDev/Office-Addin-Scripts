@@ -82,21 +82,19 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
-function isMethodFunction(node: TSESTree.MemberExpression): boolean {
-  if (node.parent?.type === AST_NODE_TYPES.CallExpression) {
-    const callExpression: TSESTree.Node = node.parent;
-    if (callExpression.callee === node) {
-      return true;
-    }
-  }
-  return false;
+function isMethod(node: TSESTree.MemberExpression): boolean {
+  const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
+  return (
+    topExpression.parent?.type === AST_NODE_TYPES.CallExpression &&
+    topExpression.parent.callee === topExpression
+  );
 }
 
 export function isMethodReference(node: TSESTree.Identifier) {
   return (
     node.parent &&
     node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
-    isMethodFunction(node.parent)
+    isMethod(node.parent)
   );
 }
 
@@ -106,7 +104,7 @@ export function findPropertiesRead(node: TSESTree.Node | undefined): string {
     if (
       node.type === AST_NODE_TYPES.MemberExpression &&
       node.property.type === AST_NODE_TYPES.Identifier &&
-      !isMethodFunction(node)
+      !isMethod(node)
     ) {
       propertyName += node.property.name + "/";
     }
