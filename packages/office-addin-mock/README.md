@@ -8,9 +8,40 @@
 - Some test APIs may require the entire object to be mocked, which can have more than 100 properties, making it not feasible.
 - Tests need to preserve the order of the functions `load` or `sync`, which are difficult to test because stateless test APIs do not support easily adding state variables to handle those functions.
 
+## Usage
+
+Import `office-addin-mock` to your testing file:
+
+```Typescript
+import { OfficeMockObject } from "office-addin-mock";
+```
+
+Create an object structure to represent the mock object. Override all the properties and methods you want to use.
+
+```Typescript
+const MockData = {
+  workbook: {
+    range: {
+      address: "C2",
+    },
+    getSelectedRange: function () {
+      return this.range;
+    },
+  },
+};
+```
+
+In your test code, create an `OfficeMockObject` with an argument of the object you created:
+
+```Typescript
+const contextMock = new OfficeMockObject(MockData) as any;
+```
+
+You can now use this newly created object as a mock of the original Office-js object.
+
 ## Examples
 
-1. Mocking example to a function using Office-js
+1. Mocking example to a function using Office-js:
 
 ```Typescript
 import { OfficeMockObject } from "office-addin-mock";
@@ -43,7 +74,7 @@ describe(`getSelectedRangeAddress`, function () {
 });
 ```
 
-2. Mocking a function that uses the global Excel variable
+2. Mocking a function that uses the global Excel variable:
 
 ```Typescript
 import { OfficeMockObject } from "office-addin-mock";
