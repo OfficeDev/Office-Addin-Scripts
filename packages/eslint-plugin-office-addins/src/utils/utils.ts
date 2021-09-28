@@ -71,7 +71,7 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
     ) {
       if (isLoadReference(node)) {
         apiReferences.push({ operation: "Load", reference: reference });
-      } else if (isCallingMethod(node)) {
+      } else if (isMethodReference(node)) {
         apiReferences.push({ operation: "Method", reference: reference });
       } else {
         apiReferences.push({ operation: "Read", reference: reference });
@@ -82,15 +82,7 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
-function isCallingMethod(node: TSESTree.Node): boolean {
-  if (node.type !== TSESTree.AST_NODE_TYPES.MemberExpression) {
-    if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
-      node = node.parent;
-    } else {
-      return false;
-    }
-  }
-
+function isMethodFunction(node: TSESTree.MemberExpression): boolean {
   if (node.parent?.type === AST_NODE_TYPES.CallExpression) {
     const callExpression: TSESTree.Node = node.parent;
     if (callExpression.callee === node) {
@@ -100,13 +92,21 @@ function isCallingMethod(node: TSESTree.Node): boolean {
   return false;
 }
 
+export function isMethodReference(node: TSESTree.Identifier) {
+  return (
+    node.parent &&
+    node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+    isMethodFunction(node.parent)
+  );
+}
+
 export function findPropertiesRead(node: TSESTree.Node | undefined): string {
   let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
   while (node) {
     if (
       node.type === AST_NODE_TYPES.MemberExpression &&
       node.property.type === AST_NODE_TYPES.Identifier &&
-      !isCallingMethod(node)
+      !isMethodFunction(node)
     ) {
       propertyName += node.property.name + "/";
     }
