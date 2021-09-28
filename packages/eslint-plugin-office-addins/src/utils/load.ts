@@ -61,25 +61,25 @@ export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
     node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
   ) {
     const argument = node.parent.arguments[0];
-    if (!argument) return [];
+    if (!argument) {
+      return [];
+    }
 
     let properties: string[] = [];
     if (argument.type === AST_NODE_TYPES.ArrayExpression) {
-      argument.elements.forEach((args) => {
-        if (args.type === TSESTree.AST_NODE_TYPES.Literal) {
+      argument.elements.forEach((arg) => {
+        if (arg.type === TSESTree.AST_NODE_TYPES.Literal) {
           properties = properties.concat(
-            parseLoadStringArgument(args.value as string)
+            parseLoadStringArgument(arg.value as string)
           );
         }
       });
-    } else {
-      if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
-        properties = properties.concat(
-          parseLoadStringArgument(argument.value as string)
-        );
-      } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
-        properties.push(composeObjectExpressionPropertyIntoString(argument));
-      }
+    } else if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
+      properties = properties.concat(
+        parseLoadStringArgument(argument.value as string)
+      );
+    } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
+      properties.push(composeObjectExpressionPropertyIntoString(argument));
     }
 
     return properties;
