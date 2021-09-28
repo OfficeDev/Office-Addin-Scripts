@@ -10,7 +10,7 @@
 
 ## Examples
 
-1. Mocking
+1. Mocking example to a function using Office-js
 
 ```Typescript
 import { OfficeMockObject } from "office-addin-mock";
@@ -43,7 +43,7 @@ describe(`getSelectedRangeAddress`, function () {
 });
 ```
 
-2. Mocking start from the global Excel variable
+2. Mocking a function that uses the global Excel variable
 
 ```Typescript
 import { OfficeMockObject } from "office-addin-mock";
