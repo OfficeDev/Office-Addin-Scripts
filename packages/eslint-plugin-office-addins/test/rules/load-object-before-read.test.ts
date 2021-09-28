@@ -86,6 +86,18 @@ ruleTester.run('load-object-before-read', rule, {
         console.log(range.format.fill.size);`
     },
     {
+      code: `
+        var table = worksheet.getTables();
+        return context.sync().then(function () {
+          table.delete();
+        });`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.getCell(0,0);`
+    },
+    {
 			code: `
 			  var range = worksheet.getSelectedRange();
 			  range.load("font/fill/color", "address");

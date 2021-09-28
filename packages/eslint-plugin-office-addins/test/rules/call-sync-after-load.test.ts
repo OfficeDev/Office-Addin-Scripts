@@ -28,6 +28,18 @@ ruleTester.run('call-sync-after-load', rule, {
         property.load("props");
         console.log(property.props);`
     },
+    {
+      code: `
+        var table = worksheet.getTables();
+        return context.sync().then(function () {
+          table.delete();
+        });`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.getCell(0,0);`
+    },
 		{
 			code: `
 			  var range = worksheet.getSelectedRange();

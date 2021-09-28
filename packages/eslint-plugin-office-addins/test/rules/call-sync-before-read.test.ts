@@ -77,6 +77,25 @@ ruleTester.run('call-sync-before-read', rule, {
       var range = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
       range.format.font.load('color');`
     },
+    {
+      code: `
+        var table = worksheet.getTables();
+        return context.sync().then(function () {
+          table.delete();
+        });`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.getCell(0,0);`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("font");
+        context.sync();
+        range.font.getColor();`
+    },
   ],
   invalid: [
     {
