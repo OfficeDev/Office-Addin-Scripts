@@ -29,4 +29,4 @@ jobs:
     steps:
     - template: ./steps/npm-install.yaml
     - template: ./steps/build.yaml
-    - template: ./steps/test.yaml
+    - template: ./steps/test.yml
