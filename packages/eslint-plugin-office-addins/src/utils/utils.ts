@@ -31,7 +31,14 @@ export function findTopLevelExpression(
 }
 
 export type OfficeApiReference = {
-  operation: "Get" | "Load" | "Sync" | "Read";
+  /**
+   * Get: An OfficeJs object, which is created when calling a `get` type function
+   * Load: A reference to `object.load()` type call
+   * Method: The reference is calling a method. Ex: `object.methodCall()`
+   * Read: The reference value is being read and it is not a method
+   * Sync: A call to `context.sync()`
+   */
+  operation: "Get" | "Load" | "Method" | "Read" | "Sync";
   reference: Reference;
 };
 
@@ -46,6 +53,7 @@ export function findOfficeApiReferences(scope: Scope): OfficeApiReference[] {
 
 function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.references.forEach((reference) => {
+    const node: TSESTree.Node = reference.identifier;
     if (
       reference.isWrite() &&
       reference.writeExpr &&
@@ -61,8 +69,10 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
       reference.resolved &&
       proxyVariables.has(reference.resolved)
     ) {
-      if (isLoadReference(reference.identifier)) {
+      if (isLoadReference(node)) {
         apiReferences.push({ operation: "Load", reference: reference });
+      } else if (isMethodReference(node)) {
+        apiReferences.push({ operation: "Method", reference: reference });
       } else {
         apiReferences.push({ operation: "Read", reference: reference });
       }
@@ -72,12 +82,29 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
   scope.childScopes.forEach(findOfficeApiReferencesInScope);
 }
 
+function isMethod(node: TSESTree.MemberExpression): boolean {
+  const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
+  return (
+    topExpression.parent?.type === AST_NODE_TYPES.CallExpression &&
+    topExpression.parent.callee === topExpression
+  );
+}
+
+export function isMethodReference(node: TSESTree.Identifier) {
+  return (
+    node.parent &&
+    node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
+    isMethod(node.parent)
+  );
+}
+
 export function findPropertiesRead(node: TSESTree.Node | undefined): string {
   let propertyName = ""; // Will be a string combined with '/' for the case of navigation properties
   while (node) {
     if (
       node.type === AST_NODE_TYPES.MemberExpression &&
-      node.property.type === AST_NODE_TYPES.Identifier
+      node.property.type === AST_NODE_TYPES.Identifier &&
+      !isMethod(node)
     ) {
       propertyName += node.property.name + "/";
     }
