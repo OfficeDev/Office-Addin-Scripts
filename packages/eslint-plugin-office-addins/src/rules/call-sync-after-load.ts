@@ -68,9 +68,13 @@ export = {
         }
 
         if (operation === "Read" && variable) {
-          const propertyName: string = findPropertiesRead(
+          let propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );
+
+          if (needSync.has({ variable: variable.name, property: "*" })) {
+            propertyName = "*";
+          }
 
           if (
             needSync.has({ variable: variable.name, property: propertyName })

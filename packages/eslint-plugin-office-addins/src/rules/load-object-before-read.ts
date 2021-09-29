@@ -41,6 +41,7 @@ export = {
       scope.variables.forEach((variable: Variable) => {
         let loadLocation: Map<string, number> = new Map<string, number>();
         let getFound: boolean = false;
+        let loadStar: boolean = false;
 
         variable.references.forEach((reference: Reference) => {
           const node: TSESTree.Node = reference.identifier;
@@ -77,7 +78,11 @@ export = {
               // In case it is a load function
               const propertyNames: string[] = parseLoadArguments(node.parent);
               propertyNames.forEach((propertyName: string) => {
-                loadLocation.set(propertyName, node.range[1]);
+                if (propertyName === "*") {
+                  loadStar = true;
+                } else {
+                  loadLocation.set(propertyName, node.range[1]);
+                }
               });
               return;
             }
@@ -95,6 +100,10 @@ export = {
             loadLocation.has(propertyName) && // If reference came after load, return
             node.range[1] > (loadLocation.get(propertyName) ?? 0)
           ) {
+            return;
+          }
+
+          if (loadStar) {
             return;
           }
 
