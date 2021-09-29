@@ -43,7 +43,7 @@ ruleTester.run('call-sync-after-load', rule, {
 		{
 			code: `
 			  var range = worksheet.getSelectedRange();
-			  range.load("font/fill/color", "address");
+			  range.load("font/fill/color, address");
 			  await context.sync();
 			  console.log(range.font.fill.color);
 			  console.log(range.address);`
@@ -71,7 +71,7 @@ ruleTester.run('call-sync-after-load', rule, {
     {
 			code: `
 			  var range = worksheet.getSelectedRange();
-			  range.load("font/fill/color", "address");
+			  range.load(["font/fill/color", "address"]);
 			  console.log(range.font.fill.color);`,
         errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "font/fill/color" }}]
 		},
