@@ -67,10 +67,10 @@ export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
 
     let properties: string[] = [];
     if (argument.type === AST_NODE_TYPES.ArrayExpression) {
-      argument.elements.forEach((arg) => {
-        if (arg.type === TSESTree.AST_NODE_TYPES.Literal) {
+      argument.elements.forEach((element) => {
+        if (element.type === TSESTree.AST_NODE_TYPES.Literal) {
           properties = properties.concat(
-            parseLoadStringArgument(arg.value as string)
+            parseLoadStringArgument(element.value as string)
           );
         }
       });
