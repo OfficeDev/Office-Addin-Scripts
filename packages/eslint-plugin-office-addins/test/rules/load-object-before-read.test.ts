@@ -100,7 +100,7 @@ ruleTester.run('load-object-before-read', rule, {
     {
 			code: `
 			  var range = worksheet.getSelectedRange();
-			  range.load("font/fill/color", "address");
+			  range.load(["font/fill/color", "address"]);
 			  await context.sync();
 			  console.log(range.font.fill.color);
 			  console.log(range.address);`
