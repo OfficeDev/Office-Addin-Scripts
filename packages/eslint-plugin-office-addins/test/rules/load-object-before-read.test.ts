@@ -106,13 +106,13 @@ ruleTester.run('load-object-before-read', rule, {
 			  console.log(range.address);`
 		},
     {
-			code: `
-			  var range = worksheet.getSelectedRange();
-			  range.load("*");
-			  await context.sync();
-			  console.log(range.address);
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("*");
+        await context.sync();
+        console.log(range.address);
         console.log(range.font);`
-		},
+    },
   ],
   invalid: [
     {

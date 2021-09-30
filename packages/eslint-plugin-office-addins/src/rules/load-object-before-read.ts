@@ -37,11 +37,24 @@ export = {
       return false;
     }
 
+    function hasBeenLoaded(
+      node: TSESTree.Node,
+      loadLocation: Map<string, number>,
+      propertyName: string
+    ): boolean {
+      if (
+        loadLocation.has(propertyName) && // If reference came after load, return
+        node.range[1] > (loadLocation.get(propertyName) ?? 0)
+      ) {
+        return true;
+      }
+      return false;
+    }
+
     function findLoadBeforeRead(scope: Scope) {
       scope.variables.forEach((variable: Variable) => {
         let loadLocation: Map<string, number> = new Map<string, number>();
         let getFound: boolean = false;
-        let loadStar: boolean = false;
 
         variable.references.forEach((reference: Reference) => {
           const node: TSESTree.Node = reference.identifier;
@@ -78,11 +91,7 @@ export = {
               // In case it is a load function
               const propertyNames: string[] = parseLoadArguments(node.parent);
               propertyNames.forEach((propertyName: string) => {
-                if (propertyName === "*") {
-                  loadStar = true;
-                } else {
-                  loadLocation.set(propertyName, node.range[1]);
-                }
+                loadLocation.set(propertyName, node.range[1]);
               });
               return;
             }
@@ -97,13 +106,9 @@ export = {
           }
 
           if (
-            loadLocation.has(propertyName) && // If reference came after load, return
-            node.range[1] > (loadLocation.get(propertyName) ?? 0)
+            hasBeenLoaded(node, loadLocation, propertyName) ||
+            hasBeenLoaded(node, loadLocation, "*")
           ) {
-            return;
-          }
-
-          if (loadStar) {
             return;
           }
 
