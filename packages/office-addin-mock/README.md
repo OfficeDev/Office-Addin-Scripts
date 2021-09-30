@@ -1,14 +1,25 @@
 # Office-Addin-Mock
 
   This library provides an easier way to unit test the Office JavaScript library (hereafter, "Office-js") API.
+  This library does not depend on Office, so it doesn't tests actual interactions with it.
   
   It aims to solve problems that arise when trying to mock the API`s objects:
 
 - Office-js APIs need to be loaded by an HTML file, so they are not available before loading.
-- Some test APIs may require the entire object to be mocked, which can have more than 100 properties, making it not feasible.
+- Some test APIs may require the entire object to be mocked, which can have more than 100 properties, making mocking not feasible.
 - Tests need to preserve the order of the functions `load` or `sync`, which are difficult to test because stateless test APIs do not support easily adding state variables to handle those functions.
 
+## Installation
+
+Install `office-addin-mock`
+
+```
+npm i office-addin-mock --save-dev
+```
+
 ## Usage
+
+The examples used here will be using [Mocha](mochajs.org/) testing framework. Any JavaScript framework should work, feel free to use others if needed.
 
 Import `office-addin-mock` to your testing file:
 
@@ -44,8 +55,6 @@ You can now use this newly created object as a mock of the original Office-js ob
 1. Testing a function that calls an Office-js API:
 
 ```Typescript
-import { OfficeMockObject } from "office-addin-mock";
-
 async function getSelectedRangeAddress(context: Excel.RequestContext): Promise<string> {
   const range: Excel.Range = context.workbook.getSelectedRange();
 
@@ -77,8 +86,6 @@ describe(`getSelectedRangeAddress`, function () {
 2. Testing a function that uses the global Excel variable:
 
 ```Typescript
-import { OfficeMockObject } from "office-addin-mock";
-
 async function run() {
   try {
     await Excel.run(async (context) => {
