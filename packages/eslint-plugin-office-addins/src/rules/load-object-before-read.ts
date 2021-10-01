@@ -42,13 +42,10 @@ export = {
       loadLocation: Map<string, number>,
       propertyName: string
     ): boolean {
-      if (
+      return (
         loadLocation.has(propertyName) && // If reference came after load, return
         node.range[1] > (loadLocation.get(propertyName) ?? 0)
-      ) {
-        return true;
-      }
-      return false;
+      );
     }
 
     function findLoadBeforeRead(scope: Scope) {
@@ -100,20 +97,13 @@ export = {
           const propertyName: string | undefined = findPropertiesRead(
             node.parent
           );
-          if (!propertyName) {
-            // There is no property
-            return;
-          }
 
           if (
+            !propertyName ||
             hasBeenLoaded(node, loadLocation, propertyName) ||
-            hasBeenLoaded(node, loadLocation, "*")
+            hasBeenLoaded(node, loadLocation, "*") ||
+            isInsideWriteStatement(node)
           ) {
-            return;
-          }
-
-          if (isInsideWriteStatement(node)) {
-            // Return in case it a write, ie, not read statment
             return;
           }
 

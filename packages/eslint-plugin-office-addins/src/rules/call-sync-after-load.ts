@@ -13,7 +13,7 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call context.sync() after calling load on '{{name}}' for property '{{loadValue}}' and before reading the property.",
+        "Call context.sync() after calling load on '{{name}}' for '{{loadValue}}' and before reading the property.",
     },
     docs: {
       description:
