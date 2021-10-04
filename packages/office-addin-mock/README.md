@@ -23,13 +23,13 @@ The examples used here will be using [Mocha](mochajs.org/) and [Jest](https://je
 
 Import `office-addin-mock` to your testing file:
 
-```Typescript
+```Javascript
 import { OfficeMockObject } from "office-addin-mock";
 ```
 
 Create an object structure to represent the mock object. Override all the properties and methods you want to use.
 
-```Typescript
+```Javascript
 const MockData = {
   workbook: {
     range: {
@@ -44,15 +44,15 @@ const MockData = {
 
 In your test code, create an `OfficeMockObject` with an argument of the object you created:
 
-```Typescript
-const contextMock = new OfficeMockObject(MockData) as any;
+```Javascript
+const contextMock = new OfficeMockObject(MockData);
 ```
 
 You can now use this newly created object as a mock of the original Office-js object.
 
 ## Examples
 
-1. Testing a function with Mocha in JavaScript for Excel platform:
+1. Testing with Jest for Excel platform:
 
 ```Javascript
 async function getSelectedRangeAddress(context) {
@@ -75,17 +75,15 @@ const MockData = {
   },
 };
 
-describe(`getSelectedRangeAddress`, function () {
-  it("Returns correct value", async function () {
-    const contextMock = new OfficeMockObject(MockData);
-    assert.strictEqual(await getSelectedRangeAddress(contextMock), "C2");
-  });
+test("Excel", async function () {
+  const contextMock = new OfficeMockObject(MockData);
+  expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
 });
 ```
 
-2. Testing a function with Mocha in TypeScript for Excel platform:
+2. Testing with Mocha for Excel platform:
 
-```Typescript
+```Javascript
 function run() {
   try {
     await Excel.run(async (context) => {
@@ -137,47 +135,7 @@ describe(`Run`, function () {
 });
 ```
 
-3. Testing a function with Mocha in JavaScript for Powerpoint platform:
-
-```Javascript
-async function run() {
-  /**
-   * Insert your PowerPoint code here
-   */
-  const options = { coercionType: Office.CoercionType.Text };
-
-  await Office.context.document.setSelectedDataAsync(" ", options);
-  await Office.context.document.setSelectedDataAsync("Hello World!", options);
-}
-
-const PowerPointMockData = {
-  context: {
-    document: {
-      setSelectedDataAsync: function (data, options?) {
-        this.data = data;
-        this.options = options;
-      },
-    },
-  },
-  CoercionType: {
-    Text: {},
-  },
-};
-
-describe(`PowerPoint`, function () {
-  it("Run", async function () {
-    const officeMock = new OfficeMockObject(PowerPointMockData);
-    global.Office = officeMock;
-
-    await run();
-
-    assert.strictEqual(officeMock.context.document.data, "Hello World!");
-  });
-});
-
-```
-
-4. Testing a function with Jest in JavaScript for Word platform:
+3. Testing with Jest for Word platform:
 
 ```Javascript
 async function run() {
@@ -228,4 +186,44 @@ test("Word", async function () {
 
   expect(wordMock.context.document.body.paragraph.font.color).toBe("blue");
 });
+```
+
+4. Testing a function with Mocha for Powerpoint platform:
+
+```Javascript
+async function run() {
+  /**
+   * Insert your PowerPoint code here
+   */
+  const options = { coercionType: Office.CoercionType.Text };
+
+  await Office.context.document.setSelectedDataAsync(" ", options);
+  await Office.context.document.setSelectedDataAsync("Hello World!", options);
+}
+
+const PowerPointMockData = {
+  context: {
+    document: {
+      setSelectedDataAsync: function (data, options?) {
+        this.data = data;
+        this.options = options;
+      },
+    },
+  },
+  CoercionType: {
+    Text: {},
+  },
+};
+
+describe(`PowerPoint`, function () {
+  it("Run", async function () {
+    const officeMock = new OfficeMockObject(PowerPointMockData);
+    global.Office = officeMock;
+
+    await run();
+
+    assert.strictEqual(officeMock.context.document.data, "Hello World!");
+  });
+});
+
 ```
