@@ -13,7 +13,7 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call context.sync() after calling load on '{{name}}' for '{{loadValue}}' and before reading the property.",
+        "Call context.sync() after calling load on '{{name}}' for the property '{{loadValue}}' and before reading the property.",
     },
     docs: {
       description:
@@ -68,7 +68,7 @@ export = {
         }
 
         if (operation === "Read" && variable) {
-          let propertyName: string = findPropertiesRead(
+          const propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );
 
