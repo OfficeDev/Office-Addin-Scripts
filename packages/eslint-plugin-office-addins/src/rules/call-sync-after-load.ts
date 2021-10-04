@@ -72,12 +72,9 @@ export = {
             reference.identifier.parent
           );
 
-          if (needSync.has({ variable: variable.name, property: "*" })) {
-            propertyName = "*";
-          }
-
           if (
-            needSync.has({ variable: variable.name, property: propertyName })
+            needSync.has({ variable: variable.name, property: propertyName }) ||
+            needSync.has({ variable: variable.name, property: "*" })
           ) {
             const node = reference.identifier;
             context.report({

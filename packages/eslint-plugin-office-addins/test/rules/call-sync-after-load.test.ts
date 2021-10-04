@@ -87,7 +87,7 @@ ruleTester.run('call-sync-after-load', rule, {
         var range = worksheet.getSelectedRange();
         range.load("*");
         console.log(range.address);`,
-      errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "*" }}]
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "address" }}]
     },
   ]
 });
