@@ -52,11 +52,11 @@ You can now use this newly created object as a mock of the original Office-js ob
 
 ## Examples
 
-1. Testing a function that calls an Office-js API:
+1. Testing a function that calls an Office-js API in JavaScript:
 
-```Typescript
-async function getSelectedRangeAddress(context: Excel.RequestContext): Promise<string> {
-  const range: Excel.Range = context.workbook.getSelectedRange();
+```Javascript
+async function getSelectedRangeAddress(context) {
+  const range = context.workbook.getSelectedRange();
 
   range.load("address");
   await context.sync();
@@ -77,13 +77,13 @@ const MockData = {
 
 describe(`getSelectedRangeAddress`, function () {
   it("Returns correct value", async function () {
-    const contextMock = new OfficeMockObject(MockData) as any;
+    const contextMock = new OfficeMockObject(MockData);
     assert.strictEqual(await getSelectedRangeAddress(contextMock), "C2");
   });
 });
 ```
 
-2. Testing a function that uses the global Excel variable:
+2. Testing a function that uses the global Excel variable in TypeScript:
 
 ```Typescript
 async function run() {
