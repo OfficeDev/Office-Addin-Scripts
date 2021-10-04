@@ -1,7 +1,7 @@
 # Office-Addin-Mock
 
   This library provides an easier way to unit test the Office JavaScript library (hereafter, "Office-js") API.
-  This library does not depend on Office, so it doesn't tests actual interactions with it.
+  This library does not depend on Office, so it doesn't test actual interactions with it.
   
   It aims to solve problems that arise when trying to mock the API`s objects:
 
