@@ -48,6 +48,13 @@ ruleTester.run('call-sync-after-load', rule, {
 			  console.log(range.font.fill.color);
 			  console.log(range.address);`
 		},
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("*");
+        await context.sync();
+        console.log(range.address);`
+    },
   ],
   invalid: [
     {
@@ -69,11 +76,18 @@ ruleTester.run('call-sync-after-load', rule, {
       errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "length" }}]
     },
     {
-			code: `
-			  var range = worksheet.getSelectedRange();
-			  range.load(["font/fill/color", "address"]);
-			  console.log(range.font.fill.color);`,
-        errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "font/fill/color" }}]
-		},
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load(["font/fill/color", "address"]);
+        console.log(range.font.fill.color);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "font/fill/color" }}]
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("*");
+        console.log(range.address);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "address" }}]
+    },
   ]
 });

@@ -43,6 +43,9 @@ export = {
         }
       }
 
+      if (lastProperty === "*") {
+        return true;
+      }
       const propertyType = getPropertyType(lastProperty);
       return (
         propertyType === PropertyType.scalar ||
