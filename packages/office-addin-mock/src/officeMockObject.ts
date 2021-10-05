@@ -106,9 +106,8 @@ export class OfficeMockObject {
     for (let i = 0; i < properties.length - 1; i++) {
       const property = properties[i];
 
-      const retrievedProperty:
-        | OfficeMockObject
-        | undefined = navigationalOfficeMockObject.properties.get(property);
+      const retrievedProperty: OfficeMockObject | undefined =
+        navigationalOfficeMockObject.properties.get(property);
       if (retrievedProperty) {
         navigationalOfficeMockObject = retrievedProperty;
       } else {
