@@ -96,6 +96,20 @@ ruleTester.run('call-sync-before-read', rule, {
         context.sync();
         range.font.getColor();`
     },
+    {
+      code: `
+        await Excel.run(async (context) => {
+        const sheet = context.workbook.worksheets.getActiveWorksheet();
+        let data: string[][] = [["one"], ["two"]];
+  
+        const rangeAddress = data.length;
+        const range = sheet.getRange(rangeAddress);
+        range.values = data;
+        range.format.autofitColumns();
+  
+        return context.sync();
+      });`
+    },
   ],
   invalid: [
     {

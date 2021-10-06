@@ -92,6 +92,13 @@ ruleTester.run('no-navigational-load', rule, {
 			  console.log(range.font.fill.color);
 			  console.log(range.address);`
 		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load({ format: { fill: { color: true } } });
+			  await context.sync();
+			  console.log(range.font.fill.color);`
+		},
 	],
 	invalid: [
 		{
