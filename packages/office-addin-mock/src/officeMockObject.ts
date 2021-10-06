@@ -1,5 +1,3 @@
-import { usageDataObject } from "./defaults";
-
 /**
  * Creates an office-js mockable object
  * @param object Object structure to provide initial values for the mock object (Optional)
@@ -108,9 +106,8 @@ export class OfficeMockObject {
     for (let i = 0; i < properties.length - 1; i++) {
       const property = properties[i];
 
-      const retrievedProperty:
-        | OfficeMockObject
-        | undefined = navigationalOfficeMockObject.properties.get(property);
+      const retrievedProperty: OfficeMockObject | undefined =
+        navigationalOfficeMockObject.properties.get(property);
       if (retrievedProperty) {
         navigationalOfficeMockObject = retrievedProperty;
       } else {
@@ -141,21 +138,16 @@ export class OfficeMockObject {
   }
 
   private populate(objectData: ObjectData) {
-    try {
-      Object.keys(objectData).forEach((property: string) => {
-        if (typeof objectData[property] === "object") {
-          this.addMock(property);
-          this[property].populate(objectData[property]);
-        } else if (typeof objectData[property] === "function") {
-          this.addMockFunction(property, objectData[property]);
-        } else {
-          this.setMock(property, objectData[property]);
-        }
-      });
-      usageDataObject.reportSuccess("populate()");
-    } catch (err: any) {
-      usageDataObject.reportException("populate()", err);
-    }
+    Object.keys(objectData).forEach((property: string) => {
+      if (typeof objectData[property] === "object") {
+        this.addMock(property);
+        this[property].populate(objectData[property]);
+      } else if (typeof objectData[property] === "function") {
+        this.addMockFunction(property, objectData[property]);
+      } else {
+        this.setMock(property, objectData[property]);
+      }
+    });
   }
 
   private resetValue(value: unknown) {
