@@ -37,6 +37,17 @@ export = {
       return false;
     }
 
+    function hasBeenLoaded(
+      node: TSESTree.Node,
+      loadLocation: Map<string, number>,
+      propertyName: string
+    ): boolean {
+      return (
+        loadLocation.has(propertyName) && // If reference came after load, return
+        node.range[1] > (loadLocation.get(propertyName) ?? 0)
+      );
+    }
+
     function findLoadBeforeRead(scope: Scope) {
       scope.variables.forEach((variable: Variable) => {
         let loadLocation: Map<string, number> = new Map<string, number>();
@@ -86,20 +97,13 @@ export = {
           const propertyName: string | undefined = findPropertiesRead(
             node.parent
           );
-          if (!propertyName) {
-            // There is no property
-            return;
-          }
 
           if (
-            loadLocation.has(propertyName) && // If reference came after load, return
-            node.range[1] > (loadLocation.get(propertyName) ?? 0)
+            !propertyName ||
+            hasBeenLoaded(node, loadLocation, propertyName) ||
+            hasBeenLoaded(node, loadLocation, "*") ||
+            isInsideWriteStatement(node)
           ) {
-            return;
-          }
-
-          if (isInsideWriteStatement(node)) {
-            // Return in case it a write, ie, not read statment
             return;
           }
 

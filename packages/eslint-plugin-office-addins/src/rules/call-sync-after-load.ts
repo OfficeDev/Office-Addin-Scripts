@@ -13,7 +13,7 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call context.sync() after calling load on '{{name}}' for property '{{loadValue}}' and before reading the property.",
+        "Call context.sync() after calling load on '{{name}}' for the property '{{loadValue}}' and before reading the property.",
     },
     docs: {
       description:
@@ -73,7 +73,8 @@ export = {
           );
 
           if (
-            needSync.has({ variable: variable.name, property: propertyName })
+            needSync.has({ variable: variable.name, property: propertyName }) ||
+            needSync.has({ variable: variable.name, property: "*" })
           ) {
             const node = reference.identifier;
             context.report({

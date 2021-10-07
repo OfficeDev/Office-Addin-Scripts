@@ -35,6 +35,11 @@ ruleTester.run('no-empty-load', rule, {
         selectedRange = "new variable";
         selectedRange.load()`
     },
+    {
+      code: `
+        var selectedRange = context.workbook.getSelectedRange();
+        selectedRange.load("*")`
+    },
   ],
   invalid: [
     {
