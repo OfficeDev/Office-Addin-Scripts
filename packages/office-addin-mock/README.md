@@ -3,7 +3,7 @@
   This library provides an easier way to unit test the Office JavaScript library (hereafter, "Office-js") API.
   This library does not depend on Office, so it doesn't test actual interactions with it.
   
-  It aims to solve problems that arise when trying to mock the API`s objects:
+  It aims to solve problems that arise when trying to mock the API's objects:
 
 - Office-js APIs need to be loaded by an HTML file, so they are not available before loading.
 - Some test APIs may require the entire object to be mocked, which can have more than 100 properties, making mocking not feasible.
