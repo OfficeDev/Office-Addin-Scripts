@@ -149,5 +149,13 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.font.type, "arial");
       assert.strictEqual(officeMock.range.font.size, 12);
     });
+    it("Load star", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.load("*");
+      officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "blue");
+      assert.strictEqual(officeMock.range.font.type, "arial");
+      assert.strictEqual(officeMock.range.font.size, 12);
+    });
   });
 });

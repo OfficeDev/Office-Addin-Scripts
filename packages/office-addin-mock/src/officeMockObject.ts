@@ -90,12 +90,16 @@ export class OfficeMockObject {
   }
 
   private loadMultipleProperties(properties: string) {
-    properties
-      .replace(/\s/g, "")
-      .split(",")
-      .forEach((completeProperties: string) => {
-        this.loadNavigational(completeProperties);
-      });
+    if (properties === "*") {
+      this.loadStar();
+    } else {
+      properties
+        .replace(/\s/g, "")
+        .split(",")
+        .forEach((completeProperties: string) => {
+          this.loadNavigational(completeProperties);
+        });
+    }
   }
 
   private loadNavigational(completePropertyName: string) {
@@ -125,16 +129,22 @@ export class OfficeMockObject {
       this.properties.get(scalarPropertyName)?.loadCalled();
       this.makePropertyCallable(scalarPropertyName);
 
-      this.properties
-        .get(scalarPropertyName)
-        ?.properties.forEach((property: OfficeMockObject) => {
-          property.loadCalled();
-        });
+      Array.from(
+        this.properties.get(scalarPropertyName)?.properties.keys() ?? []
+      ).forEach((property: string) => {
+        this.properties.get(scalarPropertyName)?.loadScalar(property);
+      });
     } else {
       throw new Error(
         `Property ${scalarPropertyName} needs to be present in object model before load is called.`
       );
     }
+  }
+
+  private loadStar() {
+    Array.from(this.properties.keys()).forEach((property: string) => {
+      this.loadScalar(property);
+    });
   }
 
   private populate(objectData: ObjectData) {
