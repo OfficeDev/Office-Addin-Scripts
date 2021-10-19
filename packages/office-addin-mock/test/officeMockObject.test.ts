@@ -22,6 +22,11 @@ const contextMockData = {
   workbook: {
     range: {
       address: "C2",
+      format: {
+        fill: {
+          color: "green",
+        }
+      }
     },
     getSelectedRange: function () {
       return this.range;
@@ -156,6 +161,12 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.getColor(), "blue");
       assert.strictEqual(officeMock.range.font.type, "arial");
       assert.strictEqual(officeMock.range.font.size, 12);
+    });
+    it("Load navigational property", async function() {
+      const contextMock = new OfficeMockObject(contextMockData);
+      contextMock.workbook.range.load("format");
+      contextMock.sync();
+      assert.strictEqual(contextMock.workbook.range.format.fill.color, "green");
     });
   });
 });
