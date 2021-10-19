@@ -113,6 +113,14 @@ ruleTester.run('load-object-before-read', rule, {
         console.log(range.address);
         console.log(range.font);`
     },
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load({ format: { fill: { color: true } }, address: true } );
+			  await context.sync();
+			  console.log(range.format.fill.color);
+			  console.log(range.address);`
+		},
   ],
   invalid: [
     {
@@ -186,6 +194,23 @@ ruleTester.run('load-object-before-read', rule, {
 			  await context.sync();
 			  console.log(range.font.fill.color);`,
         errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "font/fill/color" }  }]
+		},
+    {
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load({ format: { fill: { color: true } } } );
+			  await context.sync();
+			  console.log(range.format.fill.color);
+			  console.log(range.address);`,
+        errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "address" }  }]
+		},
+    {
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load({ format: { fill: { color: false } } } );
+			  await context.sync();
+			  console.log(range.format.fill.color);`,
+        errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
 		},
   ]
 });

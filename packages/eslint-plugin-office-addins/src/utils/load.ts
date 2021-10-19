@@ -22,23 +22,35 @@ export function isLoadReference(node: TSESTree.Identifier) {
   );
 }
 
-function composeObjectExpressionPropertyIntoString(
+function parseObjectExpressionProperty(
   objectExpression: TSESTree.ObjectExpression
-): string {
-  let composedProperty: string = "";
+): string[] {
+  let composedProperties: string[] = [];
+
   objectExpression.properties.forEach((property) => {
-    if (property.type === AST_NODE_TYPES.Property) {
-      if (property.key.type === AST_NODE_TYPES.Identifier) {
-        composedProperty += property.key.name;
-      }
+    if (
+      property.type === AST_NODE_TYPES.Property &&
+      property.key.type === AST_NODE_TYPES.Identifier
+    ) {
+      let propertyName: string = property.key.name;
+
       if (property.value.type === AST_NODE_TYPES.ObjectExpression) {
-        composedProperty +=
-          "/" + composeObjectExpressionPropertyIntoString(property.value);
+        const composedProperty = parseObjectExpressionProperty(property.value);
+        if (composedProperty.length !== 0) {
+          composedProperties = composedProperties.concat(
+            propertyName + "/" + composedProperty
+          );
+        }
+      } else if (
+        property.value.type === AST_NODE_TYPES.Literal &&
+        property.value.value // Checking if the value assigined to the property is true
+      ) {
+        composedProperties = composedProperties.concat(propertyName);
       }
     }
   });
 
-  return composedProperty;
+  return composedProperties;
 }
 
 function parseLoadStringArgument(argument: string): string[] {
@@ -79,7 +91,7 @@ export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
         parseLoadStringArgument(argument.value as string)
       );
     } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
-      properties.push(composeObjectExpressionPropertyIntoString(argument));
+      properties = properties.concat(parseObjectExpressionProperty(argument));
     }
 
     return properties;
