@@ -189,12 +189,12 @@ ruleTester.run('load-object-before-read', rule, {
       errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
     },
     {
-			code: `
-			  var range = worksheet.getSelectedRange();
-			  await context.sync();
-			  console.log(range.font.fill.color);`,
-        errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "font/fill/color" }  }]
-		},
+      code: `
+        var range = worksheet.getSelectedRange();
+        await context.sync();
+        console.log(range.font.fill.color);`,
+      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "font/fill/color" }  }]
+    },
     {
       code: `
         var range = worksheet.getSelectedRange();
