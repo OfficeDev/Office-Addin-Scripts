@@ -83,8 +83,8 @@ export class OfficeMockObject {
   }
 
   private loadAllProperties() {
-    Array.from(this.properties.keys()).forEach((property: string) => {
-      this.loadScalar(property);
+    this.properties.forEach((_, key: string) => {
+      this.loadScalar(key);
     });
   }
 
