@@ -135,11 +135,11 @@ export class OfficeMockObject {
       this.properties.get(scalarPropertyName)?.loadCalled();
       this.makePropertyCallable(scalarPropertyName);
 
-      Array.from(
-        this.properties.get(scalarPropertyName)?.properties.keys() ?? []
-      ).forEach((property: string) => {
-        this.properties.get(scalarPropertyName)?.loadScalar(property);
-      });
+      this.properties
+        .get(scalarPropertyName)
+        ?.properties.forEach((_, key: string) => {
+          this.properties.get(scalarPropertyName)?.loadScalar(key);
+        });
     } else {
       throw new Error(
         `Property ${scalarPropertyName} needs to be present in object model before load is called.`
