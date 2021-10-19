@@ -82,6 +82,12 @@ export class OfficeMockObject {
     }
   }
 
+  private loadAllProperties() {
+    Array.from(this.properties.keys()).forEach((property: string) => {
+      this.loadScalar(property);
+    });
+  }
+
   private loadCalled() {
     if (!this.loaded) {
       this.loaded = true;
@@ -91,7 +97,7 @@ export class OfficeMockObject {
 
   private loadMultipleProperties(properties: string) {
     if (properties === "*") {
-      this.loadStar();
+      this.loadAllProperties();
     } else {
       properties
         .replace(/\s/g, "")
@@ -139,12 +145,6 @@ export class OfficeMockObject {
         `Property ${scalarPropertyName} needs to be present in object model before load is called.`
       );
     }
-  }
-
-  private loadStar() {
-    Array.from(this.properties.keys()).forEach((property: string) => {
-      this.loadScalar(property);
-    });
   }
 
   private populate(objectData: ObjectData) {
