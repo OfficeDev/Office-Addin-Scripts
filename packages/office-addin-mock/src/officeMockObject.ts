@@ -83,8 +83,10 @@ export class OfficeMockObject {
   }
 
   private loadAllProperties() {
-    this.properties.forEach((_, key: string) => {
-      this.loadScalar(key);
+    this.properties.forEach((_, propertyName: string) => {
+      this.properties.get(propertyName)?.loadCalled();
+      this.makePropertyCallable(propertyName);
+      this.properties.get(propertyName)?.loadAllProperties();
     });
   }
 
@@ -137,8 +139,8 @@ export class OfficeMockObject {
 
       this.properties
         .get(scalarPropertyName)
-        ?.properties.forEach((_, key: string) => {
-          this.properties.get(scalarPropertyName)?.loadScalar(key);
+        ?.properties.forEach((property: OfficeMockObject) => {
+          property.loadCalled();
         });
     } else {
       throw new Error(

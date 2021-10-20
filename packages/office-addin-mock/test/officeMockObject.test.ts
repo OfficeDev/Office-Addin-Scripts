@@ -164,7 +164,7 @@ describe("Test OfficeMockObject class", function() {
     });
     it("Load navigational property", async function() {
       const contextMock = new OfficeMockObject(contextMockData);
-      contextMock.workbook.range.load("format");
+      contextMock.workbook.range.load("format/fill");
       contextMock.sync();
       assert.strictEqual(contextMock.workbook.range.format.fill.color, "green");
     });
