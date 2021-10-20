@@ -83,12 +83,9 @@ export class OfficeMockObject {
   }
 
   private loadAllProperties() {
-    this.properties.forEach((_, propertyName: string) => {
-      this.properties.get(propertyName)?.loadCalled();
+    this.properties.forEach((property, propertyName: string) => {
+      property.loadCalled();
       this.makePropertyCallable(propertyName);
-      this.properties.forEach((property: OfficeMockObject) => {
-        property.loadCalled();
-      });
     });
   }
 
