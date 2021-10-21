@@ -177,7 +177,6 @@ describe("Test OfficeMockObject class", function() {
       contextMock.workbook.range.load({ format: { fill: { color: true } } } );
       contextMock.sync();
       assert.strictEqual(contextMock.workbook.range.format.fill.color, "green");
-
     });
   });
 });
