@@ -82,6 +82,13 @@ export class OfficeMockObject {
     }
   }
 
+  private loadAllProperties() {
+    this.properties.forEach((property, propertyName: string) => {
+      property.loadCalled();
+      this.makePropertyCallable(propertyName);
+    });
+  }
+
   private loadCalled() {
     if (!this.loaded) {
       this.loaded = true;
@@ -90,12 +97,16 @@ export class OfficeMockObject {
   }
 
   private loadMultipleProperties(properties: string) {
-    properties
-      .replace(/\s/g, "")
-      .split(",")
-      .forEach((completeProperties: string) => {
-        this.loadNavigational(completeProperties);
-      });
+    if (properties === "*") {
+      this.loadAllProperties();
+    } else {
+      properties
+        .replace(/\s/g, "")
+        .split(",")
+        .forEach((completeProperties: string) => {
+          this.loadNavigational(completeProperties);
+        });
+    }
   }
 
   private loadNavigational(completePropertyName: string) {
