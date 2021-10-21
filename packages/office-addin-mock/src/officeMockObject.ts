@@ -36,7 +36,7 @@ export class OfficeMockObject {
    * Mock replacement of the load method in the Office.js API
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
-  load(propertyArgument: string | string[] | Object) {
+  load(propertyArgument: string | string[] | ObjectData) {
     let properties: string[] = [];
 
     if (typeof propertyArgument === "string") {
@@ -154,24 +154,24 @@ export class OfficeMockObject {
     }
   }
 
-  private parseObjectPropertyIntoArray(propertyObject: ObjectData): string[] {
+  private parseObjectPropertyIntoArray(objectData: ObjectData): string[] {
     let composedProperties: string[] = [];
 
-    Object.keys(propertyObject).forEach((propertyName: string) => {
-      if (this.properties.has(propertyName)) {
-        const property: OfficeMockObject =
-          this.properties.get(propertyName) ?? new OfficeMockObject();
-        const value: ObjectData = propertyObject[propertyName];
+    Object.keys(objectData).forEach((propertyName: string) => {
+      const property: OfficeMockObject | undefined =
+        this.properties.get(propertyName);
 
+      if (property) {
+        const propertyValue: ObjectData = objectData[propertyName];
         if (property.isObject) {
-          const composedProperty = property.parseObjectPropertyIntoArray(value);
+          const composedProperty: string[] =
+            property.parseObjectPropertyIntoArray(propertyValue);
           if (composedProperty.length !== 0) {
             composedProperties = composedProperties.concat(
               propertyName + "/" + composedProperty
             );
           }
-        } else if (value) {
-          // Checking if the value is true
+        } else if (propertyValue) {
           composedProperties = composedProperties.concat(propertyName);
         }
       } else {
