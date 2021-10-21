@@ -166,5 +166,18 @@ describe("Test OfficeMockObject class", function() {
       contextMock.sync();
       assert.strictEqual(contextMock.workbook.range.format.fill.color, "green");
     });
+    it("Load object property", async function() {
+      const contextMock = new OfficeMockObject(contextMockData);
+      contextMock.workbook.range.load({ format: { fill: { color: false } }, address: true } );
+      contextMock.sync();
+      assert.strictEqual(contextMock.workbook.range.format.fill.color, "Error, property was not loaded");
+      assert.strictEqual(contextMock.workbook.range.address, "C2");
+      assert.throws(() => contextMock.load({ format: { notAProperty: false }, address: true } ));
+
+      contextMock.workbook.range.load({ format: { fill: { color: true } } } );
+      contextMock.sync();
+      assert.strictEqual(contextMock.workbook.range.format.fill.color, "green");
+
+    });
   });
 });
