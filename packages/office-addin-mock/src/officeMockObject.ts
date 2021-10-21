@@ -36,14 +36,20 @@ export class OfficeMockObject {
    * Mock replacement of the load method in the Office.js API
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
-  load(propertyArgument: string | string[]) {
+  load(propertyArgument: string | string[] | Object) {
+    let properties: string[] = [];
+
     if (typeof propertyArgument === "string") {
-      this.loadMultipleProperties(propertyArgument);
+      properties = Array(propertyArgument);
+    } else if (Array.isArray(propertyArgument)) {
+      properties = propertyArgument;
     } else {
-      propertyArgument.forEach((property: string) => {
-        this.loadMultipleProperties(property);
-      });
+      properties = this.parseObjectPropertyIntoArray(propertyArgument);
     }
+
+    properties.forEach((property: string) => {
+      this.loadMultipleProperties(property);
+    });
   }
 
   /**
@@ -146,6 +152,16 @@ export class OfficeMockObject {
         `Property ${scalarPropertyName} needs to be present in object model before load is called.`
       );
     }
+  }
+
+  private parseObjectPropertyIntoArray(propertyObject: Object): string[] {
+    let composedProperties: string[] = [];
+  
+    Object.keys(propertyObject).forEach((property: string) => {
+      
+    });
+
+    return composedProperties;
   }
 
   private populate(objectData: ObjectData) {
