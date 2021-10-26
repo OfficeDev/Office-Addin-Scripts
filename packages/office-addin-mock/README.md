@@ -32,14 +32,14 @@ The following examples use [Mocha](mochajs.org/) and [Jest](https://jestjs.io/) 
 
     ```Javascript
     const MockData = {
-    workbook: {
+      workbook: {
         range: {
-        address: "C2",
+          address: "C2",
         },
         getSelectedRange: function () {
-        return this.range;
+          return this.range;
         },
-    },
+      },
     };
     ```
 
@@ -59,28 +59,28 @@ The following examples use [Mocha](mochajs.org/) and [Jest](https://jestjs.io/) 
 import { OfficeMockObject } from "office-addin-mock";
 
 async function getSelectedRangeAddress(context) {
-  const range = context.workbook.getSelectedRange();
+const range = context.workbook.getSelectedRange();
 
-  range.load("address");
-  await context.sync();
+range.load("address");
+await context.sync();
 
-  return range.address;
+return range.address;
 }
 
 const MockData = {
-  workbook: {
-    range: {
-      address: "C2",
-    },
-    getSelectedRange: function () {
-      return this.range;
-    },
+workbook: {
+  range: {
+    address: "C2",
   },
+  getSelectedRange: function () {
+    return this.range;
+  },
+},
 };
 
 test("Excel", async function () {
-  const contextMock = new OfficeMockObject(MockData);
-  expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
+const contextMock = new OfficeMockObject(MockData);
+expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
 });
 ```
 
