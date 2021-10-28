@@ -434,7 +434,7 @@ describe("Unit Tests", function() {
           let result;
           try {
             await OfficeAddinManifest.readManifestFile("test/manifests/invalid/incorrect-end-tag.manifest.xml");
-          } catch (err) {
+          } catch (err: any) {
             result = err;
           }
           assert.equal(result.message, "Unable to parse the manifest file: test/manifests/invalid/incorrect-end-tag.manifest.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
@@ -517,7 +517,7 @@ describe("Unit Tests", function() {
         let result;
         try {
           await OfficeAddinManifest.modifyManifestFile(testManifest);
-        } catch (err) {
+        } catch (err: any) {
           result = err.message;
         }
         assert.strictEqual(result, `You need to specify something to change in the manifest.`);
@@ -530,7 +530,7 @@ describe("Unit Tests", function() {
         let result;
         try {
           await OfficeAddinManifest.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
-        } catch (err) {
+        } catch (err: any) {
           result = err.message;
         }
 
@@ -557,7 +557,7 @@ describe("Unit Tests", function() {
         const invalidManifestPath = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
         try {
           await validateManifest(invalidManifestPath);
-        } catch (err) {
+        } catch (err: any) {
           result = err.message;
         }
         assert.strictEqual(result.indexOf("ENOENT: no such file or directory") >= 0, true);
