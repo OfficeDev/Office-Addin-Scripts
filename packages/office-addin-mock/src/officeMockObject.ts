@@ -186,10 +186,12 @@ export class OfficeMockObject {
 
   private populate(objectData: ObjectData) {
     Object.keys(objectData).forEach((property: string) => {
-      if (typeof objectData[property] === "object") {
+      const dataType = typeof objectData[property];
+
+      if (dataType === "object") {
         this.addMock(property);
         this[property].populate(objectData[property]);
-      } else if (typeof objectData[property] === "function") {
+      } else if (dataType === "function") {
         this.addMockFunction(property, objectData[property]);
       } else {
         this.setMock(property, objectData[property]);
@@ -212,7 +214,7 @@ export class OfficeMockObject {
   [key: string]: any;
 }
 
-// It represents the Object to be used when populating Office JS with data.
+// Represents the Object to be used when populating Office JS with data.
 class ObjectData {
   /* eslint-disable-next-line */
   [key: string]: any;

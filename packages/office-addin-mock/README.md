@@ -1,11 +1,12 @@
 # Office-Addin-Mock
 
-  This library provides an easier way to unit test the Office JavaScript library (hereafter, "Office-js") API.
-  This library does not depend on Office, so it doesn't test actual interactions with it.
-  
-  It aims to solve problems that arise when trying to mock the API's objects:
+This library provides a way to unit test the Office JavaScript API.
 
-- Office-js APIs need to be loaded by an HTML file, so they are not available before loading.
+This library does not depend on Office and doesn't test actual interactions with Office.
+
+This library aims to solve the following problems that arise when trying to mock Office JavaScript API objects:
+
+- Office JavaScript APIs need to be loaded by an HTML file, so they are not available before loading.
 - Some test APIs may require the entire object to be mocked, which can have more than 100 properties, making mocking not feasible.
 - Tests need to preserve the order of the functions `load` or `sync`, which are difficult to test because stateless test APIs do not support easily adding state variables to handle those functions.
 
@@ -19,71 +20,75 @@ npm i office-addin-mock --save-dev
 
 ## Usage
 
-The examples used here will be using [Mocha](mochajs.org/) and [Jest](https://jestjs.io/) testing frameworks. Any JavaScript framework should work, feel free to use others if needed.
+The following examples use [Mocha](mochajs.org/) and [Jest](https://jestjs.io/) testing frameworks. Any JavaScript framework should work, feel free to use others if needed.
 
-Import `office-addin-mock` to your testing file:
+1. Import `office-addin-mock` to your testing file:
 
-```Javascript
-import { OfficeMockObject } from "office-addin-mock";
-```
+    ```Javascript
+    import { OfficeMockObject } from "office-addin-mock";
+    ```
 
-Create an object structure to represent the mock object. Override all the properties and methods you want to use.
+1. Create an object structure to represent the mock object. Override all the properties and methods you want to use.
 
-```Javascript
-const MockData = {
-  workbook: {
-    range: {
-      address: "C2",
-    },
-    getSelectedRange: function () {
-      return this.range;
-    },
-  },
-};
-```
+    ```Javascript
+    const MockData = {
+      workbook: {
+        range: {
+          address: "C2",
+        },
+        getSelectedRange: function () {
+          return this.range;
+        },
+      },
+    };
+    ```
 
-In your test code, create an `OfficeMockObject` with an argument of the object you created:
+1. In your test code, create an `OfficeMockObject` with an argument of the object you created:
 
-```Javascript
-const contextMock = new OfficeMockObject(MockData);
-```
+    ```Javascript
+    const contextMock = new OfficeMockObject(MockData);
+    ```
 
-You can now use this newly created object as a mock of the original Office-js object.
+1. Use the newly created object as a mock of the original Office JavaScript object.
 
 ## Examples
 
-1. Testing with Jest for Excel platform:
+### Testing with Jest for Excel platform
 
 ```Javascript
+import { OfficeMockObject } from "office-addin-mock";
+
 async function getSelectedRangeAddress(context) {
-  const range = context.workbook.getSelectedRange();
+const range = context.workbook.getSelectedRange();
 
-  range.load("address");
-  await context.sync();
+range.load("address");
+await context.sync();
 
-  return range.address;
+return range.address;
 }
 
 const MockData = {
-  workbook: {
-    range: {
-      address: "C2",
-    },
-    getSelectedRange: function () {
-      return this.range;
-    },
+workbook: {
+  range: {
+    address: "C2",
   },
+  getSelectedRange: function () {
+    return this.range;
+  },
+},
 };
 
 test("Excel", async function () {
-  const contextMock = new OfficeMockObject(MockData);
-  expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
+const contextMock = new OfficeMockObject(MockData);
+expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
 });
 ```
 
-2. Testing with Mocha for Excel platform:
+### Testing with Mocha for Excel platform
 
 ```Javascript
+import { OfficeMockObject } from "office-addin-mock";
+
 function run() {
   try {
     await Excel.run(async (context) => {
@@ -135,9 +140,11 @@ describe(`Run`, function () {
 });
 ```
 
-3. Testing with Jest for Word platform:
+### Testing with Jest for Word platform
 
 ```Javascript
+import { OfficeMockObject } from "office-addin-mock";
+
 async function run() {
   return Word.run(async (context) => {
     /**
@@ -188,9 +195,11 @@ test("Word", async function () {
 });
 ```
 
-4. Testing a function with Mocha for Powerpoint platform:
+### Testing a function with Mocha for PowerPoint platform
 
 ```Javascript
+import { OfficeMockObject } from "office-addin-mock";
+
 async function run() {
   /**
    * Insert your PowerPoint code here
