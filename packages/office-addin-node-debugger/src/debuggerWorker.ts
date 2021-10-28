@@ -44,7 +44,7 @@ process.on("message", (message) => {
         /* eslint-disable no-eval */
         try {
           eval(js.replace(/this\["webpackHotUpdate"\]/g, 'self["webpackHotUpdate"]').replace("GLOBAL", "global"));
-        } catch (error) {
+        } catch (error: any) {
           console.log(`Error Message: ${error.message}`);
           console.log(`Error stack: ${error.stack}`);
         } finally {

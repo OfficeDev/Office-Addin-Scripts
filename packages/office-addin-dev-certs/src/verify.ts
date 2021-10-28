@@ -88,7 +88,7 @@ export function verifyCertificates(
     let output = isCertificateValid && isCaCertificateInstalled();
     usageDataObject.reportSuccess("verifyCertificates()");
     return output;
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("verifyCertificates()", err);
     throw err;
   }

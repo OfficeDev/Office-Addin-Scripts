@@ -54,7 +54,7 @@ export namespace OfficeAddinManifest {
           let output = await readManifestFile(manifestPath);
           usageDataObject.reportSuccess("modifyManifestFile()");
           return output;
-        } catch (err) {
+        } catch (err: any) {
           usageDataObject.reportException("modifyManifestFile()", err);
           throw err;
         }

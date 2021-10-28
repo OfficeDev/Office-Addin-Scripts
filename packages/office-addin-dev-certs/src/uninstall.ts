@@ -50,7 +50,7 @@ export async function uninstallCaCertificate(machine: boolean = false, verbose: 
       execSync(command, { stdio: "pipe" });
       console.log(`You no longer have trusted access to https://localhost.`);
       usageDataObject.reportSuccess("uninstallCaCertificate()");
-    } catch (error) {
+    } catch (error: any) {
       usageDataObject.reportException("uninstallCaCertificate()", error);
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
     }

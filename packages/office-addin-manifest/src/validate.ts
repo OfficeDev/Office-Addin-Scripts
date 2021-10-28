@@ -108,7 +108,7 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
     usageDataObject.reportSuccess("validateManifest()");
 
     return validation;
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("validateManifest()", err);
     throw err;
   }
