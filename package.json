@@ -2,8 +2,8 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": ">=14.17 <15",
-    "npm": ">=6 <7"
+    "node": ">=14.17 <17",
+    "npm": ">=6 <9"
   },
   "scripts": {
     "audit": "npm audit & npm run exec -- npm audit",
