@@ -53,7 +53,7 @@ export async function ensureCertificatesAreInstalled(
     }
 
     usageDataObject.reportSuccess("ensureCertificatesAreInstalled()");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("ensureCertificatesAreInstalled()", err);
     throw err;
   }
@@ -74,7 +74,7 @@ export async function installCaCertificate(
     console.log(
       `You now have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`
     );
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
   }
 }

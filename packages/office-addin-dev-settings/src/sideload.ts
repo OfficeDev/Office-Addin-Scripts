@@ -375,7 +375,7 @@ export async function sideloadAddIn(
       }
     }
     usageDataObject.reportSuccess("sideloadAddIn()");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("sideloadAddIn()", err);
     throw err;
   }

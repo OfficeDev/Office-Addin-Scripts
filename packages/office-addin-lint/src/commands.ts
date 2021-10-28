@@ -27,7 +27,7 @@ export async function lint(command: commander.Command) {
     const useTestConfig: boolean = command.test;
     await performLintCheck(pathToFiles, useTestConfig);
     usageDataObject.reportSuccess("lint");
-  } catch (err) {
+  } catch (err: any) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
@@ -44,7 +44,7 @@ export async function lintFix(command: commander.Command) {
     const useTestConfig: boolean = command.test;
     await performLintFix(pathToFiles, useTestConfig);
     usageDataObject.reportSuccess("lintFix");
-  } catch (err) {
+  } catch (err: any) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
@@ -60,7 +60,7 @@ export async function prettier(command: commander.Command) {
     const pathToFiles: string = getPathToFiles(command);
     await makeFilesPrettier(pathToFiles);
     usageDataObject.reportSuccess("prettier");
-  } catch (err) {
+  } catch (err: any) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
