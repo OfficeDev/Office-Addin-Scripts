@@ -22,7 +22,7 @@ export async function info(manifestPath: string) {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("info");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("info", err);
     logErrorMessage(err);
   }
@@ -131,7 +131,7 @@ export async function modify(manifestPath: string, command: commander.Command) {
     const manifest = await OfficeAddinManifest.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("modify");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("modify", err);
     logErrorMessage(err);
   }
@@ -165,7 +165,7 @@ export async function validate(
 
     process.exitCode = validation.isValid ? 0 : 1;
     usageDataObject.reportSuccess("validate");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("validate", err);
     logErrorMessage(err);
   }

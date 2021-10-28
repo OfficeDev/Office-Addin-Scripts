@@ -241,7 +241,7 @@ describe("Appcontainer", async function() {
         try {
           await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
           assert.strictEqual(0, 1); // expecting exception
-        } catch (err) {
+        } catch (err: any) {
           assert.strictEqual(err.toString().includes("The source location could not be retrieved from the manifest."), true);
         }
       });
@@ -454,7 +454,7 @@ describe("RuntimeLogging", async function() {
         let error;
         try {
           const path: string = await devSettings.enableRuntimeLogging();
-        } catch (err) {
+        } catch (err: any) {
           error = err;
         }
         assert.ok(error instanceof Error, "should throw an error");
@@ -467,7 +467,7 @@ describe("RuntimeLogging", async function() {
         let error;
         try {
           const path: string = await devSettings.enableRuntimeLogging();
-        } catch (err) {
+        } catch (err: any) {
           error = err;
         }
         assert.ok(error instanceof Error, "should throw an error");
@@ -488,7 +488,7 @@ describe("RuntimeLogging", async function() {
           let error;
           try {
             const path = await devSettings.enableRuntimeLogging(filePath);
-          } catch (err) {
+          } catch (err: any) {
             error = err;
           }
           assert.ok(error instanceof Error, "should throw an error");
@@ -533,7 +533,7 @@ describe("RuntimeLogging", async function() {
             const path = await devSettings.enableRuntimeLogging(filePath);
             assert.strictEqual(path, filePath);
             assert.strictEqual(path, await devSettings.getRuntimeLoggingPath());
-          } catch (err) {
+          } catch (err: any) {
             error = err;
           }
           assert.ok(error instanceof Error, "should throw an error");
@@ -563,7 +563,7 @@ describe("Sideload to Desktop", function() {
     const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Project, true /* canPrompt */, AppType.Desktop, undefined /* document */);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
@@ -596,7 +596,7 @@ describe("Sideload to web", function() {
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web, docurl);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
@@ -607,7 +607,7 @@ describe("Sideload to web", function() {
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
@@ -618,7 +618,7 @@ describe("Sideload to web", function() {
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Outlook, true /* canPrompt */, AppType.Web, docurl);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");

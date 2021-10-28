@@ -42,7 +42,7 @@ export async function stopDebugging(manifestPath: string) {
 
     console.log("Debugging has been stopped.");
     usageDataObject.reportSuccess("stopDebugging()");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("stopDebugging()", err);
     throw err;
   }

@@ -105,7 +105,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
     });
 
     usageDataObject.reportSuccess("start");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("start", err);
     logErrorMessage(`Unable to start debugging.\n${err}`);
   }
@@ -124,7 +124,7 @@ export async function stop(manifestPath: string, platform: string | undefined, c
 
     await stopDebugging(manifestPath);
     usageDataObject.reportSuccess("stop");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("stop", err);
     logErrorMessage(`Unable to stop debugging.\n${err}`);
   }

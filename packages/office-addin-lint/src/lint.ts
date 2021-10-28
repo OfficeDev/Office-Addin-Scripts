@@ -39,7 +39,7 @@ export function performLintCheck(files: string, useTestConfig: boolean = false) 
     const command = getLintCheckCommand(files, useTestConfig);
     execCommand(command);
     usageDataObject.reportSuccess("performLintCheck()", { exitCode: ESLintExitCode.NoLintErrors });
-  } catch (err) {
+  } catch (err: any) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
       usageDataObject.reportExpectedException("performLintCheck()", err, { exitCode: ESLintExitCode.HasLintError });
     } else {
@@ -59,7 +59,7 @@ export function performLintFix(files: string, useTestConfig: boolean = false) {
     const command = getLintFixCommand(files, useTestConfig);
     execCommand(command);
     usageDataObject.reportSuccess("performLintFix()", { exitCode: ESLintExitCode.NoLintErrors });
-  } catch (err) {
+  } catch (err: any) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
       usageDataObject.reportExpectedException("performLintFix()", err, { exitCode: ESLintExitCode.HasLintError });
     } else {
@@ -79,7 +79,7 @@ export function makeFilesPrettier(files: string) {
     const command = getPrettierCommand(files);
     execCommand(command);
     usageDataObject.reportSuccess("makeFilesPrettier()", { exitCode: PrettierExitCode.NoFormattingProblems });
-  } catch (err) {
+  } catch (err: any) {
     if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
       usageDataObject.reportExpectedException("makeFilesPrettier()", err, {
         exitCode: PrettierExitCode.HasFormattingProblem,
