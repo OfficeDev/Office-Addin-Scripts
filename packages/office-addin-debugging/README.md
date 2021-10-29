@@ -13,7 +13,7 @@ Starts debugging.
 
 Syntax:
 
-`office addin-debugging start <manifest> [platform] [options]`
+`office-addin-debugging start <manifest> [platform] [options]`
 
 `manifest`: path to manifest file.
 
@@ -116,7 +116,7 @@ Stops debugging.
 
 Syntax:
 
-`office addin-debugging stop <manifest> [options]`
+`office-addin-debugging stop <manifest> [options]`
 
 `manifest`: path to manifest file.
 
