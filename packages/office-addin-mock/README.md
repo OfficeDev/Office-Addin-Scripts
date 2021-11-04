@@ -59,28 +59,28 @@ The following examples use [Mocha](mochajs.org/) and [Jest](https://jestjs.io/) 
 import { OfficeMockObject } from "office-addin-mock";
 
 async function getSelectedRangeAddress(context) {
-const range = context.workbook.getSelectedRange();
+  const range = context.workbook.getSelectedRange();
 
-range.load("address");
-await context.sync();
+  range.load("address");
+  await context.sync();
 
-return range.address;
+  return range.address;
 }
 
 const MockData = {
-workbook: {
-  range: {
-    address: "C2",
+  workbook: {
+    range: {
+      address: "C2",
+    },
+    getSelectedRange: function () {
+      return this.range;
+    },
   },
-  getSelectedRange: function () {
-    return this.range;
-  },
-},
 };
 
 test("Excel", async function () {
-const contextMock = new OfficeMockObject(MockData);
-expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
+  const contextMock = new OfficeMockObject(MockData);
+  expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
 });
 ```
 
@@ -92,15 +92,10 @@ import { OfficeMockObject } from "office-addin-mock";
 function run() {
   try {
     await Excel.run(async (context) => {
-      /**
-       * Insert your Excel code here
-       */
       const range: Excel.Range = context.workbook.getSelectedRange();
-
-      // Load the range address
       range.load("address");
 
-      // Update the fill color
+      // Update the cell color
       range.format.fill.color = "yellow";
 
       await context.sync();
@@ -125,14 +120,14 @@ const MockData = {
       },
     },
   },
+  run: async function(callback) {
+    await callback(this.context);
+  },
 };
 
 describe(`Run`, function () {
   it("Excel", async function () {
     const excelMock = new OfficeMockObject(MockData) as any;
-    excelMock.addMockFunction("run", async function (callback) {
-      await callback(excelMock.context);
-    });
     global.Excel = excelMock;
     await run();
     assert.strictEqual(excelMock.context.workbook.range.format.fill.color, "yellow");
@@ -147,10 +142,6 @@ import { OfficeMockObject } from "office-addin-mock";
 
 async function run() {
   return Word.run(async (context) => {
-    /**
-     * Insert your Word code here
-     */
-
     // insert a paragraph at the end of the document.
     const paragraph = context.document.body.insertParagraph("Hello World", Word.InsertLocation.end);
 
@@ -180,13 +171,13 @@ const WordMockData = {
   InsertLocation: {
     end: "End",
   },
+  run: async function(callback) {
+    await callback(this.context);
+  },
 };
 
 test("Word", async function () {
   const wordMock = new officeAddinMock.OfficeMockObject(WordMockData);
-  wordMock.addMockFunction("run", async function (callback) {
-    await callback(wordMock.context);
-  });
   global.Word = wordMock;
 
   await run();
@@ -201,9 +192,6 @@ test("Word", async function () {
 import { OfficeMockObject } from "office-addin-mock";
 
 async function run() {
-  /**
-   * Insert your PowerPoint code here
-   */
   const options = { coercionType: Office.CoercionType.Text };
 
   await Office.context.document.setSelectedDataAsync(" ", options);
