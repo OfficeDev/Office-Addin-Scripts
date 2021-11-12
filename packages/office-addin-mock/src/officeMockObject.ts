@@ -70,9 +70,9 @@ export class OfficeMockObject {
   /**
    * Mock replacement for the sync method in the Office.js API
    */
-  sync() {
-    this.properties.forEach((property: OfficeMockObject, key: string) => {
-      property.sync();
+  async sync() {
+    this.properties.forEach(async (property: OfficeMockObject, key: string) => {
+      await property.sync();
       this.makePropertyCallable(key);
     });
     if (this.loaded) {
