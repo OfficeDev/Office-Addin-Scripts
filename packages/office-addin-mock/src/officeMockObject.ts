@@ -1,3 +1,5 @@
+import { isValidError, PossibleErrors } from "./possibleErrors";
+
 /**
  * Creates an office-js mockable object
  * @param object Object structure to provide initial values for the mock object (Optional)
@@ -73,32 +75,24 @@ export class OfficeMockObject {
   async sync() {
     this.properties.forEach(async (property: OfficeMockObject, key: string) => {
       await property.sync();
-      this.makePropertyCallable(key);
+      this.updatePropertyCall(key);
     });
     if (this.loaded) {
       this.value = this.valueBeforeLoaded;
     }
   }
 
-  private makePropertyCallable(propertyName: string) {
-    if (this.properties.get(propertyName)?.isObject) {
-      this[propertyName] = this.properties.get(propertyName);
-    } else {
-      this[propertyName] = this.properties.get(propertyName)?.value;
-    }
-  }
-
   private loadAllProperties() {
     this.properties.forEach((property, propertyName: string) => {
       property.loadCalled();
-      this.makePropertyCallable(propertyName);
+      this.updatePropertyCall(propertyName);
     });
   }
 
   private loadCalled() {
     if (!this.loaded) {
       this.loaded = true;
-      this.value = `Error, context.sync() was not called`;
+      this.value = PossibleErrors.notSync;
     }
   }
 
@@ -140,7 +134,7 @@ export class OfficeMockObject {
   private loadScalar(scalarPropertyName: string) {
     if (this.properties.has(scalarPropertyName)) {
       this.properties.get(scalarPropertyName)?.loadCalled();
-      this.makePropertyCallable(scalarPropertyName);
+      this.updatePropertyCall(scalarPropertyName);
 
       this.properties
         .get(scalarPropertyName)
@@ -200,9 +194,18 @@ export class OfficeMockObject {
   }
 
   private resetValue(value: unknown) {
-    this.value = `Error, property was not loaded`;
+    this.value = PossibleErrors.notLoaded;
     this.valueBeforeLoaded = value;
     this.loaded = false;
+  }
+
+  private updatePropertyCall(propertyName: string) {
+    if (this.properties.get(propertyName)?.isObject) {
+      this[propertyName] = this.properties.get(propertyName);
+    } else if (isValidError(this[propertyName])) {
+      // It is a known error
+      this[propertyName] = this.properties.get(propertyName)?.value;
+    }
   }
 
   private properties: Map<string, OfficeMockObject>;

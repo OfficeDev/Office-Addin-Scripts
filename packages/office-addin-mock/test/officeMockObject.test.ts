@@ -115,6 +115,33 @@ describe("Test OfficeMockObject class", function() {
     });
   });
 
+  describe("Writting values already present at object model", function() {
+    it("Load and Sync", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.range.color = "new color";
+      officeMock.range.load("color");
+      await officeMock.sync();
+      assert.strictEqual(officeMock.range.color, "new color");
+    });
+    it("Only load", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.range.color = "new color";
+      officeMock.range.load("color");
+      assert.strictEqual(officeMock.range.color, "new color");
+    });
+    it("Only sync", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.range.color = "new color";
+      await officeMock.sync();
+      assert.strictEqual(officeMock.range.color, "new color");
+    });
+    it("No load and no sync", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.range.color = "new color";
+      assert.strictEqual(officeMock.range.color, "new color");
+    });
+  });
+
   describe("Different ways to load properties", function() {
     it("Invalid load", async function() {
       const officeMock = new OfficeMockObject(testObject);
