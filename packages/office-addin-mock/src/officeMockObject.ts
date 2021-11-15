@@ -18,6 +18,7 @@ export class OfficeMockObject {
    * Adds a function to OfficeMockObject. The function can be accessed by simply calling `this.methodName`
    * @param methodName Method name of the function to be added
    * @param methodBody Function to be added to the object. A blank function will be added if no argument is provided (Optional)
+   * @deprecated Use setProperty instead
    */
   addMockFunction(methodName: string, methodBody?: Function) {
     this[methodName] = methodBody ? methodBody : function () {};
@@ -58,6 +59,7 @@ export class OfficeMockObject {
    * Adds a property of any type to OfficeMockObject
    * @param propertyName Property name to the property to be added
    * @param value Value this added property will have
+   * @deprecated Use setProperty instead
    */
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
@@ -67,6 +69,25 @@ export class OfficeMockObject {
     }
     this.properties.get(propertyName)?.resetValue(value);
     this[propertyName] = this.properties.get(propertyName)?.value;
+  }
+
+  /**
+   * Adds a property of any type to OfficeMockObject
+   * @param propertyName Property name to the property to be added
+   * @param value Value this added property will have
+   */
+  setProperty(propertyName: string, value: any) {
+    if (typeof value === "function") {
+      this[propertyName] = value;
+    } else {
+      if (!this.properties.has(propertyName)) {
+        const officeMockObject = new OfficeMockObject();
+        officeMockObject.isObject = false;
+        this.properties.set(propertyName, officeMockObject);
+      }
+      this.properties.get(propertyName)?.resetValue(value);
+      this[propertyName] = this.properties.get(propertyName)?.value;    
+    }
   }
 
   /**
@@ -185,10 +206,8 @@ export class OfficeMockObject {
       if (dataType === "object") {
         this.addMock(property);
         this[property].populate(objectData[property]);
-      } else if (dataType === "function") {
-        this.addMockFunction(property, objectData[property]);
       } else {
-        this.setMock(property, objectData[property]);
+        this.setProperty(property, objectData[property]);
       }
     });
   }

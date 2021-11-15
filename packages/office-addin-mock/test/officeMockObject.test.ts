@@ -99,7 +99,7 @@ describe("Test OfficeMockObject class", function() {
       officeMock.range.color = "green";
       assert.strictEqual(officeMock.range.getColor(), "green");
 
-      officeMock.range.setMock("color", "yellow");
+      officeMock.range.setProperty("color", "yellow");
       officeMock.range.load("color");
       await officeMock.sync();
       assert.strictEqual(officeMock.range.getColor(), "yellow");
