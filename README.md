@@ -44,6 +44,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
 
+* [office-addin-mock](packages/office-addin-mock/README.md)
+
+  This package provides a way to unit test the Office JavaScript API.
+
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
