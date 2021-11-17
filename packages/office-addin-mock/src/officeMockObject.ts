@@ -25,7 +25,7 @@ export class OfficeMockObject {
   }
 
   /**
-   * Adds a mock object to OfficeMockObject. The object can be accessed by simply calling `this.objectName`
+   * addMock(name) will add a property named “name”, with a new OfficeMockObject as its value, to the object
    * @param objectName Object name of the object to be added
    */
   addMock(objectName: string) {
@@ -72,11 +72,11 @@ export class OfficeMockObject {
   }
 
   /**
-   * Adds a property of any type to OfficeMockObject
+   * Sets a property of any type or function to the object
    * @param propertyName Property name to the property to be added
    * @param value Value this added property will have
    */
-  setProperty(propertyName: string, value: any) {
+  set(propertyName: string, value: any) {
     if (typeof value === "function") {
       this[propertyName] = value;
     } else {
@@ -86,7 +86,7 @@ export class OfficeMockObject {
         this.properties.set(propertyName, officeMockObject);
       }
       this.properties.get(propertyName)?.resetValue(value);
-      this[propertyName] = this.properties.get(propertyName)?.value;    
+      this[propertyName] = this.properties.get(propertyName)?.value;
     }
   }
 
@@ -207,7 +207,7 @@ export class OfficeMockObject {
         this.addMock(property);
         this[property].populate(objectData[property]);
       } else {
-        this.setProperty(property, objectData[property]);
+        this.set(property, objectData[property]);
       }
     });
   }
