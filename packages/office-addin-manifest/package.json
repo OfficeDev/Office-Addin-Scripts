@@ -32,7 +32,6 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "@types/es6-promise": "0.0.32",
     "@types/mocha": "^5.2.7",
     "@types/node": "^14.17.2",
     "@types/node-fetch": "^2.5.10",
