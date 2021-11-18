@@ -40,7 +40,6 @@
     "@types/node-fetch": "^2.5.10",
     "@types/ws": "^6.0.4",
     "concurrently": "^6.2.2",
-    "es6-promise": "^4.2.8",
     "express": "^4.16.4",
     "mocha": "^9.1.1",
     "office-addin-lint": "^1.4.3",

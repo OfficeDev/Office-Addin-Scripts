@@ -15,7 +15,6 @@
     "office-js"
   ],
   "dependencies": {
-    "es6-promise": "^4.2.8",
     "office-addin-usage-data": "^1.4.3"
   },
   "devDependencies": {

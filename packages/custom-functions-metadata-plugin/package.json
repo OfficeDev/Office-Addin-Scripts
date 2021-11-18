@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "custom-functions-metadata": "^1.2.3",
-    "es6-promise": "^4.2.8",
     "loader-utils": "^2.0.0",
     "webpack": "^5.24.4"
   },
