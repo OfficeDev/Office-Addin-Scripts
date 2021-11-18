@@ -126,9 +126,8 @@ constructor(object?: Object);
 
 Adds a function to OfficeMockObject.
 
-The `methodName` parameter is the name of the function to be added.
-
-The `methodBody` parameter is the function to be added to the object. A blank function will be added if no argument is provided. (Optional)
+- The `methodName` parameter is the name of the function to be added.
+- The `methodBody` parameter is the function to be added to the object. A blank function will be added if no argument is provided. (Optional)
 
 ```
 addMockFunction(methodName: string, methodBody?: Function): void;
@@ -140,7 +139,7 @@ For more information about the use of this method, see [Adding mock objects, pro
 
 Adds a property to a OfficeMockObject whose value is another OfficeMockObject.
 
-The `objectName` parameter is the property name.
+- The `objectName` parameter is the property name.
 
 ```
 addMock(objectName: string): void; 
@@ -150,9 +149,9 @@ For more information about the use of this method, see [Adding mock objects, pro
 
 ##### load
 
-Mock implementation of the `load` method in the application-specific Office.js APIs. Do not call this method explicitly in your test code.
+Mock implementation of the `load` method in the application-specific Office.js APIs.
 
-The `propertyArgument` specifies the properties that should be loaded.  
+- The `propertyArgument` specifies the properties that should be loaded.  
 
 ```
 load(propertyArgument: string | string[] | Object): void;
@@ -160,11 +159,10 @@ load(propertyArgument: string | string[] | Object): void;
 
 ##### setMock
 
-Adds a property of any type to OfficeMockObject. 
+Adds a property of any type to OfficeMockObject.
 
-The `propertyName` parameter is the name of the property to be added.
-
-The `value` parameter is the value the propery is set to.
+- The `propertyName` parameter is the name of the property to be added.
+- The `value` parameter is the value the propery is set to.
 
 ```
 setMock(propertyName: string, value: unknown): void
@@ -174,7 +172,7 @@ For more information about the use of this method, see [Adding mock objects, pro
 
 ##### sync
 
-Mock replacement for the `sync` method in the application-specific Office.js APIs. Do not call this method explicitly in your test code.
+Mock replacement for the `sync` method in the application-specific Office.js APIs.
 
 ```
 sync(): void;
