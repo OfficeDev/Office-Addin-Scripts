@@ -33,6 +33,7 @@
     "@types/node-fetch": "^2.5.10",
     "@types/ws": "^5.1.2",
     "concurrently": "^6.2.2",
+    "es6-promise": "^4.2.8",
     "office-addin-lint": "^1.4.3",
     "rimraf": "^3.0.2",
     "typescript": "^4.3.5"

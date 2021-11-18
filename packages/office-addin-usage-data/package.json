@@ -31,6 +31,7 @@
     "@types/node": "^14.17.2",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "concurrently": "^6.0.2",
+    "es6-promise": "^4.2.8",
     "eslint": "7.32.0",
     "eslint-plugin-office-addins": "^1.1.2",
     "eslint-plugin-prettier": "^3.4.0",

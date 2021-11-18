@@ -46,6 +46,7 @@
     "@types/whatwg-url": "^6.4.0",
     "@types/winreg": "^1.2.30",
     "concurrently": "^6.2.2",
+    "es6-promise": "^4.2.8",
     "mocha": "^9.1.1",
     "office-addin-lint": "^1.4.3",
     "rimraf": "^3.0.2",
