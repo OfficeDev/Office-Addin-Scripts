@@ -1,88 +1,20 @@
 # Office-Addin-Mock
 
-This library provides a way to unit test the Office JavaScript API.
+This library makes it much easier to unit test the Office JavaScript API. It works with any JavaScript unit testing framework.
 
-This library does not depend on Office and doesn't test actual interactions with Office.
-
-This library aims to solve the following problems that arise when trying to mock Office JavaScript API objects:
-
-- Office JavaScript APIs need to be loaded by an HTML file, so they are not available before loading.
-- Some test APIs may require the entire object to be mocked, which can have more than 100 properties, making mocking not feasible.
-- Tests need to preserve the order of the functions `load` or `sync`, which are difficult to test because stateless test APIs do not support easily adding state variables to handle those functions.
+For details about the library and how to use it, see [Unit testing in Office Add-ins](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing).
 
 ## Installation
 
-Install `office-addin-mock`
+Install `office-addin-mock` in the root of an add-in project with this command:
 
 ```
 npm i office-addin-mock --save-dev
 ```
 
-## Usage
-
-The following examples use [Mocha](mochajs.org/) and [Jest](https://jestjs.io/) testing frameworks. Any JavaScript framework should work, feel free to use others if needed.
-
-1. Import `office-addin-mock` to your testing file:
-
-    ```Javascript
-    import { OfficeMockObject } from "office-addin-mock";
-    ```
-
-1. Create an object structure to represent the mock object. Override all the properties and methods you want to use.
-
-    ```Javascript
-    const MockData = {
-      workbook: {
-        range: {
-          address: "C2",
-        },
-        getSelectedRange: function () {
-          return this.range;
-        },
-      },
-    };
-    ```
-
-1. In your test code, create an `OfficeMockObject` with an argument of the object you created:
-
-    ```Javascript
-    const contextMock = new OfficeMockObject(MockData);
-    ```
-
-1. Use the newly created object as a mock of the original Office JavaScript object.
-
 ## Examples
 
-### Testing with Jest for Excel platform
-
-```Javascript
-import { OfficeMockObject } from "office-addin-mock";
-
-async function getSelectedRangeAddress(context) {
-  const range = context.workbook.getSelectedRange();
-
-  range.load("address");
-  await context.sync();
-
-  return range.address;
-}
-
-const MockData = {
-  workbook: {
-    range: {
-      address: "C2",
-    },
-    getSelectedRange: function () {
-      return this.range;
-    },
-  },
-};
-
-test("Excel", async function () {
-  const contextMock = new OfficeMockObject(MockData);
-  expect(await getSelectedRangeAddress(contextMock)).toBe("C2");
-});
-```
+For basic examples that use the [Jest](https://jestjs.io) framework, see [Unit testing in Office Add-ins - Examples](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#examples). Below are some examples using other frameworks.
 
 ### Testing with Mocha for Excel platform
 
@@ -135,57 +67,6 @@ describe(`Run`, function () {
 });
 ```
 
-### Testing with Jest for Word platform
-
-```Javascript
-import { OfficeMockObject } from "office-addin-mock";
-
-async function run() {
-  return Word.run(async (context) => {
-    // insert a paragraph at the end of the document.
-    const paragraph = context.document.body.insertParagraph("Hello World", Word.InsertLocation.end);
-
-    // change the paragraph color to blue.
-    paragraph.font.color = "blue";
-
-    await context.sync();
-  });
-}
-
-const WordMockData = {
-  context: {
-    document: {
-      body: {
-        paragraph: {
-          font: {},
-          text: "",
-        },
-        insertParagraph: function (paragraphText, insertLocation) {
-          this.paragraph.text = paragraphText;
-          this.paragraph.insertLocation = insertLocation;
-          return this.paragraph;
-        },
-      },
-    },
-  },
-  InsertLocation: {
-    end: "End",
-  },
-  run: async function(callback) {
-    await callback(this.context);
-  },
-};
-
-test("Word", async function () {
-  const wordMock = new officeAddinMock.OfficeMockObject(WordMockData);
-  global.Word = wordMock;
-
-  await run();
-
-  expect(wordMock.context.document.body.paragraph.font.color).toBe("blue");
-});
-```
-
 ### Testing a function with Mocha for PowerPoint platform
 
 ```Javascript
@@ -223,4 +104,76 @@ describe(`PowerPoint`, function () {
   });
 });
 
+```
+
+## Reference
+
+### OfficeMockObject class
+
+Represents a mock Office object.
+
+#### Constructor
+
+The object parameter provides initial values for the mock object. (Optional)
+
+```
+constructor(object?: Object); 
+```
+
+#### Methods
+
+##### addMockFunction
+
+Adds a function to OfficeMockObject.
+
+- The `methodName` parameter is the name of the function to be added.
+- The `methodBody` parameter is the function to be added to the object. A blank function will be added if no argument is provided. (Optional)
+
+```
+addMockFunction(methodName: string, methodBody?: Function): void;
+```
+
+For more information about the use of this method, see [Adding mock objects, properties, and methods dynamically when testing](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#adding-mock-objects-properties-and-methods-dynamically-when-testing)].
+
+##### addMock
+
+Adds a property to a OfficeMockObject whose value is another OfficeMockObject.
+
+- The `objectName` parameter is the property name.
+
+```
+addMock(objectName: string): void; 
+```
+
+For more information about the use of this method, see [Adding mock objects, properties, and methods dynamically when testing](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#adding-mock-objects-properties-and-methods-dynamically-when-testing)].
+
+##### load
+
+Mock implementation of the `load` method in the application-specific Office.js APIs.
+
+- The `propertyArgument` specifies the properties that should be loaded.  
+
+```
+load(propertyArgument: string | string[] | Object): void;
+```
+
+##### setMock
+
+Adds a property of any type to OfficeMockObject.
+
+- The `propertyName` parameter is the name of the property to be added.
+- The `value` parameter is the value the propery is set to.
+
+```
+setMock(propertyName: string, value: unknown): void
+```
+
+For more information about the use of this method, see [Adding mock objects, properties, and methods dynamically when testing](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#adding-mock-objects-properties-and-methods-dynamically-when-testing)].
+
+##### sync
+
+Mock replacement for the `sync` method in the application-specific Office.js APIs.
+
+```
+sync(): void;
 ```
