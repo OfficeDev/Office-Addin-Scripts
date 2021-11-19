@@ -151,30 +151,62 @@ export class OfficeMockObject {
   private parseObjectPropertyIntoArray(objectData: ObjectData): string[] {
     let composedProperties: string[] = [];
 
-    Object.keys(objectData).forEach((propertyName: string) => {
-      const property: OfficeMockObject | undefined =
-        this.properties.get(propertyName);
-
-      if (property) {
-        const propertyValue: ObjectData = objectData[propertyName];
-        if (property.isObject) {
-          const composedProperty: string[] =
-            property.parseObjectPropertyIntoArray(propertyValue);
-          if (composedProperty.length !== 0) {
-            composedProperties = composedProperties.concat(
-              propertyName + "/" + composedProperty
-            );
+    if (Array.isArray(objectData)) {
+      objectData.forEach((property: any) => {
+        const propertyName = property;
+        if (property) {
+          const propertyValue: ObjectData = objectData[propertyName];
+          if (property.isObject) {
+            const composedProperty: string[] =
+              property.parseObjectPropertyIntoArray(propertyValue);
+            if (composedProperty.length !== 0) {
+              composedProperties = composedProperties.concat(
+                propertyName + "/" + composedProperty
+              );
+            }
+          } else if (propertyValue) {
+            composedProperties = composedProperties.concat(propertyName);
           }
-        } else if (propertyValue) {
-          composedProperties = composedProperties.concat(propertyName);
+        } else {
+          throw new Error(
+            `Property ${propertyName} needs to be present in object model before load is called.`
+          );
         }
-      } else {
-        throw new Error(
-          `Property ${propertyName} needs to be present in object model before load is called.`
-        );
-      }
+      });
+      return composedProperties;
+    }
+
+    Object.keys(objectData).forEach((propertyName: string) => {
+      composedProperties = this.aux(objectData, propertyName);
     });
 
+    return composedProperties;
+  }
+
+  private aux(objectData: ObjectData, propertyName: string): string[] {
+    let composedProperties: string[] = [];
+
+    const property: OfficeMockObject | undefined =
+      this.properties.get(propertyName);
+
+    if (property) {
+      const propertyValue: ObjectData = objectData[propertyName];
+      if (property.isObject) {
+        const composedProperty: string[] =
+          property.parseObjectPropertyIntoArray(propertyValue);
+        if (composedProperty.length !== 0) {
+          composedProperties = composedProperties.concat(
+            propertyName + "/" + composedProperty
+          );
+        }
+      } else if (propertyValue) {
+        composedProperties = composedProperties.concat(propertyName);
+      }
+    } else {
+      throw new Error(
+        `Property ${propertyName} needs to be present in object model before load is called.`
+      );
+    }
     return composedProperties;
   }
 
