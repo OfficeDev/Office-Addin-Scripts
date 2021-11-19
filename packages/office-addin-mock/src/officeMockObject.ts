@@ -47,6 +47,7 @@ export class OfficeMockObject {
       properties = propertyArgument;
     } else {
       properties = this.parseObjectPropertyIntoArray(propertyArgument);
+      console.log(`Parse returned ${properties}`);
     }
 
     properties.forEach((property: string) => {
@@ -151,42 +152,37 @@ export class OfficeMockObject {
   private parseObjectPropertyIntoArray(objectData: ObjectData): string[] {
     let composedProperties: string[] = [];
 
-    if (Array.isArray(objectData)) {
-      objectData.forEach((property: any) => {
-        composedProperties = [];
-      });
-    } else {
-      Object.keys(objectData).forEach((propertyName: string) => {
-        composedProperties = this.aux(objectData, propertyName);
-      });
-    }
-    return composedProperties;
-  }
+    Object.keys(objectData).forEach((propertyName: string) => {
+      const property: OfficeMockObject | undefined =
+        this.properties.get(propertyName);
 
-  private aux(objectData: ObjectData, propertyName: string): string[] {
-    let composedProperties: string[] = [];
-
-    const property: OfficeMockObject | undefined =
-      this.properties.get(propertyName);
-
-    if (property) {
-      const propertyValue: ObjectData = objectData[propertyName];
-      if (property.isObject) {
-        const composedProperty: string[] =
-          property.parseObjectPropertyIntoArray(propertyValue);
-        if (composedProperty.length !== 0) {
-          composedProperties = composedProperties.concat(
-            propertyName + "/" + composedProperty
-          );
+      if (property) {
+        const propertyValue: ObjectData = objectData[propertyName];
+        if (property.isObject) {
+          const composedProperty: string[] =
+            property.parseObjectPropertyIntoArray(propertyValue);
+          if (composedProperty.length !== 0) {
+            // Test if it is number
+            if (/^-?\d+$/.test(propertyName)) {
+              composedProperties = composedProperties.concat(composedProperty);
+            } else {
+              composedProperty.forEach((prop: string) => {
+                composedProperties = composedProperties.concat(
+                  propertyName + "/" + prop
+                );
+              })
+            }
+          }
+        } else if (propertyValue) {
+          composedProperties = composedProperties.concat(propertyName);
         }
-      } else if (propertyValue) {
-        composedProperties = composedProperties.concat(propertyName);
+      } else {
+        throw new Error(
+          `Property ${propertyName} needs to be present in object model before load is called.`
+        );
       }
-    } else {
-      throw new Error(
-        `Property ${propertyName} needs to be present in object model before load is called.`
-      );
-    }
+    });
+
     return composedProperties;
   }
 

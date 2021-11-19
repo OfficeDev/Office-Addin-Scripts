@@ -206,23 +206,16 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(contextMock.workbook.range.format.fill.color, "green");
     });
     it("Loading an array inside an Object", async function() {
-      const WordFields = [ { text: 'A' }, {text: 'B' } ];
-      const MockData = {
-        context: {
-          items: WordFields,
-        },
-        run: async function (callback: any) {
-          return await callback(this.context);
-        },
+      const ContextMockData = {
+        items: [ { text: 'A' }, {text2: 'B' } ],
       };
   
-      const WordMock = new OfficeMockObject(MockData) as any;
-      await WordMock.run((context: any) => {
-       context.load( { items: [ { text: 'A' }, { text: 'B' } ] } );
+      const context = new OfficeMockObject(ContextMockData) as any;
+      // console.log(context);
+       context.load( { items: [ { text: 'A' }, { text2: 'B' } ] } );
        context.sync();
       //  assert.strictEqual(context.items[0].text, "A");
-      //  assert.strictEqual(context.items[0].text, "B");
-      });
+      //  assert.strictEqual(context.items[0].text2, "B");
     });
   });
 });
