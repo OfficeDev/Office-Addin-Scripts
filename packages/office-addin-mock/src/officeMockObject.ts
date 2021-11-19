@@ -29,6 +29,10 @@ export class OfficeMockObject {
    * @param objectName Object name of the object to be added
    */
   addMock(objectName: string) {
+    if (this[objectName] !== undefined) {
+      throw new Error("Mock object already exists");
+    }
+
     const officeMockObject = new OfficeMockObject();
     officeMockObject.isObject = true;
     this.properties.set(objectName, officeMockObject);

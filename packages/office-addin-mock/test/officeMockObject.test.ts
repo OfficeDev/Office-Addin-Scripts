@@ -113,6 +113,16 @@ describe("Test OfficeMockObject class", function() {
       officeMock.range.font.color = "blue";
       assert.strictEqual(officeMock.range.font.color, "blue");
     });
+    it("Calling addMock multiple times", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+      assert.throws(() => officeMock.addMock("range"));
+
+      officeMock.addMock("notAnExistingObject");
+      assert.throws(() => officeMock.addMock("notAnExistingObject"));
+
+      officeMock.notAnExistingObject.color = "blue";
+      assert.strictEqual(officeMock.notAnExistingObject.color, "blue");
+    });
   });
 
   describe("Writting values already present at object model", function() {
