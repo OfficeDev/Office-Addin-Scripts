@@ -209,15 +209,6 @@ describe("Test OfficeMockObject class", function() {
       const WordFields = [ { text: 'A' }, {text: 'B' } ];
       const MockData = {
         context: {
-          document: {
-            body: {
-              search: function () {
-                return {
-                  items: WordFields,
-                };
-              },
-            },
-          },
           items: WordFields,
         },
         run: async function (callback: any) {
@@ -228,6 +219,9 @@ describe("Test OfficeMockObject class", function() {
       const WordMock = new OfficeMockObject(MockData) as any;
       await WordMock.run((context: any) => {
        context.load( { items: [ { text: 'A' }, { text: 'B' } ] } );
+       context.sync();
+      //  assert.strictEqual(context.items[0].text, "A");
+      //  assert.strictEqual(context.items[0].text, "B");
       });
     });
   });

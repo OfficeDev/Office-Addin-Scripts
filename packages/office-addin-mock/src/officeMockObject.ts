@@ -153,33 +153,13 @@ export class OfficeMockObject {
 
     if (Array.isArray(objectData)) {
       objectData.forEach((property: any) => {
-        const propertyName = property;
-        if (property) {
-          const propertyValue: ObjectData = objectData[propertyName];
-          if (property.isObject) {
-            const composedProperty: string[] =
-              property.parseObjectPropertyIntoArray(propertyValue);
-            if (composedProperty.length !== 0) {
-              composedProperties = composedProperties.concat(
-                propertyName + "/" + composedProperty
-              );
-            }
-          } else if (propertyValue) {
-            composedProperties = composedProperties.concat(propertyName);
-          }
-        } else {
-          throw new Error(
-            `Property ${propertyName} needs to be present in object model before load is called.`
-          );
-        }
+        composedProperties = [];
       });
-      return composedProperties;
+    } else {
+      Object.keys(objectData).forEach((propertyName: string) => {
+        composedProperties = this.aux(objectData, propertyName);
+      });
     }
-
-    Object.keys(objectData).forEach((propertyName: string) => {
-      composedProperties = this.aux(objectData, propertyName);
-    });
-
     return composedProperties;
   }
 
