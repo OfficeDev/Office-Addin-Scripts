@@ -13,8 +13,7 @@
         "types": [
             "node",
             "ws",
-            "node-fetch",
-            "es6-promise"
+            "node-fetch"
         ]
     },
     "include": [
