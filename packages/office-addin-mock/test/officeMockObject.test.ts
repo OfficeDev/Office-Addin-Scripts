@@ -209,7 +209,6 @@ describe("Test OfficeMockObject class", function() {
       const ContextMockData = {
         items: [ "text", "text2" ],
       };
-  
       const context = new OfficeMockObject(ContextMockData) as any;
       context.load("items");
       await context.sync();
@@ -222,17 +221,11 @@ describe("Test OfficeMockObject class", function() {
       };
   
       const context = new OfficeMockObject(ContextMockData) as any;
-      // console.log(context);
-      // console.log(context["items"]);
+      context.load( { items: [ { text: 'A' }, { text2: 'B' } ] } );
+      await context.sync();
 
-       context.load( { items: [ { text: 'A' }, { text2: 'B' } ] } );
-      //  console.log(context["items"]);
-
-       context.sync();
-      //  console.log(context["items"]);
-
-        // assert.strictEqual(context.items[0].text, "A");
-      //  assert.strictEqual(context.items[0].text2, "B");
+      assert.strictEqual(context.items[0].text, "A");
+      assert.strictEqual(context.items[1].text2, "B");
     });
   });
 });

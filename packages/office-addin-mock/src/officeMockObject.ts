@@ -47,7 +47,6 @@ export class OfficeMockObject {
       properties = propertyArgument;
     } else {
       properties = this.parseObjectPropertyIntoArray(propertyArgument);
-      console.log(`Parse returned ${properties}`);
     }
 
     properties.forEach((property: string) => {
@@ -76,18 +75,11 @@ export class OfficeMockObject {
    */
   async sync() {
     this.properties.forEach(async (property: OfficeMockObject, key: string) => {
-      console.log(`On SYNC with propertyName = ${key} with property = `);
-      console.log(property);
       await property.sync();
       this.updatePropertyCall(key);
     });
     if (this.loaded) {
-      console.log("On the if with this = ");
-      console.log(this);
-      console.log(this.value);
       this.value = this.valueBeforeLoaded;
-      console.log(this.value);
-      console.log("End of if");
     }
   }
 
@@ -170,16 +162,11 @@ export class OfficeMockObject {
           const composedProperty: string[] =
             property.parseObjectPropertyIntoArray(propertyValue);
           if (composedProperty.length !== 0) {
-            // Test if it is number
-            if (/^-?\d+$/.test(propertyName)) {
-              composedProperties = composedProperties.concat(composedProperty);
-            } else {
-              composedProperty.forEach((prop: string) => {
-                composedProperties = composedProperties.concat(
-                  propertyName + "/" + prop
-                );
-              });
-            }
+            composedProperty.forEach((prop: string) => {
+              composedProperties = composedProperties.concat(
+                propertyName + "/" + prop
+              );
+            });
           }
         } else if (propertyValue) {
           composedProperties = composedProperties.concat(propertyName);
@@ -199,35 +186,21 @@ export class OfficeMockObject {
       const property = objectData[propertyName];
       const dataType: string = typeof property;
 
-      // if (Array.isArray(property)) {
-      //   console.log(`Is object with an array inside. propertyName = ${propertyName}`);
-      //   console.log(property);
-
-
-
-      // } else 
       if (dataType === "object" && !Array.isArray(property)) {
         this.addMock(propertyName);
         this[propertyName].populate(property);
       } else if (dataType === "function") {
         this.addMockFunction(propertyName, property);
       } else {
-        if (Array.isArray(property)) {
-          console.log(`Is object with an array inside. propertyName = ${propertyName}`);
-          console.log(property);
-        }
         this.setMock(propertyName, property);
       }
     });
   }
 
   private resetValue(value: unknown) {
-    console.log("On reset value with value = ");
-    console.log(value);
     this.value = PossibleErrors.notLoaded;
     this.valueBeforeLoaded = value;
     this.loaded = false;
-    console.log(this.valueBeforeLoaded);
   }
 
   private updatePropertyCall(propertyName: string) {
