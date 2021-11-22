@@ -66,7 +66,6 @@ export class OfficeMockObject {
       this.properties.set(propertyName, officeMockObject);
     }
     this.properties.get(propertyName)?.resetValue(value);
-
     this[propertyName] = this.properties.get(propertyName)?.value;
   }
 
