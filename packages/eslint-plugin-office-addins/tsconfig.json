@@ -13,8 +13,7 @@
         "strict": true,
         "target": "es6",
         "types": [
-            "node",
-            "es6-promise"
+            "node"
         ]
     },
     "include": [
