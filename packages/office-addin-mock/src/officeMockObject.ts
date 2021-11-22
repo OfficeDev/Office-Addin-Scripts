@@ -161,9 +161,11 @@ export class OfficeMockObject {
           const composedProperty: string[] =
             property.parseObjectPropertyIntoArray(propertyValue);
           if (composedProperty.length !== 0) {
-            composedProperties = composedProperties.concat(
-              propertyName + "/" + composedProperty
-            );
+            composedProperty.forEach((prop: string) => {
+              composedProperties = composedProperties.concat(
+                propertyName + "/" + prop
+              );
+            });
           }
         } else if (propertyValue) {
           composedProperties = composedProperties.concat(propertyName);
@@ -179,16 +181,17 @@ export class OfficeMockObject {
   }
 
   private populate(objectData: ObjectData) {
-    Object.keys(objectData).forEach((property: string) => {
-      const dataType = typeof objectData[property];
+    Object.keys(objectData).forEach((propertyName: string) => {
+      const property = objectData[propertyName];
+      const dataType: string = typeof property;
 
-      if (dataType === "object") {
-        this.addMock(property);
-        this[property].populate(objectData[property]);
+      if (dataType === "object" && !Array.isArray(property)) {
+        this.addMock(propertyName);
+        this[propertyName].populate(property);
       } else if (dataType === "function") {
-        this.addMockFunction(property, objectData[property]);
+        this.addMockFunction(propertyName, property);
       } else {
-        this.setMock(property, objectData[property]);
+        this.setMock(propertyName, property);
       }
     });
   }
