@@ -12,8 +12,7 @@
         "alwaysStrict": false,
         "noImplicitUseStrict": true,
         "types": [
-            "node",
-            "es6-promise"
+            "node"
         ]
     },
     "include": [

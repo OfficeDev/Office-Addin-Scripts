@@ -27,8 +27,6 @@
     "readline-sync": "^1.4.9"
   },
   "devDependencies": {
-    "@types/applicationinsights": "^0.20.0",
-    "@types/es6-promise": "3.3.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^14.17.2",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
