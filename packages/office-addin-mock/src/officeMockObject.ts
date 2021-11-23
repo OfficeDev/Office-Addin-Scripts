@@ -18,7 +18,7 @@ export class OfficeMockObject {
    * Adds a function to OfficeMockObject. The function can be accessed by simply calling `this.methodName`
    * @param methodName Method name of the function to be added
    * @param methodBody Function to be added to the object. A blank function will be added if no argument is provided (Optional)
-   * @deprecated Use setProperty instead
+   * @deprecated Use `set` instead
    */
   addMockFunction(methodName: string, methodBody?: Function) {
     this[methodName] = methodBody ? methodBody : function () {};
@@ -63,7 +63,7 @@ export class OfficeMockObject {
    * Adds a property of any type to OfficeMockObject
    * @param propertyName Property name to the property to be added
    * @param value Value this added property will have
-   * @deprecated Use setProperty instead
+   * @deprecated Use `set` instead
    */
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
@@ -186,9 +186,11 @@ export class OfficeMockObject {
           const composedProperty: string[] =
             property.parseObjectPropertyIntoArray(propertyValue);
           if (composedProperty.length !== 0) {
-            composedProperties = composedProperties.concat(
-              propertyName + "/" + composedProperty
-            );
+            composedProperty.forEach((prop: string) => {
+              composedProperties = composedProperties.concat(
+                propertyName + "/" + prop
+              );
+            });
           }
         } else if (propertyValue) {
           composedProperties = composedProperties.concat(propertyName);
@@ -204,14 +206,15 @@ export class OfficeMockObject {
   }
 
   private populate(objectData: ObjectData) {
-    Object.keys(objectData).forEach((property: string) => {
-      const dataType = typeof objectData[property];
+    Object.keys(objectData).forEach((propertyName: string) => {
+      const property = objectData[propertyName];
+      const dataType: string = typeof property;
 
-      if (dataType === "object") {
-        this.addMock(property);
-        this[property].populate(objectData[property]);
+      if (dataType === "object" && !Array.isArray(property)) {
+        this.addMock(propertyName);
+        this[propertyName].populate(property);
       } else {
-        this.set(property, objectData[property]);
+        this.set(propertyName, property);
       }
     });
   }
