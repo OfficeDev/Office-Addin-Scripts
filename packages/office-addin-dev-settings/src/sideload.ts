@@ -54,23 +54,28 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     throw new ExpectedError("The manifest contains an unsupported OfficeApp xsi:type.");
   }
 
-  const templatePath = document && document !== "" ? path.resolve(document) : getTemplatePath(app, addInType);
+  const documentWasProvided = document && document !== "";
+  const templatePath = documentWasProvided ? path.resolve(document) : getTemplatePath(app, addInType);
 
   if (!templatePath) {
     throw new ExpectedError(`Sideload is not supported for apptype: ${addInType}.`);
   }
 
   const templateBuffer = await readFileAsync(templatePath);
-  const zip = await jszip.loadAsync(templateBuffer);
-  const webExtensionPath = getWebExtensionPath(app, addInType);
-
-  if (!webExtensionPath) {
-    throw new ExpectedError("Don't know the webextension path.");
-  }
+  const zip: jszip = await jszip.loadAsync(templateBuffer);
 
   const appName = getOfficeAppName(app);
   const extension = path.extname(templatePath);
-  const pathToWrite = makePathUnique(path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`), true);
+  const pathToWrite: string = makePathUnique(path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`), true);
+
+  if (documentWasProvided) {
+    return await writeZipFile(zip, pathToWrite);
+  }
+
+  const webExtensionPath = getWebExtensionPath(app, addInType);
+  if (!webExtensionPath) {
+    throw new ExpectedError("Don't know the webextension path.");
+  }
 
   // replace the placeholder id and version
   const zipFile = zip.file(webExtensionPath);
@@ -82,16 +87,7 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     .replace(/1.0.0.0/g, manifest.version);
   zip.file(webExtensionPath, webExtensionXml);
 
-  // Write the file
-  await new Promise((resolve, reject) => {
-    zip
-      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-      .pipe(fs.createWriteStream(pathToWrite))
-      .on("error", reject)
-      .on("finish", resolve);
-  });
-
-  return pathToWrite;
+  return await writeZipFile(zip, pathToWrite);
 }
 
 /**
@@ -379,4 +375,17 @@ export async function sideloadAddIn(
     usageDataObject.reportException("sideloadAddIn()", err);
     throw err;
   }
+}
+
+async function writeZipFile(zip: jszip, pathToWrite: string): Promise<string> {
+    // Write the file
+    await new Promise((resolve, reject) => {
+      zip
+        .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+        .pipe(fs.createWriteStream(pathToWrite))
+        .on("error", reject)
+        .on("finish", resolve);
+    });
+
+    return pathToWrite;
 }
