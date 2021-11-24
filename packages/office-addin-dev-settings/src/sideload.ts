@@ -66,7 +66,10 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
 
   const appName = getOfficeAppName(app);
   const extension = path.extname(templatePath);
-  const pathToWrite: string = makePathUnique(path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`), true);
+  const pathToWrite: string = makePathUnique(
+    path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`),
+    true
+  );
 
   if (documentWasProvided) {
     return await writeZipFile(zip, pathToWrite);
@@ -378,14 +381,14 @@ export async function sideloadAddIn(
 }
 
 async function writeZipFile(zip: jszip, pathToWrite: string): Promise<string> {
-    // Write the file
-    await new Promise((resolve, reject) => {
-      zip
-        .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-        .pipe(fs.createWriteStream(pathToWrite))
-        .on("error", reject)
-        .on("finish", resolve);
-    });
+  // Write the file
+  await new Promise((resolve, reject) => {
+    zip
+      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+      .pipe(fs.createWriteStream(pathToWrite))
+      .on("error", reject)
+      .on("finish", resolve);
+  });
 
-    return pathToWrite;
+  return pathToWrite;
 }
