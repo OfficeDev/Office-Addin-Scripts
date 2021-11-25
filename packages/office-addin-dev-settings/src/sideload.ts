@@ -71,24 +71,22 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     true
   );
 
-  if (documentWasProvided) {
-    return await writeZipFile(zip, pathToWrite);
-  }
+  if (!documentWasProvided) {
+    const webExtensionPath = getWebExtensionPath(app, addInType);
+    if (!webExtensionPath) {
+      throw new ExpectedError("Don't know the webextension path.");
+    }
 
-  const webExtensionPath = getWebExtensionPath(app, addInType);
-  if (!webExtensionPath) {
-    throw new ExpectedError("Don't know the webextension path.");
+    // replace the placeholder id and version
+    const zipFile = zip.file(webExtensionPath);
+    if (!zipFile) {
+      throw new ExpectedError("webextension was not found.");
+    }
+    const webExtensionXml = (await zipFile.async("text"))
+      .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
+      .replace(/1.0.0.0/g, manifest.version);
+    zip.file(webExtensionPath, webExtensionXml);
   }
-
-  // replace the placeholder id and version
-  const zipFile = zip.file(webExtensionPath);
-  if (!zipFile) {
-    throw new ExpectedError("webextension was not found.");
-  }
-  const webExtensionXml = (await zipFile.async("text"))
-    .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
-    .replace(/1.0.0.0/g, manifest.version);
-  zip.file(webExtensionPath, webExtensionXml);
 
   return await writeZipFile(zip, pathToWrite);
 }
