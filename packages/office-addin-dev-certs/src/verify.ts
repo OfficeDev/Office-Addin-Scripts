@@ -18,7 +18,8 @@ function getVerifyCommand(): string {
       return `powershell -ExecutionPolicy Bypass -File "${script}" "${defaults.certificateName}"`;
     }
     case "darwin": // macOS
-      return `security find-certificate -c '${defaults.certificateName}' -p | openssl x509 -checkend 86400 -noout`;
+      const script = path.resolve(__dirname, "../scripts/verify.sh");
+      return `sh ${script} ${defaults.certificateName}`;
     case "linux":
       return `[ -f /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} ] && openssl x509 -in /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} -checkend 86400 -noout`;
     default:
@@ -38,6 +39,7 @@ export function isCaCertificateInstalled(): boolean {
     }
   } catch (error) {
     // Mac security command throws error if the certifcate is not-found/expired
+    console.log(`Error: ${error}`);
   }
 
   return false;
