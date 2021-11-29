@@ -37,7 +37,7 @@ export function isCaCertificateInstalled(): boolean {
       return true; 
     }
   } catch (error) {
-    // Some commands throw errora if the certifcate is not found or expired
+    // Some commands throw errors if the certifcate is not found or expired
   }
 
   return false;
