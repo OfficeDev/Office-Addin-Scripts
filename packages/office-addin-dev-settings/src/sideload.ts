@@ -88,7 +88,16 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     zip.file(webExtensionPath, webExtensionXml);
   }
 
-  return await writeZipFile(zip, pathToWrite);
+  // Write the file
+  await new Promise((resolve, reject) => {
+    zip
+      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+      .pipe(fs.createWriteStream(pathToWrite))
+      .on("error", reject)
+      .on("finish", resolve);
+  });
+
+  return pathToWrite;
 }
 
 /**
@@ -376,17 +385,4 @@ export async function sideloadAddIn(
     usageDataObject.reportException("sideloadAddIn()", err);
     throw err;
   }
-}
-
-async function writeZipFile(zip: jszip, pathToWrite: string): Promise<string> {
-  // Write the file
-  await new Promise((resolve, reject) => {
-    zip
-      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-      .pipe(fs.createWriteStream(pathToWrite))
-      .on("error", reject)
-      .on("finish", resolve);
-  });
-
-  return pathToWrite;
 }
