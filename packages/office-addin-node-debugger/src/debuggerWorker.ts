@@ -11,11 +11,14 @@
 /* global __fbBatchedBridge, self, importScripts, postMessage, onmessage: true */
 /* eslint no-unused-vars: 0 */
 
-import * as fetch from 'node-fetch';
-declare var __fbBatchedBridge: any;
-declare var __platformBundles: any; 
+import * as fetch from "node-fetch";
 
-process.on('message', message => {
+/* global global, process, console */
+
+declare var __fbBatchedBridge: any;
+declare var __platformBundles: any;
+
+process.on("message", (message) => {
   let shouldQueueMessages = false;
   const messageQueue: { (): void }[] = [];
 
@@ -38,9 +41,10 @@ process.on('message', message => {
       shouldQueueMessages = true;
 
       function evalJS(js: string): void {
+        /* eslint-disable no-eval */
         try {
-          eval(js.replace(/this\["webpackHotUpdate"\]/g, 'self["webpackHotUpdate"]').replace('GLOBAL', 'global'));
-        } catch (error) {
+          eval(js.replace(/this\["webpackHotUpdate"\]/g, 'self["webpackHotUpdate"]').replace("GLOBAL", "global"));
+        } catch (error: any) {
           console.log(`Error Message: ${error.message}`);
           console.log(`Error stack: ${error.stack}`);
         } finally {
@@ -52,25 +56,25 @@ process.on('message', message => {
       }
 
       // load platform bundles
-      if (__platformBundles != undefined) {
-        const platformBundles = __platformBundles.concat();
-        __platformBundles = null;
+      if ((global as any).__platformBundles != undefined) {
+        const platformBundles = (global as any).__platformBundles.concat();
+        delete (global as any).__platformBundles;
         for (const [index, pb] of platformBundles.entries()) {
           //console.log(`PB start ${index + 1}/${platformBundles.length}`);
           eval(pb);
           //console.log(`PB done  ${index + 1}/${platformBundles.length}`);
         }
       }
-      
+
       fetch
         .default(message.url)
-        .then(resp => resp.text())
+        .then((resp) => resp.text())
         .then(evalJS);
-    }
+    },
   };
 
   const processMessage = () => {
-    const sendReply = function(result: any, error?: any) {
+    const sendReply = function (result: any, error?: any) {
       if (process.send) {
         process.send({ replyID: message.id, result, error });
       }
@@ -87,7 +91,7 @@ process.on('message', message => {
     // Other methods get called on the bridge
     let returnValue = [[], [], [], 0];
     try {
-      if (typeof __fbBatchedBridge === 'object') {
+      if (typeof __fbBatchedBridge === "object") {
         returnValue = __fbBatchedBridge[message.method].apply(null, message.arguments);
       }
     } finally {

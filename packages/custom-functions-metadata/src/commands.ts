@@ -1,25 +1,33 @@
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
-import * as metadata from "./custom-functions-metadata";
+import { writeFileSync } from "fs";
+import { logErrorMessage } from "office-addin-cli";
+import { generateCustomFunctionsMetadata } from "./generate";
 
-export async function generate(inputFile: string, outputFile: string) {
+/* global console */
+
+export async function generate(inputPath: string, outputPath: string) {
   try {
-      if (!inputFile) {
-        throw new Error("You need to provide the path to the source file for custom functions.");
+    if (!inputPath) {
+      throw new Error("You need to provide the path to the source file for custom functions.");
+    }
+    const results = await generateCustomFunctionsMetadata(inputPath);
+    if (results.errors.length > 0) {
+      console.error("Errors found:");
+      results.errors.forEach((err) => console.log(err));
+    } else {
+      if (outputPath) {
+        try {
+          writeFileSync(outputPath, results.metadataJson);
+        } catch (err) {
+          throw new Error(`Cannot write to file: ${outputPath}.`);
+        }
+      } else {
+        console.log(results.metadataJson);
       }
-      if (!outputFile) {
-        throw new Error("You need to provide the path to the output file for the custom functions metadata.");
-      }
-      console.log("Begin json generation");
-      await metadata.generate(inputFile, outputFile);
+    }
   } catch (err) {
     logErrorMessage(err);
   }
-}
-
-function logErrorMessage(err: any) {
-  console.error(`Error: ${err instanceof Error ? err.message : err}`);
 }

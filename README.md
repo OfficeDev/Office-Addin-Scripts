@@ -20,21 +20,53 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   A WebPack plugin which generates the metadata for custom functions.
 
+* [office-addin-cli](packages/office-addin-cli/README.md)
+
+  A command-line interface for Office Add-ins.
+
 * [office-addin-debugging](packages/office-addin-debugging/README.md)
 
   This package provides the orchestration of components related to debugging Office Add-ins. When debugging is started, it will ensure that the dev-server is running, that dev settings are configured for debugging, and will register and sideload the Office Add-in. When debugging is stopped, it will unregister and shutdown components.
   
+* [office-addin-dev-certs](packages/office-addin-dev-certs/README.md)
+
+  This package can be used to manage certificates for development server using https://localhost. 
+
 * [office-addin-dev-settings](packages/office-addin-dev-settings/README.md)
 
-  This package can be used to configure developer settings for an Office Add-in. 
+  This package can be used to configure developer settings for an Office Add-in.
+
+* [office-addin-lint](packages/office-addin-lint/README.md)
+
+  This package can be used to ensure code quality with lint rules and standardize code formatting.
 
 * [office-addin-manifest](packages/office-addin-manifest/README.md)
 
   This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
 
+* [office-addin-mock](packages/office-addin-mock/README.md)
+
+  This package provides a way to unit test the Office JavaScript API.
+
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
-  This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application. 
+  This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
+
+* [office-addin-sso](packages/office-addin-sso/README.md)
+
+  This package provides the ability to register an application in Azure Active Directory and infrastructure for implementing single sign-on (SSO) taskpane add-ins.
+
+* [office-addin-test-helpers](packages/office-addin-test-helpers/README.md)
+
+  This package provides tools that make validating your Office Add-in easier. You can use it with the office-addin-test-server package and the Mocha test framework (or another testing framework of your choice).
+
+* [office-addin-test-server](packages/office-addin-test-server/README.md)
+
+  This package provides a framework for testing Office task pane add-ins by allowing add-ins to send results to a test server. The results can then be consumed and used by tests to validate that the add-in is working as expected.
+
+* [office-addin-usage-data](packages/office-addin-usage-data/README.md)
+
+  This package allows for sending usage data event and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights)
 
 ## Requirements
 
@@ -73,6 +105,40 @@ This project welcomes contributions and suggestions.  Most contributions require
 
 When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
+### Quickstart with Git
+
+1. Install [Git](https://git-scm.com/downloads), [NodeJs](https://nodejs.org/en/download/) and [VS Code](https://code.visualstudio.com/Download) if you haven’t ready.
+2. Create a GitHub account if you don’t already have one.
+3. Go to [https://github.com/OfficeDev/Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts)
+4. Create a fork of OfficeDev/Office-Addin-Scripts in GitHub
+5. In a command prompt:
+    1. ```git clone https://github.com/OfficeDev/Office-Addin-Scripts```
+    2. ```cd Office-Addin-Scripts```
+    3. ```git remote add {username} https://github.com/{username}/Office-Addin-Scripts.git``` (where “{username}” is your GitHub user name)
+    4. ```git checkout -b my-branch-name``` (recommend using all lowercase with hyphens for branch names)
+6. Make your desired changes
+7. Commit your changes and push the fork you created
+    1. git commit
+    2. git push -u {username} {branch-name}
+8. Go to [Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts) and create a pull request.
+
+## Feedback
+
+* Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/office-addin-scripts).
+
+* [File an Issue](https://github.com/OfficeDev/Office-Addin-Scripts/issues).
+
+## Reporting Security Issues
+
+Security issues and bugs should be reported privately, via email, to the Microsoft Security
+Response Center (MSRC) at [secure@microsoft.com](mailto:secure@microsoft.com). You should
+receive a response within 24 hours. If for some reason you do not, please follow up via
+email to ensure we received your original message. Further information, including the
+[MSRC PGP](https://technet.microsoft.com/en-us/security/dn606155) key, can be found in
+the [Security TechCenter](https://technet.microsoft.com/en-us/security/default).
+
+## Code of Conduct
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
@@ -80,3 +146,9 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 ## License
 
 Code licensed under the [MIT License](https://github.com/OfficeDev/Office-Addin-Scripts/blob/master/LICENSE).
+
+## Data usage
+
+The Office Add-in CLI tools collect anonymized usage data and send it to Microsoft. This allows us to understand how the tools are used and how to improve them.
+
+For more details on what we collect and how to turn it off, see our [Data usage notice](usage-data.md)

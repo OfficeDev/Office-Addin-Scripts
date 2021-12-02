@@ -5,20 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Command Line: Info",
+      "name": "Command Line: info",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/manifest.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "info",
-        "${workspaceFolder}\\test\\manifests\\ExcelCustomFunctions.manifest.xml"
+        "${workspaceFolder}/test/manifests/Office-Addin-TaskPane.manifest.xml"
       ]
     },
     {
-      "name": "Command Line: Modify",
+      "name": "Command Line: modify",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/lib/manifest.js",
+      "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "modify",
         "${workspaceFolder}\\test\\manifests\\manifest.xml",
@@ -29,13 +29,23 @@
       ]
     },
     {
+      "name": "Command Line: validate",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [
+        "validate",
+        "${workspaceFolder}/../../../office-addin-validator/manifest-to-test/valid_excel.xml"
+      ]
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Debug Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "-u",
-        "tdd",
+        "bdd",
         "--timeout",
         "999999",
         "--colors",

@@ -1,8 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as fs from "fs";
 import * as util from "util";
-import * as uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "./xml";
+import { usageDataObject } from "./defaults";
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 type Xml = xmlMethods.Xml;
@@ -31,6 +35,44 @@ export class ManifestInfo {
   public version?: string;
 
   public defaultSettings?: DefaultSettings;
+}
+
+export namespace OfficeAddinManifest {
+  export async function modifyManifestFile(
+    manifestPath: string,
+    guid?: string,
+    displayName?: string
+  ): Promise<ManifestInfo> {
+    let manifestData: ManifestInfo = {};
+    if (manifestPath) {
+      if (guid === undefined && displayName === undefined) {
+        throw new Error("You need to specify something to change in the manifest.");
+      } else {
+        try {
+          manifestData = await modifyManifestXml(manifestPath, guid, displayName);
+          await writeManifestData(manifestPath, manifestData);
+          let output = await readManifestFile(manifestPath);
+          usageDataObject.reportSuccess("modifyManifestFile()");
+          return output;
+        } catch (err: any) {
+          usageDataObject.reportException("modifyManifestFile()", err);
+          throw err;
+        }
+      }
+    } else {
+      throw new Error(`Please provide the path to the manifest file.`);
+    }
+  }
+
+  export async function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
+    if (manifestPath) {
+      const xml = await readXmlFromManifestFile(manifestPath);
+      const manifest: ManifestInfo = parseManifest(xml);
+      return manifest;
+    } else {
+      throw new Error(`Please provide the path to the manifest file.`);
+    }
+  }
 }
 
 function parseManifest(xml: Xml): ManifestInfo {
@@ -70,21 +112,6 @@ function parseManifest(xml: Xml): ManifestInfo {
   return manifest;
 }
 
-export async function modifyManifestFile(manifestPath: string, guid?: string, displayName?: string): Promise<ManifestInfo> {
-  let manifestData: ManifestInfo = {};
-  if (manifestPath) {
-    if (guid === undefined && displayName === undefined) {
-      throw new Error("You need to specify something to change in the manifest.");
-    } else {
-      manifestData = await modifyManifestXml(manifestPath, guid, displayName);
-      await writeManifestData(manifestPath, manifestData);
-      return await readManifestFile(manifestPath);
-    }
-  } else {
-    throw new Error(`Please provide the path to the manifest file.`);
-  }
-}
-
 async function modifyManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
   try {
     const manifestXml: Xml = await readXmlFromManifestFile(manifestPath);
@@ -96,8 +123,8 @@ async function modifyManifestXml(manifestPath: string, guid?: string, displayNam
 }
 
 async function parseXmlAsync(xmlString: string, manifestPath: string): Promise<Xml> {
-  return new Promise(async function(resolve, reject) {
-    xml2js.parseString(xmlString, function(parseError, xml) {
+  return new Promise(function (resolve, reject) {
+    xml2js.parseString(xmlString, function (parseError, xml) {
       if (parseError) {
         reject(new Error(`Unable to parse the manifest file: ${manifestPath}. \n${parseError}`));
       } else {
@@ -107,31 +134,23 @@ async function parseXmlAsync(xmlString: string, manifestPath: string): Promise<X
   });
 }
 
-export async function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
-  if (manifestPath) {
-    const xml = await readXmlFromManifestFile(manifestPath);
-    const manifest: ManifestInfo = parseManifest(xml);
-    return manifest;
-  } else {
-    throw new Error(`Please provide the path to the manifest file.`);
-  }
-}
-
 async function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
-  const fileData: string = await readFileAsync(manifestPath, {encoding: "utf8"});
+  const fileData: string = await readFileAsync(manifestPath, {
+    encoding: "utf8",
+  });
   const xml = await parseXmlAsync(fileData, manifestPath);
   return xml;
 }
 
 function setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void {
-  if (typeof(guid) !== "undefined") {
+  if (typeof guid !== "undefined") {
     if (!guid || guid === "random") {
-      guid = uuid();
+      guid = uuidv4();
     }
     xmlMethods.setXmlElementValue(xml, "Id", guid);
   }
 
-  if (typeof(displayName) !== "undefined") {
+  if (typeof displayName !== "undefined") {
     xmlMethods.setXmlElementAttributeValue(xml, "DisplayName", displayName);
   }
 }
@@ -150,7 +169,7 @@ async function writeManifestData(manifestPath: string, manifestData: any): Promi
   try {
     // Write the xml back to the manifest file.
     await writeFileAsync(manifestPath, xml);
-    } catch (err) {
-      throw new Error(`Unable to write to file. ${manifestPath} \n${err}`);
-    }
+  } catch (err) {
+    throw new Error(`Unable to write to file. ${manifestPath} \n${err}`);
+  }
 }

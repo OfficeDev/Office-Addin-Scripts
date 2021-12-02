@@ -1,30 +1,49 @@
-import * as devSettings from "office-addin-dev-settings";
-import * as manifest from "office-addin-manifest";
-import { startProcess } from "./process";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
 
-export async function stopDebugging(manifestPath: string, unregisterCommandLine?: string) {
+import { clearDevSettings, unregisterAddIn } from "office-addin-dev-settings";
+import { OfficeAddinManifest } from "office-addin-manifest";
+import * as debugInfo from "./debugInfo";
+import { stopProcess } from "./process";
+import { usageDataObject } from "./defaults";
+import { ExpectedError } from "office-addin-usage-data";
+
+/* global process, console */
+
+export async function stopDebugging(manifestPath: string) {
+  try {
     console.log("Debugging is being stopped...");
 
-    const isWindowsPlatform = (process.platform === "win32");
-    const manifestInfo = await manifest.readManifestFile(manifestPath);
+    const isWindowsPlatform = process.platform === "win32";
+    const manifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
-        throw new Error("Manifest does not contain the id for the Office Add-in.");
+      throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");
     }
 
     // clear dev settings
     if (isWindowsPlatform) {
-      await devSettings.clearDevSettings(manifestInfo.id);
+      await clearDevSettings(manifestInfo.id);
     }
 
-    if (unregisterCommandLine) {
-        // unregister
-        try {
-            await startProcess(unregisterCommandLine);
-        } catch (err) {
-            console.log(`Unable to unregister the Office Add-in. ${err}`);
-        }
+    // unregister
+    try {
+      await unregisterAddIn(manifestPath);
+    } catch (err) {
+      console.log(`Unable to unregister the Office Add-in. ${err}`);
+    }
+
+    const processId = debugInfo.readDevServerProcessId();
+    if (processId) {
+      stopProcess(processId);
+      console.log(`Stopped dev server. Process id: ${processId}`);
+      debugInfo.clearDevServerProcessId();
     }
 
     console.log("Debugging has been stopped.");
+    usageDataObject.reportSuccess("stopDebugging()");
+  } catch (err: any) {
+    usageDataObject.reportException("stopDebugging()", err);
+    throw err;
+  }
 }

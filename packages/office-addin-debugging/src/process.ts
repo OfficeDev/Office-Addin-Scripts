@@ -1,37 +1,17 @@
-import * as childProcess from "child_process";
-import { ExecException } from "child_process";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+import { ChildProcess } from "child_process";
+import * as devSettings from "office-addin-dev-settings";
 
 export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        if (verbose) {
-            console.log(`Starting: ${commandLine}`);
-        }
-
-        childProcess.exec(commandLine, (error: ExecException | null, stdout: string, stderr: string) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve();
-            }
-        });
-    });
+  await devSettings.startProcess(commandLine, verbose);
 }
 
-export function startDetachedProcess(commandLine: string, verbose: boolean = false): void {
-    if (verbose) {
-        console.log(`Starting: ${commandLine}`);
-    }
+export function startDetachedProcess(commandLine: string, verbose: boolean = false): ChildProcess {
+  return devSettings.startDetachedProcess(commandLine, verbose);
+}
 
-    const subprocess = childProcess.spawn(commandLine, [], {
-        detached: true,
-        shell: true,
-        stdio: "ignore",
-        windowsHide: false,
-    });
-
-    subprocess.on("error", (err) => {
-        console.log(`Unable to run command: ${commandLine}.\n${err}`);
-    });
-
-    subprocess.unref();
+export function stopProcess(processId: number): void {
+  devSettings.stopProcess(processId);
 }

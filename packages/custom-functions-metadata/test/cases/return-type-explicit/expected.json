@@ -1,0 +1,118 @@
+{
+    "functions": [
+        {
+            "id": "RETURNSBOOLEAN",
+            "name": "RETURNSBOOLEAN",
+            "parameters": [],
+            "result": {
+                "type": "boolean"
+            }
+        },
+        {
+            "id": "RETURNSNUMBER",
+            "name": "RETURNSNUMBER",
+            "parameters": [],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "id": "RETURNSSTRING",
+            "name": "RETURNSSTRING",
+            "parameters": [],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "id": "RETURNSOBJECT",
+            "name": "RETURNSOBJECT",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSMATRIXBOOLEAN",
+            "name": "RETURNSMATRIXBOOLEAN",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "boolean"
+            }
+        },
+        {
+            "id": "RETURNSMATRIXNUMBER",
+            "name": "RETURNSMATRIXNUMBER",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "number"
+            }
+        },
+        {
+            "id": "RETURNSMATRIXSTRING",
+            "name": "RETURNSMATRIXSTRING",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "RETURNSBOOLEANPROMISE",
+            "name": "RETURNSBOOLEANPROMISE",
+            "parameters": [],
+            "result": {
+                "type": "boolean"
+            }
+        },
+        {
+            "id": "RETURNSNUMBERPROMISE",
+            "name": "RETURNSNUMBERPROMISE",
+            "parameters": [],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "id": "RETURNSSTRINGPROMISE",
+            "name": "RETURNSSTRINGPROMISE",
+            "parameters": [],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "id": "RETURNSOBJECTPROMISE",
+            "name": "RETURNSOBJECTPROMISE",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "id": "RETURNSMATRIXBOOLEANPROMISE",
+            "name": "RETURNSMATRIXBOOLEANPROMISE",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "boolean"
+            }
+        },
+        {
+            "id": "RETURNSMATRIXNUMBERPROMISE",
+            "name": "RETURNSMATRIXNUMBERPROMISE",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "number"
+            }
+        },
+        {
+            "id": "RETURNSMATRIXSTRINGPROMISE",
+            "name": "RETURNSMATRIXSTRINGPROMISE",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        }
+    ]
+}

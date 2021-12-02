@@ -1,0 +1,11 @@
+{
+    "functions": [
+        {
+            "description": "Uppercase function name test",
+            "id": "UPPERCASE",
+            "name": "UPPERCASE",
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}

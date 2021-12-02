@@ -1,0 +1,4 @@
+export = {
+  plugins: ["office-addins"],
+  extends: ["plugin:office-addins/recommended"],
+};

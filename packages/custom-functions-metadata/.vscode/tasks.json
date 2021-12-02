@@ -4,12 +4,22 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Build",
             "type": "npm",
             "script": "build",
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Watch",
+            "type": "npm",
+            "script": "watch",
+            "problemMatcher": [
+                "$watch"
+            ],
+            "isBackground": true
         }
     ]
 }

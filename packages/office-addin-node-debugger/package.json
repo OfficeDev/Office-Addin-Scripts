@@ -1,19 +1,21 @@
 {
   "name": "office-addin-node-debugger",
-  "version": "0.3.2",
+  "version": "0.6.4",
   "description": "Files for enabling office add-in web debugging using Node and VS Code.",
   "main": "./lib/debugger.js",
   "scripts": {
-    "tsc": "tsc -p tsconfig.json",
-    "tsc-watch": "tsc -p tsconfig.json -w",
-    "build": "rimraf lib && concurrently \"npm run tsc\"",
-    "start": "rimraf lib && concurrently \"npm run tsc-watch\"",
-    "test": "echo No tests."
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
+    "start": "rimraf lib && concurrently \"npm run watch\"",
+    "test": "echo No tests.",
+    "watch": "tsc -p tsconfig.json -w"
   },
   "author": "Office Dev",
   "license": "MIT",
   "bin": {
-    "office-addin-node-debugger": "./lib/debugger.js"
+    "office-addin-node-debugger": "./cli.js"
   },
   "keywords": [
     "Office",
@@ -21,18 +23,19 @@
   ],
   "dependencies": {
     "child_process": "^1.0.2",
-    "commander": "^2.19.0",
-    "node-fetch": "^2.2.0",
-    "ws": "^6.1.0"
+    "commander": "^6.2.0",
+    "node-fetch": "^2.6.1",
+    "office-addin-usage-data": "^1.4.4",
+    "ws": "^7.4.6"
   },
   "devDependencies": {
-    "@types/es6-promise": "0.0.32",
-    "@types/node": "^10.12.0",
-    "@types/node-fetch": "^2.1.2",
+    "@types/node": "^14.17.2",
+    "@types/node-fetch": "^2.5.10",
     "@types/ws": "^5.1.2",
-    "concurrently": "^3.5.0",
-    "rimraf": "^2.6.1",
-    "typescript": "^3.2.2"
+    "concurrently": "^6.2.2",
+    "office-addin-lint": "^1.4.4",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.3.5"
   },
   "repository": {
     "type": "git",
@@ -40,5 +43,7 @@
   },
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
-  }
+  },
+  "prettier": "office-addin-prettier-config",
+  "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }

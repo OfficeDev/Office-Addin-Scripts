@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 export type Xml = any;
 
 /**
@@ -9,12 +12,12 @@ export type Xml = any;
  *   <First DefaultValue="abc">1</First>
  */
 export function getXmlAttributeValue(xml: Xml, name: string): string | undefined {
-    try {
-      return xml.$[name];
-    } catch (err) {
-      // reading xml values is resilient to errors but you can uncomment the next line for debugging if attributes are missing
-      // console.error(`Unable to get xml attribute value "${name}". ${err}`);
-    }
+  try {
+    return xml.$[name];
+  } catch (err) {
+    // reading xml values is resilient to errors but you can uncomment the next line for debugging if attributes are missing
+    // console.error(`Unable to get xml attribute value "${name}". ${err}`);
+  }
 }
 
 /**
@@ -51,7 +54,11 @@ export function getXmlElement(xml: Xml, name: string): Xml | undefined {
  *     <First DefaultValue="abc">1</First>
  *   </Current>
  */
-export function getXmlElementAttributeValue(xml: Xml, elementName: string, attributeName: string = "DefaultValue"): string | undefined {
+export function getXmlElementAttributeValue(
+  xml: Xml,
+  elementName: string,
+  attributeName: string = "DefaultValue"
+): string | undefined {
   const element: Xml = getXmlElement(xml, elementName);
   if (element) {
     return getXmlAttributeValue(element, attributeName);
@@ -72,7 +79,7 @@ export function getXmlElementAttributeValue(xml: Xml, elementName: string, attri
 export function getXmlElements(xml: Xml, name: string): Xml[] {
   try {
     const elements = xml[name];
-    return (elements instanceof Array) ? elements : [];
+    return elements instanceof Array ? elements : [];
   } catch (err) {
     return [];
   }
@@ -89,15 +96,26 @@ export function getXmlElements(xml: Xml, name: string): Xml[] {
  *     <Item DefaultValue="Two" AnotherValue="Second">2</Item>
  *   </Current>
  */
-export function getXmlElementsAttributeValue(xml: Xml, name: string, itemElementName: string, attributeName: string = "DefaultValue"): string[] {
+export function getXmlElementsAttributeValue(
+  xml: Xml,
+  name: string,
+  itemElementName: string,
+  attributeName: string = "DefaultValue"
+): string[] {
   const values: string[] = [];
 
-  getXmlElements(xml, name).forEach((xmlElement) => {
-    const elementValue = getXmlElementAttributeValue(xmlElement, itemElementName, attributeName);
-    if (elementValue !== undefined) {
-      values.push(elementValue);
-    }
-  });
+  try {
+    const xmlElements: Xml[] = xml[name][0][itemElementName];
+
+    xmlElements.forEach((xmlElement: Xml) => {
+      const elementValue = getXmlAttributeValue(xmlElement, attributeName);
+      if (elementValue !== undefined) {
+        values.push(elementValue);
+      }
+    });
+  } catch (err) {
+    // do nothing
+  }
 
   return values;
 }
@@ -145,7 +163,7 @@ export function getXmlElementValue(xml: Xml, name: string): string | undefined {
   } catch (err) {
     // reading xml values is resilient to errors but you can uncomment the next line for debugging if elements are missing
     // console.error(`Unable to get xml element value "${name}". ${err}`);
-    }
+  }
 }
 
 /**
@@ -155,7 +173,12 @@ export function getXmlElementValue(xml: Xml, name: string): string | undefined {
  * @param attributeValue Attribute value
  * @param attributeName Attribute name
  */
-export function setXmlElementAttributeValue(xml: Xml, elementName: string, attributeValue: string | undefined, attributeName: string = "DefaultValue") {
+export function setXmlElementAttributeValue(
+  xml: Xml,
+  elementName: string,
+  attributeValue: string | undefined,
+  attributeName: string = "DefaultValue"
+) {
   xml[elementName][0].$[attributeName] = attributeValue;
 }
 

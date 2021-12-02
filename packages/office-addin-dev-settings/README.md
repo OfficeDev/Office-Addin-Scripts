@@ -7,8 +7,13 @@ Provides the ability to configure developer settings for Office Add-ins.
 * [clear](#clear)
 * [debugging](#debugging)
 * [live-reload](#live-reload)
+* [register](#register)
+* [registered](#registered)
 * [runtime-log](#runtime-log)
+* [sideload](#sideload)
 * [source-bundle-url](#source-bundle-url)
+* [unregister](#unregister)
+* [webview](#webview)
 
 #
 
@@ -17,7 +22,7 @@ Display or configure settings related to the appcontainer for an Office Add-in.
 
 Syntax:
 
-`office addin-dev-settings appcontainer <manifest> [options]`
+`office-addin-dev-settings appcontainer <manifest> [options]`
 
 `manifest`: path to manifest file.
 
@@ -45,7 +50,7 @@ Clear developer settings for the Office Add-in.
 
 Syntax:
 
-`office addin-debugging clear <manifest>`
+`office-addin-debugging clear <manifest>`
 
 `manifest`: path to manifest file.
 
@@ -56,11 +61,11 @@ Display or configure debugging settings for an Office Add-in.
 
 Syntax:
 
-`office addin-dev-settings debugging <manifest> [options]`
+`office-addin-dev-settings debugging <manifest> [options]`
 
 `manifest`: path to manifest file. 
 
-Without options, displays whether devbugging is enabled.
+Without options, displays whether debugging is enabled.
 
 Notes:
 
@@ -89,7 +94,7 @@ Display or configure settings related to live reload for an Office Add-in.
 
 Syntax:
 
-`office addin-dev-settings live-reload <manifest> [options]`
+`office-addin-dev-settings live-reload <manifest> [options]`
 
 `manifest`: path to manifest file. 
 
@@ -107,6 +112,26 @@ Enable live-reload for the Office Add-in.
  
 #
 
+### register 
+Registers an Office Add-in for development. 
+
+Syntax:
+
+`office-addin-dev-settings register <manifest> [options]`
+
+`manifest`: path to manifest file. 
+
+#
+
+### registered 
+Displays the Office Add-ins registered for development. 
+
+Syntax:
+
+`office-addin-dev-settings registered [options]`
+
+#
+
 ### runtime-log 
  Use the command to enable or disable writing any Office Add-in runtime events to a log file. Without options, it displays whether runtime logging is enabled.
 
@@ -116,7 +141,7 @@ The setting is not specific to a particular Office Add-in. It applies to the run
 
 Syntax:
 
-`office addin-dev-settings runtime-log [options]`
+`office-addin-dev-settings runtime-log [options]`
 
 Without options, displays whether runtime logging is enabled and the log file path (if enabled).
 
@@ -134,6 +159,35 @@ Enable runtime logging.
  
 #
 
+### sideload 
+Start Office and open a document so the Office Add-in is loaded. 
+
+Syntax:
+
+`office-addin-dev-settings sideload <manifest> [app-type] [options]`
+
+`manifest`: path to manifest file.
+
+`app-type`: host application type to sideload ("desktop" or "web").
+
+Note:
+
+If the add-in supports more than one Office app and the app-type is "desktop", the command will prompt to choose the app unless the `--app` parameter is provided.  
+
+Options:
+
+`-a`
+`--app`
+
+Specify the Office application to load.
+
+`-d`
+`--document`
+
+Specify the document to sideload.  The document option can either be the local path to a document or a url.
+
+#
+
 ### source-bundle-url 
 Configure the url used to obtain the source bundle from the packager for an Office Add-in.
 
@@ -148,7 +202,7 @@ http://`HOST`:`PORT`/`PATH` `EXTENSION`
 
 Syntax:
 
-`office addin-dev-settings source-bundle-url [options]`
+`office-addin-dev-settings source-bundle-url [options]`
 
 Without options, displays the current source-bundle-url settings.
 
@@ -173,4 +227,30 @@ Specify the path or "" to use the default.
 
 Specify the extension (which should start with a period) or "" to use the default.
  
+#
+
+### unregister 
+Unregisters an Office Add-in for development. 
+
+Syntax:
+
+`office-addin-dev-settings register <manifest> [options]`
+
+`manifest`: path to manifest file. 
+
+#
+
+### webview 
+Switches the webview runtime in Office for testing and development scenarios.
+
+> Office must be running on the Beta channel to switch runtimes
+
+Syntax:
+
+`office-addin-dev-settings webview <manifest> <web-view-type>`
+
+`manifest`: path to manifest file. 
+
+`web-view-type`: Office webview to load ('edge' or 'edge-chromium, 'edge-legacy', 'ie', or 'default'). 
+
 #

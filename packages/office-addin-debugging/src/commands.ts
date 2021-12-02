@@ -1,87 +1,131 @@
-import * as commander from "commander";
-import * as devSettings from "office-addin-dev-settings";
-import { AppType, parseAppType, parseDebuggingMethod, startDebugging} from "./start";
-import { stopDebugging} from "./stop";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
 
-function logErrorMessage(err: any) {
-    console.error(`Error: ${err instanceof Error ? err.message : err}`);
+import * as commander from "commander";
+import * as fs from "fs";
+import { logErrorMessage, parseNumber, getPackageJsonScript } from "office-addin-cli";
+import * as devSettings from "office-addin-dev-settings";
+import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
+import { AppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
+import { stopDebugging } from "./stop";
+import { usageDataObject } from "./defaults";
+import { ExpectedError } from "office-addin-usage-data";
+
+/* global process */
+
+function determineManifestPath(platform: Platform, dev: boolean): string {
+  let manifestPath = process.env.npm_package_config_manifest_location || "";
+  manifestPath = manifestPath.replace("${flavor}", dev ? "dev" : "prod").replace("${platform}", platform);
+
+  if (!manifestPath) {
+    throw new ExpectedError(`The manifest path was not provided.`);
+  }
+  if (!fs.existsSync(manifestPath)) {
+    throw new ExpectedError(`The manifest path does not exist: ${manifestPath}.`);
+  }
+
+  return manifestPath;
 }
 
 function parseDevServerPort(optionValue: any): number | undefined {
-    const devServerPort = parseNumericCommandOption(optionValue, "--dev-server-port should specify a number.");
+  const devServerPort = parseNumber(optionValue, "--dev-server-port should specify a number.");
 
-    if (devServerPort !== undefined) {
-        if ((devServerPort < 0) || (devServerPort > 65535)) {
-            throw new Error("--dev-server-port should be between 0 and 65535.");
-        }
+  if (devServerPort !== undefined) {
+    if (!Number.isInteger(devServerPort)) {
+      throw new ExpectedError("--dev-server-port should be an integer.");
     }
+    if (devServerPort < 0 || devServerPort > 65535) {
+      throw new ExpectedError("--dev-server-port should be between 0 and 65535.");
+    }
+  }
 
-    return devServerPort;
+  return devServerPort;
 }
 
-function parseNumericCommandOption(optionValue: any, errorMessage: string = "The value should be a number."): number | undefined {
-    switch (typeof(optionValue)) {
-        case "number": {
-            return optionValue;
-        }
-        case "string": {
-            let result;
+export async function start(manifestPath: string, platform: string | undefined, command: commander.Command) {
+  try {
+    const appPlatformToDebug: Platform | undefined = parsePlatform(
+      platform || process.env.npm_package_config_app_platform_to_debug || Platform.Win32
+    );
+    const appTypeToDebug: AppType | undefined = devSettings.parseAppType(
+      appPlatformToDebug || process.env.npm_package_config_app_type_to_debug || AppType.Desktop
+    );
+    const appToDebug: string | undefined = command.app || process.env.npm_package_config_app_to_debug;
+    const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;
+    const dev: boolean = command.prod ? false : true;
+    const debuggingMethod = parseDebuggingMethod(command.debugMethod);
+    const devServer: string | undefined = command.devServer || (await getPackageJsonScript("dev-server"));
+    const devServerPort = parseDevServerPort(command.devServerPort || process.env.npm_package_config_dev_server_port);
+    const document: string | undefined = command.document || process.env.npm_package_config_document;
+    const enableDebugging: boolean = command.debug;
+    const enableLiveReload: boolean = command.liveReload === true;
+    const enableSideload: boolean = command.sideload !== false; // enable if true or undefined; only disable if false
+    const openDevTools: boolean = command.devTools === true;
+    const packager: string | undefined = command.packager || (await getPackageJsonScript("packager"));
+    const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
+    const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
+    const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
+      command.sourceBundleUrlHost,
+      command.sourceBundleUrlPort,
+      command.sourceBundleUrlPath,
+      command.sourceBundleUrlExtension
+    );
 
-            try {
-                result = parseInt(optionValue, 10);
-            } catch (err) {
-                throw new Error(errorMessage);
-            }
-
-            if (Number.isNaN(result)) {
-                throw new Error(errorMessage);
-            }
-
-            return result;
-        }
-        case "undefined": {
-            return undefined;
-        }
-        default: {
-            throw new Error(errorMessage);
-        }
+    if (appPlatformToDebug === undefined) {
+      throw new ExpectedError("Please specify the platform to debug.");
     }
+
+    if (appTypeToDebug === undefined) {
+      throw new ExpectedError("Please specify the application type to debug.");
+    }
+
+    if (appPlatformToDebug === Platform.Android || appPlatformToDebug === Platform.iOS) {
+      throw new ExpectedError(`Platform type ${appPlatformToDebug} not currently supported for debugging`);
+    }
+
+    if (!manifestPath) {
+      manifestPath = determineManifestPath(appPlatformToDebug, dev);
+    }
+
+    await startDebugging(manifestPath, {
+      appType: appTypeToDebug,
+      app,
+      debuggingMethod,
+      sourceBundleUrlComponents,
+      devServerCommandLine: devServer,
+      devServerPort,
+      packagerCommandLine: packager,
+      packagerHost,
+      packagerPort,
+      enableDebugging,
+      enableLiveReload,
+      enableSideload,
+      openDevTools,
+      document,
+    });
+
+    usageDataObject.reportSuccess("start");
+  } catch (err: any) {
+    usageDataObject.reportException("start", err);
+    logErrorMessage(`Unable to start debugging.\n${err}`);
+  }
 }
 
-export async function start(manifestPath: string, appType: string | undefined, command: commander.Command) {
-    try {
-        const appTypeToDebug: AppType | undefined = parseAppType(appType || process.env.npm_package_config_app_type_to_debug || "desktop");
-        const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
-            command.sourceBundleUrlHost, command.sourceBundleUrlPort,
-            command.sourceBundleUrlPath, command.sourceBundleUrlExtension);
-        const debuggingMethod = parseDebuggingMethod(command.debugMethod);
-        const devServer: string | undefined = command.devServer || process.env.npm_package_scripts_dev_server;
-        const devServerPort = parseDevServerPort(command.devServerPort || process.env.npm_package_config_dev_server_port);
-        const enableDebugging: boolean = command.debug;
-        const enableLiveReload: boolean = (command.liveReload === true);
-        const packager: string | undefined = command.packager || process.env.npm_package_scripts_packager;
-        const packagerHost: string | undefined = command.PackagerHost || process.env.npm_package_config_packager_host;
-        const packagerPort: string | undefined = command.PackagerPort || process.env.npm_package_config_packager_port;
-        const sideload: string | undefined = command.sideload || process.env.npm_package_scripts_sideload;
+export async function stop(manifestPath: string, platform: string | undefined, command: commander.Command) {
+  try {
+    const appPlatformToDebug: Platform | undefined = parsePlatform(
+      platform || process.env.npm_package_config_app_plaform_to_debug || Platform.Win32
+    );
+    const dev: boolean = command.prod ? false : true;
 
-        if (appTypeToDebug === undefined) {
-            throw new Error("Please specify the application type to debug.");
-        }
-
-        await startDebugging(manifestPath, appTypeToDebug, debuggingMethod, sourceBundleUrlComponents,
-            devServer, devServerPort, packager, packagerHost, packagerPort, sideload,
-            enableDebugging, enableLiveReload);
-    } catch (err) {
-        logErrorMessage(`Unable to start debugging.\n${err}`);
+    if (manifestPath === "" && appPlatformToDebug !== undefined) {
+      manifestPath = determineManifestPath(appPlatformToDebug, dev);
     }
-}
 
-export async function stop(manifestPath: string, command: commander.Command) {
-    try {
-        const unload: string | undefined = command.unload || process.env.npm_package_scripts_unload;
-
-        await stopDebugging(manifestPath, unload);
-    } catch (err) {
-        logErrorMessage(`Unable to stop debugging.\n${err}`);
-    }
+    await stopDebugging(manifestPath);
+    usageDataObject.reportSuccess("stop");
+  } catch (err: any) {
+    usageDataObject.reportException("stop", err);
+    logErrorMessage(`Unable to stop debugging.\n${err}`);
+  }
 }

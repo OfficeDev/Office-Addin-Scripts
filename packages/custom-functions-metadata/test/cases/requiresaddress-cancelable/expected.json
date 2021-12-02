@@ -1,0 +1,21 @@
+{
+    "functions": [
+        {
+            "description": "Test the requiresAddress tag with cancelable type",
+            "id": "REQUIRESADDRESSTEST",
+            "name": "REQUIRESADDRESSTEST",
+            "options": {
+                "cancelable": true,
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

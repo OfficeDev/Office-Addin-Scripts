@@ -1,0 +1,6 @@
+steps:
+  - task: Npm@1
+    displayName: "Install NPM packages"
+    inputs:
+      command: custom
+      customCommand: "install"

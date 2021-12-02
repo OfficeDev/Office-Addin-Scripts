@@ -1,50 +1,69 @@
-import * as metadata from "custom-functions-metadata";
-import * as fs from "fs";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+import {
+  generateCustomFunctionsMetadata,
+  IGenerateResult,
+} from "custom-functions-metadata";
 import * as path from "path";
-import * as webpack from "webpack";
+import { Compiler, sources, WebpackError, NormalModule } from "webpack";
+
+/* global require */
 
 const pluginName = "CustomFunctionsMetadataPlugin";
 
-type Options = {input: string, output: string};
+type Options = { input: string; output: string };
 
 class CustomFunctionsMetadataPlugin {
-    private options: Options;
+  private options: Options;
 
-    constructor(options: Options) {
-        this.options = options;
-    }
+  constructor(options: Options) {
+    this.options = options;
+  }
 
-    public apply(compiler: webpack.Compiler) {
-        const outputPath: string = (compiler.options && compiler.options.output) ? compiler.options.output.path || "" : "";
-        const outputFilePath = path.resolve(outputPath, this.options.output);
+  public static generateResults: Record<string, IGenerateResult> = {};
 
-        compiler.hooks.compile.tap(pluginName, () => {
-            try {
-                fs.mkdirSync(outputPath);
-            } catch (err) {
-                if (err.code !== "EEXIST") {
-                    throw err;
-                }
-            }
-            metadata.generate(this.options.input, outputFilePath, true);
-        });
+  public apply(compiler: Compiler) {
+    const inputFilePath = path.resolve(this.options.input);
+    let generateResult: IGenerateResult;
 
-        compiler.hooks.emit.tap(pluginName, (compilation) => {
-            if (metadata.isErrorFound()) {
-                compilation.errors.push("Generating metadata file:" + outputFilePath);
-                metadata.errorLogFile.forEach((err: string) => compilation.errors.push(this.options.input + " " + err));
-            } else {
-                const stats = fs.statSync(outputFilePath);
-                const content = fs.readFileSync(outputFilePath);
-                compilation.assets[this.options.output] = {
-                    source() { return content; },
-                    size() { return stats.size; },
-                };
-            }
-        });
+    compiler.hooks.beforeCompile.tapPromise(pluginName, async () => {
+      generateResult = await generateCustomFunctionsMetadata(
+        inputFilePath,
+        true
+      );
+    });
 
-    }
+    compiler.hooks.compilation.tap(pluginName, (compilation) => {
+      if (generateResult.errors.length > 0) {
+        generateResult.errors.forEach((err: string) =>
+          compilation.errors.push(new WebpackError(inputFilePath + " " + err))
+        );
+      } else {
+        compilation.assets[this.options.output] = new sources.RawSource(
+          generateResult.metadataJson
+        );
+        CustomFunctionsMetadataPlugin.generateResults[this.options.input] =
+          generateResult;
+      }
 
+      NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(
+        pluginName,
+        (_, module) => {
+          if (module.userRequest.endsWith(inputFilePath)) {
+            module.loaders.push({
+              loader: require.resolve("./loader.js"),
+              options: {
+                input: this.options.input,
+              },
+              ident: null,
+              type: null,
+            });
+          }
+        }
+      );
+    });
+  }
 }
 
-module.exports = CustomFunctionsMetadataPlugin;
+export = CustomFunctionsMetadataPlugin;
