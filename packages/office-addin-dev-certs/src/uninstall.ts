@@ -20,7 +20,8 @@ function getUninstallCommand(machine: boolean = false): string {
       }"`;
     }
     case "darwin": // macOS
-      return `sudo security delete-certificate -c '${defaults.certificateName}'`;
+      const script = path.resolve(__dirname, "../scripts/uninstall.sh");
+      return `sudo sh ${script} '${defaults.certificateName}'`;
     case "linux":
       return `sudo rm -r /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} && sudo /usr/sbin/update-ca-certificates --fresh`;
     default:
