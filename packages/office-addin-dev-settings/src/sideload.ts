@@ -54,33 +54,39 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     throw new ExpectedError("The manifest contains an unsupported OfficeApp xsi:type.");
   }
 
-  const templatePath = document && document !== "" ? path.resolve(document) : getTemplatePath(app, addInType);
+  const documentWasProvided = document && document !== "";
+  const templatePath = documentWasProvided ? path.resolve(document) : getTemplatePath(app, addInType);
 
   if (!templatePath) {
     throw new ExpectedError(`Sideload is not supported for apptype: ${addInType}.`);
   }
 
   const templateBuffer = await readFileAsync(templatePath);
-  const zip = await jszip.loadAsync(templateBuffer);
-  const webExtensionPath = getWebExtensionPath(app, addInType);
-
-  if (!webExtensionPath) {
-    throw new ExpectedError("Don't know the webextension path.");
-  }
+  const zip: jszip = await jszip.loadAsync(templateBuffer);
 
   const appName = getOfficeAppName(app);
   const extension = path.extname(templatePath);
-  const pathToWrite = makePathUnique(path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`), true);
+  const pathToWrite: string = makePathUnique(
+    path.join(os.tmpdir(), `${appName} add-in ${manifest.id}${extension}`),
+    true
+  );
 
-  // replace the placeholder id and version
-  const zipFile = zip.file(webExtensionPath);
-  if (!zipFile) {
-    throw new ExpectedError("webextension was not found.");
+  if (!documentWasProvided) {
+    const webExtensionPath = getWebExtensionPath(app, addInType);
+    if (!webExtensionPath) {
+      throw new ExpectedError("Don't know the webextension path.");
+    }
+
+    // replace the placeholder id and version
+    const zipFile = zip.file(webExtensionPath);
+    if (!zipFile) {
+      throw new ExpectedError("webextension was not found.");
+    }
+    const webExtensionXml = (await zipFile.async("text"))
+      .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
+      .replace(/1.0.0.0/g, manifest.version);
+    zip.file(webExtensionPath, webExtensionXml);
   }
-  const webExtensionXml = (await zipFile.async("text"))
-    .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
-    .replace(/1.0.0.0/g, manifest.version);
-  zip.file(webExtensionPath, webExtensionXml);
 
   // Write the file
   await new Promise((resolve, reject) => {
