@@ -98,11 +98,6 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.getColor(), "blue");
       officeMock.range.color = "green";
       assert.strictEqual(officeMock.range.getColor(), "green");
-
-      officeMock.range.set("color", "yellow");
-      officeMock.range.load("color");
-      await officeMock.sync();
-      assert.strictEqual(officeMock.range.getColor(), "yellow");
     });
     it("Writting values", async function() {
       const officeMock = new OfficeMockObject(testObject);
@@ -112,16 +107,6 @@ describe("Test OfficeMockObject class", function() {
   
       officeMock.range.font.color = "blue";
       assert.strictEqual(officeMock.range.font.color, "blue");
-    });
-    it("Calling addMock multiple times", async function() {
-      const officeMock = new OfficeMockObject(testObject);
-      assert.throws(() => officeMock.addMock("range"));
-
-      officeMock.addMock("notAnExistingObject");
-      assert.throws(() => officeMock.addMock("notAnExistingObject"));
-
-      officeMock.notAnExistingObject.color = "blue";
-      assert.strictEqual(officeMock.notAnExistingObject.color, "blue");
     });
   });
 
