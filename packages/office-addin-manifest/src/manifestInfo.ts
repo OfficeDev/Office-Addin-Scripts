@@ -5,11 +5,10 @@ import * as fs from "fs";
 import * as util from "util";
 import { v4 as uuidv4 } from "uuid";
 import * as xml2js from "xml2js";
-import * as xmlMethods from "./xml";
+import { ManifestXML, Xml } from "./xml";
 import { usageDataObject } from "./defaults";
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
-type Xml = xmlMethods.Xml;
 
 class DefaultSettings {
   public sourceLocation?: string;
@@ -78,32 +77,33 @@ export namespace OfficeAddinManifest {
 function parseManifest(xml: Xml): ManifestInfo {
   const manifest: ManifestInfo = new ManifestInfo();
   const officeApp: Xml = xml.OfficeApp;
+  const xmlMethods: ManifestXML = new ManifestXML(officeApp);
 
   if (officeApp) {
-    const defaultSettingsXml: Xml = xmlMethods.getXmlElement(officeApp, "DefaultSettings");
+    manifest.id = xmlMethods.getElementValue("Id");
+    manifest.allowSnapshot = xmlMethods.getElementValue("AllowSnapshot");
+    manifest.alternateId = xmlMethods.getElementValue("AlternateId");
+    manifest.appDomains = xmlMethods.getElementsValue("AppDomains", "AppDomain");
+    manifest.defaultLocale = xmlMethods.getElementValue("DefaultLocale");
+    manifest.description = xmlMethods.getElementAttributeValue("Description");
+    manifest.displayName = xmlMethods.getElementAttributeValue("DisplayName");
+    manifest.highResolutionIconUrl = xmlMethods.getElementAttributeValue("HighResolutionIconUrl");
+    manifest.hosts = xmlMethods.getElementsAttributeValue("Hosts", "Host", "Name");
+    manifest.iconUrl = xmlMethods.getElementAttributeValue("IconUrl");
+    manifest.officeAppType = xmlMethods.getAttributeValue("xsi:type");
+    manifest.permissions = xmlMethods.getElementValue("Permissions");
+    manifest.providerName = xmlMethods.getElementValue("ProviderName");
+    manifest.supportUrl = xmlMethods.getElementAttributeValue("SupportUrl");
+    manifest.version = xmlMethods.getElementValue("Version");
 
-    manifest.id = xmlMethods.getXmlElementValue(officeApp, "Id");
-    manifest.allowSnapshot = xmlMethods.getXmlElementValue(officeApp, "AllowSnapshot");
-    manifest.alternateId = xmlMethods.getXmlElementValue(officeApp, "AlternateId");
-    manifest.appDomains = xmlMethods.getXmlElementsValue(officeApp, "AppDomains", "AppDomain");
-    manifest.defaultLocale = xmlMethods.getXmlElementValue(officeApp, "DefaultLocale");
-    manifest.description = xmlMethods.getXmlElementAttributeValue(officeApp, "Description");
-    manifest.displayName = xmlMethods.getXmlElementAttributeValue(officeApp, "DisplayName");
-    manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "HighResolutionIconUrl");
-    manifest.hosts = xmlMethods.getXmlElementsAttributeValue(officeApp, "Hosts", "Host", "Name");
-    manifest.iconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "IconUrl");
-    manifest.officeAppType = xmlMethods.getXmlAttributeValue(officeApp, "xsi:type");
-    manifest.permissions = xmlMethods.getXmlElementValue(officeApp, "Permissions");
-    manifest.providerName = xmlMethods.getXmlElementValue(officeApp, "ProviderName");
-    manifest.supportUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "SupportUrl");
-    manifest.version = xmlMethods.getXmlElementValue(officeApp, "Version");
-
+    const defaultSettingsXml: Xml = xmlMethods.getElement("DefaultSettings");
     if (defaultSettingsXml) {
+      const defaultSettingsManifestXml: ManifestXML = new ManifestXML(defaultSettingsXml);
       const defaultSettings: DefaultSettings = new DefaultSettings();
 
-      defaultSettings.requestedHeight = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedHeight");
-      defaultSettings.requestedWidth = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedWidth");
-      defaultSettings.sourceLocation = xmlMethods.getXmlElementAttributeValue(defaultSettingsXml, "SourceLocation");
+      defaultSettings.requestedHeight = defaultSettingsManifestXml.getElementValue("RequestedHeight");
+      defaultSettings.requestedWidth = defaultSettingsManifestXml.getElementValue("RequestedWidth");
+      defaultSettings.sourceLocation = defaultSettingsManifestXml.getElementAttributeValue("SourceLocation");
 
       manifest.defaultSettings = defaultSettings;
     }
@@ -143,15 +143,16 @@ async function readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
 }
 
 function setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void {
+  const manifestXML: ManifestXML = new ManifestXML(xml);
   if (typeof guid !== "undefined") {
     if (!guid || guid === "random") {
       guid = uuidv4();
     }
-    xmlMethods.setXmlElementValue(xml, "Id", guid);
+    manifestXML.setElementValue("Id", guid);
   }
 
   if (typeof displayName !== "undefined") {
-    xmlMethods.setXmlElementAttributeValue(xml, "DisplayName", displayName);
+    manifestXML.setElementAttributeValue("DisplayName", displayName);
   }
 }
 
