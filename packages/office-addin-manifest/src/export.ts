@@ -7,14 +7,14 @@ export function exportMetadataPackage(
   output: string = "package/manifest.zip",
   manifest: string = "manifest.json",
   assets: string = "assets"
-) {
+): string {
   const zip = new jszip();
 
   if (fs.existsSync(manifest)) {
     const manifestData = fs.readFileSync(manifest);
     zip.file("manifest.json", manifestData);
   } else {
-    throw new Error(`The file ${manifest} does not exist`);
+    throw new Error(`The file '${manifest}' does not exist`);
   }
 
   if (fs.existsSync(assets)) {
@@ -31,4 +31,6 @@ export function exportMetadataPackage(
 
   fsExtra.ensureDirSync(path.dirname(output));
   zip.generateNodeStream({ type: "nodebuffer", streamFiles: true }).pipe(fs.createWriteStream(output));
+
+  return output;
 }
