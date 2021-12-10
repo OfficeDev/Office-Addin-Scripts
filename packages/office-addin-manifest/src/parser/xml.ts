@@ -7,7 +7,12 @@ export type Xml = any;
 
 export class ManifestXML extends ManifestParser {
   /**
-   * Adds the xml file to the class
+   * The XML object that will manipulated across this class
+   */
+  xml: Xml;
+
+  /**
+   * Adds the Xml object and creates the ManifestXML object
    */
   constructor(xml: Xml) {
     super();
@@ -15,13 +20,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * The XML file that will manipulated across this clas
-   */
-  xml: Xml;
-
-  /**
-   * Given an xml element, returns the value of the attribute with the specified name.
-   * @param xml Xml object
+   * Returns the value of the attribute with the specified name.
    * @param name Attribute name
    * @returns The attribute value or undefined
    * @example Given the the following xml, the attribute name "DefaultValue" will return the value "abc".
@@ -37,8 +36,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * Given an xml object, returns the first inner element with the specified name, or undefined.
-   * @param xml Xml object
+   * Returns the first inner element with the specified name, or undefined.
    * @param name Element name
    * @returns Xml object or undefined
    * @example Given the the following xml, the name "Second" will return the xml object for <Second>...</Second>.
@@ -61,8 +59,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * Given an xml object, returns the attribute value for the first inner element with the specified name, or undefined.
-   * @param xml Xml object
+   * Returns the attribute value for the first inner element with the specified name, or undefined.
    * @param elementName Element name
    * @param attributeName Attribute name
    * @example Given the the following xml, the element name "First" and attribute name "DefaultValue" will return the value "abc".
@@ -78,8 +75,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * Given an xml object, returns an array with the inner elements with the specified name.
-   * @param xml Xml object
+   * Returns an array with the inner elements with the specified name.
    * @param name Element name
    * @returns Array of xml objects;
    * @example Given the the following xml, the name "Item" will return an array with the two items.
@@ -98,8 +94,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * Given an xml object, for the specified element, returns the values of the inner elements with the specified item element name.
-   * @param xml The xml object.
+   * For the specified element, returns the values of the inner elements with the specified item element name.
    * @param name The name of the inner xml element.
    * @example Given the the following xml, the container name "Items" and item name "Item" will return ["One", "Two"].
    * If the attributeName is "AnotherValue", then it will return ["First", "Second"].
@@ -129,8 +124,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * Given an xml object, for the specified element, returns the values of the inner elements with the specified item element name.
-   * @param xml The xml object.
+   * For the specified element, returns the values of the inner elements with the specified item element name.
    * @param name The name of the inner xml element.
    * @example Given the the following xml, the container name "Items" and item name "Item" will return ["1", "2"].
    *   <Items>
@@ -154,7 +148,6 @@ export class ManifestXML extends ManifestParser {
 
   /**
    * Returns the value of the first inner xml element with the specified name.
-   * @param xml The xml object.
    * @param name The name of the inner xml element.
    * @example Given the the following xml, the name "Second" will return the value "2".
    *   <Current>
@@ -176,8 +169,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * Given an xml object, set the attribute value for the specified element name.
-   * @param xml Xml object
+   * Set the attribute value for the specified element name.
    * @param elementName Element name
    * @param attributeValue Attribute value
    * @param attributeName Attribute name
@@ -191,8 +183,7 @@ export class ManifestXML extends ManifestParser {
   }
 
   /**
-   * Given an xml object, set the inner xml element
-   * @param xml Xml object
+   * Set the inner xml element
    * @param elementName Element name
    * @param elementValue Element value
    */

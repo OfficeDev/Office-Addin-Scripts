@@ -5,4 +5,3 @@ export * from "./addInTypes";
 export * from "./manifestInfo";
 export * from "./officeApp";
 export * from "./validate";
-export * from "./xml";

@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as util from "util";
 import { v4 as uuidv4 } from "uuid";
 import * as xml2js from "xml2js";
-import { ManifestXML, Xml } from "./xml";
+import { ManifestXML, Xml } from "./parser/xml";
 import { usageDataObject } from "./defaults";
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
