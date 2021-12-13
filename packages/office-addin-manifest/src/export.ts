@@ -21,7 +21,7 @@ export function exportMetadataPackage(
     const files: string[] = fs.readdirSync(assets);
     zip.folder(assets);
     files.forEach((element) => {
-      const filePath = assets + "/" + element;
+      const filePath = path.join(assets, element);
       const fileData = fs.readFileSync(filePath);
       zip.file(filePath, fileData);
     });

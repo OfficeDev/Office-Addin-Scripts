@@ -174,9 +174,9 @@ export async function validate(
 
 export async function exportManifest(command: commander.Command) {
   try {
-    const outputPath: string | undefined = command.output ?? "./package/manifest.zip";
-    const manifestPath: string | undefined = command.manifest ?? "./manifest.json";
-    const assetsPath: string | undefined = command.assets ?? "./assets";
+    const outputPath: string = command.output ?? "./package/manifest.zip";
+    const manifestPath: string = command.manifest ?? "./manifest.json";
+    const assetsPath: string = command.assets ?? "./assets";
 
     await exportMetadataPackage(outputPath, manifestPath, assetsPath);
     usageDataObject.reportSuccess("export");

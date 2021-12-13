@@ -658,7 +658,7 @@ describe("Unit Tests", function() {
 async function _deleteFolder(folder: string): Promise<void> {
   if (fs.existsSync(folder)) {
     fs.readdirSync(folder).forEach(function(file) {
-    const curPath = folder + "/" + file;
+    const curPath = path.join(folder, file);
 
     if (fs.lstatSync(curPath).isDirectory()) {
       _deleteFolder(curPath);

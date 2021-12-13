@@ -46,7 +46,7 @@
       "args": [
         "export",
         "-o",
-        "${workspaceFolder}\\test\\out.zip",
+        "${env:TEMP}\\manifest.zip",
         "-m",
         "${workspaceFolder}\\test\\manifests\\manifest.json",
         "-a",
