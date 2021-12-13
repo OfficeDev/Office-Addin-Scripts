@@ -196,7 +196,7 @@ export class OfficeMockObject {
         this.addMock(propertyName);
         this[propertyName].populate(property);
       } else {
-        this.set(propertyName, property);
+        this.setValue(propertyName, property);
       }
     });
   }
@@ -212,7 +212,7 @@ export class OfficeMockObject {
    * @param propertyName Property name to the property to be added
    * @param value Value this added property will have
    */
-  private set(propertyName: string, value: any) {
+  private setValue(propertyName: string, value: any) {
     if (typeof value === "function") {
       this[propertyName] = value;
     } else {
