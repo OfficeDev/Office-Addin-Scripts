@@ -4,17 +4,18 @@ import * as jszip from "jszip";
 import * as path from "path";
 
 export function exportMetadataPackage(
-  output: string = "package/manifest.zip",
+  output: string = "",
   manifest: string = "manifest.json",
   assets: string = "assets"
 ): string {
   const zip = new jszip();
+  const manifestPath: string = path.resolve(manifest);
 
-  if (fs.existsSync(manifest)) {
-    const manifestData = fs.readFileSync(manifest);
+  if (fs.existsSync(manifestPath)) {
+    const manifestData = fs.readFileSync(manifestPath);
     zip.file("manifest.json", manifestData);
   } else {
-    throw new Error(`The file '${manifest}' does not exist`);
+    throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
   if (fs.existsSync(assets)) {
@@ -27,6 +28,12 @@ export function exportMetadataPackage(
     });
   } else {
     throw new Error("Need folder of assets referenced by manifest file");
+  }
+
+  if (output === "") {
+    output = path.join(path.dirname(manifestPath), "manifest.zip");
+  } else {
+    output = path.resolve(output);
   }
 
   fsExtra.ensureDirSync(path.dirname(output));

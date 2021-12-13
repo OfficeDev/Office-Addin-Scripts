@@ -626,7 +626,7 @@ describe("Unit Tests", function() {
   });
   describe("export.ts", function() {
     describe("exportMetadataPackage()", function() {
-      it("export manifest", async function() {
+      it("export manifest to test location", async function() {
         this.timeout(6000);
         const testFolder = path.resolve("./testExecution");
         const manifestPath = path.normalize("test/manifests/manifest.json");
@@ -640,16 +640,31 @@ describe("Unit Tests", function() {
         // Cleanup
         fs.rmSync(testFolder, { recursive: true });
       });
+      it("export manifest to default location", async function() {
+        this.timeout(6000);
+        const manifestPath = path.normalize("test/manifests/manifest.json");
+        const assetsPath = path.normalize("test/assets");
+        const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
+        const outputFile = await exportMetadataPackage("", manifestPath, assetsPath);
+
+        assert.strictEqual(outputFile, expectedOutput, "Output path should match the argument");
+        assert.strictEqual(fs.existsSync(outputFile), true, "Output file should exist");
+        
+        // Cleanup
+        fs.unlinkSync(outputFile);
+      });
       it("invalid manifest path", async function() {
         this.timeout(6000);
-        let result: string = "";
         const invalidManifestPath = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
+        const expectedError = `The file '${invalidManifestPath}' does not exist`;
+        let result: string = "";
+
         try {
-          await exportMetadataPackage(invalidManifestPath);
+          await exportMetadataPackage("" /* use default output path */, invalidManifestPath);
         } catch (err: any) {
           result = err.message;
         }
-        assert.strictEqual(result.indexOf("The file 'manifest.json' does not exist") >= 0, true);
+        assert.strictEqual(result, expectedError);
       });
     });
   });

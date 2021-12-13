@@ -174,7 +174,7 @@ export async function validate(
 
 export async function exportManifest(command: commander.Command) {
   try {
-    const outputPath: string = command.output ?? "./package/manifest.zip";
+    const outputPath: string = command.output ?? "";
     const manifestPath: string = command.manifest ?? "./manifest.json";
     const assetsPath: string = command.assets ?? "./assets";
 
