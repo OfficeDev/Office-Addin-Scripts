@@ -98,11 +98,6 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.getColor(), "blue");
       officeMock.range.color = "green";
       assert.strictEqual(officeMock.range.getColor(), "green");
-
-      officeMock.range.setMock("color", "yellow");
-      officeMock.range.load("color");
-      await officeMock.sync();
-      assert.strictEqual(officeMock.range.getColor(), "yellow");
     });
     it("Writting values", async function() {
       const officeMock = new OfficeMockObject(testObject);
