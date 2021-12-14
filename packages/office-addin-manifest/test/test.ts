@@ -21,6 +21,7 @@ import {
   toOfficeApp,
 } from "../src/officeApp";
 import { validateManifest } from "../src/validate";
+import { exportMetadataPackage } from "../src/export";
 
 const manifestOriginalFolder = path.resolve("./test/manifests");
 const manifestTestFolder = path.resolve("./testExecution/testManifests");
@@ -473,10 +474,10 @@ describe("Unit Tests", function() {
     });
     describe("modifyManifestFile()", function() {
       beforeEach(async function() {
-        await _createManifestFilesFolder();
+        await _createManifestTestFolder(manifestTestFolder);
       });
       afterEach(async function() {
-        await _deleteManifestTestFolder(manifestTestFolder);
+        await _deleteFolder(manifestTestFolder);
       });
       it("should handle a specified valid guid and displayName", async function() {
         // call modify, specifying guid and displayName  parameters
@@ -623,27 +624,71 @@ describe("Unit Tests", function() {
       });
     });
   });
+  describe("export.ts", function() {
+    describe("exportMetadataPackage()", function() {
+      it("export manifest to test location", async function() {
+        this.timeout(6000);
+        const testFolder = path.resolve("./testExecution");
+        const manifestPath = path.normalize("test/manifests/manifest.json");
+        const assetsPath = path.normalize("test/assets");
+        const outputPath = path.normalize(`${testFolder}/testPackage.zip`);
+        const outputFile = await exportMetadataPackage(outputPath, manifestPath, assetsPath);
+
+        assert.strictEqual(outputFile, outputPath, "Output path should match the argument");
+        assert.strictEqual(fs.existsSync(outputFile), true, "Output file should exist");
+        
+        // Cleanup
+        fs.rmSync(testFolder, { recursive: true });
+      });
+      it("export manifest to default location", async function() {
+        this.timeout(6000);
+        const manifestPath = path.normalize("test/manifests/manifest.json");
+        const assetsPath = path.normalize("test/assets");
+        const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
+        const outputFile = await exportMetadataPackage("", manifestPath, assetsPath);
+
+        assert.strictEqual(outputFile, expectedOutput, "Output path should match the argument");
+        assert.strictEqual(fs.existsSync(outputFile), true, "Output file should exist");
+        
+        // Cleanup
+        fs.unlinkSync(outputFile);
+      });
+      it("invalid manifest path", async function() {
+        this.timeout(6000);
+        const invalidManifestPath = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
+        const expectedError = `The file '${invalidManifestPath}' does not exist`;
+        let result: string = "";
+
+        try {
+          await exportMetadataPackage("" /* use default output path */, invalidManifestPath);
+        } catch (err: any) {
+          result = err.message;
+        }
+        assert.strictEqual(result, expectedError);
+      });
+    });
+  });
 });
 
-async function _deleteManifestTestFolder(projectFolder: string): Promise<void> {
-  if (fs.existsSync(projectFolder)) {
-    fs.readdirSync(projectFolder).forEach(function(file) {
-    const curPath = projectFolder + "/" + file;
+async function _deleteFolder(folder: string): Promise<void> {
+  if (fs.existsSync(folder)) {
+    fs.readdirSync(folder).forEach(function(file) {
+    const curPath = path.join(folder, file);
 
     if (fs.lstatSync(curPath).isDirectory()) {
-      _deleteManifestTestFolder(curPath);
+      _deleteFolder(curPath);
     } else {
       fs.unlinkSync(curPath);
     }
   });
-    fs.rmdirSync(projectFolder);
+    fs.rmdirSync(folder);
   }
 }
 
-async function _createManifestFilesFolder(): Promise<void> {
-    if (fs.existsSync(manifestTestFolder)) {
-      await _deleteManifestTestFolder(manifestTestFolder);
+async function _createManifestTestFolder(folder: string): Promise<void> {
+    if (fs.existsSync(folder)) {
+      await _deleteFolder(folder);
     }
     const fsExtra = require("fs-extra");
-    await fsExtra.copy(manifestOriginalFolder, manifestTestFolder);
+    await fsExtra.copy(manifestOriginalFolder, folder);
 }

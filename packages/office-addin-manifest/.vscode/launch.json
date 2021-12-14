@@ -39,6 +39,21 @@
       ]
     },
     {
+      "name": "Command Line: export",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [
+        "export",
+        "-o",
+        "${env:TEMP}\\manifest.zip",
+        "-m",
+        "${workspaceFolder}\\test\\manifests\\manifest.json",
+        "-a",
+        "${workspaceFolder}\\test\\assets",
+      ]
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Debug Tests",
