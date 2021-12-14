@@ -7,6 +7,7 @@ import { logErrorMessage } from "office-addin-cli";
 import { OfficeAddinManifest, ManifestInfo } from "./manifestInfo";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
 import { usageDataObject } from "./defaults";
+import { exportMetadataPackage } from "./export";
 
 /* global console, process */
 
@@ -167,6 +168,20 @@ export async function validate(
     usageDataObject.reportSuccess("validate");
   } catch (err: any) {
     usageDataObject.reportException("validate", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function exportManifest(command: commander.Command) {
+  try {
+    const outputPath: string = command.output ?? "";
+    const manifestPath: string = command.manifest ?? "./manifest.json";
+    const assetsPath: string = command.assets ?? "./assets";
+
+    await exportMetadataPackage(outputPath, manifestPath, assetsPath);
+    usageDataObject.reportSuccess("export");
+  } catch (err: any) {
+    usageDataObject.reportException("export", err);
     logErrorMessage(err);
   }
 }
