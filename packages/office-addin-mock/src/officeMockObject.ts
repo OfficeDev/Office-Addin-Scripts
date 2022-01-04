@@ -18,16 +18,22 @@ export class OfficeMockObject {
    * Adds a function to OfficeMockObject. The function can be accessed by simply calling `this.methodName`
    * @param methodName Method name of the function to be added
    * @param methodBody Function to be added to the object. A blank function will be added if no argument is provided (Optional)
+   * @deprecated Add the function to the JSON in the constructor instead
    */
   addMockFunction(methodName: string, methodBody?: Function) {
     this[methodName] = methodBody ? methodBody : function () {};
   }
 
   /**
-   * Adds a mock object to OfficeMockObject. The object can be accessed by simply calling `this.objectName`
+   * addMock(name) will add a property named “name”, with a new OfficeMockObject as its value, to the object
    * @param objectName Object name of the object to be added
+   * @deprecated Add the object to the JSON in the constructor instead
    */
   addMock(objectName: string) {
+    if (this[objectName] !== undefined) {
+      throw new Error("Mock object already exists");
+    }
+
     const officeMockObject = new OfficeMockObject();
     officeMockObject.isObject = true;
     this.properties.set(objectName, officeMockObject);
@@ -58,6 +64,7 @@ export class OfficeMockObject {
    * Adds a property of any type to OfficeMockObject
    * @param propertyName Property name to the property to be added
    * @param value Value this added property will have
+   * @deprecated Add the property to the JSON in the constructor instead
    */
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
@@ -188,10 +195,8 @@ export class OfficeMockObject {
       if (dataType === "object" && !Array.isArray(property)) {
         this.addMock(propertyName);
         this[propertyName].populate(property);
-      } else if (dataType === "function") {
-        this.addMockFunction(propertyName, property);
       } else {
-        this.setMock(propertyName, property);
+        this.setValue(propertyName, property);
       }
     });
   }
@@ -200,6 +205,25 @@ export class OfficeMockObject {
     this.value = PossibleErrors.notLoaded;
     this.valueBeforeLoaded = value;
     this.loaded = false;
+  }
+
+  /**
+   * Sets a property of any type or function to the object
+   * @param propertyName Property name to the property to be added
+   * @param value Value this added property will have
+   */
+  private setValue(propertyName: string, value: any) {
+    if (typeof value === "function") {
+      this[propertyName] = value;
+    } else {
+      if (!this.properties.has(propertyName)) {
+        const officeMockObject = new OfficeMockObject();
+        officeMockObject.isObject = false;
+        this.properties.set(propertyName, officeMockObject);
+      }
+      this.properties.get(propertyName)?.resetValue(value);
+      this[propertyName] = this.properties.get(propertyName)?.value;
+    }
   }
 
   private updatePropertyCall(propertyName: string) {
