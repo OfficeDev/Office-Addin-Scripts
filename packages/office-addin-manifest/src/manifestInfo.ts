@@ -2,8 +2,11 @@
 // Licensed under the MIT license.
 
 import { usageDataObject } from "./defaults";
+import { ManifestHandlerJson } from "./manifestHandler/manifestHandlerJson";
 import { ManifestHandlerXml } from "./manifestHandler/manifestHandlerXml";
-import { ManifestHandler } from "./manifestHandler/manifestHandler";
+import { isJsonObject, ManifestHandler } from "./manifestHandler/manifestHandler";
+import * as util from "util";
+import * as fs from "fs";
 
 export class DefaultSettings {
   public sourceLocation?: string;
@@ -43,10 +46,20 @@ export namespace OfficeAddinManifest {
         throw new Error("You need to specify something to change in the manifest.");
       } else {
         try {
-          const manifestHandlerXml: ManifestHandler = new ManifestHandlerXml();
+          let manifestHandler: ManifestHandler;
 
-          manifestData = await manifestHandlerXml.modifyManifest(manifestPath, guid, displayName);
-          await manifestHandlerXml.writeManifestData(manifestPath, manifestData);
+          const readFileAsync = util.promisify(fs.readFile);
+          const fileData: string = await readFileAsync(manifestPath, {
+            encoding: "utf8",
+          });
+          if (isJsonObject(fileData)) {
+            manifestHandler = new ManifestHandlerJson();
+          } else {
+            manifestHandler = new ManifestHandlerXml();
+          }
+
+          manifestData = await manifestHandler.modifyManifest(manifestPath, guid, displayName);
+          await manifestHandler.writeManifestData(manifestPath, manifestData);
           let output = await readManifestFile(manifestPath);
           usageDataObject.reportSuccess("modifyManifestFile()");
           return output;

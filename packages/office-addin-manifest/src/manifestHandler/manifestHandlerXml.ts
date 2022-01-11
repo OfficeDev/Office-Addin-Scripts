@@ -12,8 +12,16 @@ const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 export type Xml = xmlMethods.Xml;
 
-export class ManifestHandlerXml implements ManifestHandler {
-  constructor() {}
+export class ManifestHandlerXml extends ManifestHandler {
+  async modifyManifest(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
+    try {
+      const manifestXml: Xml = await this.readFromManifestFile(manifestPath);
+      this.setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
+      return manifestXml;
+    } catch (err) {
+      throw new Error(`Unable to modify xml data for manifest file: ${manifestPath}. \n${err}`);
+    }
+  }
 
   parseManifest(xml: Xml): ManifestInfo {
     const manifest: ManifestInfo = new ManifestInfo();
@@ -50,16 +58,6 @@ export class ManifestHandlerXml implements ManifestHandler {
     }
 
     return manifest;
-  }
-
-  async modifyManifest(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
-    try {
-      const manifestXml: Xml = await this.readFromManifestFile(manifestPath);
-      this.setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
-      return manifestXml;
-    } catch (err) {
-      throw new Error(`Unable to modify xml data for manifest file: ${manifestPath}. \n${err}`);
-    }
   }
 
   async parseXmlAsync(xmlString: string, manifestPath: string): Promise<Xml> {
