@@ -634,8 +634,8 @@ describe("Unit Tests", function() {
         const outputPath = path.normalize(`${testFolder}/testPackage.zip`);
         const outputFile = await exportMetadataPackage(outputPath, manifestPath, assetsPath);
 
-        assert.strictEqual(outputFile, outputPath, "Output path should match the argument");
-        assert.strictEqual(fs.existsSync(outputFile), true, "Output file should exist");
+        assert.strictEqual(outputFile, outputPath, "Output path \'" + outputFile + "\' should match the argument \'" + outputPath + "\'");
+        assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
         
         // Cleanup
         fs.rmSync(testFolder, { recursive: true });
@@ -647,8 +647,8 @@ describe("Unit Tests", function() {
         const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
         const outputFile = await exportMetadataPackage("", manifestPath, assetsPath);
 
-        assert.strictEqual(outputFile, expectedOutput, "Output path should match the argument");
-        assert.strictEqual(fs.existsSync(outputFile), true, "Output file should exist");
+        assert.strictEqual(outputFile, expectedOutput, "Output path \'" + outputFile + "\' should match the default \'" + expectedOutput + "\'");
+        assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
         
         // Cleanup
         fs.unlinkSync(outputFile);
