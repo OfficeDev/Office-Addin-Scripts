@@ -45,7 +45,7 @@ export namespace OfficeAddinManifest {
         try {
           const manifestHandlerXml: ManifestHandler = new ManifestHandlerXml();
 
-          manifestData = await manifestHandlerXml.modifyManifestXml(manifestPath, guid, displayName);
+          manifestData = await manifestHandlerXml.modifyManifest(manifestPath, guid, displayName);
           await manifestHandlerXml.writeManifestData(manifestPath, manifestData);
           let output = await readManifestFile(manifestPath);
           usageDataObject.reportSuccess("modifyManifestFile()");
@@ -64,7 +64,7 @@ export namespace OfficeAddinManifest {
     if (manifestPath) {
       const manifestHandlerXml: ManifestHandler = new ManifestHandlerXml();
 
-      const xml = await manifestHandlerXml.readXmlFromManifestFile(manifestPath);
+      const xml = await manifestHandlerXml.readFromManifestFile(manifestPath);
       const manifest: ManifestInfo = manifestHandlerXml.parseManifest(xml);
       return manifest;
     } else {

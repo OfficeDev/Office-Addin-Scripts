@@ -52,9 +52,9 @@ export class ManifestHandlerXml implements ManifestHandler {
     return manifest;
   }
 
-  async modifyManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
+  async modifyManifest(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
     try {
-      const manifestXml: Xml = await this.readXmlFromManifestFile(manifestPath);
+      const manifestXml: Xml = await this.readFromManifestFile(manifestPath);
       this.setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
       return manifestXml;
     } catch (err) {
@@ -74,7 +74,7 @@ export class ManifestHandlerXml implements ManifestHandler {
     });
   }
 
-  async readXmlFromManifestFile(manifestPath: string): Promise<Xml> {
+  async readFromManifestFile(manifestPath: string): Promise<Xml> {
     const fileData: string = await readFileAsync(manifestPath, {
       encoding: "utf8",
     });
