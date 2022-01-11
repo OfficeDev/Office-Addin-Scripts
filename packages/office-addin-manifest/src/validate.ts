@@ -3,7 +3,7 @@
 
 import { createReadStream } from "fs";
 import fetch from "node-fetch";
-import { OfficeAddinManifest } from "./manifestHandler/manifestHandlerXml";
+import { OfficeAddinManifest } from "./manifestInfo";
 import { usageDataObject } from "./defaults";
 
 export class ManifestValidationDetails {

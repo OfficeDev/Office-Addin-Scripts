@@ -1,17 +1,13 @@
-export abstract class manifestHandler {
+import { ManifestInfo } from "../manifestInfo";
+import { Xml } from "./manifestHandlerXml";
+
+export abstract class ManifestHandler {
   /* eslint-disable no-unused-vars */
-  abstract getAttributeValue(name: string): string | undefined;
-  abstract getElement(name: string): any | undefined;
-  abstract getElementAttributeValue(elementName: string, attributeName: string): string | undefined;
-  abstract getElements(name: string): any[];
-  abstract getElementsAttributeValue(name: string, itemElementName: string, attributeName: string): string[];
-  abstract getElementsValue(name: string, itemElementName: string): string[];
-  abstract getElementValue(name: string): string | undefined;
-  abstract setElementAttributeValue(
-    elementName: string,
-    attributeValue: string | undefined,
-    attributeName: string
-  ): void;
-  abstract setElementValue(elementName: string, elementValue: any): void;
+  abstract parseManifest(xml: Xml): ManifestInfo;
+  abstract modifyManifestXml(manifestPath: string, guid?: string, displayName?: string): Promise<Xml>;
+  abstract parseXmlAsync(xmlString: string, manifestPath: string): Promise<Xml>;
+  abstract readXmlFromManifestFile(manifestPath: string): Promise<Xml>;
+  abstract setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void;
+  abstract writeManifestData(manifestPath: string, manifestData: any): Promise<void>;
   /* eslint-enable no-unused-vars */
 }

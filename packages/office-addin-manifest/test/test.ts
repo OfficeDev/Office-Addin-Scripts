@@ -8,7 +8,7 @@ import * as path from "path";
 import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
-import { OfficeAddinManifest } from "../src/manifestHandler/manifestHandlerXml";
+import { OfficeAddinManifest } from "../src/manifestInfo";
 import {
   getOfficeAppForManifestHost,
   getOfficeAppName,
