@@ -147,9 +147,9 @@ export async function validate(
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
 
     if (validation.isValid) {
-      console.log("The manifest is valid.");
+      console.log(chalk.bold.green("The manifest is valid."));
     } else {
-      console.log("The manifest is not valid.");
+      console.log(chalk.bold.red("The manifest is not valid."));
     }
     console.log();
 
