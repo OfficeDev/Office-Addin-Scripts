@@ -8,7 +8,6 @@ import * as xml2js from "xml2js";
 import * as xmlMethods from "../xml";
 import { DefaultSettings, ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
-const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
 export type Xml = xmlMethods.Xml;
 

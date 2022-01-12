@@ -10,12 +10,3 @@ export abstract class ManifestHandler {
   abstract writeManifestData(manifestPath: string, manifestData: any): Promise<void>;
   /* eslint-enable no-unused-vars */
 }
-
-export function isJsonObject(file: any) {
-  try {
-    JSON.parse(file);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}

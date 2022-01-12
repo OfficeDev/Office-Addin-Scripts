@@ -2,9 +2,8 @@
 // Licensed under the MIT license.
 
 import { usageDataObject } from "./defaults";
-import { isJsonObject, ManifestHandler } from "./manifestHandler/manifestHandler";
-import { ManifestHandlerJson } from "./manifestHandler/manifestHandlerJson";
-import { ManifestHandlerXml } from "./manifestHandler/manifestHandlerXml";
+import { ManifestHandler } from "./manifestHandler/manifestHandler";
+import { getManifestHandler } from "./manifestHandler/getManifestHandler";
 import * as util from "util";
 import * as fs from "fs";
 
@@ -86,14 +85,4 @@ async function readFromManifestFile(manifestPath: string): Promise<string> {
   } catch (err) {
     throw new Error(`Unable to read data for manifest file: ${manifestPath}. \n${err}`);
   }
-}
-
-export function getManifestHandler(fileData: string): ManifestHandler {
-  let manifestHandler: ManifestHandler;
-  if (isJsonObject(fileData)) {
-    manifestHandler = new ManifestHandlerJson();
-  } else {
-    manifestHandler = new ManifestHandlerXml();
-  }
-  return manifestHandler;
 }
