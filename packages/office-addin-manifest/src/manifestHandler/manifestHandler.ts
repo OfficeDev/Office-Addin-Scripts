@@ -5,9 +5,8 @@ import { ManifestInfo } from "../manifestInfo";
 
 export abstract class ManifestHandler {
   /* eslint-disable no-unused-vars */
-  abstract modifyManifest(manifestPath: string, guid?: string, displayName?: string): Promise<any>;
-  abstract parseManifest(file: any): ManifestInfo;
-  abstract readFromManifestFile(manifestPath: string): Promise<any>;
+  abstract modifyManifest(manifestPath: string, fileData: string, guid?: string, displayName?: string): Promise<any>;
+  abstract parseManifest(manifestPath: string, fileData: string): Promise<ManifestInfo>;
   abstract writeManifestData(manifestPath: string, manifestData: any): Promise<void>;
   /* eslint-enable no-unused-vars */
 }

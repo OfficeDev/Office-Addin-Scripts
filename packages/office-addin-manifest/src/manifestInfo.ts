@@ -47,7 +47,6 @@ export namespace OfficeAddinManifest {
       } else {
         try {
           let manifestHandler: ManifestHandler;
-
           const fileData: string = await readFromManifestFile(manifestPath);
           if (isJsonObject(fileData)) {
             manifestHandler = new ManifestHandlerJson();
@@ -55,7 +54,7 @@ export namespace OfficeAddinManifest {
             manifestHandler = new ManifestHandlerXml();
           }
 
-          manifestData = await manifestHandler.modifyManifest(manifestPath, guid, displayName);
+          manifestData = await manifestHandler.modifyManifest(manifestPath, fileData, guid, displayName);
           await manifestHandler.writeManifestData(manifestPath, manifestData);
           let output = await readManifestFile(manifestPath);
           usageDataObject.reportSuccess("modifyManifestFile()");
@@ -72,10 +71,15 @@ export namespace OfficeAddinManifest {
 
   export async function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
     if (manifestPath) {
-      const manifestHandlerXml: ManifestHandler = new ManifestHandlerXml();
+      let manifestHandler: ManifestHandler;
+      const fileData: string = await readFromManifestFile(manifestPath);
+      if (isJsonObject(fileData)) {
+        manifestHandler = new ManifestHandlerJson();
+      } else {
+        manifestHandler = new ManifestHandlerXml();
+      }
 
-      const xml = await manifestHandlerXml.readFromManifestFile(manifestPath);
-      const manifest: ManifestInfo = manifestHandlerXml.parseManifest(xml);
+      const manifest: ManifestInfo = await manifestHandler.parseManifest(manifestPath, fileData);
       return manifest;
     } else {
       throw new Error(`Please provide the path to the manifest file.`);
@@ -89,7 +93,7 @@ async function readFromManifestFile(manifestPath: string): Promise<string> {
       encoding: "utf8",
     });
     return fileData;
-  } catch(err) {
+  } catch (err) {
     throw new Error(`Unable to read data for manifest file: ${manifestPath}. \n${err}`);
   }
 }

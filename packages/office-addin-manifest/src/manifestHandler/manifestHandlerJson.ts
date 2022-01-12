@@ -5,15 +5,11 @@ import { ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 
 export class ManifestHandlerJson extends ManifestHandler {
-  async modifyManifest(manifestPath: string, guid?: string, displayName?: string): Promise<any> {}
+  async modifyManifest(manifestPath: string, fileData: string, guid?: string, displayName?: string): Promise<any> {}
 
-  parseManifest(file: any): ManifestInfo {
+  async parseManifest(manifestPath: string, fileData: string): Promise<ManifestInfo> {
     const manifest: ManifestInfo = new ManifestInfo();
     return manifest;
-  }
-
-  async readFromManifestFile(manifestPath: string): Promise<any> {
-    return "json data";
   }
 
   async writeManifestData(manifestPath: string, manifestData: any): Promise<void> {}

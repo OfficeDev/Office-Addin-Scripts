@@ -13,9 +13,9 @@ const writeFileAsync = util.promisify(fs.writeFile);
 export type Xml = xmlMethods.Xml;
 
 export class ManifestHandlerXml extends ManifestHandler {
-  async modifyManifest(manifestPath: string, guid?: string, displayName?: string): Promise<Xml> {
+  async modifyManifest(manifestPath: string, fileData: string, guid?: string, displayName?: string): Promise<Xml> {
     try {
-      const manifestXml: Xml = await this.readFromManifestFile(manifestPath);
+      const manifestXml: Xml = await this.parseXmlAsync(fileData, manifestPath);
       this.setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
       return manifestXml;
     } catch (err) {
@@ -23,7 +23,8 @@ export class ManifestHandlerXml extends ManifestHandler {
     }
   }
 
-  parseManifest(xml: Xml): ManifestInfo {
+  async parseManifest(manifestPath: string, fileData: string): Promise<ManifestInfo> {
+    const xml = await this.parseXmlAsync(fileData, manifestPath);
     const manifest: ManifestInfo = new ManifestInfo();
     const officeApp: Xml = xml.OfficeApp;
 
@@ -70,14 +71,6 @@ export class ManifestHandlerXml extends ManifestHandler {
         }
       });
     });
-  }
-
-  async readFromManifestFile(manifestPath: string): Promise<Xml> {
-    const fileData: string = await readFileAsync(manifestPath, {
-      encoding: "utf8",
-    });
-    const xml = await this.parseXmlAsync(fileData, manifestPath);
-    return xml;
   }
 
   setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void {
