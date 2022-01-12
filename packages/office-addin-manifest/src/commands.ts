@@ -143,7 +143,8 @@ export async function validate(
   command: commander.Command /* eslint-disable-line no-unused-vars */
 ) {
   try {
-    const validation: ManifestValidation = await validateManifest(manifestPath);
+    const verifyProduction: boolean = command.production;
+    const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
 
     if (validation.isValid) {
       console.log("The manifest is valid.");
