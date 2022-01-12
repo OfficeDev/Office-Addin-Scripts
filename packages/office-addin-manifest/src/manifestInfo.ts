@@ -48,10 +48,7 @@ export namespace OfficeAddinManifest {
         try {
           let manifestHandler: ManifestHandler;
 
-          const readFileAsync = util.promisify(fs.readFile);
-          const fileData: string = await readFileAsync(manifestPath, {
-            encoding: "utf8",
-          });
+          const fileData: string = await readFromManifestFile(manifestPath);
           if (isJsonObject(fileData)) {
             manifestHandler = new ManifestHandlerJson();
           } else {
@@ -83,5 +80,16 @@ export namespace OfficeAddinManifest {
     } else {
       throw new Error(`Please provide the path to the manifest file.`);
     }
+  }
+}
+
+async function readFromManifestFile(manifestPath: string): Promise<string> {
+  try {
+    const fileData: string = await util.promisify(fs.readFile)(manifestPath, {
+      encoding: "utf8",
+    });
+    return fileData;
+  } catch(err) {
+    throw new Error(`Unable to read data for manifest file: ${manifestPath}. \n${err}`);
   }
 }
