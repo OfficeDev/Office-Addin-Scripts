@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 
 import { usageDataObject } from "./defaults";
+import { isJsonObject, ManifestHandler } from "./manifestHandler/manifestHandler";
 import { ManifestHandlerJson } from "./manifestHandler/manifestHandlerJson";
 import { ManifestHandlerXml } from "./manifestHandler/manifestHandlerXml";
-import { isJsonObject, ManifestHandler } from "./manifestHandler/manifestHandler";
 import * as util from "util";
 import * as fs from "fs";
 
@@ -46,13 +46,8 @@ export namespace OfficeAddinManifest {
         throw new Error("You need to specify something to change in the manifest.");
       } else {
         try {
-          let manifestHandler: ManifestHandler;
           const fileData: string = await readFromManifestFile(manifestPath);
-          if (isJsonObject(fileData)) {
-            manifestHandler = new ManifestHandlerJson();
-          } else {
-            manifestHandler = new ManifestHandlerXml();
-          }
+          const manifestHandler: ManifestHandler = getManifestHandler(fileData);
 
           manifestData = await manifestHandler.modifyManifest(manifestPath, fileData, guid, displayName);
           await manifestHandler.writeManifestData(manifestPath, manifestData);
@@ -71,13 +66,8 @@ export namespace OfficeAddinManifest {
 
   export async function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
     if (manifestPath) {
-      let manifestHandler: ManifestHandler;
       const fileData: string = await readFromManifestFile(manifestPath);
-      if (isJsonObject(fileData)) {
-        manifestHandler = new ManifestHandlerJson();
-      } else {
-        manifestHandler = new ManifestHandlerXml();
-      }
+      const manifestHandler: ManifestHandler = getManifestHandler(fileData);
 
       const manifest: ManifestInfo = await manifestHandler.parseManifest(manifestPath, fileData);
       return manifest;
@@ -96,4 +86,14 @@ async function readFromManifestFile(manifestPath: string): Promise<string> {
   } catch (err) {
     throw new Error(`Unable to read data for manifest file: ${manifestPath}. \n${err}`);
   }
+}
+
+export function getManifestHandler(fileData: string): ManifestHandler {
+  let manifestHandler: ManifestHandler;
+  if (isJsonObject(fileData)) {
+    manifestHandler = new ManifestHandlerJson();
+  } else {
+    manifestHandler = new ManifestHandlerXml();
+  }
+  return manifestHandler;
 }
