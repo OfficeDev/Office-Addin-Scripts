@@ -7,25 +7,23 @@ import { ManifestHandler } from "./manifestHandler";
 export class ManifestHandlerJson extends ManifestHandler {
   /* eslint-disable no-unused-vars */
   async modifyManifest(manifestPath: string, fileData: string, guid?: string, displayName?: string): Promise<any> {
-    console.log("modifyManifest JSON called");
+    throw new Error("Manifest cannot be modified in .json files");
   }
 
   async parseManifest(manifestPath: string, fileData: string): Promise<ManifestInfo> {
-    console.log("parseManifest JSON called");
     const manifestInfo: ManifestInfo = new ManifestInfo();
 
     try {
-      const file = JSON.parse(fileData);
+      const file = await JSON.parse(fileData);
     } catch (err) {
-      throw new Error(`Unable to read data for manifest file2: ${manifestPath}. \n${err}`);
+      throw new Error(`Unable to read data for manifest file: ${manifestPath}. \n${err}`);
     }
 
-    return manifestInfo;
+    throw new Error("Manifest cannot be parsed in .json files");
   }
 
   async writeManifestData(manifestPath: string, manifestData: any): Promise<void> {
-    console.log("writeManifestData JSON called");
-
+    throw new Error("Manifest cannot be written in .json files");
   }
   /* eslint-enable no-unused-vars */
 }

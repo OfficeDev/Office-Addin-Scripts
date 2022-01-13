@@ -11,7 +11,6 @@ function isJsonFile(path: string) {
 
 export function getManifestHandler(manifestPath: string): ManifestHandler {
   if (isJsonFile(manifestPath)) {
-    console.log("returning json");
     return new ManifestHandlerJson();
   } else {
     return new ManifestHandlerXml();
