@@ -691,26 +691,32 @@ describe("Unit Tests", function() {
       it("Detects a JSON manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/manifest.json");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, false);
       });
       it("Detects an XML manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/TaskPane.Excel.manifest.xml");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
       });
       it("Detects an inexistent JSON manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/foo/manifest.json");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, false);
       });
       it("Detects an inexistent XML manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/foo/TaskPane.Excel.manifest.xml");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
       });
       it("Detects an invalid JSON manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/invalid-manifest.json");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, false);
       });
       it("Detects an inexistent XML manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/invalid/incorrect-end-tag.manifest.xml");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
       });
     });
   });
