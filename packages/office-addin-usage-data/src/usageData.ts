@@ -318,7 +318,7 @@ export class OfficeAddinUsageData {
           return;
         }
 
-        let error = err instanceof Error ? err : new Error(`${this.options.projectName} error: ${err}`);
+        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),

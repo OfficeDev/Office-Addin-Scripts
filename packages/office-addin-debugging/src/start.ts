@@ -94,7 +94,7 @@ export function parsePlatform(text: string): Platform | undefined {
     case "win32":
       return Platform.Win32;
     default:
-      throw new ExpectedError(`The current platform is not supported: ${process.platform}`);
+      throw new ExpectedError(`The current platform is not supported: ${text}`);
   }
 }
 
