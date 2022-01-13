@@ -9,7 +9,7 @@
     },
     "project": "./tsconfig.json"
   },
-  "extends": ["eslint:recommended"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   "rules": {
     "prettier/prettier": ["error", { "endOfLine": "auto" }],
     "no-eval": "error",

@@ -16,7 +16,11 @@ module.exports = {
         },
         project: "./tsconfig.json",
       },
-      extends: ["eslint:recommended", "prettier"],
+      extends: [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier",
+      ],
       rules: {
         "prettier/prettier": ["error", { endOfLine: "auto" }],
         "no-eval": "error",
@@ -54,8 +58,7 @@ module.exports = {
     test: {
       plugins: ["office-addins"],
       extends: ["plugin:office-addins/recommended"],
-      rules: {
-      },
+      rules: {},
     },
   },
 };
