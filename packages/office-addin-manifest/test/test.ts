@@ -22,6 +22,10 @@ import {
 } from "../src/officeApp";
 import { validateManifest } from "../src/validate";
 import { exportMetadataPackage } from "../src/export";
+import { getManifestHandler } from "../src/manifestHandler/getManifestHandler";
+import { ManifestHandler } from "../src/manifestHandler/manifestHandler";
+import { ManifestHandlerXml } from "../src/manifestHandler/manifestHandlerXml";
+import { ManifestHandlerJson } from "../src/manifestHandler/manifestHandlerJson";
 
 const manifestOriginalFolder = path.resolve("./test/manifests");
 const manifestTestFolder = path.resolve("./testExecution/testManifests");
@@ -401,7 +405,7 @@ describe("Unit Tests", function() {
     });
   });
   describe("manifestInfo.ts", function() {
-    describe("readManifestInfo()", function() {
+    describe("readManifestInfo() XML", function() {
       it("should read the manifest info", async function() {
         const info = await OfficeAddinManifest.readManifestFile("test/manifests/TaskPane.manifest.xml");
 
@@ -665,6 +669,21 @@ describe("Unit Tests", function() {
           result = err.message;
         }
         assert.strictEqual(result, expectedError);
+      });
+    });
+  });
+
+
+
+  describe("getManifestHandler.ts", function() {
+    describe("getManifestHandler()", function() {
+      it("Detects a JSON manifest", async function() {
+        const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/manifest.json");
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
+      });
+      it("Detects an XML manifest", async function() {
+        const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/TaskPane.Excel.manifest.xml");
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
       });
     });
   });

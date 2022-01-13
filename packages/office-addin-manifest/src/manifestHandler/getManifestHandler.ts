@@ -5,18 +5,13 @@ import { ManifestHandler } from "./manifestHandler";
 import { ManifestHandlerJson } from "./manifestHandlerJson";
 import { ManifestHandlerXml } from "./manifestHandlerXml";
 
-function isJsonObject(file: any) {
-  try {
-    JSON.parse(file);
-  } catch (e) {
-    return false;
-  }
-  return true;
+function isJsonFile(path: string) {
+  return path.endsWith(".json");
 }
 
-export function getManifestHandler(fileData: string): ManifestHandler {
+export function getManifestHandler(manifestPath: string): ManifestHandler {
   let manifestHandler: ManifestHandler;
-  if (isJsonObject(fileData)) {
+  if (isJsonFile(manifestPath)) {
     manifestHandler = new ManifestHandlerJson();
   } else {
     manifestHandler = new ManifestHandlerXml();

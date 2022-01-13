@@ -5,6 +5,7 @@ import { ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 
 export class ManifestHandlerJson extends ManifestHandler {
+  /* eslint-disable no-unused-vars */
   async modifyManifest(manifestPath: string, fileData: string, guid?: string, displayName?: string): Promise<any> {}
 
   async parseManifest(manifestPath: string, fileData: string): Promise<ManifestInfo> {
@@ -13,4 +14,5 @@ export class ManifestHandlerJson extends ManifestHandler {
   }
 
   async writeManifestData(manifestPath: string, manifestData: any): Promise<void> {}
+  /* eslint-enable no-unused-vars */
 }

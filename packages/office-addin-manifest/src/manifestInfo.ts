@@ -45,8 +45,8 @@ export namespace OfficeAddinManifest {
         throw new Error("You need to specify something to change in the manifest.");
       } else {
         try {
+          const manifestHandler: ManifestHandler = getManifestHandler(manifestPath);
           const fileData: string = await readFromManifestFile(manifestPath);
-          const manifestHandler: ManifestHandler = getManifestHandler(fileData);
 
           manifestData = await manifestHandler.modifyManifest(manifestPath, fileData, guid, displayName);
           await manifestHandler.writeManifestData(manifestPath, manifestData);
@@ -65,8 +65,8 @@ export namespace OfficeAddinManifest {
 
   export async function readManifestFile(manifestPath: string): Promise<ManifestInfo> {
     if (manifestPath) {
+      const manifestHandler: ManifestHandler = getManifestHandler(manifestPath);
       const fileData: string = await readFromManifestFile(manifestPath);
-      const manifestHandler: ManifestHandler = getManifestHandler(fileData);
 
       const manifest: ManifestInfo = await manifestHandler.parseManifest(manifestPath, fileData);
       return manifest;
