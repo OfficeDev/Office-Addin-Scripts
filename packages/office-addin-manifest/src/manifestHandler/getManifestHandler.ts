@@ -10,11 +10,10 @@ function isJsonFile(path: string) {
 }
 
 export function getManifestHandler(manifestPath: string): ManifestHandler {
-  let manifestHandler: ManifestHandler;
   if (isJsonFile(manifestPath)) {
-    manifestHandler = new ManifestHandlerJson();
+    console.log("returning json");
+    return new ManifestHandlerJson();
   } else {
-    manifestHandler = new ManifestHandlerXml();
+    return new ManifestHandlerXml();
   }
-  return manifestHandler;
 }

@@ -541,6 +541,21 @@ describe("Unit Tests", function() {
 
         assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
       });
+
+      it("invalid manifest path JSON", async function() {
+        // call  modify, specifying an invalid manifest path with a valid guid and displayName
+        const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
+        const testGuid = uuidv1();
+        const testDisplayName = "TestDisplayName";
+        let result;
+        try {
+          await OfficeAddinManifest.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
+        } catch (err: any) {
+          result = err.message;
+        }
+
+        assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      });
     });
   });
   describe("validate.ts", function() {
@@ -650,7 +665,6 @@ describe("Unit Tests", function() {
         const assetsPath = path.normalize("test/assets");
         const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
         const outputFile = await exportMetadataPackage("", manifestPath, assetsPath);
-
         assert.strictEqual(outputFile, expectedOutput, "Output path \'" + outputFile + "\' should match the default \'" + expectedOutput + "\'");
         assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
         
@@ -672,9 +686,6 @@ describe("Unit Tests", function() {
       });
     });
   });
-
-
-
   describe("getManifestHandler.ts", function() {
     describe("getManifestHandler()", function() {
       it("Detects a JSON manifest", async function() {
@@ -683,6 +694,22 @@ describe("Unit Tests", function() {
       });
       it("Detects an XML manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/TaskPane.Excel.manifest.xml");
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
+      });
+      it("Detects an inexistent JSON manifest", async function() {
+        const manifestHandler: ManifestHandler = getManifestHandler("test/foo/manifest.json");
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
+      });
+      it("Detects an inexistent XML manifest", async function() {
+        const manifestHandler: ManifestHandler = getManifestHandler("test/foo/TaskPane.Excel.manifest.xml");
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
+      });
+      it("Detects an invalid JSON manifest", async function() {
+        const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/invalid-manifest.json");
+        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
+      });
+      it("Detects an inexistent XML manifest", async function() {
+        const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/invalid/incorrect-end-tag.manifest.xml");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
       });
     });
