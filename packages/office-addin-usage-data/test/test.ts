@@ -166,19 +166,21 @@ describe("Test office-addin-usage data-package", function() {
       compareError.message = "this error contains a file path:C:\\index.js";
       // may throw error if change any part of the top of the test file
       compareError.stack = "this error contains a file path:C:\\.js";
-      addInUsageData.maskFilePaths(err);
-      assert.equal(compareError.name, err.name);
-      assert.equal(compareError.message, err.message);
-      assert.equal(err.stack.includes(compareError.stack), true);
+      const returnedError = addInUsageData.maskFilePaths(err);
+
+      assert.strictEqual(compareError.name, returnedError.name);
+      assert.strictEqual(compareError.message, returnedError.message);
+      assert.strictEqual(returnedError.stack.includes(compareError.stack), true);
     });
     it("should parse error file paths with backslashs", () => {
       addInUsageData.setUsageDataOff();
       const compareErrorWithBackslash = new Error();
       compareErrorWithBackslash.message = "this error contains a file path:C:\\excel file .xlsx";
       compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";;
-      addInUsageData.maskFilePaths(errWithBackslash);
-      assert.equal(compareErrorWithBackslash.message, errWithBackslash.message);
-      assert.equal(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
+      const returnedError = addInUsageData.maskFilePaths(errWithBackslash);
+
+      assert.strictEqual(compareErrorWithBackslash.message, returnedError.message);
+      assert.strictEqual(returnedError.stack.includes(compareErrorWithBackslash.stack), true);
     });
   });
 
