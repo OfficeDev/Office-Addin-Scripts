@@ -11,8 +11,7 @@ import * as officeAddinUsageData from "../src/usageData";
 import * as jsonData from "../src/usageDataSettings";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
-const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
-const errWithBackslash = new Error(`this error contains a file path:C:\\Users\\admin\\AppData\\Local\Temp\\excel file .xlsx`);
+const err = new Error(`this error contains a file path:C:/Users/admin/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
@@ -162,25 +161,29 @@ describe("Test office-addin-usage data-package", function() {
     it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
       const compareError = new Error();
-      compareError.name = "TestData-test";
-      compareError.message = "this error contains a file path:C:\\index.js";
+      compareError.name = "Error";
+      compareError.message = "this error contains a file path:index.js";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path:C:\\.js";
-      const returnedError = addInUsageData.maskFilePaths(err);
+      compareError.stack = "this error contains a file path:index.js";
+      const error = new Error(`this error contains a file path:C:/Users/admin/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
 
-      assert.strictEqual(compareError.name, returnedError.name);
-      assert.strictEqual(compareError.message, returnedError.message);
-      assert.strictEqual(returnedError.stack.includes(compareError.stack), true);
+      addInUsageData.maskFilePaths(error);
+
+      assert.strictEqual(compareError.name, error.name);
+      assert.strictEqual(compareError.message, error.message);
+      assert.strictEqual(error.stack.includes(compareError.stack), true);
     });
     it("should parse error file paths with backslashs", () => {
       addInUsageData.setUsageDataOff();
       const compareErrorWithBackslash = new Error();
-      compareErrorWithBackslash.message = "this error contains a file path:C:\\excel file .xlsx";
-      compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";;
-      const returnedError = addInUsageData.maskFilePaths(errWithBackslash);
+      compareErrorWithBackslash.message = "this error contains a file path:excel file .xlsx";
+      compareErrorWithBackslash.stack = "this error contains a file path:excel file .xlsx";;
+      const errWithBackslash = new Error(`this error contains a file path:C:\\Users\\admin\\AppData\\Local\Temp\\excel file .xlsx`);
+      
+      addInUsageData.maskFilePaths(errWithBackslash);
 
-      assert.strictEqual(compareErrorWithBackslash.message, returnedError.message);
-      assert.strictEqual(returnedError.stack.includes(compareErrorWithBackslash.stack), true);
+      assert.strictEqual(compareErrorWithBackslash.message, errWithBackslash.message);
+      assert.strictEqual(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
     });
   });
 

@@ -182,9 +182,11 @@ export class OfficeAddinUsageData {
    */
   public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      let error = Object.create(err);
+
       err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
       this.usageDataClient.trackException({
-        exception: this.maskFilePaths(err),
+        exception: this.maskFilePaths(error),
       });
       this.exceptionsSent++;
     }
@@ -282,14 +284,12 @@ export class OfficeAddinUsageData {
    */
   public maskFilePaths(err: Error): Error {
     try {
-      const error: Error = err;
-      const regexRemoveUserFilePaths = /[\/\\](.*)[\/\\]/gim; /* eslint-disable-line no-useless-escape */
-      const regexRemoveAbsoluteUserFilePathsFromStack = /\w:\\(?:[^\\\s]+\\)+/gim;
-      const regexRemoveFirstFilePathFromStack = /\\(.*)\./i;
-      error.message = error.message.replace(regexRemoveUserFilePaths, "\\");
-      error.stack = error.stack.replace(regexRemoveFirstFilePathFromStack, "\\.");
-      error.stack = error.stack.replace(regexRemoveAbsoluteUserFilePathsFromStack, "");
-      return error;
+      const regexRemoveUserFilePaths = /\w:[\/\\](?:[^\\\s]+[\/\\])+/gmi;
+
+      err.message = err.message.replace(regexRemoveUserFilePaths, "");
+      err.stack = err.stack.replace(regexRemoveUserFilePaths, "");
+
+      return err;
     } catch (err) {
       this.reportError("maskFilePaths", err);
       throw new Error(err);
@@ -350,7 +350,7 @@ export class OfficeAddinUsageData {
    * @param data Data object(s) sent to Application Insights
    */
   public reportExpectedException(method: string, err: Error | string, data: object = {}) {
-    let error = err instanceof Error ? err : new Error(`${this.options.projectName} error: ${err}`);
+    let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
     error.name = this.getEventName();
     error = this.maskFilePaths(error);
     const errorMessage = error instanceof Error ? error.message : error;
@@ -388,7 +388,7 @@ export class OfficeAddinUsageData {
   public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        let error = err instanceof Error ? err : new Error(`${this.options.projectName} error: ${err}`);
+        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
