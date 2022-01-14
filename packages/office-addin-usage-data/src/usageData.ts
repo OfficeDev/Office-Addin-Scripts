@@ -352,7 +352,7 @@ export class OfficeAddinUsageData {
   public reportExpectedException(method: string, err: Error | string, data: object = {}) {
     let error = err instanceof Error ? err : new Error(`${this.options.projectName} error: ${err}`);
     error.name = this.getEventName();
-    this.maskFilePaths(error);
+    error = this.maskFilePaths(error);
     const errorMessage = error instanceof Error ? error.message : error;
 
     this.sendUsageDataEvent({
