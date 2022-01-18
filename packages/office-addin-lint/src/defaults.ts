@@ -6,14 +6,14 @@ import * as usageData from "office-addin-usage-data";
 export const lintFiles = "src/**/*.{ts,tsx,js,jsx}";
 
 export enum ESLintExitCode {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   NoLintErrors = 0,
   HasLintError = 1,
   CommandFailed = 2,
 }
 
 export enum PrettierExitCode {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   NoFormattingProblems = 0,
   HasFormattingProblem = 1,
   CommandFailed = 2,

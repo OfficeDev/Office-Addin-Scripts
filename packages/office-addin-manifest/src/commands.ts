@@ -140,7 +140,7 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
 export async function validate(
   manifestPath: string,
-  command: commander.Command /* eslint-disable-line no-unused-vars */
+  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
     const validation: ManifestValidation = await validateManifest(manifestPath);

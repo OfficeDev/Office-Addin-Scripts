@@ -15,7 +15,7 @@ const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 export { toWebViewTypeName } from "./dev-settings-windows";
 
 export enum DebuggingMethod {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   Direct,
   Proxy,
   /** @deprecated use Proxy */
@@ -23,7 +23,7 @@ export enum DebuggingMethod {
 }
 
 export enum WebViewType {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   Default = "Default",
   IE = "IE",
   Edge = "Edge",

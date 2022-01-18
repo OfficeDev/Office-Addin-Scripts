@@ -13,7 +13,7 @@ import * as defaults from "./defaults";
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
  */
 export enum UsageDataReportingMethod {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   applicationInsights = "applicationInsights",
 }
 /**
@@ -22,7 +22,7 @@ export enum UsageDataReportingMethod {
  * @enum on: on level of usage data, sends errors and events
  */
 export enum UsageDataLevel {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   off = "off",
   on = "on",
 }

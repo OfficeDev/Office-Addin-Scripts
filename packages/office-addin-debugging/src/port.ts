@@ -69,7 +69,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
         const lines = stdout.trim().split("\n");
         if (isWin32) {
           lines.forEach((line) => {
-            /* eslint-disable no-unused-vars */
+            /* eslint-disable @typescript-eslint/no-unused-vars */
             const [protocol, localAddress, foreignAddress, status, processId] = line.split(" ").filter((text) => text);
             if (processId !== undefined) {
               const localAddressPort = parsePort(localAddress);
@@ -81,12 +81,12 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
         } else if (isLinux) {
           lines.forEach((line) => {
             const [
-              proto /* eslint-disable-line no-unused-vars */,
-              recv /* eslint-disable-line no-unused-vars */,
-              send /* eslint-disable-line no-unused-vars */,
+              proto /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              recv /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              send /* eslint-disable-line @typescript-eslint/no-unused-vars */,
               local_address,
-              remote_address /* eslint-disable-line no-unused-vars */,
-              state /* eslint-disable-line no-unused-vars */,
+              remote_address /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              state /* eslint-disable-line @typescript-eslint/no-unused-vars */,
               program,
             ] = line.split(" ").filter((text) => text);
             if (local_address !== undefined && local_address.endsWith(`:${port}`) && program !== undefined) {
@@ -99,15 +99,15 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
         } else {
           lines.forEach((line) => {
             const [
-              process /* eslint-disable-line no-unused-vars */,
+              process /* eslint-disable-line @typescript-eslint/no-unused-vars */,
               processId,
-              user /* eslint-disable-line no-unused-vars */,
-              fd /* eslint-disable-line no-unused-vars */,
-              type /* eslint-disable-line no-unused-vars */,
-              device /* eslint-disable-line no-unused-vars */,
-              size /* eslint-disable-line no-unused-vars */,
-              node /* eslint-disable-line no-unused-vars */,
-              name /* eslint-disable-line no-unused-vars */,
+              user /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              fd /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              type /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              device /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              size /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              node /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+              name /* eslint-disable-line @typescript-eslint/no-unused-vars */,
             ] = line.split(" ").filter((text) => text);
             if (processId !== undefined && processId !== "PID") {
               processIds.add(parseInt(processId, 10));

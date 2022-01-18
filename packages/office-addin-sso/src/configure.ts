@@ -16,7 +16,7 @@ require("dotenv").config();
 export async function createNewApplication(
   ssoAppName: string,
   port: string,
-  userJson: Object /* eslint-disable-line no-unused-vars */
+  userJson: Object /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ): Promise<Object> {
   try {
     let azRestCommand = await fs.readFileSync(defaults.azRestAppCreateCommandPath, "utf8");

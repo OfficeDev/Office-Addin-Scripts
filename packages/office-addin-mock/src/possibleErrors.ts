@@ -1,8 +1,8 @@
 export enum PossibleErrors {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   notLoaded = "Error, property was not loaded",
   notSync = "Error, context.sync() was not called",
-  /* eslint-enable no-unused-vars */
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
 export function isValidError(str: string): boolean {
