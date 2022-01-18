@@ -17,7 +17,6 @@ import { ExpectedError } from "office-addin-usage-data";
 /* global process, console, setTimeout */
 
 export enum AppType {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   Desktop = "desktop",
   Web = "web",
 }

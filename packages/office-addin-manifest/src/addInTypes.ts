@@ -7,7 +7,6 @@ import { ExpectedError } from "office-addin-usage-data";
  * The types of Office add-ins.
  */
 export enum AddInType {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   // the string values should be lowercase
   Content = "content",
   Mail = "mail",
