@@ -9,14 +9,14 @@
     },
     "project": "./tsconfig.json"
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  "extends": ["eslint:recommended", "prettier"],
   "rules": {
-    "prettier/prettier": ["error", { "endOfLine": "auto" }],
-    "no-eval": "error",
+    "@typescript-eslint/no-unused-vars": "error",
     "no-delete-var": "warn",
-    "no-octal": "warn",
+    "no-eval": "error",
     "no-inner-declarations": "warn",
+    "no-octal": "warn",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "error"
+    "prettier/prettier": ["error", { "endOfLine": "auto" }]
   }
 }
