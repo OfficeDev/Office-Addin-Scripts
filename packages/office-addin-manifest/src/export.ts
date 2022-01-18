@@ -3,11 +3,11 @@ import * as fsExtra from "fs-extra";
 import * as jszip from "jszip";
 import * as path from "path";
 
-export function exportMetadataPackage(
+export async function exportMetadataPackage(
   output: string = "",
   manifest: string = "manifest.json",
   assets: string = "assets"
-): string {
+): Promise<string> {
   const zip = new jszip();
   const manifestPath: string = path.resolve(manifest);
 
@@ -37,7 +37,12 @@ export function exportMetadataPackage(
   }
 
   fsExtra.ensureDirSync(path.dirname(output));
-  zip.generateNodeStream({ type: "nodebuffer", streamFiles: true }).pipe(fs.createWriteStream(output));
+  await new Promise((fulfill) =>
+    zip
+      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+      .pipe(fs.createWriteStream(output))
+      .on("finish", fulfill)
+  );
 
   return output;
 }
