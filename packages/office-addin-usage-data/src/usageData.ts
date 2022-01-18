@@ -184,7 +184,7 @@ export class OfficeAddinUsageData {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       let error = Object.create(err);
 
-      err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
+      error.name = this.options.isForTesting ? `${errorName}-test` : errorName;
       this.usageDataClient.trackException({
         exception: this.maskFilePaths(error),
       });
