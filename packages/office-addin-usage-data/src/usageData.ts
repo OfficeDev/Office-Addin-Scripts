@@ -284,10 +284,10 @@ export class OfficeAddinUsageData {
    */
   public maskFilePaths(err: Error): Error {
     try {
-      const regexRemoveUserFilePaths = /[/\\](.*[/\\]+)*(.+\.)+/gim;
+      const regexRemoveUserFilePaths = /(\w:)*[/\\](.*[/\\]+)*(.+\.)+[a-zA-Z]+/gim;
 
-      err.message = err.message.replace(regexRemoveUserFilePaths, "\\.");
-      err.stack = err.stack.replace(regexRemoveUserFilePaths, "\\.");
+      err.message = err.message.replace(regexRemoveUserFilePaths, '""');
+      err.stack = err.stack.replace(regexRemoveUserFilePaths, '""');
 
       return err;
     } catch (err) {

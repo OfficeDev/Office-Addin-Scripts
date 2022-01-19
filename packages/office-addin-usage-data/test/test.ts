@@ -160,12 +160,12 @@ describe("Test office-addin-usage data-package", function() {
   describe("Test maskFilePaths method", () => {
     it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
-      const error = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
+      const error = new Error(`this error contains a file path: C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
       const compareError = new Error();
       compareError.name = "Error";
-      compareError.message = "this error contains a file path:C:\\.js";
+      compareError.message = "this error contains a file path: \"\"";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path:C:\\.js";
+      compareError.stack = "this error contains a file path: \"\"";
 
       addInUsageData.maskFilePaths(error);
 
@@ -175,10 +175,10 @@ describe("Test office-addin-usage data-package", function() {
     });
     it("should parse error file paths with backslashs", () => {
       addInUsageData.setUsageDataOff();
-      const errWithBackslash = new Error(`this error contains a file path:C:\\Users\\admin\\AppData\\Local\\Temp\\excel file .xlsx`);
+      const errWithBackslash = new Error(`this error contains a file path: C:\\Users\\admin\\AppData\\Local\\Temp\\excel file .xlsx`);
       const compareErrorWithBackslash = new Error();
-      compareErrorWithBackslash.message = "this error contains a file path:C:\\.xlsx";
-      compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";
+      compareErrorWithBackslash.message = "this error contains a file path: \"\"";
+      compareErrorWithBackslash.stack = "this error contains a file path: \"\"";
       
       addInUsageData.maskFilePaths(errWithBackslash);
 
@@ -187,10 +187,10 @@ describe("Test office-addin-usage data-package", function() {
     });
     it("should parse error file paths with slashs and backslashs", () => {
       addInUsageData.setUsageDataOff();
-      const error = new Error(`this error contains a file path:C:\\Users/\\admin\\AppData\\Local//Temp\\excel_file .xlsx`);
+      const error = new Error(`this error contains a file path: C:\\Users/\\admin\\AppData\\Local//Temp\\excel_file .xlsx`);
       const compareError = new Error();
-      compareError.message = "this error contains a file path:C:\\.xlsx";
-      compareError.stack = "this error contains a file path:C:\\.xlsx";;
+      compareError.message = "this error contains a file path: \"\"";
+      compareError.stack = "this error contains a file path: \"\"";
       
       addInUsageData.maskFilePaths(error);
 
@@ -201,8 +201,8 @@ describe("Test office-addin-usage data-package", function() {
       addInUsageData.setUsageDataOff();
       const error = new Error(`file path: /this is a file path/path/manifestName.xml`);
       const compareError = new Error();
-      compareError.message = "file path: \\.xml";
-      compareError.stack = "file path: \\.xml";
+      compareError.message = "file path: \"\"";
+      compareError.stack = "file path: \"\"";
       
       addInUsageData.maskFilePaths(error);
 
