@@ -11,8 +11,7 @@ import * as officeAddinUsageData from "../src/usageData";
 import * as jsonData from "../src/usageDataSettings";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
-const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
-const errWithBackslash = new Error(`this error contains a file path:C:\\Users\\admin\\AppData\\Local\Temp\\excel file .xlsx`);
+const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
@@ -161,24 +160,54 @@ describe("Test office-addin-usage data-package", function() {
   describe("Test maskFilePaths method", () => {
     it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
+      const error = new Error(`this error contains a file path: C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
       const compareError = new Error();
-      compareError.name = "TestData-test";
-      compareError.message = "this error contains a file path:C:\\index.js";
+      compareError.name = "Error";
+      compareError.message = "this error contains a file path: <filepath>";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path:C:\\.js";
-      addInUsageData.maskFilePaths(err);
-      assert.equal(compareError.name, err.name);
-      assert.equal(compareError.message, err.message);
-      assert.equal(err.stack.includes(compareError.stack), true);
+      compareError.stack = "this error contains a file path: <filepath>";
+
+      addInUsageData.maskFilePaths(error);
+
+      assert.strictEqual(compareError.name, error.name);
+      assert.strictEqual(compareError.message, error.message);
+      assert.strictEqual(error.stack.includes(compareError.stack), true);
     });
     it("should parse error file paths with backslashs", () => {
       addInUsageData.setUsageDataOff();
+      const errWithBackslash = new Error(`this error contains a file path: C:\\Users\\admin\\AppData\\Local\\Temp\\excel file .xlsx`);
       const compareErrorWithBackslash = new Error();
-      compareErrorWithBackslash.message = "this error contains a file path:C:\\excel file .xlsx";
-      compareErrorWithBackslash.stack = "this error contains a file path:C:\\.xlsx";;
+      compareErrorWithBackslash.message = "this error contains a file path: <filepath>";
+      compareErrorWithBackslash.stack = "this error contains a file path: <filepath>";
+      
       addInUsageData.maskFilePaths(errWithBackslash);
-      assert.equal(compareErrorWithBackslash.message, errWithBackslash.message);
-      assert.equal(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
+
+      assert.strictEqual(compareErrorWithBackslash.message, errWithBackslash.message);
+      assert.strictEqual(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
+    });
+    it("should parse error file paths with slashs and backslashs", () => {
+      addInUsageData.setUsageDataOff();
+      const error = new Error(`this error contains a file path: C:\\Users/\\admin\\AppData\\Local//Temp\\excel_file .xlsx`);
+      const compareError = new Error();
+      compareError.message = "this error contains a file path: <filepath>";
+      compareError.stack = "this error contains a file path: <filepath>";
+      
+      addInUsageData.maskFilePaths(error);
+
+      assert.strictEqual(compareError.message, error.message);
+      assert.strictEqual(error.stack.includes(compareError.stack), true);
+    });
+    it("should handle relative paths", () => {
+      addInUsageData.setUsageDataOff();
+      const error = new Error(`file path: /this is a file path/path/manifestName.xml`);
+      const compareError = new Error();
+      compareError.message = "file path: <filepath>";
+      compareError.stack = "file path: <filepath>";
+      
+      addInUsageData.maskFilePaths(error);
+
+      assert.strictEqual(compareError.message, error.message);
+      assert.strictEqual(error.stack.includes(compareError.stack), true);
     });
   });
 
