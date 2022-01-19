@@ -61,9 +61,13 @@ export class ManifestValidation {
   }
 }
 
-export async function validateManifest(manifestPath: string): Promise<ManifestValidation> {
+export async function validateManifest(
+  manifestPath: string,
+  verifyProduction: boolean = false
+): Promise<ManifestValidation> {
   try {
     const validation: ManifestValidation = new ManifestValidation();
+    const clientId: string = verifyProduction ? "Default" : "devx";
 
     // read the manifest file to ensure the file path is valid
     await OfficeAddinManifest.readManifestFile(manifestPath);
@@ -72,16 +76,13 @@ export async function validateManifest(manifestPath: string): Promise<ManifestVa
     let response;
 
     try {
-      response = await fetch(
-        "https://validationgateway.omex.office.net/package/api/check?gates=DisableIconDimensionValidation",
-        {
-          body: stream,
-          headers: {
-            "Content-Type": "application/xml",
-          },
-          method: "POST",
-        }
-      );
+      response = await fetch(`https://validationgateway.omex.office.net/package/api/check?clientId=${clientId}`, {
+        body: stream,
+        headers: {
+          "Content-Type": "application/xml",
+        },
+        method: "POST",
+      });
     } catch (err) {
       throw new Error(`Unable to contact the manifest validation service.\n${err}`);
     }
