@@ -5,10 +5,13 @@ import { ManifestHandler } from "./manifestHandler";
 import { ManifestHandlerJson } from "./manifestHandlerJson";
 import { ManifestHandlerXml } from "./manifestHandlerXml";
 
-export function getManifestHandler(manifestPath: string): ManifestHandler {
+export async function getManifestHandler(manifestPath: string): Promise<ManifestHandler> {
+  let manifestHandler: ManifestHandler;
   if (manifestPath.endsWith(".json")) {
-    return new ManifestHandlerJson();
+    manifestHandler = new ManifestHandlerJson();
   } else {
-    return new ManifestHandlerXml();
+    manifestHandler = new ManifestHandlerXml();
   }
+  await manifestHandler.readFromManifestFile(manifestPath);
+  return manifestHandler;
 }
