@@ -20,7 +20,10 @@ commander
   .option("-d, --displayName <name>", "Change the display name.")
   .action(commands.modify);
 
-commander.command("validate <manifest-path>").action(commands.validate);
+commander
+  .command("validate <manifest-path>")
+  .option("-p, --production", "Verify the manifest for production environment")
+  .action(commands.validate);
 
 commander
   .command("export")
