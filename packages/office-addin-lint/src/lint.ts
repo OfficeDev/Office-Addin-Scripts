@@ -26,9 +26,9 @@ function normalizeFilePath(filePath: string): string {
 
 function getEsLintBaseCommand(useTestConfig: boolean = false): string {
   const projLintConfig = path.resolve(process.cwd(), ".eslintrc.json");
-  const libLintConfig = useTestConfig ? eslintTestConfigPath : eslintConfigPath;
-  const useConfig = fs.existsSync(projLintConfig) ? "" : `-c ${libLintConfig} `;
-  const eslintBaseCommand: string = `node "${eslintFilePath}" ${useConfig}--resolve-plugins-relative-to "${__dirname}"`;
+  const prodConfig = fs.existsSync(projLintConfig) ? projLintConfig : eslintConfigPath;
+  const configFilePath = useTestConfig ? eslintTestConfigPath : prodConfig;
+  const eslintBaseCommand: string = `node "${eslintFilePath}" -c "${configFilePath}" --resolve-plugins-relative-to "${__dirname}"`;
   return eslintBaseCommand;
 }
 
