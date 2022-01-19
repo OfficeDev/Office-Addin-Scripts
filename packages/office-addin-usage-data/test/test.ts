@@ -11,7 +11,7 @@ import * as officeAddinUsageData from "../src/usageData";
 import * as jsonData from "../src/usageDataSettings";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
-const err = new Error(`this error contains a file path:C:/Users/admin/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
+const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
@@ -160,7 +160,7 @@ describe("Test office-addin-usage data-package", function() {
   describe("Test maskFilePaths method", () => {
     it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
-      const error = new Error(`this error contains a file path:C:/Users/admin/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
+      const error = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
       const compareError = new Error();
       compareError.name = "Error";
       compareError.message = "this error contains a file path:C:\\.js";
