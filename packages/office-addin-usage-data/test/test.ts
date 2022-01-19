@@ -163,9 +163,9 @@ describe("Test office-addin-usage data-package", function() {
       const error = new Error(`this error contains a file path: C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
       const compareError = new Error();
       compareError.name = "Error";
-      compareError.message = "this error contains a file path: \"\"";
+      compareError.message = "this error contains a file path: <filepath>";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path: \"\"";
+      compareError.stack = "this error contains a file path: <filepath>";
 
       addInUsageData.maskFilePaths(error);
 
@@ -177,8 +177,8 @@ describe("Test office-addin-usage data-package", function() {
       addInUsageData.setUsageDataOff();
       const errWithBackslash = new Error(`this error contains a file path: C:\\Users\\admin\\AppData\\Local\\Temp\\excel file .xlsx`);
       const compareErrorWithBackslash = new Error();
-      compareErrorWithBackslash.message = "this error contains a file path: \"\"";
-      compareErrorWithBackslash.stack = "this error contains a file path: \"\"";
+      compareErrorWithBackslash.message = "this error contains a file path: <filepath>";
+      compareErrorWithBackslash.stack = "this error contains a file path: <filepath>";
       
       addInUsageData.maskFilePaths(errWithBackslash);
 
@@ -189,8 +189,8 @@ describe("Test office-addin-usage data-package", function() {
       addInUsageData.setUsageDataOff();
       const error = new Error(`this error contains a file path: C:\\Users/\\admin\\AppData\\Local//Temp\\excel_file .xlsx`);
       const compareError = new Error();
-      compareError.message = "this error contains a file path: \"\"";
-      compareError.stack = "this error contains a file path: \"\"";
+      compareError.message = "this error contains a file path: <filepath>";
+      compareError.stack = "this error contains a file path: <filepath>";
       
       addInUsageData.maskFilePaths(error);
 
@@ -201,8 +201,8 @@ describe("Test office-addin-usage data-package", function() {
       addInUsageData.setUsageDataOff();
       const error = new Error(`file path: /this is a file path/path/manifestName.xml`);
       const compareError = new Error();
-      compareError.message = "file path: \"\"";
-      compareError.stack = "file path: \"\"";
+      compareError.message = "file path: <filepath>";
+      compareError.stack = "file path: <filepath>";
       
       addInUsageData.maskFilePaths(error);
 
