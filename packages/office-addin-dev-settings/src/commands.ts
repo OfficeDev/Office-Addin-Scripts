@@ -296,7 +296,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
 
 export async function register(
   manifestPath: string,
-  command: commander.Command /* eslint-disable-line no-unused-vars */
+  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
     await devSettings.registerAddIn(manifestPath);
@@ -307,7 +307,9 @@ export async function register(
   }
 }
 
-export async function registered(command: commander.Command /* eslint-disable-line no-unused-vars */) {
+export async function registered(
+  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+) {
   try {
     const registeredAddins = await devSettings.getRegisterAddIns();
 
@@ -427,7 +429,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
 
 export async function unregister(
   manifestPath: string,
-  command: commander.Command /* eslint-disable-line no-unused-vars */
+  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
     if (manifestPath === "all") {

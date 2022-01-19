@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as fs from "fs";
 import * as path from "path";
 import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
-/* global require, __dirname */
+/* global require, __dirname, process */
 
 const eslintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
@@ -24,7 +25,9 @@ function normalizeFilePath(filePath: string): string {
 }
 
 function getEsLintBaseCommand(useTestConfig: boolean = false): string {
-  const configFilePath = useTestConfig ? eslintTestConfigPath : eslintConfigPath;
+  const projLintConfig = path.resolve(process.cwd(), ".eslintrc.json");
+  const prodConfig = fs.existsSync(projLintConfig) ? projLintConfig : eslintConfigPath;
+  const configFilePath = useTestConfig ? eslintTestConfigPath : prodConfig;
   const eslintBaseCommand: string = `node "${eslintFilePath}" -c "${configFilePath}" --resolve-plugins-relative-to "${__dirname}"`;
   return eslintBaseCommand;
 }

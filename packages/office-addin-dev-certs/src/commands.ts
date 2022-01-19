@@ -38,7 +38,7 @@ export async function install(command: commander.Command) {
   }
 }
 
-export async function verify(command: commander.Command /* eslint-disable-line no-unused-vars */) {
+export async function verify(command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */) {
   try {
     if (await verifyCertificates()) {
       console.log(
