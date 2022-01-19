@@ -60,8 +60,9 @@ function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefin
   if (errors) {
     let errorNumber = 1;
     for (const currentError of errors) {
-      console.log(chalk.bold.red(`\nError # ${errorNumber}: `));
+      console.log(chalk.bold.red(`Error #${errorNumber}: `));
       logManifestValidationIssue(currentError);
+      console.log();
       ++errorNumber;
     }
   }
@@ -69,7 +70,7 @@ function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefin
 
 function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined) {
   if (infos) {
-    console.log(chalk.bold.blue(`\nAdditional information: `));
+    console.log(chalk.bold.blue(`Validation Information: `));
     for (const currentInfo of infos) {
       logManifestValidationIssue(currentInfo);
       console.log();
@@ -81,8 +82,9 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
   if (warnings) {
     let warningNumber = 1;
     for (const currentWarning of warnings) {
-      console.log(chalk.bold.yellow(`\nWarning # ${warningNumber}: `));
+      console.log(chalk.bold.yellow(`Warning #${warningNumber}: `));
       logManifestValidationIssue(currentWarning);
+      console.log();
       ++warningNumber;
     }
   }
@@ -143,24 +145,22 @@ export async function validate(
   command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
-    const validation: ManifestValidation = await validateManifest(manifestPath);
-
-    if (validation.isValid) {
-      console.log("The manifest is valid.");
-    } else {
-      console.log("The manifest is not valid.");
-    }
-    console.log();
+    const verifyProduction: boolean = command.production;
+    const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
 
     if (validation.report) {
+      logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);
       logManifestValidationWarnings(validation.report.warnings);
-      logManifestValidationInfos(validation.report.notes);
 
       if (validation.isValid) {
         if (validation.report.addInDetails) {
           logManifestValidationSupportedProducts(validation.report.addInDetails.supportedProducts);
+          console.log();
         }
+        console.log(chalk.bold.green("The manifest is valid.\n"));
+      } else {
+        console.log(chalk.bold.red("The manifest is not valid.\n"));
       }
     }
 

@@ -35,7 +35,7 @@
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
         "validate",
-        "${workspaceFolder}/../../../office-addin-validator/manifest-to-test/valid_excel.xml"
+        "${workspaceFolder}\\test\\manifests\\TaskPane.manifest.xml"
       ]
     },
     {
