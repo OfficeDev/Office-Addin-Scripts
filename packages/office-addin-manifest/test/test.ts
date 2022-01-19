@@ -552,6 +552,16 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
       });
+      it("valid manifest prod (fail)", async function() {
+        this.timeout(6000);
+        const validation = await validateManifest("test/manifests/TaskPane.manifest.xml", true);
+        assert.strictEqual(validation.isValid, false);
+        assert.strictEqual(validation.status, 200);
+        assert.strictEqual(validation.report!.errors!.length, 2);
+        assert.strictEqual(validation.report!.notes!.length > 0, true);
+        assert.strictEqual(validation.report!.warnings!.length, 0);
+        assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
+      });
       it("invalid manifest path", async function() {
         this.timeout(6000);
         let result: string = "";
