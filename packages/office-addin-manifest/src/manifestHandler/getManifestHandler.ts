@@ -5,12 +5,8 @@ import { ManifestHandler } from "./manifestHandler";
 import { ManifestHandlerJson } from "./manifestHandlerJson";
 import { ManifestHandlerXml } from "./manifestHandlerXml";
 
-function isJsonFile(path: string) {
-  return path.endsWith(".json");
-}
-
 export function getManifestHandler(manifestPath: string): ManifestHandler {
-  if (isJsonFile(manifestPath)) {
+  if (manifestPath.endsWith(".json")) {
     return new ManifestHandlerJson();
   } else {
     return new ManifestHandlerXml();

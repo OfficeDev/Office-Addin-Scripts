@@ -8,7 +8,7 @@ import * as path from "path";
 import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
-import { OfficeAddinManifest } from "../src/manifestInfo";
+import { OfficeAddinManifest } from "../src/manifestOperations";
 import {
   getOfficeAppForManifestHost,
   getOfficeAppName,
@@ -487,7 +487,7 @@ describe("Unit Tests", function() {
         }
         assert.strictEqual(result, "Manifest cannot be parsed in .json files");
       });
-      it ("should an invalid json format", async function() {
+      it ("should thrown an error on an invalid json format", async function() {
         let result;
         try {
           await OfficeAddinManifest.readManifestFile("test/manifests/invalid/invalid-manifest.json");
@@ -496,7 +496,7 @@ describe("Unit Tests", function() {
         }
         assert.strictEqual(result, "Unable to read data for manifest file: test/manifests/invalid/invalid-manifest.json. \nSyntaxError: Unexpected token ] in JSON at position 4114");
       });
-      it ("inexistent manifest", async function() {
+      it ("nonexistent manifest", async function() {
         const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
         let result;
         try {
@@ -755,12 +755,12 @@ describe("Unit Tests", function() {
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
       });
-      it("Detects an inexistent JSON manifest", async function() {
+      it("Detects an nonexistent JSON manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/foo/manifest.json");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, false);
       });
-      it("Detects an inexistent XML manifest", async function() {
+      it("Detects an nonexistent XML manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/foo/TaskPane.Excel.manifest.xml");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
@@ -770,7 +770,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, false);
       });
-      it("Detects an inexistent XML manifest", async function() {
+      it("Detects an nonexistent XML manifest", async function() {
         const manifestHandler: ManifestHandler = getManifestHandler("test/manifests/invalid/incorrect-end-tag.manifest.xml");
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
