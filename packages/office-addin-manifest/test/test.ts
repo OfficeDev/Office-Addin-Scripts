@@ -765,6 +765,16 @@ describe("Unit Tests", function() {
         assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
         assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
       });
+      it("Detects an invalid extension manifest", async function() {
+        this.timeout(6000);
+        let result: string = "";
+        try {
+          await getManifestHandler("test/foo/tag.manifest.txt");
+        } catch (err: any) {
+          result =  err.message;
+        }
+        assert.strictEqual(result, `Manifest operations are not supported in .txt.\nThey are only supported in .xml and in .json.`)
+      });
     });
   });
 });
