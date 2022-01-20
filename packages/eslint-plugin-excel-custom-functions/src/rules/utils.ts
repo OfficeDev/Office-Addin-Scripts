@@ -8,9 +8,9 @@ import {
 import * as ts from "typescript";
 
 export enum OfficeCalls {
-  WRITE = "WRITE", // eslint-disable-line no-unused-vars
-  READ = "READ", // eslint-disable-line no-unused-vars
-  NOTOFFICE = "NOTOFFICE", // eslint-disable-line no-unused-vars
+  WRITE = "WRITE",
+  READ = "READ",
+  NOTOFFICE = "NOTOFFICE",
 }
 
 type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;

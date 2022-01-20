@@ -16,8 +16,8 @@ export async function startProcess(commandLine: string, verbose: boolean = false
       commandLine,
       (
         error: ExecException | null,
-        stdout: string /* eslint-disable-line no-unused-vars */,
-        stderr: string /* eslint-disable-line no-unused-vars */
+        stdout: string /* eslint-disable-line @typescript-eslint/no-unused-vars */,
+        stderr: string /* eslint-disable-line @typescript-eslint/no-unused-vars */
       ) => {
         if (error) {
           reject(error);

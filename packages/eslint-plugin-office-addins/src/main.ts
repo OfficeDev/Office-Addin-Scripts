@@ -18,11 +18,12 @@ module.exports = {
       },
       extends: ["eslint:recommended", "prettier"],
       rules: {
-        "prettier/prettier": ["error", { endOfLine: "auto" }],
-        "no-eval": "error",
+        "@typescript-eslint/no-unused-vars": "error",
         "no-delete-var": "warn",
-        "no-octal": "warn",
+        "no-eval": "error",
         "no-inner-declarations": "warn",
+        "no-octal": "warn",
+        "no-unused-vars": "off",
         "office-addins/call-sync-after-load": "error",
         "office-addins/call-sync-before-read": "error",
         "office-addins/load-object-before-read": "error",
@@ -31,6 +32,7 @@ module.exports = {
         "office-addins/no-navigational-load": "warn",
         "office-addins/no-office-initialize": "warn",
         "office-addins/test-for-null-using-isNullObject": "error",
+        "prettier/prettier": ["error", { endOfLine: "auto" }],
       },
     },
     react: {
@@ -54,8 +56,7 @@ module.exports = {
     test: {
       plugins: ["office-addins"],
       extends: ["plugin:office-addins/recommended"],
-      rules: {
-      },
+      rules: {},
     },
   },
 };

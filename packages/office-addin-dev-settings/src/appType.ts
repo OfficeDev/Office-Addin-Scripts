@@ -4,7 +4,6 @@ import { ExpectedError } from "office-addin-usage-data";
  * The type of Office application.
  */
 export enum AppType {
-  /* eslint-disable no-unused-vars */
   /**
    * Office application for Windows or Mac
    */

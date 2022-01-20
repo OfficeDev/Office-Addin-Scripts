@@ -5,7 +5,6 @@
  * The Office apps which can host Office Add-ins.
  */
 export enum OfficeApp {
-  /* eslint-disable no-unused-vars */
   // the string values should be lowercase
   Excel = "excel",
   OneNote = "onenote",

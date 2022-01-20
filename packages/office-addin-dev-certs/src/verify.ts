@@ -17,9 +17,11 @@ function getVerifyCommand(): string {
       const script = path.resolve(__dirname, "..\\scripts\\verify.ps1");
       return `powershell -ExecutionPolicy Bypass -File "${script}" "${defaults.certificateName}"`;
     }
-    case "darwin": // macOS
+    case "darwin": {
+      // macOS
       const script = path.resolve(__dirname, "../scripts/verify.sh");
       return `sh ${script} '${defaults.certificateName}'`;
+    }
     case "linux":
       return `[ -f /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} ] && openssl x509 -in /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} -checkend 86400 -noout`;
     default:
@@ -34,7 +36,7 @@ export function isCaCertificateInstalled(): boolean {
     const output = execSync(command, { stdio: "pipe" }).toString();
     // script files return empty string if the certificate not found or expired
     if (output.length !== 0) {
-      return true; 
+      return true;
     }
   } catch (error) {
     // Some commands throw errors if the certifcate is not found or expired
