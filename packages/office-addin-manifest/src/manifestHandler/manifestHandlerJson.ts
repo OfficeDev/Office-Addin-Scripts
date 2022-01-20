@@ -5,7 +5,7 @@ import { ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 
 export class ManifestHandlerJson extends ManifestHandler {
-  /* eslint-disable no-unused-vars */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   async modifyManifest(guid?: string, displayName?: string): Promise<any> {
     throw new Error("Manifest cannot be modified in .json files");
   }
@@ -25,5 +25,5 @@ export class ManifestHandlerJson extends ManifestHandler {
   async writeManifestData(manifestData: any): Promise<void> {
     throw new Error("Manifest cannot be written in .json files");
   }
-  /* eslint-enable no-unused-vars */
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }

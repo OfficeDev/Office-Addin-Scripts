@@ -1,3 +1,6 @@
+// copyright (c) Microsoft Corporation. All rights reserved.
+// licensed under the MIT license.
+
 import { usageDataObject } from "./defaults";
 import { ManifestHandler } from "./manifestHandler/manifestHandler";
 import { ManifestInfo } from "./manifestInfo";
