@@ -8,7 +8,7 @@ import * as path from "path";
 import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
-import { OfficeAddinManifest } from "../src/manifestOperations";
+import { getManifestHandler, OfficeAddinManifest } from "../src/manifestOperations";
 import {
   getOfficeAppForManifestHost,
   getOfficeAppName,
@@ -22,7 +22,6 @@ import {
 } from "../src/officeApp";
 import { validateManifest } from "../src/validate";
 import { exportMetadataPackage } from "../src/export";
-import { getManifestHandler } from "../src/manifestHandler/getManifestHandler";
 import { ManifestHandler } from "../src/manifestHandler/manifestHandler";
 import { ManifestHandlerXml } from "../src/manifestHandler/manifestHandlerXml";
 import { ManifestHandlerJson } from "../src/manifestHandler/manifestHandlerJson";
@@ -487,7 +486,7 @@ describe("Unit Tests", function() {
         }
         assert.strictEqual(result, "Manifest cannot be parsed in .json files");
       });
-      it ("should thrown an error on an invalid json format", async function() {
+      it ("should throw an error on an invalid json format", async function() {
         let result;
         try {
           await OfficeAddinManifest.readManifestFile("test/manifests/invalid/invalid-manifest.json");

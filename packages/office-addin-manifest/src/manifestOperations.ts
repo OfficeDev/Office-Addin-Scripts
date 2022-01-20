@@ -1,7 +1,8 @@
 import { usageDataObject } from "./defaults";
 import { ManifestHandler } from "./manifestHandler/manifestHandler";
-import { getManifestHandler } from "./manifestHandler/getManifestHandler";
 import { ManifestInfo } from "./manifestInfo";
+import { ManifestHandlerJson } from "./manifestHandler/manifestHandlerJson";
+import { ManifestHandlerXml } from "./manifestHandler/manifestHandlerXml";
 
 export namespace OfficeAddinManifest {
   export async function modifyManifestFile(
@@ -40,4 +41,20 @@ export namespace OfficeAddinManifest {
       throw new Error(`Please provide the path to the manifest file.`);
     }
   }
+}
+
+export async function getManifestHandler(manifestPath: string): Promise<ManifestHandler> {
+  let manifestHandler: ManifestHandler;
+  if (manifestPath.endsWith(".json")) {
+    manifestHandler = new ManifestHandlerJson();
+  } else if (manifestPath.endsWith(".xml")) {
+    manifestHandler = new ManifestHandlerXml();
+  } else {
+    const extension: string = manifestPath.split(".").pop() ?? "<no extension>";
+    throw new Error(
+      `Manifest operations are not supported in .${extension}.\nThey are only supported in .xml and in .json.`
+    );
+  }
+  await manifestHandler.readFromManifestFile(manifestPath);
+  return manifestHandler;
 }
