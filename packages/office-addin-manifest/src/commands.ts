@@ -4,7 +4,8 @@
 import chalk from "chalk";
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-cli";
-import { OfficeAddinManifest, ManifestInfo } from "./manifestInfo";
+import { ManifestInfo } from "./manifestInfo";
+import { OfficeAddinManifest } from "./manifestOperations";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
 import { usageDataObject } from "./defaults";
 import { exportMetadataPackage } from "./export";

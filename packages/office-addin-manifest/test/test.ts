@@ -8,7 +8,7 @@ import * as path from "path";
 import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
-import { OfficeAddinManifest } from "../src/manifestInfo";
+import { OfficeAddinManifest } from "../src/manifestOperations";
 import {
   getOfficeAppForManifestHost,
   getOfficeAppName,
@@ -22,10 +22,14 @@ import {
 } from "../src/officeApp";
 import { validateManifest } from "../src/validate";
 import { exportMetadataPackage } from "../src/export";
+import { ManifestHandler } from "../src/manifestHandler/manifestHandler";
+import { ManifestHandlerXml } from "../src/manifestHandler/manifestHandlerXml";
+import { ManifestHandlerJson } from "../src/manifestHandler/manifestHandlerJson";
 
 const manifestOriginalFolder = path.resolve("./test/manifests");
 const manifestTestFolder = path.resolve("./testExecution/testManifests");
-const testManifest = path.resolve(manifestTestFolder, "TaskPane.manifest.xml");
+const testManifestXml = path.resolve(manifestTestFolder, "TaskPane.manifest.xml");
+const testManifestJson = path.resolve(manifestTestFolder, "manifest.json");
 
 describe("Unit Tests", function() {
   describe("addInTypes.ts", function() {
@@ -401,8 +405,8 @@ describe("Unit Tests", function() {
     });
   });
   describe("manifestInfo.ts", function() {
-    describe("readManifestInfo()", function() {
-      it("should read the manifest info", async function() {
+    describe("readManifestInfo() XML", function() {
+      it("should read the manifest xml info", async function() {
         const info = await OfficeAddinManifest.readManifestFile("test/manifests/TaskPane.manifest.xml");
 
         assert.strictEqual(info.allowSnapshot, undefined);
@@ -440,7 +444,7 @@ describe("Unit Tests", function() {
           }
           assert.equal(result.message, "Unable to parse the manifest file: test/manifests/invalid/incorrect-end-tag.manifest.xml. \nError: Unexpected close tag\nLine: 8\nColumn: 46\nChar: >");
       });
-      it ("should handle OfficeApp with no info", async function() {
+      it ("should handle OfficeApp with no info in xml", async function() {
         const info = await OfficeAddinManifest.readManifestFile("test/manifests/invalid/officeapp-empty.manifest.xml");
 
         assert.strictEqual(info.allowSnapshot, undefined);
@@ -460,7 +464,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.supportUrl, undefined);
         assert.strictEqual(info.version, undefined);
       });
-      it("should handle a missing description", async function() {
+      it("should handle a missing description in xml", async function() {
         const info = await OfficeAddinManifest.readManifestFile("test/manifests/invalid/no-description.manifest.xml");
 
         assert.strictEqual(info.defaultLocale, "en-US");
@@ -472,7 +476,47 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.version, "1.2.3.4");
       });
     });
-    describe("modifyManifestFile()", function() {
+    describe("readManifestInfo() JSON", function() {
+      it("should read the manifest json info", async function() {
+        let result;
+        try {
+          await OfficeAddinManifest.readManifestFile("test/manifests/manifest.json");
+        } catch (err: any) {
+          result = err.message;
+        }
+        assert.strictEqual(result, "Manifest cannot be parsed in .json files");
+      });
+      it ("should throw an error on an invalid json format", async function() {
+        let result;
+        try {
+          await OfficeAddinManifest.readManifestFile("test/manifests/invalid/invalid-manifest.json");
+        } catch (err: any) {
+          result = err.message;
+        }
+        assert.strictEqual(result, "Unable to read data for manifest file: test/manifests/invalid/invalid-manifest.json. \nSyntaxError: Unexpected token ] in JSON at position 4114");
+      });
+      it ("nonexistent manifest", async function() {
+        const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
+        let result;
+        try {
+          await OfficeAddinManifest.readManifestFile(invalidManifest);
+        } catch (err: any) {
+          result = err.message;
+        }
+        assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      });
+      it("invalid extension manifest", async function() {
+        this.timeout(6000);
+        let result: string = "";
+        try {
+          await OfficeAddinManifest.readManifestFile("test/foo/tag.manifest.txt");
+        } catch (err: any) {
+          result =  err.message;
+        }
+        assert.strictEqual(result, `Manifest operations are not supported in .txt.\nThey are only supported in .xml and in .json.`)
+      });
+    });
+    describe("modifyManifestFile() XML", function() {
       beforeEach(async function() {
         await _createManifestTestFolder(manifestTestFolder);
       });
@@ -483,7 +527,7 @@ describe("Unit Tests", function() {
         // call modify, specifying guid and displayName  parameters
         const testGuid = uuidv1();
         const testDisplayName = "TestDisplayName";
-        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifest, testGuid, testDisplayName);
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifestXml, testGuid, testDisplayName);
 
         // verify guid displayName updated
         assert.strictEqual(updatedInfo.id, testGuid);
@@ -491,10 +535,10 @@ describe("Unit Tests", function() {
       });
       it(`should handle specifying "random" form guid parameter`, async function() {
         // get original manifest info and create copy of manifest that we can overwrite in this test
-        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifest);
+        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifestXml);
 
         // call modify, specifying "random" parameter
-        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifest, "random", undefined);
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifestXml, "random", undefined);
 
         // verify guid updated, that it"s a valid guid and that the displayName is not updated
         assert.notStrictEqual(updatedInfo.id, originalInfo.id);
@@ -503,11 +547,11 @@ describe("Unit Tests", function() {
       });
       it("should handle specifying displayName only", async function() {
         // get original manifest info and create copy of manifest that we can overwrite in this test
-        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifest);
+        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifestXml);
 
         // call  modify, specifying a displayName parameter
         const testDisplayName = "TestDisplayName";
-        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifest, undefined, testDisplayName);
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifestXml, undefined, testDisplayName);
 
         // verify displayName updated and guid not updated
         assert.notStrictEqual(updatedInfo.displayName, originalInfo.displayName);
@@ -517,13 +561,13 @@ describe("Unit Tests", function() {
       it("should handle not specifying either a guid or displayName", async function() {
         let result;
         try {
-          await OfficeAddinManifest.modifyManifestFile(testManifest);
+          await OfficeAddinManifest.modifyManifestFile(testManifestXml);
         } catch (err: any) {
           result = err.message;
         }
         assert.strictEqual(result, `You need to specify something to change in the manifest.`);
       });
-      it("should handle an invalid manifest file path", async function() {
+      it("should handle an invalid XML manifest file path", async function() {
         // call  modify, specifying an invalid manifest path with a valid guid and displayName
         const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.xml`);
         const testGuid = uuidv1();
@@ -535,7 +579,38 @@ describe("Unit Tests", function() {
           result = err.message;
         }
 
-        assert.strictEqual(result, `Unable to modify xml data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+        assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+      });
+    });
+    describe("modifyManifestFile() JSON", function() {
+      beforeEach(async function() {
+        await _createManifestTestFolder(manifestTestFolder);
+      });
+      afterEach(async function() {
+        await _deleteFolder(manifestTestFolder);
+      });
+      it("should handle not specifying either a guid or displayName", async function() {
+        let result;
+        try {
+          await OfficeAddinManifest.modifyManifestFile(testManifestJson);
+        } catch (err: any) {
+          result = err.message;
+        }
+        assert.strictEqual(result, `You need to specify something to change in the manifest.`);
+      });
+      it("should handle an invalid JSON manifest file path", async function() {
+        // call  modify, specifying an invalid manifest path with a valid guid and displayName
+        const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
+        const testGuid = uuidv1();
+        const testDisplayName = "TestDisplayName";
+        let result;
+        try {
+          await OfficeAddinManifest.modifyManifestFile(invalidManifest, testGuid, testDisplayName);
+        } catch (err: any) {
+          result = err.message;
+        }
+
+        assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
       });
     });
   });
@@ -656,7 +731,6 @@ describe("Unit Tests", function() {
         const assetsPath = path.normalize("test/assets");
         const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
         const outputFile = await exportMetadataPackage("", manifestPath, assetsPath);
-
         assert.strictEqual(outputFile, expectedOutput, "Output path \'" + outputFile + "\' should match the default \'" + expectedOutput + "\'");
         assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
         

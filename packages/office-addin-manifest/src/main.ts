@@ -3,6 +3,7 @@
 
 export * from "./addInTypes";
 export * from "./manifestInfo";
+export * from "./manifestOperations";
 export * from "./officeApp";
 export * from "./validate";
 export * from "./xml";
