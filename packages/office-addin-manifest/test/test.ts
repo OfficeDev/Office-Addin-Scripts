@@ -8,7 +8,7 @@ import * as path from "path";
 import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import { AddInType, getAddInTypeForManifestOfficeAppType, getAddInTypes, parseAddInType, parseAddInTypes, toAddInType } from "../src/addInTypes";
-import { getManifestHandler, OfficeAddinManifest } from "../src/manifestOperations";
+import { OfficeAddinManifest } from "../src/manifestOperations";
 import {
   getOfficeAppForManifestHost,
   getOfficeAppName,
@@ -505,6 +505,16 @@ describe("Unit Tests", function() {
         }
         assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
       });
+      it("invalid extension manifest", async function() {
+        this.timeout(6000);
+        let result: string = "";
+        try {
+          await OfficeAddinManifest.readManifestFile("test/foo/tag.manifest.txt");
+        } catch (err: any) {
+          result =  err.message;
+        }
+        assert.strictEqual(result, `Manifest operations are not supported in .txt.\nThey are only supported in .xml and in .json.`)
+      });
     });
     describe("modifyManifestFile() XML", function() {
       beforeEach(async function() {
@@ -739,40 +749,6 @@ describe("Unit Tests", function() {
           result = err.message;
         }
         assert.strictEqual(result, expectedError);
-      });
-    });
-  });
-  describe("getManifestHandler.ts", function() {
-    describe("getManifestHandler()", function() {
-      it("Detects a JSON manifest", async function() {
-        const manifestHandler: ManifestHandler = await getManifestHandler("test/manifests/manifest.json");
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, false);
-      });
-      it("Detects an XML manifest", async function() {
-        const manifestHandler: ManifestHandler = await getManifestHandler("test/manifests/TaskPane.Excel.manifest.xml");
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
-      });
-      it("Detects an invalid JSON manifest", async function() {
-        const manifestHandler: ManifestHandler = await getManifestHandler("test/manifests/invalid/invalid-manifest.json");
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, true);
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, false);
-      });
-      it("Detects an invalid XML manifest", async function() {
-        const manifestHandler: ManifestHandler = await getManifestHandler("test/manifests/invalid/incorrect-end-tag.manifest.xml");
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerXml, true);
-        assert.strictEqual(manifestHandler instanceof ManifestHandlerJson, false);
-      });
-      it("Detects an invalid extension manifest", async function() {
-        this.timeout(6000);
-        let result: string = "";
-        try {
-          await getManifestHandler("test/foo/tag.manifest.txt");
-        } catch (err: any) {
-          result =  err.message;
-        }
-        assert.strictEqual(result, `Manifest operations are not supported in .txt.\nThey are only supported in .xml and in .json.`)
       });
     });
   });

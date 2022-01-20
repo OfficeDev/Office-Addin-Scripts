@@ -46,7 +46,7 @@ export namespace OfficeAddinManifest {
   }
 }
 
-export async function getManifestHandler(manifestPath: string): Promise<ManifestHandler> {
+async function getManifestHandler(manifestPath: string): Promise<ManifestHandler> {
   let manifestHandler: ManifestHandler;
   if (manifestPath.endsWith(".json")) {
     manifestHandler = new ManifestHandlerJson();
