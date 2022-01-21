@@ -5,6 +5,7 @@
 
 import * as commander from "commander";
 import { logErrorMessage } from "./log";
+import * as commands from "./commands";
 
 /* global process */
 
@@ -17,6 +18,8 @@ commander.on("command:*", function () {
   process.exitCode = 1;
   commander.help();
 });
+
+commander.command("upgrade <manifest-path>").action(commands.upgrade);
 
 if (process.argv.length > 2) {
   commander.parse(process.argv);
