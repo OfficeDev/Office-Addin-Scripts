@@ -5,9 +5,10 @@ import { isValidError, PossibleErrors } from "./possibleErrors";
  * @param object Object structure to provide initial values for the mock object (Optional)
  */
 export class OfficeMockObject {
-  constructor(object?: ObjectData) {
+  constructor(object?: ObjectData, isOutlook: boolean = false) {
     this.properties = new Map<string, OfficeMockObject>();
     this.loaded = false;
+    this.isOutlook = isOutlook;
     this.resetValue(undefined);
     if (object) {
       this.populate(object);
@@ -34,7 +35,7 @@ export class OfficeMockObject {
       throw new Error("Mock object already exists");
     }
 
-    const officeMockObject = new OfficeMockObject();
+    const officeMockObject = new OfficeMockObject(undefined, this.isOutlook);
     officeMockObject.isObject = true;
     this.properties.set(objectName, officeMockObject);
     this[objectName] = this.properties.get(objectName);
@@ -45,6 +46,9 @@ export class OfficeMockObject {
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
   load(propertyArgument: string | string[] | ObjectData) {
+    if (this.isOutlook) {
+      return;
+    }
     let properties: string[] = [];
 
     if (typeof propertyArgument === "string") {
@@ -68,7 +72,7 @@ export class OfficeMockObject {
    */
   setMock(propertyName: string, value: unknown) {
     if (!this.properties.has(propertyName)) {
-      const officeMockObject = new OfficeMockObject();
+      const officeMockObject = new OfficeMockObject(undefined, this.isOutlook);
       officeMockObject.isObject = false;
       this.properties.set(propertyName, officeMockObject);
     }
@@ -202,9 +206,13 @@ export class OfficeMockObject {
   }
 
   private resetValue(value: unknown) {
-    this.value = PossibleErrors.notLoaded;
-    this.valueBeforeLoaded = value;
-    this.loaded = false;
+    if (this.isOutlook) {
+      this.value = value;
+    } else {
+      this.value = PossibleErrors.notLoaded;
+      this.valueBeforeLoaded = value;
+      this.loaded = false;
+    }
   }
 
   /**
@@ -217,7 +225,10 @@ export class OfficeMockObject {
       this[propertyName] = value;
     } else {
       if (!this.properties.has(propertyName)) {
-        const officeMockObject = new OfficeMockObject();
+        const officeMockObject = new OfficeMockObject(
+          undefined,
+          this.isOutlook
+        );
         officeMockObject.isObject = false;
         this.properties.set(propertyName, officeMockObject);
       }
@@ -240,6 +251,7 @@ export class OfficeMockObject {
   private value: unknown;
   private valueBeforeLoaded: unknown;
   private isObject: boolean | undefined;
+  private isOutlook: boolean;
   /* eslint-disable-next-line */
   [key: string]: any;
 }
