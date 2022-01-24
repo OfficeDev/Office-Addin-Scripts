@@ -16,32 +16,6 @@ export class OfficeMockObject {
   }
 
   /**
-   * Adds a function to OfficeMockObject. The function can be accessed by simply calling `this.methodName`
-   * @param methodName Method name of the function to be added
-   * @param methodBody Function to be added to the object. A blank function will be added if no argument is provided (Optional)
-   * @deprecated Add the function to the JSON in the constructor instead
-   */
-  addMockFunction(methodName: string, methodBody?: Function) {
-    this[methodName] = methodBody ? methodBody : function () {};
-  }
-
-  /**
-   * addMock(name) will add a property named “name”, with a new OfficeMockObject as its value, to the object
-   * @param objectName Object name of the object to be added
-   * @deprecated Add the object to the JSON in the constructor instead
-   */
-  addMock(objectName: string) {
-    if (this[objectName] !== undefined) {
-      throw new Error("Mock object already exists");
-    }
-
-    const officeMockObject = new OfficeMockObject(undefined, this.isOutlook);
-    officeMockObject.isObject = true;
-    this.properties.set(objectName, officeMockObject);
-    this[objectName] = this.properties.get(objectName);
-  }
-
-  /**
    * Mock replacement of the load method in the Office.js API
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
@@ -65,22 +39,6 @@ export class OfficeMockObject {
   }
 
   /**
-   * Adds a property of any type to OfficeMockObject
-   * @param propertyName Property name to the property to be added
-   * @param value Value this added property will have
-   * @deprecated Add the property to the JSON in the constructor instead
-   */
-  setMock(propertyName: string, value: unknown) {
-    if (!this.properties.has(propertyName)) {
-      const officeMockObject = new OfficeMockObject(undefined, this.isOutlook);
-      officeMockObject.isObject = false;
-      this.properties.set(propertyName, officeMockObject);
-    }
-    this.properties.get(propertyName)?.resetValue(value);
-    this[propertyName] = this.properties.get(propertyName)?.value;
-  }
-
-  /**
    * Mock replacement for the sync method in the Office.js API
    */
   async sync() {
@@ -91,6 +49,21 @@ export class OfficeMockObject {
     if (this.loaded) {
       this.value = this.valueBeforeLoaded;
     }
+  }
+
+  /**
+   * addMock(name) will add a property named “name”, with a new OfficeMockObject as its value, to the object
+   * @param objectName Object name of the object to be added
+   */
+  private addMock(objectName: string) {
+    if (this[objectName] !== undefined) {
+      throw new Error("Mock object already exists");
+    }
+
+    const officeMockObject = new OfficeMockObject(undefined, this.isOutlook);
+    officeMockObject.isObject = true;
+    this.properties.set(objectName, officeMockObject);
+    this[objectName] = this.properties.get(objectName);
   }
 
   private loadAllProperties() {
