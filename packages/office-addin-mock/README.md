@@ -122,31 +122,6 @@ constructor(object?: Object);
 
 #### Methods
 
-##### addMockFunction
-
-Adds a function to OfficeMockObject.
-
-- The `methodName` parameter is the name of the function to be added.
-- The `methodBody` parameter is the function to be added to the object. A blank function will be added if no argument is provided. (Optional)
-
-```
-addMockFunction(methodName: string, methodBody?: Function): void;
-```
-
-For more information about the use of this method, see [Adding mock objects, properties, and methods dynamically when testing](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#adding-mock-objects-properties-and-methods-dynamically-when-testing)].
-
-##### addMock
-
-Adds a property to a OfficeMockObject whose value is another OfficeMockObject.
-
-- The `objectName` parameter is the property name.
-
-```
-addMock(objectName: string): void; 
-```
-
-For more information about the use of this method, see [Adding mock objects, properties, and methods dynamically when testing](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#adding-mock-objects-properties-and-methods-dynamically-when-testing)].
-
 ##### load
 
 Mock implementation of the `load` method in the application-specific Office.js APIs.
@@ -156,19 +131,6 @@ Mock implementation of the `load` method in the application-specific Office.js A
 ```
 load(propertyArgument: string | string[] | Object): void;
 ```
-
-##### setMock
-
-Adds a property of any type to OfficeMockObject.
-
-- The `propertyName` parameter is the name of the property to be added.
-- The `value` parameter is the value the propery is set to.
-
-```
-setMock(propertyName: string, value: unknown): void
-```
-
-For more information about the use of this method, see [Adding mock objects, properties, and methods dynamically when testing](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#adding-mock-objects-properties-and-methods-dynamically-when-testing)].
 
 ##### sync
 
