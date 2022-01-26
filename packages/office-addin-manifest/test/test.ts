@@ -632,7 +632,7 @@ describe("Unit Tests", function() {
         const validation = await validateManifest("test/manifests/TaskPane.manifest.xml", true);
         assert.strictEqual(validation.isValid, false);
         assert.strictEqual(validation.status, 200);
-        assert.strictEqual(validation.report!.errors!.length, 2);
+        assert.strictEqual(validation.report!.errors!.length, 4);
         assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
