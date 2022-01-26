@@ -4,15 +4,15 @@
 import { logErrorMessage } from "./log";
 import { usageDataObject } from "./defaults";
 
-export async function upgrade(manifestPath: string) {
+export async function convert(manifestPath: string) {
   try {
     // Convert manifest .xml to manifest.json
     // Do any more needed modifications on the code?
 
-    usageDataObject.reportSuccess("upgrade");
+    usageDataObject.reportSuccess("convert");
     throw new Error("Upgrade function is not ready yet.");
   } catch (err: any) {
-    usageDataObject.reportException("upgrade", err);
+    usageDataObject.reportException("convert", err);
     logErrorMessage(err);
   }
 }

@@ -19,7 +19,7 @@ commander.on("command:*", function () {
   commander.help();
 });
 
-commander.command("upgrade <manifest-path>").action(commands.upgrade);
+commander.command("convert <manifest-path>").action(commands.convert);
 
 if (process.argv.length > 2) {
   commander.parse(process.argv);
