@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-/* global console */
+import * as OfficeAddinUsageData from "office-addin-usage-data";
 
 /**
  * Logs an error message
  * @param err The error to be logged
+ * @deprecated scriptName The name of the script
  */
 export function logErrorMessage(err: any) {
-  console.error(`Error: ${err instanceof Error ? err.message : err}`);
+  OfficeAddinUsageData.logErrorMessage(err);
 }
