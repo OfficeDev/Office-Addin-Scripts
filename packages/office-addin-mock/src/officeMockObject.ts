@@ -5,6 +5,7 @@ import { ObjectData } from "./objectData";
 /**
  * Creates an office-js mockable object
  * @param object Object structure to provide initial values for the mock object (Optional)
+ * @param host Host tested by the object (Optional)
  */
 export class OfficeMockObject {
   constructor(object?: ObjectData, host?: Host) {
