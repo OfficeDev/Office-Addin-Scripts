@@ -18,6 +18,20 @@ const testObject = {
   },
 }
 
+const testObjectOutlook = {
+  range: {
+    color: "blue",
+    getColor: function() {
+      return this.color;
+    },
+    font: {
+      size: 12,
+      type: "arial"
+    }
+  },
+  host: "outlook",
+}
+
 const contextMockData = {
   workbook: {
     range: {
@@ -226,7 +240,7 @@ describe("Test OfficeMockObject class", function() {
 
   describe("Works on Outlook", function() {
     it("Object construction", async function() {
-      const officeMock = new OfficeMockObject(testObject, true);
+      const officeMock = new OfficeMockObject(testObjectOutlook);
       officeMock.load("range");
       officeMock.sync();
       assert.strictEqual(officeMock.range.color, "blue");
@@ -234,13 +248,13 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.getColor(), "blue");
     });
     it("Invalid load calls", async function() {
-      const officeMock = new OfficeMockObject(testObject, true);
+      const officeMock = new OfficeMockObject(testObjectOutlook);
       officeMock.range.load("color");
       assert.strictEqual(officeMock.range.getColor(), "blue");
       assert.strictEqual(officeMock.range.color, "blue");
     });
     it("Invalid sync calls", async function() {
-      const officeMock = new OfficeMockObject(testObject, true);
+      const officeMock = new OfficeMockObject(testObjectOutlook);
       officeMock.sync();
       assert.strictEqual(officeMock.range.getColor(), "blue");
       assert.strictEqual(officeMock.range.color, "blue");
