@@ -3,7 +3,8 @@
 
 import * as commander from "commander";
 import * as fs from "fs";
-import { logErrorMessage, parseNumber, getPackageJsonScript } from "office-addin-cli";
+import { parseNumber, getPackageJsonScript } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";

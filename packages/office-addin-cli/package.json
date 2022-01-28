@@ -37,9 +37,9 @@
     "eslint-plugin-prettier": "^3.4.0",
     "mocha": "^9.1.1",
     "office-addin-prettier-config": "^1.1.4",
+    "office-addin-usage-data": "^1.4.6",
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
-    "sinon": "^7.5.0",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
   },

@@ -3,7 +3,7 @@
 
 import chalk from "chalk";
 import * as commander from "commander";
-import { logErrorMessage } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo } from "./manifestInfo";
 import { OfficeAddinManifest } from "./manifestOperations";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
