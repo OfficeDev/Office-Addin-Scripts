@@ -14,12 +14,33 @@ describe("Test Host file", function() {
       };
       assert.strictEqual(getHostType(object), "excel");
     });
+    it("OneNote", async function() {
+      const object = {
+        context: {},
+        host: "onenote"
+      };
+      assert.strictEqual(getHostType(object), "onenote");
+    });
     it("PowerPoint", async function() {
       const object = {
         context: {},
         host: "powerpoint"
       };
       assert.strictEqual(getHostType(object), "powerpoint");
+    });
+    it("Project", async function() {
+      const object = {
+        context: {},
+        host: "project"
+      };
+      assert.strictEqual(getHostType(object), "project");
+    });
+    it("Visio", async function() {
+      const object = {
+        context: {},
+        host: "visio"
+      };
+      assert.strictEqual(getHostType(object), "visio");
     });
     it("Word", async function() {
       const object = {
@@ -39,7 +60,7 @@ describe("Test Host file", function() {
       const outlookObject = {
         context: {},
       };
-      assert.strictEqual(getHostType(outlookObject), "notFound");
+      assert.strictEqual(getHostType(outlookObject), "unknow");
     });
     it("Other", async function() {
       const object = {
@@ -47,7 +68,7 @@ describe("Test Host file", function() {
         host: "not a host"
 
       };
-      assert.strictEqual(getHostType(object), "other");
+      assert.strictEqual(getHostType(object), "unknow");
     });
   });
 });

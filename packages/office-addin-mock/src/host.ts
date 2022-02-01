@@ -2,22 +2,23 @@ import { ObjectData } from "./objectData";
 
 export enum Host {
   excel = "excel",
+  onenote = "onenote",
   outlook = "outlook",
   powerpoint = "powerpoint",
+  project = "project",
+  visio = "visio",
   word = "word",
-  other = "other",
-  notFound = "notFound",
+  unknow = "unknow",
 }
 
 export function getHostType(object: ObjectData | undefined): Host {
+  let validHost = Host.unknow;
   if (object && object["host"]) {
-    let validHost = Host.other;
     Object.values(Host).forEach((host: string) => {
       if (object["host"] === host) {
         validHost = object["host"];
       }
     });
-    return validHost;
   }
-  return Host.notFound;
+  return validHost;
 }
