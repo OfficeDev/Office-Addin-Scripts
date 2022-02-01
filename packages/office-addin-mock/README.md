@@ -118,21 +118,19 @@ The object parameter provides initial values for the mock object. (Optional)
 The host parameter identifies the host of the tests. (Optional)
 
 ```
-constructor(object?: Object, host?: Host); 
+constructor(object?: Object, host?: OfficeApp | undefined); 
 ```
 
 Host can be any of the following:
 
 ```Javascript
-Host {
-  excel = "excel",
-  onenote = "onenote",
-  outlook = "outlook",
-  powerpoint = "powerpoint",
-  project = "project",
-  visio = "visio",
-  word = "word",
-  unknow = "unknow",
+OfficeApp {
+  Excel = "excel",
+  OneNote = "onenote",
+  Outlook = "outlook",
+  PowerPoint = "powerpoint",
+  Project = "project",
+  Word = "word",
 }
 ```
 
