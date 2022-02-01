@@ -4,7 +4,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import { logErrorMessage } from "./log";
+import { logErrorMessage } from "office-addin-usage-data";
 
 /* global process */
 

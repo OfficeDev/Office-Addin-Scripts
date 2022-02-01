@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import { logErrorMessage } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import * as defaults from "./defaults";
 import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
 import { usageDataObject } from "./defaults";
