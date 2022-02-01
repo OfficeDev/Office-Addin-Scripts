@@ -1,4 +1,5 @@
-import { getHostType, Host } from "./host";
+import { OfficeApp } from "office-addin-manifest";
+import { getHostType } from "./host";
 import { isValidError, PossibleErrors } from "./possibleErrors";
 import { ObjectData } from "./objectData";
 
@@ -8,7 +9,7 @@ import { ObjectData } from "./objectData";
  * @param host Host tested by the object (Optional)
  */
 export class OfficeMockObject {
-  constructor(object?: ObjectData, host?: Host) {
+  constructor(object?: ObjectData, host?: OfficeApp | undefined) {
     this.properties = new Map<string, OfficeMockObject>();
     this.loaded = false;
     if (host) {
@@ -27,7 +28,7 @@ export class OfficeMockObject {
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
   load(propertyArgument: string | string[] | ObjectData) {
-    if (this.host === Host.outlook) {
+    if (this.host === OfficeApp.Outlook) {
       return;
     }
     let properties: string[] = [];
@@ -186,7 +187,7 @@ export class OfficeMockObject {
   }
 
   private resetValue(value: unknown) {
-    if (this.host === Host.outlook) {
+    if (this.host === OfficeApp.Outlook) {
       this.value = value;
     } else {
       this.value = PossibleErrors.notLoaded;
@@ -228,7 +229,7 @@ export class OfficeMockObject {
   private value: unknown;
   private valueBeforeLoaded: unknown;
   private isObject: boolean | undefined;
-  private host: Host;
+  private host: OfficeApp | undefined;
   /* eslint-disable-next-line */
   [key: string]: any;
 }

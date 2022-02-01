@@ -3,7 +3,7 @@
 
 import * as assert from "assert";
 import * as mocha from "mocha";
-import { getHostType, Host } from "../src/host";
+import { getHostType } from "../src/host";
 
 describe("Test Host file", function() {
   describe("Works on differt hosts", function() {
@@ -35,13 +35,6 @@ describe("Test Host file", function() {
       };
       assert.strictEqual(getHostType(object), "project");
     });
-    it("Visio", async function() {
-      const object = {
-        context: {},
-        host: "visio"
-      };
-      assert.strictEqual(getHostType(object), "visio");
-    });
     it("Word", async function() {
       const object = {
         context: {},
@@ -60,7 +53,7 @@ describe("Test Host file", function() {
       const outlookObject = {
         context: {},
       };
-      assert.strictEqual(getHostType(outlookObject), "unknow");
+      assert.strictEqual(getHostType(outlookObject), undefined);
     });
     it("Other", async function() {
       const object = {
@@ -68,7 +61,7 @@ describe("Test Host file", function() {
         host: "not a host"
 
       };
-      assert.strictEqual(getHostType(object), "unknow");
+      assert.strictEqual(getHostType(object), undefined);
     });
   });
 });

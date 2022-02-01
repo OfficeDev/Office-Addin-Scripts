@@ -15,6 +15,7 @@
     "office-js"
   ],
   "dependencies": {
+    "office-addin-manifest": "^1.7.7",
     "office-addin-usage-data": "^1.4.6"
   },
   "devDependencies": {

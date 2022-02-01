@@ -1,20 +1,12 @@
+import { OfficeApp } from "office-addin-manifest";
 import { ObjectData } from "./objectData";
 
-export enum Host {
-  excel = "excel",
-  onenote = "onenote",
-  outlook = "outlook",
-  powerpoint = "powerpoint",
-  project = "project",
-  visio = "visio",
-  word = "word",
-  unknow = "unknow",
-}
-
-export function getHostType(object: ObjectData | undefined): Host {
-  let validHost = Host.unknow;
+export function getHostType(
+  object: ObjectData | undefined
+): OfficeApp | undefined {
+  let validHost = undefined;
   if (object && object["host"]) {
-    Object.values(Host).forEach((host: string) => {
+    Object.values(OfficeApp).forEach((host: string) => {
       if (object["host"] === host) {
         validHost = object["host"];
       }
