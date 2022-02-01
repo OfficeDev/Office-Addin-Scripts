@@ -126,11 +126,13 @@ Host can be any of the following:
 ```Javascript
 Host {
   excel = "excel",
+  onenote = "onenote",
   outlook = "outlook",
   powerpoint = "powerpoint",
+  project = "project",
+  visio = "visio",
   word = "word",
-  other = "other",
-  notFound = "notFound",
+  unknow = "unknow",
 }
 ```
 
