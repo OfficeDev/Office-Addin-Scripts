@@ -1,13 +1,22 @@
+import { OfficeApp } from "office-addin-manifest";
+import { getHostType } from "./host";
 import { isValidError, PossibleErrors } from "./possibleErrors";
+import { ObjectData } from "./objectData";
 
 /**
  * Creates an office-js mockable object
  * @param object Object structure to provide initial values for the mock object (Optional)
+ * @param host Host tested by the object (Optional)
  */
 export class OfficeMockObject {
-  constructor(object?: ObjectData) {
+  constructor(object?: ObjectData, host?: OfficeApp | undefined) {
     this.properties = new Map<string, OfficeMockObject>();
     this.loaded = false;
+    if (host) {
+      this.host = host;
+    } else {
+      this.host = getHostType(object);
+    }
     this.resetValue(undefined);
     if (object) {
       this.populate(object);
@@ -19,6 +28,9 @@ export class OfficeMockObject {
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
   load(propertyArgument: string | string[] | ObjectData) {
+    if (this.host === OfficeApp.Outlook) {
+      return;
+    }
     let properties: string[] = [];
 
     if (typeof propertyArgument === "string") {
@@ -56,7 +68,7 @@ export class OfficeMockObject {
       throw new Error("Mock object already exists");
     }
 
-    const officeMockObject = new OfficeMockObject();
+    const officeMockObject = new OfficeMockObject(undefined, this.host);
     officeMockObject.isObject = true;
     this.properties.set(objectName, officeMockObject);
     this[objectName] = this.properties.get(objectName);
@@ -175,9 +187,13 @@ export class OfficeMockObject {
   }
 
   private resetValue(value: unknown) {
-    this.value = PossibleErrors.notLoaded;
-    this.valueBeforeLoaded = value;
-    this.loaded = false;
+    if (this.host === OfficeApp.Outlook) {
+      this.value = value;
+    } else {
+      this.value = PossibleErrors.notLoaded;
+      this.valueBeforeLoaded = value;
+      this.loaded = false;
+    }
   }
 
   /**
@@ -190,7 +206,7 @@ export class OfficeMockObject {
       this[propertyName] = value;
     } else {
       if (!this.properties.has(propertyName)) {
-        const officeMockObject = new OfficeMockObject();
+        const officeMockObject = new OfficeMockObject(undefined, this.host);
         officeMockObject.isObject = false;
         this.properties.set(propertyName, officeMockObject);
       }
@@ -213,12 +229,7 @@ export class OfficeMockObject {
   private value: unknown;
   private valueBeforeLoaded: unknown;
   private isObject: boolean | undefined;
-  /* eslint-disable-next-line */
-  [key: string]: any;
-}
-
-// Represents the Object to be used when populating Office JS with data.
-class ObjectData {
+  private host: OfficeApp | undefined;
   /* eslint-disable-next-line */
   [key: string]: any;
 }
