@@ -8,6 +8,7 @@ import * as mocha from "mocha";
 import * as parse from "../src/parse";
 
 import { clearCachedScripts, getPackageJsonScript } from "../src/npmPackage";
+import { checkPackagesAreUpdated } from "../src/commands";
 
 describe("office-addin-cli tests", function() {
   describe("parse.ts", function() {
@@ -124,6 +125,20 @@ describe("office-addin-cli tests", function() {
         process.env.npm_package_json = "./test/test.json";
         const script = await getPackageJsonScript("five-five-five");
         assert.strictEqual(script, "5");
+      });
+    });
+
+    describe("commands.ts", function() {
+      describe("convert - checkIfPackagesAreUpdated()", function() {
+        it("Works on minimum version", async function() {
+          assert.strictEqual(await checkPackagesAreUpdated("test/test-equal-version-package.json"), true);
+        });
+        it("Works on an higher version", async function() {
+          assert.strictEqual(await checkPackagesAreUpdated("test/test-higher-version-package.json"), true);
+        });
+        it("Throws when version is not sufficient", async function() {
+          assert.strictEqual(await checkPackagesAreUpdated("test/test-lower-version-package.json"), false);
+        });
       });
     });
   });

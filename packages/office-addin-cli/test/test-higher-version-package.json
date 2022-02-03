@@ -1,0 +1,11 @@
+{
+    "scripts": {
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+      "office-addin-debugging": "5.0.1",
+      "office-addin-manifest": "~2.3.1"
+    }
+  }
+  
