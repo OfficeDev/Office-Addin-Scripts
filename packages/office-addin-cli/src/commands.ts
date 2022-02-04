@@ -1,19 +1,40 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as commander from "commander";
 import * as fs from "fs";
 import * as semver from "semver";
 // import semver = require("semver");
 
 import * as util from "util";
-import { logErrorMessage } from "office-addin-usage-data";
+import { ExpectedError, logErrorMessage } from "office-addin-usage-data";
 import { usageDataObject } from "./defaults";
 
-export async function convert(manifestPath: string) {
+export async function convert(command: commander.Command) {
   try {
+    // Check if the project is already converted
+
     // Convert manifest .xml to manifest.json
     // Do any more needed modifications on the code?
-    checkPackagesAreUpdated();
+
+    const manifestPath: string = command.manifest ?? "./manifest.xml";
+
+    if (manifestPath.endsWith(".json")) {
+      throw new ExpectedError(`The convert command only works on xml based manifests`);
+    }
+
+    if (!fs.existsSync(manifestPath)) {
+      throw new ExpectedError(`The file '${manifestPath}' does not exist`);
+    }
+  
+    const manifestData = fs.readFileSync(manifestPath);
+
+    const validPackages: boolean = await checkPackagesAreUpdated();
+    if (!validPackages) {
+
+    }
+
+
     usageDataObject.reportSuccess("convert");
     throw new Error("Upgrade function is not ready yet.");
   } catch (err: any) {
@@ -39,18 +60,9 @@ export async function checkPackagesAreUpdated(packageJsonPath?: string): Promise
     if (depedentPackages.has(key)) {
       const minVersion: string = depedentPackages.get(key) ?? "";
       const version = semver.coerce(content.devDependencies[key]);
-      console.log("Target version = " + minVersion);
 
-      if (version) {
-        console.log("On key = " + key);
-        console.log("With version = " + version.version);
-        console.log("comparison = " + semver.gte(version, minVersion));
-        console.log("");
-
-        if(!semver.gte(version, minVersion)) {
-          versionsAreValid = false;
-        }
-
+      if (version && !semver.gte(version, minVersion)) {
+        versionsAreValid = false;
       }
     }
   });

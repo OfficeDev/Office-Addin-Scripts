@@ -130,13 +130,13 @@ describe("office-addin-cli tests", function() {
 
     describe("commands.ts", function() {
       describe("convert - checkIfPackagesAreUpdated()", function() {
-        it("Works on minimum version", async function() {
+        it("Valid packages on minimum version", async function() {
           assert.strictEqual(await checkPackagesAreUpdated("test/test-equal-version-package.json"), true);
         });
-        it("Works on an higher version", async function() {
+        it("Valid packages on an higher version", async function() {
           assert.strictEqual(await checkPackagesAreUpdated("test/test-higher-version-package.json"), true);
         });
-        it("Throws when version is not sufficient", async function() {
+        it("Invalid packages when version is not sufficient", async function() {
           assert.strictEqual(await checkPackagesAreUpdated("test/test-lower-version-package.json"), false);
         });
       });
