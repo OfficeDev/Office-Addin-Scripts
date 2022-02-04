@@ -8,7 +8,8 @@ import * as mocha from "mocha";
 import * as parse from "../src/parse";
 
 import { clearCachedScripts, getPackageJsonScript } from "../src/npmPackage";
-import { checkPackagesAreUpdated } from "../src/commands";
+import { convertProject } from "../src/convert";
+import { ExpectedError } from "office-addin-usage-data";
 
 describe("office-addin-cli tests", function() {
   describe("parse.ts", function() {
@@ -128,16 +129,31 @@ describe("office-addin-cli tests", function() {
       });
     });
 
-    describe("commands.ts", function() {
-      describe("convert - checkIfPackagesAreUpdated()", function() {
-        it("Valid packages on minimum version", async function() {
-          assert.strictEqual(await checkPackagesAreUpdated("test/test-equal-version-package.json"), true);
+    describe("convert.ts", function() {
+      describe("convertProject", function() {
+        it("Throws when manifest file does not exist", async function() {
+          try {
+            await convertProject("foo/bar.xml", "test/test-package.json");
+            assert.fail("The expected Error was not thrown.");
+          } catch (err: any) {}
         });
-        it("Valid packages on an higher version", async function() {
-          assert.strictEqual(await checkPackagesAreUpdated("test/test-higher-version-package.json"), true);
+        it("Throws when version of packages are not sufficient", async function() {
+          try {
+            await convertProject("test/TaskPane.manifest.xml", "test/test-lower-version-package.json");
+            assert.fail("The expected Error was not thrown.");
+          } catch (err: any) {}
         });
-        it("Invalid packages when version is not sufficient", async function() {
-          assert.strictEqual(await checkPackagesAreUpdated("test/test-lower-version-package.json"), false);
+        it("Throws when package json does not exist", async function() {
+          try {
+            await convertProject("test/TaskPane.manifest.xml", "foo/bar.json");
+            assert.fail("The expected Error was not thrown.");
+          } catch (err: any) {}
+        });
+        it("Throws when coverting already converted project", async function() {
+          try {
+            await convertProject("test/test.json", "test/test-package.json");
+            assert.fail("The expected Error was not thrown.");
+          } catch (err: any) {}
         });
       });
     });

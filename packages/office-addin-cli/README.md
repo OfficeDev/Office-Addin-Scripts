@@ -9,12 +9,24 @@ This package provides the ability to upgrade your Office Addin code.
 
 #
 
-### upgrade
+### convert
 
-Upgrade the Office Addin Code.
+Converts the Office Addin Code.
 
 Syntax:
 
-`office-addin-cli upgrade <manifest-path>`
+`office-addin-cli convert [options]`
 
 `manifest-path`: path to manifest file.
+
+Options:
+
+`-m <manifest-path>`<br>
+`--manifest <manifest-path>`
+
+Specify the location of the manifest file. If the path is not provided, `./manifest.xml` is used.
+
+`-p <packageJson-path>`<br>
+`--packageJson <packageJson-path>`
+
+Specify the location of the manifest file. If the path is not provided, `./package.json` is used.

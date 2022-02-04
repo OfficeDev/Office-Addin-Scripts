@@ -4,3 +4,4 @@
 export * from "./log";
 export * from "./npmPackage";
 export * from "./parse";
+export * from "./convert";
