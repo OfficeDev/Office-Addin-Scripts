@@ -3,7 +3,10 @@
 
 import * as fs from "fs";
 import * as semver from "semver";
+import { exec } from "child_process";
 import { ExpectedError } from "office-addin-usage-data";
+
+/* global console */
 
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
@@ -40,11 +43,9 @@ function checkPackagesAreUpdated(packageJsonPath: string): void {
       const version = semver.coerce(content.devDependencies[key]);
 
       if (version && !semver.gte(version, minVersion)) {
-        throw new ExpectedError(
-          `Your version of the package ${key} should be at least ${depedentPackages.get(
-            key
-          )}. To update your package, run:\nnpm i ${key}@latest --save-dev`
-        );
+        console.log(`Your version of the package ${key} should be at least ${depedentPackages.get(key)}`);
+        console.log(`Installing latest version of ${key}`);
+        exec(`npm i ${key}@latest --save-dev`);
       }
     }
   });

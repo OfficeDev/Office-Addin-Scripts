@@ -137,12 +137,6 @@ describe("office-addin-cli tests", function() {
             assert.fail("The expected Error was not thrown.");
           } catch (err: any) {}
         });
-        it("Throws when version of packages are not sufficient", async function() {
-          try {
-            await convertProject("test/TaskPane.manifest.xml", "test/test-lower-version-package.json");
-            assert.fail("The expected Error was not thrown.");
-          } catch (err: any) {}
-        });
         it("Throws when package json does not exist", async function() {
           try {
             await convertProject("test/TaskPane.manifest.xml", "foo/bar.json");
