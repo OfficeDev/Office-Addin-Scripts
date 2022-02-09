@@ -25,8 +25,3 @@ Options:
 `--manifest <manifest-path>`
 
 Specify the location of the manifest file. If the path is not provided, `./manifest.xml` is used.
-
-`-p <packageJson-path>`<br>
-`--packageJson <packageJson-path>`
-
-Specify the location of the manifest file. If the path is not provided, `./package.json` is used.

@@ -9,9 +9,8 @@ import { convertProject } from "./convert";
 export async function convert(command: commander.Command) {
   try {
     const manifestPath: string = command.manifest ?? "./manifest.xml";
-    const packageJsonPath: string = command.packageJson ?? "./package.json";
 
-    await convertProject(manifestPath, packageJsonPath);
+    await convertProject(manifestPath);
     usageDataObject.reportSuccess("convert");
     throw new Error("Upgrade function is not ready yet.");
   } catch (err: any) {

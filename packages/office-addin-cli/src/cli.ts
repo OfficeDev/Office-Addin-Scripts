@@ -22,10 +22,6 @@ commander.on("command:*", function () {
 commander
   .command("convert")
   .option("-m, --manifest <manifest-path>", "Specify the location of the manifest file.  Default is './manifest.xml'")
-  .option(
-    "-p, --packageJson <packageJson-path>",
-    "Specify the location of the package.json file.  Default is './package.json'"
-  )
   .action(commands.convert);
 
 if (process.argv.length > 2) {
