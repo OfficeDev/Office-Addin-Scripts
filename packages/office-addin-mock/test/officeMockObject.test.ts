@@ -46,6 +46,9 @@ const contextMockData = {
       return this.range;
     },
   },
+  properties: {
+    propsA: "propsA Value"
+  }
 };
 
 describe("Test OfficeMockObject class", function() {

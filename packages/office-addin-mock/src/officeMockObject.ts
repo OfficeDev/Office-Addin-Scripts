@@ -10,12 +10,12 @@ import { ObjectData } from "./objectData";
  */
 export class OfficeMockObject {
   constructor(object?: ObjectData, host?: OfficeApp | undefined) {
-    this.properties = new Map<string, OfficeMockObject>();
-    this.loaded = false;
+    this._properties = new Map<string, OfficeMockObject>();
+    this._loaded = false;
     if (host) {
-      this.host = host;
+      this._host = host;
     } else {
-      this.host = getHostType(object);
+      this._host = getHostType(object);
     }
     this.resetValue(undefined);
     if (object) {
@@ -28,7 +28,7 @@ export class OfficeMockObject {
    * @param propertyArgument Argument of the load call. Will load any properties in the argument
    */
   load(propertyArgument: string | string[] | ObjectData) {
-    if (this.host === OfficeApp.Outlook) {
+    if (this._host === OfficeApp.Outlook) {
       return;
     }
     let properties: string[] = [];
@@ -50,12 +50,12 @@ export class OfficeMockObject {
    * Mock replacement for the sync method in the Office.js API
    */
   async sync() {
-    this.properties.forEach(async (property: OfficeMockObject, key: string) => {
+    this._properties.forEach(async (property: OfficeMockObject, key: string) => {
       await property.sync();
       this.updatePropertyCall(key);
     });
-    if (this.loaded) {
-      this.value = this.valueBeforeLoaded;
+    if (this._loaded) {
+      this._value = this._valueBeforeLoaded;
     }
   }
 
@@ -68,23 +68,23 @@ export class OfficeMockObject {
       throw new Error("Mock object already exists");
     }
 
-    const officeMockObject = new OfficeMockObject(undefined, this.host);
-    officeMockObject.isObject = true;
-    this.properties.set(objectName, officeMockObject);
-    this[objectName] = this.properties.get(objectName);
+    const officeMockObject = new OfficeMockObject(undefined, this._host);
+    officeMockObject._isObject = true;
+    this._properties.set(objectName, officeMockObject);
+    this[objectName] = this._properties.get(objectName);
   }
 
   private loadAllProperties() {
-    this.properties.forEach((property, propertyName: string) => {
+    this._properties.forEach((property, propertyName: string) => {
       property.loadCalled();
       this.updatePropertyCall(propertyName);
     });
   }
 
   private loadCalled() {
-    if (!this.loaded) {
-      this.loaded = true;
-      this.value = PossibleErrors.notSync;
+    if (!this._loaded) {
+      this._loaded = true;
+      this._value = PossibleErrors.notSync;
     }
   }
 
@@ -110,7 +110,7 @@ export class OfficeMockObject {
       const property = properties[i];
 
       const retrievedProperty: OfficeMockObject | undefined =
-        navigationalOfficeMockObject.properties.get(property);
+        navigationalOfficeMockObject._properties.get(property);
       if (retrievedProperty) {
         navigationalOfficeMockObject = retrievedProperty;
       } else {
@@ -124,13 +124,13 @@ export class OfficeMockObject {
   }
 
   private loadScalar(scalarPropertyName: string) {
-    if (this.properties.has(scalarPropertyName)) {
-      this.properties.get(scalarPropertyName)?.loadCalled();
+    if (this._properties.has(scalarPropertyName)) {
+      this._properties.get(scalarPropertyName)?.loadCalled();
       this.updatePropertyCall(scalarPropertyName);
 
-      this.properties
+      this._properties
         .get(scalarPropertyName)
-        ?.properties.forEach((property: OfficeMockObject) => {
+        ?._properties.forEach((property: OfficeMockObject) => {
           property.loadCalled();
         });
     } else {
@@ -145,11 +145,11 @@ export class OfficeMockObject {
 
     Object.keys(objectData).forEach((propertyName: string) => {
       const property: OfficeMockObject | undefined =
-        this.properties.get(propertyName);
+        this._properties.get(propertyName);
 
       if (property) {
         const propertyValue: ObjectData = objectData[propertyName];
-        if (property.isObject) {
+        if (property._isObject) {
           const composedProperty: string[] =
             property.parseObjectPropertyIntoArray(propertyValue);
           if (composedProperty.length !== 0) {
@@ -187,12 +187,12 @@ export class OfficeMockObject {
   }
 
   private resetValue(value: unknown) {
-    if (this.host === OfficeApp.Outlook) {
-      this.value = value;
+    if (this._host === OfficeApp.Outlook) {
+      this._value = value;
     } else {
-      this.value = PossibleErrors.notLoaded;
-      this.valueBeforeLoaded = value;
-      this.loaded = false;
+      this._value = PossibleErrors.notLoaded;
+      this._valueBeforeLoaded = value;
+      this._loaded = false;
     }
   }
 
@@ -205,31 +205,31 @@ export class OfficeMockObject {
     if (typeof value === "function") {
       this[propertyName] = value;
     } else {
-      if (!this.properties.has(propertyName)) {
-        const officeMockObject = new OfficeMockObject(undefined, this.host);
-        officeMockObject.isObject = false;
-        this.properties.set(propertyName, officeMockObject);
+      if (!this._properties.has(propertyName)) {
+        const officeMockObject = new OfficeMockObject(undefined, this._host);
+        officeMockObject._isObject = false;
+        this._properties.set(propertyName, officeMockObject);
       }
-      this.properties.get(propertyName)?.resetValue(value);
-      this[propertyName] = this.properties.get(propertyName)?.value;
+      this._properties.get(propertyName)?.resetValue(value);
+      this[propertyName] = this._properties.get(propertyName)?._value;
     }
   }
 
   private updatePropertyCall(propertyName: string) {
-    if (this.properties.get(propertyName)?.isObject) {
-      this[propertyName] = this.properties.get(propertyName);
+    if (this._properties.get(propertyName)?._isObject) {
+      this[propertyName] = this._properties.get(propertyName);
     } else if (isValidError(this[propertyName])) {
       // It is a known error
-      this[propertyName] = this.properties.get(propertyName)?.value;
+      this[propertyName] = this._properties.get(propertyName)?._value;
     }
   }
 
-  private properties: Map<string, OfficeMockObject>;
-  private loaded: boolean;
-  private value: unknown;
-  private valueBeforeLoaded: unknown;
-  private isObject: boolean | undefined;
-  private host: OfficeApp | undefined;
+  private _properties: Map<string, OfficeMockObject>;
+  private _loaded: boolean;
+  private _value: unknown;
+  private _valueBeforeLoaded: unknown;
+  private _isObject: boolean | undefined;
+  private _host: OfficeApp | undefined;
   /* eslint-disable-next-line */
   [key: string]: any;
 }
