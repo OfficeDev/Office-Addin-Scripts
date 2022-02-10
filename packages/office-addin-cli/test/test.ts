@@ -133,19 +133,13 @@ describe("office-addin-cli tests", function() {
       describe("convertProject", function() {
         it("Throws when manifest file does not exist", async function() {
           try {
-            await convertProject("foo/bar.xml", "test/test-package.json");
-            assert.fail("The expected Error was not thrown.");
-          } catch (err: any) {}
-        });
-        it("Throws when package json does not exist", async function() {
-          try {
-            await convertProject("test/TaskPane.manifest.xml", "foo/bar.json");
+            await convertProject("foo/bar.xml");
             assert.fail("The expected Error was not thrown.");
           } catch (err: any) {}
         });
         it("Throws when coverting already converted project", async function() {
           try {
-            await convertProject("test/test.json", "test/test-package.json");
+            await convertProject("test/test.json");
             assert.fail("The expected Error was not thrown.");
           } catch (err: any) {}
         });
