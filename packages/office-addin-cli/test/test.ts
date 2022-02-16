@@ -8,7 +8,6 @@ import * as mocha from "mocha";
 import * as parse from "../src/parse";
 
 import { clearCachedScripts, getPackageJsonScript } from "../src/npmPackage";
-import { ExpectedError } from "office-addin-usage-data";
 
 describe("office-addin-cli tests", function() {
   describe("parse.ts", function() {

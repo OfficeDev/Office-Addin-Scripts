@@ -14,17 +14,20 @@
     "office-js"
   ],
   "dependencies": {
+    "commander": "^9.0.0",
     "office-addin-manifest": "^1.7.8",
     "office-addin-usage-data": "^1.4.7"
   },
   "devDependencies": {
     "@types/mocha": "^9.1.0",
     "@types/node": "^14.17.2",
+    "@types/semver": "^7.3.9",
     "assert": "^2.0.0",
     "concurrently": "^7.0.0",
     "mocha": "^9.2.0",
     "office-addin-lint": "^2.0.1",
     "rimraf": "^3.0.2",
+    "semver": "^7.3.5",
     "ts-node": "^10.5.0",
     "typescript": "^4.5.5"
   },
