@@ -17,3 +17,9 @@ commander.on("command:*", function () {
   process.exitCode = 1;
   commander.help();
 });
+
+if (process.argv.length > 2) {
+  commander.parse(process.argv);
+} else {
+  commander.help();
+}
