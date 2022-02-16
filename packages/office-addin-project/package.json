@@ -14,7 +14,7 @@
     "office-js"
   ],
   "dependencies": {
-    "commander": "^9.0.0",
+    "commander": "^6.2.1",
     "office-addin-manifest": "^1.7.8",
     "office-addin-usage-data": "^1.4.7"
   },

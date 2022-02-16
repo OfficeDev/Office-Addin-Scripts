@@ -9,7 +9,7 @@ import * as commands from "./commands";
 
 /* global process */
 
-commander.name("office-addin-cli");
+commander.name("office-addin-project");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 // if the command is not known, display an error
