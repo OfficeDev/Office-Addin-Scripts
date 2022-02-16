@@ -1,0 +1,42 @@
+{
+  "name": "office-addin-project",
+  "version": "0.0.1",
+  "description": "Provides project wide commands to an Office Addin Project",
+  "main": "./lib/main.js",
+  "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
+    "test": "mocha -r ts-node/register test/**/*.ts"
+  },
+  "keywords": [
+    "office-js"
+  ],
+  "dependencies": {
+    "office-addin-manifest": "^1.7.8",
+    "office-addin-usage-data": "^1.4.7"
+  },
+  "devDependencies": {
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^14.17.2",
+    "assert": "^2.0.0",
+    "concurrently": "^7.0.0",
+    "mocha": "^9.2.0",
+    "office-addin-lint": "^2.0.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.5.5"
+  },
+  "homepage": "https://github.com/OfficeDev/Office-Addin-Scripts",
+  "repository": {
+    "directory": "packages/office-addin-project",
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  },
+  "author": "Office Dev",
+  "license": "MIT"
+}

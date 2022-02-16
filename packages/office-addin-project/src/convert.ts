@@ -9,11 +9,15 @@ import { ExpectedError } from "office-addin-usage-data";
 
 export async function convertProject(manifestPath: string = "./manifest.xml") {
   if (manifestPath.endsWith(".json")) {
-    throw new ExpectedError(`The convert command only works on xml based projects`);
+    throw new ExpectedError(
+      `The convert command only works on xml based projects`
+    );
   }
 
   if (!fs.existsSync(manifestPath)) {
-    throw new ExpectedError(`The manifest file '${manifestPath}' does not exist`);
+    throw new ExpectedError(
+      `The manifest file '${manifestPath}' does not exist`
+    );
   }
 
   updatePackages();
@@ -21,7 +25,11 @@ export async function convertProject(manifestPath: string = "./manifest.xml") {
 
 function updatePackages(): void {
   // Contains name of the package and minimum version
-  const depedentPackages: string[] = ["@microsoft/teamsfx", "office-addin-debugging", "office-addin-manifest"];
+  const depedentPackages: string[] = [
+    "@microsoft/teamsfx",
+    "office-addin-debugging",
+    "office-addin-manifest",
+  ];
   let command: string = "npm install";
   let messageToBePrinted: string = "Installing latest versions of";
 

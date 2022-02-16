@@ -5,6 +5,7 @@
 
 import * as commander from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
+import * as commands from "./commands";
 
 /* global process */
 
@@ -17,3 +18,17 @@ commander.on("command:*", function () {
   process.exitCode = 1;
   commander.help();
 });
+
+commander
+  .command("convert")
+  .option(
+    "-m, --manifest <manifest-path>",
+    "Specify the location of the manifest file.  Default is './manifest.xml'"
+  )
+  .action(commands.convert);
+
+if (process.argv.length > 2) {
+  commander.parse(process.argv);
+} else {
+  commander.help();
+}
