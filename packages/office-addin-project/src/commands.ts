@@ -11,8 +11,8 @@ export async function convert(command: commander.Command) {
     const manifestPath: string = command.manifest ?? "./manifest.xml";
 
     await convertProject(manifestPath);
-    usageDataObject.reportSuccess("convert");
     throw new Error("Upgrade function is not ready yet.");
+    // usageDataObject.reportSuccess("convert");
   } catch (err: any) {
     usageDataObject.reportException("convert", err);
     logErrorMessage(err);

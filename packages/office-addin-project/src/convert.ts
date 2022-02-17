@@ -10,7 +10,7 @@ import { ExpectedError } from "office-addin-usage-data";
 export async function convertProject(manifestPath: string = "./manifest.xml") {
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
-      `The convert command only works on xml based projects`
+      `The convert command only works on xml manifest based projects`
     );
   }
 
