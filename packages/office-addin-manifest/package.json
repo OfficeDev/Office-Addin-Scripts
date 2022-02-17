@@ -24,13 +24,13 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "commander": "^6.2.0",
+    "fs-extra": "^7.0.1",
     "jszip": "^3.7.1",
     "node-fetch": "^2.6.1",
     "office-addin-usage-data": "^1.4.7",
     "path": "^0.12.7",
     "uuid": "^8.3.2",
-    "xml2js": "^0.4.23",
-    "fs-extra": "^7.0.1"
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
