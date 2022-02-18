@@ -22,6 +22,7 @@
     "Office Add-in"
   ],
   "dependencies": {
+    "@microsoft/teamsfx-api": "^0.14.0",
     "chalk": "^2.4.2",
     "commander": "^6.2.0",
     "fs-extra": "^7.0.1",
