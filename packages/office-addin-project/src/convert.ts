@@ -2,7 +2,8 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
-import * as prompt from "prompt";
+import * as inquirer from "inquirer";
+
 import { exec } from "child_process";
 import { ExpectedError } from "office-addin-usage-data";
 
@@ -22,39 +23,20 @@ export async function convertProject(manifestPath: string = "./manifest.xml") {
   }
 
   const shouldContinue = await asksForUserConfirmation();
-  console.log(`Should return returned: ${shouldContinue}`);
   if (!shouldContinue) {
     return;
   }
   updatePackages();
 }
 
-async function asksForUserConfirmation(): Promise<boolean | undefined> {
-  let shouldContinue: boolean | undefined;
-
-  console.log(
-    "This command will convert your XML manifest to a JSON manifest and upgrade your project dependencies to make it compatible with the new project.\nWould you like to continue? (y/N)"
-  );
-
-  const schema = {
-    properties: {
-      continue: {
-        pattern: /^(?:Y|y|N|n)$/,
-        message: 'Please specify with "y" for yes or "N" for no.',
-        required: true,
-      },
-    },
+async function asksForUserConfirmation(): Promise<boolean> {
+  const question = {
+    message: `This command will convert your XML manifest to a JSON manifest and upgrade your project dependencies to make it compatible with the new project.\nWould you like to continue?`,
+    name: "didUserConfirm",
+    type: "confirm",
   };
-  const result = await prompt.get(schema);
-  const answer = result.continue;
-
-  if (answer === "N" || answer === "n") {
-    shouldContinue = false;
-  } else if (answer === "Y" || answer === "y") {
-    shouldContinue = true;
-  }
-
-  return shouldContinue;
+  const answers = await inquirer.prompt([question]);
+  return (answers as any).didUserConfirm;
 }
 
 function updatePackages(): void {
