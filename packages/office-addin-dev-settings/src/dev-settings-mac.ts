@@ -3,11 +3,18 @@
 
 import * as fs from "fs-extra";
 import * as junk from "junk";
-import { getOfficeApps, getOfficeAppsForManifestHosts, OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
+import {
+  // exportMetadataPackage,
+  getOfficeApps,
+  getOfficeAppsForManifestHosts,
+  OfficeApp,
+  OfficeAddinManifest,
+} from "office-addin-manifest";
 import * as os from "os";
 import * as path from "path";
 import { RegisteredAddin } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
+import { publish } from "./publish";
 
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const registeredAddins: RegisteredAddin[] = [];
@@ -54,15 +61,20 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
       throw new ExpectedError("The manifest file doesn't contain the id of the Office Add-in.");
     }
 
-    for (const app of officeApps) {
-      const sideloadDirectory = getSideloadDirectory(app);
+    if (manifestPath.endsWith(".json")) {
+      const zipPath: string = ""; // exportMetadataPackage(manifestPath);
+      return publish(zipPath);
+    } else if (manifestPath.endsWith(".xml")) {
+      for (const app of officeApps) {
+        const sideloadDirectory = getSideloadDirectory(app);
 
-      if (sideloadDirectory) {
-        // include manifest id in sideload filename
-        const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${path.basename(manifestPath)}`);
+        if (sideloadDirectory) {
+          // include manifest id in sideload filename
+          const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${path.basename(manifestPath)}`);
 
-        fs.ensureDirSync(sideloadDirectory);
-        fs.ensureLinkSync(manifestPath, sideloadPath);
+          fs.ensureDirSync(sideloadDirectory);
+          fs.ensureLinkSync(manifestPath, sideloadPath);
+        }
       }
     }
   } catch (err) {
