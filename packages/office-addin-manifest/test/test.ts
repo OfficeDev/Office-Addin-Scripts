@@ -25,6 +25,7 @@ import { exportMetadataPackage } from "../src/export";
 import { ManifestHandler } from "../src/manifestHandler/manifestHandler";
 import { ManifestHandlerXml } from "../src/manifestHandler/manifestHandlerXml";
 import { ManifestHandlerJson } from "../src/manifestHandler/manifestHandlerJson";
+import { ManifestInfo } from "../src/manifestInfo";
 
 const manifestOriginalFolder = path.resolve("./test/manifests");
 const manifestTestFolder = path.resolve("./testExecution/testManifests");
@@ -405,7 +406,7 @@ describe("Unit Tests", function() {
     });
   });
   describe("manifestInfo.ts", function() {
-    describe("readManifestInfo() XML", function() {
+    describe("readManifestFile() XML", function() {
       it("should read the manifest xml info", async function() {
         const info = await OfficeAddinManifest.readManifestFile("test/manifests/TaskPane.manifest.xml");
 
@@ -476,15 +477,11 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.version, "1.2.3.4");
       });
     });
-    describe("readManifestInfo() JSON", function() {
+    describe("readManifestFile() JSON", function() {
       it("should read the manifest json info", async function() {
-        let result;
-        try {
-          await OfficeAddinManifest.readManifestFile("test/manifests/manifest.json");
-        } catch (err: any) {
-          result = err.message;
-        }
-        assert.strictEqual(result, "Manifest cannot be parsed in .json files");
+        const manifestInfo: ManifestInfo = await OfficeAddinManifest.readManifestFile("test/manifests/manifest.json");
+        assert.strictEqual(manifestInfo.id, "df2fa15f-332a-47aa-87c2-e30c20686eee");
+
       });
       it ("should throw an error on an invalid json format", async function() {
         let result;

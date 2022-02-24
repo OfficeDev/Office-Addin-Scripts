@@ -7,13 +7,12 @@ import * as fs from "fs";
 
 export abstract class ManifestHandler {
   /* eslint-disable no-unused-vars */
-  constructor() {
-    this.manifestPath = "";
+  constructor(manifestPath: string) {
+    this.manifestPath = manifestPath;
     this.fileData = "";
   }
 
   public async readFromManifestFile(manifestPath: string): Promise<string> {
-    this.manifestPath = manifestPath;
     try {
       const fileData: string = await util.promisify(fs.readFile)(manifestPath, {
         encoding: "utf8",

@@ -13,16 +13,15 @@ export namespace OfficeAddinManifest {
     guid?: string,
     displayName?: string
   ): Promise<ManifestInfo> {
-    let manifestData: ManifestInfo = {};
     if (manifestPath) {
       if (guid === undefined && displayName === undefined) {
         throw new Error("You need to specify something to change in the manifest.");
       } else {
         try {
           const manifestHandler: ManifestHandler = await getManifestHandler(manifestPath);
-          manifestData = await manifestHandler.modifyManifest(guid, displayName);
+          const manifestData = await manifestHandler.modifyManifest(guid, displayName);
           await manifestHandler.writeManifestData(manifestData);
-          let output = await readManifestFile(manifestPath);
+          const output = await readManifestFile(manifestPath);
           usageDataObject.reportSuccess("modifyManifestFile()");
           return output;
         } catch (err: any) {
@@ -49,9 +48,9 @@ export namespace OfficeAddinManifest {
 async function getManifestHandler(manifestPath: string): Promise<ManifestHandler> {
   let manifestHandler: ManifestHandler;
   if (manifestPath.endsWith(".json")) {
-    manifestHandler = new ManifestHandlerJson();
+    manifestHandler = new ManifestHandlerJson(manifestPath);
   } else if (manifestPath.endsWith(".xml")) {
-    manifestHandler = new ManifestHandlerXml();
+    manifestHandler = new ManifestHandlerXml(manifestPath);
   } else {
     const extension: string = manifestPath.split(".").pop() ?? "<no extension>";
     throw new Error(
