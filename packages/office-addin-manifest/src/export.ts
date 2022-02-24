@@ -5,14 +5,10 @@ import * as path from "path";
 
 /* global console */
 
-export async function exportMetadataPackage(
-  output: string = "",
-  manifest: string = "manifest.json",
-  assets: string = "assets"
-): Promise<string> {
+export async function exportMetadataPackage(output: string = "", manifest: string = "manifest.json"): Promise<string> {
   const manifestPath: string = path.resolve(manifest);
 
-  const zip: jszip = createZip(manifestPath, assets);
+  const zip: jszip = createZip(manifestPath);
 
   if (output === "") {
     output = path.join(path.dirname(manifestPath), "manifest.zip");
@@ -22,7 +18,7 @@ export async function exportMetadataPackage(
   return output;
 }
 
-function createZip(manifestPath: string = "manifest.json", assets: string = "assets"): jszip {
+function createZip(manifestPath: string = "manifest.json"): jszip {
   const zip = new jszip();
 
   if (fs.existsSync(manifestPath)) {
@@ -32,17 +28,7 @@ function createZip(manifestPath: string = "manifest.json", assets: string = "ass
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
-  if (fs.existsSync(assets)) {
-    const files: string[] = fs.readdirSync(assets);
-    zip.folder(assets);
-    files.forEach((element) => {
-      const filePath = path.join(assets, element);
-      const fileData = fs.readFileSync(filePath);
-      zip.file(filePath, fileData);
-    });
-  } else {
-    throw new Error("Need folder of assets referenced by manifest file");
-  }
+  // TODO: Add including icons from manfest file into package
 
   return zip;
 }

@@ -715,9 +715,8 @@ describe("Unit Tests", function() {
         this.timeout(6000);
         const testFolder = path.resolve("./testExecution");
         const manifestPath = path.normalize("test/manifests/manifest.json");
-        const assetsPath = path.normalize("test/assets");
         const outputPath = path.normalize(`${testFolder}/testPackage.zip`);
-        const outputFile = await exportMetadataPackage(outputPath, manifestPath, assetsPath);
+        const outputFile = await exportMetadataPackage(outputPath, manifestPath);
 
         assert.strictEqual(outputFile, outputPath, "Output path \'" + outputFile + "\' should match the argument \'" + outputPath + "\'");
         assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
@@ -728,9 +727,8 @@ describe("Unit Tests", function() {
       it("export manifest to default location", async function() {
         this.timeout(6000);
         const manifestPath = path.normalize("test/manifests/manifest.json");
-        const assetsPath = path.normalize("test/assets");
         const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
-        const outputFile = await exportMetadataPackage("", manifestPath, assetsPath);
+        const outputFile = await exportMetadataPackage("", manifestPath);
         assert.strictEqual(outputFile, expectedOutput, "Output path \'" + outputFile + "\' should match the default \'" + expectedOutput + "\'");
         assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
         
