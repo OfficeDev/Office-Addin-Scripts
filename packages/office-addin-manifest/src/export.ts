@@ -62,4 +62,3 @@ async function saveZip(zip: jszip, outputPath: string) {
       })
   );
 }
-

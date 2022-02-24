@@ -4,7 +4,7 @@
 import * as fs from "fs-extra";
 import * as junk from "junk";
 import {
-  // exportMetadataPackage,
+  exportMetadataPackage,
   getOfficeApps,
   getOfficeAppsForManifestHosts,
   OfficeApp,
@@ -62,7 +62,7 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
     }
 
     if (manifestPath.endsWith(".json")) {
-      const zipPath: string = ""; // exportMetadataPackage(manifestPath);
+      const zipPath: string = await exportMetadataPackage(manifestPath);
       return publish(zipPath);
     } else if (manifestPath.endsWith(".xml")) {
       for (const app of officeApps) {

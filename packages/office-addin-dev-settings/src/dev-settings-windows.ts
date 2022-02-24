@@ -4,7 +4,7 @@
 // licensed under the MIT license.
 
 import {
-  //exportMetadataPackage,
+  exportMetadataPackage,
   getOfficeAppsForManifestHosts,
   ManifestInfo,
   OfficeApp,
@@ -182,7 +182,7 @@ export async function registerAddIn(addinId: string, manifestPath: string) {
   }
 
   if (manifestPath.endsWith(".json")) {
-    const zipPath: string = ""; //exportMetadataPackage(manifestPath);
+    const zipPath: string = await exportMetadataPackage(manifestPath);
     return publish(zipPath);
   } else if (manifestPath.endsWith(".xml")) {
     const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
