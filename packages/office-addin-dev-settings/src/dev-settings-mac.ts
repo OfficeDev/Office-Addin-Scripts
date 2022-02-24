@@ -15,6 +15,9 @@ import * as path from "path";
 import { RegisteredAddin } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import { publish } from "./publish";
+import * as fspath from "path";
+
+/* global process */
 
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const registeredAddins: RegisteredAddin[] = [];
@@ -62,7 +65,8 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
     }
 
     if (manifestPath.endsWith(".json")) {
-      const zipPath: string = await exportMetadataPackage(manifestPath);
+      const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
+      const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
       return publish(zipPath);
     } else if (manifestPath.endsWith(".xml")) {
       for (const app of officeApps) {

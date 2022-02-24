@@ -14,6 +14,9 @@ import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewTyp
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
 import { publish } from "./publish";
+import * as fspath from "path";
+
+/* global process */
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
 
@@ -174,21 +177,24 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
   return false;
 }
 
-export async function registerAddIn(addinId: string, manifestPath: string) {
-  const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
-  if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
-    enableOutlookSideloading(manifestPath);
-  }
-
+export async function registerAddIn(manifestPath: string) {
   if (manifestPath.endsWith(".json")) {
-    const zipPath: string = await exportMetadataPackage(manifestPath);
+    const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
+    const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
+
     return publish(zipPath);
   } else if (manifestPath.endsWith(".xml")) {
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
+    const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+
+    if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
+      enableOutlookSideloading(manifestPath);
+    }
+
     const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
     await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
-    return registry.addStringValue(key, addinId, manifestPath);
+    return registry.addStringValue(key, manifest.id || "", manifestPath);
   }
 }
 
