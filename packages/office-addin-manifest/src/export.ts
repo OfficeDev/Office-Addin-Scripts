@@ -28,10 +28,22 @@ function createZip(manifestPath: string = "manifest.json"): jszip {
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
-  // TODO: Add including icons from manfest file into package
+  // Need json manifest manipulation before this can work.
+  // const manifest = readManifest(manifestPath);
+  // addIconFile(manifest.icon?.color, zip);
+  // addIconFile(manifest.icon?.outline, zip);
 
   return zip;
 }
+
+// function addIconFile(iconPath: string, zip: jszip) {
+//   if (iconPath && !iconPath.startsWith("https://")) {
+//     const filePath: string = path.resolve(iconPath);
+//     if (fs.existsSync(filePath)) {
+//       zip.file(iconPath, fs.readFileSync(filePath));
+//     }
+//   }
+// }
 
 async function saveZip(zip: jszip, outputPath: string) {
   outputPath = path.resolve(outputPath);
