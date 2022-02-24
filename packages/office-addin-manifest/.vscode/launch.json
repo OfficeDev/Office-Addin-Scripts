@@ -49,8 +49,6 @@
         "${env:TEMP}\\manifest.zip",
         "-m",
         "${workspaceFolder}\\test\\manifests\\manifest.json",
-        "-a",
-        "${workspaceFolder}\\test\\assets",
       ]
     },
     {
