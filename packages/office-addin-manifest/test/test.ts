@@ -478,8 +478,6 @@ describe("Unit Tests", function() {
       it("should read the manifest json info", async function() {
         const info: ManifestInfo = await OfficeAddinManifest.readManifestFile(path.normalize("test/manifests/manifest.json"));
         assert.strictEqual(info.id, "df2fa15f-332a-47aa-87c2-e30c20686eee");
-        assert.strictEqual(info.allowSnapshot, undefined);
-        assert.strictEqual(info.alternateId, undefined);
         // assert.strictEqual(info.appDomains instanceof Array, true);
         // assert.strictEqual(info.appDomains!.length, 1);
         // assert.strictEqual(info.appDomains![0], "contoso.com");
