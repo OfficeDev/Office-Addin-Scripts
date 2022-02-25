@@ -2,7 +2,7 @@ import * as childProcess from "child_process";
 
 /* global console */
 
-export async function publish(zipPath: string): Promise<void> {
+export async function registerWithTeams(zipPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const command = `npx @microsoft/teamsfx-cli@0.11.0-rc.0 provision manifest --file-path ${zipPath}`;
 

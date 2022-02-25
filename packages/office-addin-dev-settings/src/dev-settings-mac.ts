@@ -14,7 +14,7 @@ import * as os from "os";
 import * as path from "path";
 import { RegisteredAddin } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
-import { publish } from "./publish";
+import { registerWithTeams } from "./publish";
 import * as fspath from "path";
 
 /* global process */
@@ -67,7 +67,7 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
     if (manifestPath.endsWith(".json")) {
       const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
       const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
-      return publish(zipPath);
+      return registerWithTeams(zipPath);
     } else if (manifestPath.endsWith(".xml")) {
       for (const app of officeApps) {
         const sideloadDirectory = getSideloadDirectory(app);

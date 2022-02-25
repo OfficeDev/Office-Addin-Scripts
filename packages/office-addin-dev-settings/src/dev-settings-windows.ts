@@ -13,7 +13,7 @@ import {
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
-import { publish } from "./publish";
+import { registerWithTeams } from "./publish";
 import * as fspath from "path";
 
 /* global process */
@@ -182,7 +182,7 @@ export async function registerAddIn(manifestPath: string) {
     const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
     const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
 
-    return publish(zipPath);
+    return registerWithTeams(zipPath);
   } else if (manifestPath.endsWith(".xml")) {
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
