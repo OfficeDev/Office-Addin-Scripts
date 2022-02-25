@@ -319,28 +319,6 @@ describe("Registration", function() {
         assert.strictEqual(first.id, firstManifestId);
         assert.strictEqual(first.manifestPath, firstRegisteredManifestPath);
       });
-      if (process.platform === "win32") {
-        it("Supports manifest path instead of id for registry value name", async function() {
-          await devSettingsWindows.registerAddIn(secondManifestPath, secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, "");
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-        it("When registered by id, registry value name with manifest path is removed", async function() {
-          await devSettings.registerAddIn(secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, secondManifestId);
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-      }
     });
 
     if (isWindows) {
