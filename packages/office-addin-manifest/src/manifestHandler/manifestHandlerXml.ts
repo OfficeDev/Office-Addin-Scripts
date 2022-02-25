@@ -102,6 +102,7 @@ export class ManifestHandlerXml extends ManifestHandler {
     try {
       // Write the xml back to the manifest file.
       await writeFileAsync(this.manifestPath, xml);
+      await this.updateFileData();
     } catch (err) {
       throw new Error(`Unable to write to file. ${this.manifestPath} \n${err}`);
     }

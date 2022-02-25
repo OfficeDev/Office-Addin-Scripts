@@ -26,41 +26,38 @@ export class ManifestHandlerJson extends ManifestHandler {
   }
 
   async parseManifest(): Promise<ManifestInfo> {
-    let manifestInfo: ManifestInfo;
-
     try {
       const file: TeamsAppManifest = await JSON.parse(this.fileData);
-      manifestInfo = this.translateTeamsAppManifestToManifestInfo(file);
+      return this.translateTeamsAppManifestToManifestInfo(file);
     } catch (err) {
       throw new Error(`Unable to read data for manifest file: ${this.manifestPath}. \n${err}`);
     }
-    return manifestInfo;
   }
 
   translateTeamsAppManifestToManifestInfo(teamsAppManifest: TeamsAppManifest): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
     manifestInfo.id = teamsAppManifest.id;
-
     // manifestInfo.allowSnapshot = teamsAppManifest.AllowSnapshot; // TODO
     // manifestInfo.alternateId = teamsAppManifest.AlternateId; // TODO
     manifestInfo.appDomains = teamsAppManifest.validDomains;
     manifestInfo.defaultLocale = teamsAppManifest.localizationInfo?.defaultLanguageTag;
     manifestInfo.description = teamsAppManifest.description.short;
     manifestInfo.displayName = teamsAppManifest.name.short;
-    // manifestInfo.highResolutionIconUrl = teamsAppManifest.HighResolutionIconUrl; // TODO
+    manifestInfo.highResolutionIconUrl = teamsAppManifest.icons.color;
     // manifestInfo.hosts = teamsAppManifest.Hosts.Host.Name; // TODO
-    // manifestInfo.iconUrl = teamsAppManifest.IconUrl; // TODO
+    manifestInfo.iconUrl = teamsAppManifest.icons.color; // TODO
     // manifestInfo.officeAppType = teamsAppManifest["xsi:type"]; // TODO
     // manifestInfo.permissions = teamsAppManifest.Permissions; // TODO
     manifestInfo.providerName = teamsAppManifest.developer.name;
-    // manifestInfo.supportUrl = teamsAppManifest.SupportUrl; // TODO
-
+    manifestInfo.supportUrl = teamsAppManifest.developer.websiteUrl; // TODO
     manifestInfo.version = teamsAppManifest.version;
+
     return manifestInfo;
   }
 
   async writeManifestData(manifestData: TeamsAppManifest): Promise<void> {
-    writeToPath(this.manifestPath, manifestData);
+    await writeToPath(this.manifestPath, manifestData);
+    await this.updateFileData();
   }
   /* eslint-enable @typescript-eslint/no-unused-vars */
 }
@@ -70,5 +67,5 @@ export class ManifestHandlerJson extends ManifestHandler {
  * @param filePath path to the manifest.json file
  */
 async function writeToPath(path: string, manifest: TeamsAppManifest): Promise<void> {
-  return fs.writeJson(path, manifest);
+  return fs.writeJson(path, manifest, { spaces: 4 });
 }

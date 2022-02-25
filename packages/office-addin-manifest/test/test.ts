@@ -22,9 +22,6 @@ import {
 } from "../src/officeApp";
 import { validateManifest } from "../src/validate";
 import { exportMetadataPackage } from "../src/export";
-import { ManifestHandler } from "../src/manifestHandler/manifestHandler";
-import { ManifestHandlerXml } from "../src/manifestHandler/manifestHandlerXml";
-import { ManifestHandlerJson } from "../src/manifestHandler/manifestHandlerJson";
 import { ManifestInfo } from "../src/manifestInfo";
 
 const manifestOriginalFolder = path.resolve("./test/manifests");
@@ -479,18 +476,36 @@ describe("Unit Tests", function() {
     });
     describe("readManifestFile() JSON", function() {
       it("should read the manifest json info", async function() {
-        const manifestInfo: ManifestInfo = await OfficeAddinManifest.readManifestFile("test/manifests/manifest.json");
-        assert.strictEqual(manifestInfo.id, "df2fa15f-332a-47aa-87c2-e30c20686eee");
-
+        const info: ManifestInfo = await OfficeAddinManifest.readManifestFile(path.normalize("test/manifests/manifest.json"));
+        assert.strictEqual(info.id, "df2fa15f-332a-47aa-87c2-e30c20686eee");
+        assert.strictEqual(info.allowSnapshot, undefined);
+        assert.strictEqual(info.alternateId, undefined);
+        // assert.strictEqual(info.appDomains instanceof Array, true);
+        // assert.strictEqual(info.appDomains!.length, 1);
+        // assert.strictEqual(info.appDomains![0], "contoso.com");
+        assert.strictEqual(info.appDomains, undefined);
+        assert.strictEqual(info.defaultLocale, "en-us");
+        assert.strictEqual(info.description, "A template to get started.");
+        assert.strictEqual(info.displayName, "My Office Add-in");
+        assert.strictEqual(info.highResolutionIconUrl, "assets/icon-32.png");
+        // assert.strictEqual(info.hosts instanceof Array, true);
+        // assert.strictEqual(info.hosts!.length, 1);
+        // assert.strictEqual(info.hosts![0], "Workbook");
+        assert.strictEqual(info.iconUrl, "assets/icon-32.png");
+        // assert.strictEqual(info.officeAppType, "TaskPaneApp");
+        // assert.strictEqual(info.permissions, "ReadWriteDocument");
+        assert.strictEqual(info.providerName, "Contoso");
+        assert.strictEqual(info.supportUrl, "https://www.contoso.com");
+        assert.strictEqual(info.version, "1.0.0");
       });
       it ("should throw an error on an invalid json format", async function() {
         let result;
         try {
-          await OfficeAddinManifest.readManifestFile("test/manifests/invalid/invalid-manifest.json");
+          await OfficeAddinManifest.readManifestFile(path.normalize("test/manifests/invalid/invalid-manifest.json"));
         } catch (err: any) {
           result = err.message;
         }
-        assert.strictEqual(result, "Unable to read data for manifest file: test/manifests/invalid/invalid-manifest.json. \nSyntaxError: Unexpected token ] in JSON at position 4114");
+        assert.strictEqual(result, "Unable to read data for manifest file: test\\manifests\\invalid\\invalid-manifest.json. \nSyntaxError: Unexpected token ] in JSON at position 4114");
       });
       it ("nonexistent manifest", async function() {
         const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
@@ -585,6 +600,41 @@ describe("Unit Tests", function() {
       });
       afterEach(async function() {
         await _deleteFolder(manifestTestFolder);
+      });
+      it("should handle a specified valid guid and displayName", async function() {
+        // call modify, specifying guid and displayName  parameters
+        const testGuid = uuidv1();
+        const testDisplayName = "TestDisplayName";
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifestJson, testGuid, testDisplayName);
+
+        // verify guid displayName updated
+        assert.strictEqual(updatedInfo.id, testGuid);
+        assert.strictEqual(updatedInfo.displayName, testDisplayName);
+      });
+      it(`should handle specifying "random" form guid parameter`, async function() {
+        // get original manifest info and create copy of manifest that we can overwrite in this test
+        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifestJson);
+
+        // call modify, specifying "random" parameter
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifestJson, "random", undefined);
+
+        // verify guid updated, that it"s a valid guid and that the displayName is not updated
+        assert.notStrictEqual(updatedInfo.id, originalInfo.id);
+        assert.strictEqual(updatedInfo.id && isUUID(updatedInfo.id), true);
+        assert.strictEqual(updatedInfo.displayName, originalInfo.displayName);
+      });
+      it("should handle specifying displayName only", async function() {
+        // get original manifest info and create copy of manifest that we can overwrite in this test
+        const originalInfo = await OfficeAddinManifest.readManifestFile(testManifestJson);
+
+        // call  modify, specifying a displayName parameter
+        const testDisplayName = "TestDisplayName";
+        const updatedInfo = await OfficeAddinManifest.modifyManifestFile(testManifestJson, undefined, testDisplayName);
+
+        // verify displayName updated and guid not updated
+        assert.notStrictEqual(updatedInfo.displayName, originalInfo.displayName);
+        assert.strictEqual(updatedInfo.displayName, testDisplayName);
+        assert.strictEqual( updatedInfo.id, originalInfo.id);
       });
       it("should handle not specifying either a guid or displayName", async function() {
         let result;

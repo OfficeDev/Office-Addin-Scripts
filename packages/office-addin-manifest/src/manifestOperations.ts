@@ -21,9 +21,9 @@ export namespace OfficeAddinManifest {
           const manifestHandler: ManifestHandler = await getManifestHandler(manifestPath);
           const manifestData = await manifestHandler.modifyManifest(guid, displayName);
           await manifestHandler.writeManifestData(manifestData);
-          const output = await readManifestFile(manifestPath);
+          const manifestInfo: ManifestInfo = await manifestHandler.parseManifest();
           usageDataObject.reportSuccess("modifyManifestFile()");
-          return output;
+          return manifestInfo;
         } catch (err: any) {
           usageDataObject.reportException("modifyManifestFile()", err);
           throw err;
@@ -57,6 +57,6 @@ async function getManifestHandler(manifestPath: string): Promise<ManifestHandler
       `Manifest operations are not supported in .${extension}.\nThey are only supported in .xml and in .json.`
     );
   }
-  await manifestHandler.readFromManifestFile(manifestPath);
+  await manifestHandler.updateFileData();
   return manifestHandler;
 }
