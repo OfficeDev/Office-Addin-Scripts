@@ -28,13 +28,13 @@ export class ManifestHandlerJson extends ManifestHandler {
   async parseManifest(): Promise<ManifestInfo> {
     try {
       const file: TeamsAppManifest = await JSON.parse(this.fileData);
-      return this.translateTeamsAppManifestToManifestInfo(file);
+      return this.getManifestInfo(file);
     } catch (err) {
       throw new Error(`Unable to read data for manifest file: ${this.manifestPath}. \n${err}`);
     }
   }
 
-  translateTeamsAppManifestToManifestInfo(teamsAppManifest: TeamsAppManifest): ManifestInfo {
+  getManifestInfo(teamsAppManifest: TeamsAppManifest): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
     manifestInfo.id = teamsAppManifest.id;
     manifestInfo.appDomains = teamsAppManifest.validDomains;
@@ -55,7 +55,7 @@ export class ManifestHandlerJson extends ManifestHandler {
 
   async writeManifestData(manifestData: TeamsAppManifest): Promise<void> {
     await writeToPath(this.manifestPath, manifestData);
-    await this.updateFileData();
+    await this.readFromManifestFile();
   }
   /* eslint-enable @typescript-eslint/no-unused-vars */
 }

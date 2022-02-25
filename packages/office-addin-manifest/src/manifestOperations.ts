@@ -57,6 +57,6 @@ async function getManifestHandler(manifestPath: string): Promise<ManifestHandler
       `Manifest operations are not supported in .${extension}.\nThey are only supported in .xml and in .json.`
     );
   }
-  await manifestHandler.updateFileData();
+  await manifestHandler.readFromManifestFile();
   return manifestHandler;
 }

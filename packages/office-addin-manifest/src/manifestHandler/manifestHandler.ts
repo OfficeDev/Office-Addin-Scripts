@@ -12,7 +12,7 @@ export abstract class ManifestHandler {
     this.fileData = "";
   }
 
-  public async updateFileData(): Promise<string> {
+  public async readFromManifestFile(): Promise<string> {
     try {
       const fileData: string = await util.promisify(fs.readFile)(this.manifestPath, {
         encoding: "utf8",
