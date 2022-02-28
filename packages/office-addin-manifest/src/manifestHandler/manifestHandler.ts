@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 
 import { ManifestInfo } from "../manifestInfo";
-import * as util from "util";
-import * as fs from "fs";
 
 export abstract class ManifestHandler {
   /* eslint-disable no-unused-vars */
@@ -11,7 +9,6 @@ export abstract class ManifestHandler {
     this.manifestPath = manifestPath;
     this.fileData = "";
   }
-
 
   abstract modifyManifest(guid?: string, displayName?: string): Promise<any>;
   abstract parseManifest(): Promise<ManifestInfo>;
