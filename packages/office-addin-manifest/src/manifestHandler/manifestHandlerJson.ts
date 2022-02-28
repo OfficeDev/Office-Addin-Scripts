@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs-extra";
 import { TeamsAppManifest } from "@microsoft/teamsfx-api";
+import { ManifestUtil } from "@microsoft/teams-manifest";
 import { v4 as uuidv4 } from "uuid";
 import { ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
@@ -54,16 +54,8 @@ export class ManifestHandlerJson extends ManifestHandler {
   }
 
   async writeManifestData(manifestData: TeamsAppManifest): Promise<void> {
-    await writeToPath(this.manifestPath, manifestData);
+    await ManifestUtil.writeToPath(this.manifestPath, manifestData);
     await this.readFromManifestFile();
   }
   /* eslint-enable @typescript-eslint/no-unused-vars */
-}
-
-/**
- * Save manifest to .json file
- * @param filePath path to the manifest.json file
- */
-async function writeToPath(path: string, manifest: TeamsAppManifest): Promise<void> {
-  return fs.writeJson(path, manifest, { spaces: 4 });
 }

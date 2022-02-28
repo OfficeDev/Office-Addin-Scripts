@@ -23,6 +23,7 @@
   ],
   "dependencies": {
     "@microsoft/teamsfx-api": "^0.14.0",
+    "@microsoft/teams-manifest": "^0.0.1",
     "chalk": "^2.4.2",
     "commander": "^6.2.0",
     "fs-extra": "^7.0.1",
