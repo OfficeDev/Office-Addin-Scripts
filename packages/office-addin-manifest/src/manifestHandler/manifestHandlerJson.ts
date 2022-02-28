@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { TeamsAppManifest } from "@microsoft/teamsfx-api";
-import { ManifestUtil } from "@microsoft/teams-manifest";
+import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
 import { v4 as uuidv4 } from "uuid";
 import { ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
@@ -10,24 +9,28 @@ import { ManifestHandler } from "./manifestHandler";
 export class ManifestHandlerJson extends ManifestHandler {
   /* eslint-disable @typescript-eslint/no-unused-vars */
   async modifyManifest(guid?: string, displayName?: string): Promise<TeamsAppManifest> {
-    const teamsAppManifest: TeamsAppManifest = await JSON.parse(this.fileData);
+    try {
+      const teamsAppManifest: TeamsAppManifest = await ManifestUtil.loadFromPath(this.manifestPath);
 
-    if (typeof guid !== "undefined") {
-      if (!guid || guid === "random") {
-        guid = uuidv4();
+      if (typeof guid !== "undefined") {
+        if (!guid || guid === "random") {
+          guid = uuidv4();
+        }
+        teamsAppManifest.id = guid;
       }
-      teamsAppManifest.id = guid;
-    }
 
-    if (typeof displayName !== "undefined") {
-      teamsAppManifest.name.short = displayName;
+      if (typeof displayName !== "undefined") {
+        teamsAppManifest.name.short = displayName;
+      }
+      return teamsAppManifest;
+    } catch (err) {
+      throw new Error(`Unable to modify json data for manifest file: ${this.manifestPath}. \n${err}`);
     }
-    return teamsAppManifest;
   }
 
   async parseManifest(): Promise<ManifestInfo> {
     try {
-      const file: TeamsAppManifest = await JSON.parse(this.fileData);
+      const file: TeamsAppManifest = await ManifestUtil.loadFromPath(this.manifestPath);
       return this.getManifestInfo(file);
     } catch (err) {
       throw new Error(`Unable to read data for manifest file: ${this.manifestPath}. \n${err}`);
@@ -55,7 +58,6 @@ export class ManifestHandlerJson extends ManifestHandler {
 
   async writeManifestData(manifestData: TeamsAppManifest): Promise<void> {
     await ManifestUtil.writeToPath(this.manifestPath, manifestData);
-    await this.readFromManifestFile();
   }
   /* eslint-enable @typescript-eslint/no-unused-vars */
 }

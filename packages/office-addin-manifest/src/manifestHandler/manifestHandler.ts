@@ -12,17 +12,6 @@ export abstract class ManifestHandler {
     this.fileData = "";
   }
 
-  public async readFromManifestFile(): Promise<string> {
-    try {
-      const fileData: string = await util.promisify(fs.readFile)(this.manifestPath, {
-        encoding: "utf8",
-      });
-      this.fileData = fileData;
-      return fileData;
-    } catch (err) {
-      throw new Error(`Unable to read data for manifest file: ${this.manifestPath}. \n${err}`);
-    }
-  }
 
   abstract modifyManifest(guid?: string, displayName?: string): Promise<any>;
   abstract parseManifest(): Promise<ManifestInfo>;

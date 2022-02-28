@@ -497,13 +497,14 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.version, "1.0.0");
       });
       it ("should throw an error on an invalid json format", async function() {
+        const invalidManifest = path.normalize("test/manifests/invalid/invalid-manifest.json")
         let result;
         try {
-          await OfficeAddinManifest.readManifestFile(path.normalize("test/manifests/invalid/invalid-manifest.json"));
+          await OfficeAddinManifest.readManifestFile(invalidManifest);
         } catch (err: any) {
           result = err.message;
         }
-        assert.strictEqual(result, "Unable to read data for manifest file: test\\manifests\\invalid\\invalid-manifest.json. \nSyntaxError: Unexpected token ] in JSON at position 4114");
+        assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nSyntaxError: ${invalidManifest}: Unexpected token ] in JSON at position 4114`);
       });
       it ("nonexistent manifest", async function() {
         const invalidManifest = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
@@ -589,7 +590,7 @@ describe("Unit Tests", function() {
           result = err.message;
         }
 
-        assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+        assert.strictEqual(result, `Unable to modify xml data for manifest file: ${invalidManifest}.\nError: Unable to read data for manifest file: ${invalidManifest}.\nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
       });
     });
     describe("modifyManifestFile() JSON", function() {
@@ -655,7 +656,7 @@ describe("Unit Tests", function() {
           result = err.message;
         }
 
-        assert.strictEqual(result, `Unable to read data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
+        assert.strictEqual(result, `Unable to modify json data for manifest file: ${invalidManifest}. \nError: ENOENT: no such file or directory, open '${invalidManifest}'`);
       });
     });
   });
