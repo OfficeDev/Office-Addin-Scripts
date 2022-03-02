@@ -3,6 +3,7 @@ import * as fsExtra from "fs-extra";
 import * as jszip from "jszip";
 import * as path from "path";
 import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
+import { PromiseWithChild } from "child_process";
 
 /* global console */
 
@@ -46,7 +47,7 @@ function addIconFile(iconPath: string, zip: jszip) {
   }
 }
 
-async function saveZip(zip: jszip, outputPath: string) {
+async function saveZip(zip: jszip, outputPath: string): Promise<void> {
   outputPath = path.resolve(outputPath);
 
   fsExtra.ensureDirSync(path.dirname(outputPath));
