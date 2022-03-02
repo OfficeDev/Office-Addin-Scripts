@@ -12,8 +12,8 @@
     "full": "A template to get started."
   },
   "icons": {
-    "outline": "assets/icon-32.png",
-    "color": "assets/icon-32.png"
+    "outline": "test/assets/icon-32.png",
+    "color": "test/assets/icon-32.png"
   },
   "accentColor": "#FFFFFF",
   "developer": {

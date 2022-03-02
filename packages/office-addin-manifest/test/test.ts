@@ -485,11 +485,11 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.defaultLocale, "en-us");
         assert.strictEqual(info.description, "A template to get started.");
         assert.strictEqual(info.displayName, "My Office Add-in");
-        assert.strictEqual(info.highResolutionIconUrl, "assets/icon-32.png");
+        assert.strictEqual(info.highResolutionIconUrl, "test/assets/icon-32.png");
         // assert.strictEqual(info.hosts instanceof Array, true);
         // assert.strictEqual(info.hosts!.length, 1);
         // assert.strictEqual(info.hosts![0], "Workbook");
-        assert.strictEqual(info.iconUrl, "assets/icon-32.png");
+        assert.strictEqual(info.iconUrl, "test/assets/icon-32.png");
         // assert.strictEqual(info.officeAppType, "TaskPaneApp");
         // assert.strictEqual(info.permissions, "ReadWriteDocument");
         assert.strictEqual(info.providerName, "Contoso");
