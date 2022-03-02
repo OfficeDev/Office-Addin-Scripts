@@ -12,14 +12,8 @@ const writeFileAsync = util.promisify(fs.writeFile);
 export type Xml = xmlMethods.Xml;
 
 export class ManifestHandlerXml extends ManifestHandler {
-  constructor(manifestPath: string) {
-    super(manifestPath);
-    this.fileData = "";
-  }
-
   async modifyManifest(guid?: string, displayName?: string): Promise<Xml> {
     try {
-      await this.readFromManifestFile();
       const manifestXml: Xml = await this.parseXmlAsync();
       this.setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
       return manifestXml;
@@ -29,8 +23,6 @@ export class ManifestHandlerXml extends ManifestHandler {
   }
 
   async parseManifest(): Promise<ManifestInfo> {
-    await this.readFromManifestFile();
-
     const xml = await this.parseXmlAsync();
     const manifest: ManifestInfo = new ManifestInfo();
     const officeApp: Xml = xml.OfficeApp;
@@ -70,7 +62,7 @@ export class ManifestHandlerXml extends ManifestHandler {
 
   async parseXmlAsync(): Promise<Xml> {
     // Needed declaration as `this` does not work inside the new Promise expression
-    const fileData = this.fileData;
+    const fileData = await this.readFromManifestFile();
     const manifestPath = this.manifestPath;
     return new Promise(function (resolve, reject) {
       xml2js.parseString(fileData, function (parseError, xml) {
@@ -88,7 +80,6 @@ export class ManifestHandlerXml extends ManifestHandler {
       const fileData: string = await util.promisify(fs.readFile)(this.manifestPath, {
         encoding: "utf8",
       });
-      this.fileData = fileData;
       return fileData;
     } catch (err) {
       throw new Error(`Unable to read data for manifest file: ${this.manifestPath}.\n${err}`);
@@ -126,6 +117,4 @@ export class ManifestHandlerXml extends ManifestHandler {
       throw new Error(`Unable to write to file. ${this.manifestPath} \n${err}`);
     }
   }
-
-  fileData: string;
 }
