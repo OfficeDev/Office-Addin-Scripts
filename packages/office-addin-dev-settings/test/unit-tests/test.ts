@@ -11,6 +11,7 @@ import * as appcontainer from "../../src/appcontainer";
 import { AppType } from "../../src/appType";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
+import { registerWithTeams } from "../../src/publish";
 import { deleteKey, getStringValue } from "../../src/registry";
 import * as devSettingsSideload from "../../src/sideload";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
@@ -319,28 +320,32 @@ describe("Registration", function() {
         assert.strictEqual(first.id, firstManifestId);
         assert.strictEqual(first.manifestPath, firstRegisteredManifestPath);
       });
-      if (process.platform === "win32") {
-        it("Supports manifest path instead of id for registry value name", async function() {
-          await devSettingsWindows.registerAddIn(secondManifestPath, secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, "");
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-        it("When registered by id, registry value name with manifest path is removed", async function() {
-          await devSettings.registerAddIn(secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, secondManifestId);
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-      }
+    });
+    describe("json manifest functionality", function() {
+      it('Error when file does not exist', () => {
+        const zipPath = fspath.resolve(manifestsFolder, "nozip.zip");
+        return registerWithTeams(zipPath)
+          .then(() => {
+              Promise.reject(new Error('Expected method to reject.'));
+            },
+            (error) => {
+              assert.ok(error instanceof Error, "Should throw an error when zip doesn't exist");
+              assert.strictEqual(error.message, `The file '${zipPath}' is not valid`);
+            }
+          );
+      });
+      it('Error when not a zip file', () => {
+        const zipPath = fspath.resolve(manifestsFolder, "manifest.xml");
+        return registerWithTeams(zipPath)
+          .then(() => {
+              Promise.reject(new Error('Expected method to reject.'));
+            },
+            (error) => {
+              assert.ok(error instanceof Error, "Should throw an error when file is not a zip file");
+              assert.strictEqual(error.message, `The file '${zipPath}' is not valid`);
+            }
+          );
+      });
     });
 
     if (isWindows) {

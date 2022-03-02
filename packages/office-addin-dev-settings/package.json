@@ -22,6 +22,7 @@
     "Office Add-in"
   ],
   "dependencies": {
+    "@microsoft/teamsfx-cli": "0.11.0-rc.0",
     "child_process": "^1.0.2",
     "commander": "^6.2.0",
     "fs-extra": "^9.0.1",

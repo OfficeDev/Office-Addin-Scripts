@@ -9,6 +9,7 @@ https://docs.microsoft.com/en-us/office/dev/add-ins/develop/add-in-manifests).
 * [info](#info)
 * [modify](#modify)
 * [validate](#validate)
+* [export](#export)
 
 #
 
@@ -63,3 +64,21 @@ Syntax:
 
 `manifest`: path to manifest file.
 
+### export
+Packages up the json manifest file and some icons into a zip file
+
+Syntax:
+
+`office-addin-manifest export [options]`
+
+Options:
+
+`-m <manfest>`<br> 
+`--manifest <manfest>`
+
+Specify the path to the manifest file.  Default is './manifest.json'
+
+`-o <output>`<br>
+`--output <output>`
+
+Specify the path to save the package to.  Default is next to the manifest file

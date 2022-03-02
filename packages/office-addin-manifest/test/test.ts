@@ -485,11 +485,11 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.defaultLocale, "en-us");
         assert.strictEqual(info.description, "A template to get started.");
         assert.strictEqual(info.displayName, "My Office Add-in");
-        assert.strictEqual(info.highResolutionIconUrl, "assets/icon-32.png");
+        assert.strictEqual(info.highResolutionIconUrl, "test/assets/icon-32.png");
         // assert.strictEqual(info.hosts instanceof Array, true);
         // assert.strictEqual(info.hosts!.length, 1);
         // assert.strictEqual(info.hosts![0], "Workbook");
-        assert.strictEqual(info.iconUrl, "assets/icon-32.png");
+        assert.strictEqual(info.iconUrl, "test/assets/icon-32.png");
         // assert.strictEqual(info.officeAppType, "TaskPaneApp");
         // assert.strictEqual(info.permissions, "ReadWriteDocument");
         assert.strictEqual(info.providerName, "Contoso");
@@ -761,9 +761,8 @@ describe("Unit Tests", function() {
         this.timeout(6000);
         const testFolder = path.resolve("./testExecution");
         const manifestPath = path.normalize("test/manifests/manifest.json");
-        const assetsPath = path.normalize("test/assets");
         const outputPath = path.normalize(`${testFolder}/testPackage.zip`);
-        const outputFile = await exportMetadataPackage(outputPath, manifestPath, assetsPath);
+        const outputFile = await exportMetadataPackage(outputPath, manifestPath);
 
         assert.strictEqual(outputFile, outputPath, "Output path \'" + outputFile + "\' should match the argument \'" + outputPath + "\'");
         assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
@@ -774,9 +773,8 @@ describe("Unit Tests", function() {
       it("export manifest to default location", async function() {
         this.timeout(6000);
         const manifestPath = path.normalize("test/manifests/manifest.json");
-        const assetsPath = path.normalize("test/assets");
         const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
-        const outputFile = await exportMetadataPackage("", manifestPath, assetsPath);
+        const outputFile = await exportMetadataPackage("", manifestPath);
         assert.strictEqual(outputFile, expectedOutput, "Output path \'" + outputFile + "\' should match the default \'" + expectedOutput + "\'");
         assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
         
