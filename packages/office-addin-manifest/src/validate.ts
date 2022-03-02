@@ -5,7 +5,6 @@ import { createReadStream } from "fs";
 import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
 import fetch from "node-fetch";
 import { OfficeAddinManifest } from "./manifestOperations";
-import { usageDataObject } from "./defaults";
 
 export class ManifestValidationDetails {
   public adminInstallOnly?: boolean;
@@ -77,7 +76,8 @@ export async function validateManifest(
     const manifest: TeamsAppManifest = await ManifestUtil.loadFromPath(manifestPath);
     const validationResult: string[] = await ManifestUtil.validateManifest(manifest);
 
-    if (validationResult.length !== 0) { // There are errors
+    if (validationResult.length !== 0) {
+      // There are errors
       validation.isValid = false;
       validation.jsonErrors = validationResult;
     } else {

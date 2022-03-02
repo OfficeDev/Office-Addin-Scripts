@@ -3,7 +3,6 @@ import * as fsExtra from "fs-extra";
 import * as jszip from "jszip";
 import * as path from "path";
 import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
-import { PromiseWithChild } from "child_process";
 
 /* global console */
 
