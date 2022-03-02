@@ -12,6 +12,11 @@ const writeFileAsync = util.promisify(fs.writeFile);
 export type Xml = xmlMethods.Xml;
 
 export class ManifestHandlerXml extends ManifestHandler {
+  constructor(manifestPath: string) {
+    super(manifestPath);
+    this.fileData = "";
+  }
+
   async modifyManifest(guid?: string, displayName?: string): Promise<Xml> {
     try {
       await this.readFromManifestFile();
@@ -121,4 +126,6 @@ export class ManifestHandlerXml extends ManifestHandler {
       throw new Error(`Unable to write to file. ${this.manifestPath} \n${err}`);
     }
   }
+
+  fileData: string;
 }
