@@ -18,7 +18,7 @@ export class ManifestHandlerXml extends ManifestHandler {
       this.setModifiedXmlData(manifestXml.OfficeApp, guid, displayName);
       return manifestXml;
     } catch (err) {
-      throw new Error(`Unable to modify xml data for manifest file: ${this.manifestPath}. \n${err}`);
+      throw new Error(`Unable to modify xml data for manifest file: ${this.manifestPath}.\n${err}`);
     }
   }
 
@@ -62,7 +62,7 @@ export class ManifestHandlerXml extends ManifestHandler {
 
   async parseXmlAsync(): Promise<Xml> {
     // Needed declaration as `this` does not work inside the new Promise expression
-    const fileData = this.fileData;
+    const fileData = await this.readFromManifestFile();
     const manifestPath = this.manifestPath;
     return new Promise(function (resolve, reject) {
       xml2js.parseString(fileData, function (parseError, xml) {
@@ -73,6 +73,17 @@ export class ManifestHandlerXml extends ManifestHandler {
         }
       });
     });
+  }
+
+  async readFromManifestFile(): Promise<string> {
+    try {
+      const fileData: string = await util.promisify(fs.readFile)(this.manifestPath, {
+        encoding: "utf8",
+      });
+      return fileData;
+    } catch (err) {
+      throw new Error(`Unable to read data for manifest file: ${this.manifestPath}.\n${err}`);
+    }
   }
 
   setModifiedXmlData(xml: any, guid: string | undefined, displayName: string | undefined): void {

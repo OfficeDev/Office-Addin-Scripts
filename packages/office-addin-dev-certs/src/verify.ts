@@ -20,7 +20,7 @@ function getVerifyCommand(): string {
     case "darwin": {
       // macOS
       const script = path.resolve(__dirname, "../scripts/verify.sh");
-      return `sh ${script} '${defaults.certificateName}'`;
+      return `sh '${script}' '${defaults.certificateName}'`;
     }
     case "linux":
       return `[ -f /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} ] && openssl x509 -in /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} -checkend 86400 -noout`;
