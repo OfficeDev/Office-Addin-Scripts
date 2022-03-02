@@ -79,6 +79,18 @@ function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined
   }
 }
 
+function logManifestValidationJsonErrors(errors: string[] | undefined) {
+  if (errors) {
+    let errorNumber = 1;
+    for (const currentError of errors) {
+      console.log(chalk.bold.red(`Error #${errorNumber}: `));
+      console.log(currentError);
+      console.log();
+      ++errorNumber;
+    }
+  }
+}
+
 function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | undefined) {
   if (warnings) {
     let warningNumber = 1;
@@ -148,7 +160,7 @@ export async function validate(
   try {
     const verifyProduction: boolean = command.production;
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
-
+    logManifestValidationJsonErrors(validation.jsonErrors);
     if (validation.report) {
       logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import { createReadStream } from "fs";
+import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
 import fetch from "node-fetch";
 import { OfficeAddinManifest } from "./manifestOperations";
 import { usageDataObject } from "./defaults";
@@ -55,6 +56,7 @@ export class ManifestValidation {
   public isValid: boolean;
   public report?: ManifestValidationReport;
   public status?: number;
+  public jsonErrors?: string[];
 
   constructor() {
     this.isValid = false;
@@ -65,13 +67,23 @@ export async function validateManifest(
   manifestPath: string,
   verifyProduction: boolean = false
 ): Promise<ManifestValidation> {
-  try {
-    const validation: ManifestValidation = new ManifestValidation();
-    const clientId: string = verifyProduction ? "Default" : "devx";
+  const validation: ManifestValidation = new ManifestValidation();
+  const clientId: string = verifyProduction ? "Default" : "devx";
 
-    // read the manifest file to ensure the file path is valid
-    await OfficeAddinManifest.readManifestFile(manifestPath);
+  // read the manifest file to ensure the file path is valid
+  await OfficeAddinManifest.readManifestFile(manifestPath);
 
+  if (manifestPath.endsWith(".json")) {
+    const manifest: TeamsAppManifest = await ManifestUtil.loadFromPath(manifestPath);
+    const validationResult: string[] = await ManifestUtil.validateManifest(manifest);
+
+    if (validationResult.length !== 0) { // There are errors
+      validation.isValid = false;
+      validation.jsonErrors = validationResult;
+    } else {
+      validation.isValid = true;
+    }
+  } else {
     const stream = await createReadStream(manifestPath);
     let response;
 
@@ -106,11 +118,6 @@ export async function validateManifest(
         }
       }
     }
-    usageDataObject.reportSuccess("validateManifest()");
-
-    return validation;
-  } catch (err: any) {
-    usageDataObject.reportException("validateManifest()", err);
-    throw err;
   }
+  return validation;
 }
