@@ -432,7 +432,9 @@ export async function unregister(
   command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
-    if (manifestPath === "all") {
+    if (manifestPath.endsWith(".json")) {
+      console.log("Please navigate to https://dev.teams.microsoft.com/apps to remove add-in");
+    } else if (manifestPath === "all") {
       await devSettings.unregisterAllAddIns();
     } else {
       await devSettings.unregisterAddIn(manifestPath);

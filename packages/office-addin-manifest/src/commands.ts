@@ -177,9 +177,8 @@ export async function exportManifest(command: commander.Command) {
   try {
     const outputPath: string = command.output ?? "";
     const manifestPath: string = command.manifest ?? "./manifest.json";
-    const assetsPath: string = command.assets ?? "./assets";
 
-    await exportMetadataPackage(outputPath, manifestPath, assetsPath);
+    await exportMetadataPackage(outputPath, manifestPath);
     usageDataObject.reportSuccess("export");
   } catch (err: any) {
     usageDataObject.reportException("export", err);

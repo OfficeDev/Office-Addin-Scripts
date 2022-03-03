@@ -28,7 +28,6 @@ commander
 commander
   .command("export")
   .option("-m, --manifest <manfest-path>", "Specify the location of the manifest file.  Default is './manifest.json'")
-  .option("-a, --assets <assets-folder-path>", "Specify the location of the assets folder.  Default is './assets'")
   .option(
     "-o, --output <output-path>",
     "Specify where to save the package.  Default is next to the manifest file input"
