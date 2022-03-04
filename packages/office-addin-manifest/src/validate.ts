@@ -55,7 +55,6 @@ export class ManifestValidation {
   public isValid: boolean;
   public report?: ManifestValidationReport;
   public status?: number;
-  public jsonErrors?: string[];
 
   constructor() {
     this.isValid = false;
@@ -67,7 +66,6 @@ export async function validateManifest(
   verifyProduction: boolean = false
 ): Promise<ManifestValidation> {
   const validation: ManifestValidation = new ManifestValidation();
-  const clientId: string = verifyProduction ? "Default" : "devx";
 
   // read the manifest file to ensure the file path is valid
   await OfficeAddinManifest.readManifestFile(manifestPath);
@@ -75,16 +73,24 @@ export async function validateManifest(
   if (manifestPath.endsWith(".json")) {
     const manifest: TeamsAppManifest = await ManifestUtil.loadFromPath(manifestPath);
     const validationResult: string[] = await ManifestUtil.validateManifest(manifest);
-
     if (validationResult.length !== 0) {
       // There are errors
       validation.isValid = false;
-      validation.jsonErrors = validationResult;
+      validation.report = new ManifestValidationReport();
+      validation.report.errors = [];
+      validationResult.forEach((error: string) => {
+        let issue: ManifestValidationIssue = new ManifestValidationIssue();
+        issue.content = error;
+        issue.title = "Error";
+
+        validation.report?.errors?.push(issue);
+      });
     } else {
       validation.isValid = true;
     }
   } else {
     const stream = await createReadStream(manifestPath);
+    const clientId: string = verifyProduction ? "Default" : "devx";
     let response;
 
     try {

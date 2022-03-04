@@ -761,13 +761,12 @@ describe("Unit Tests", function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/teamsManifest.json");
         assert.strictEqual(validation.isValid, true);
-        assert.strictEqual(validation.jsonErrors, undefined);
       });
       it("Invalid manifest", async function() {
         this.timeout(6000);
         const validation = await validateManifest("test/manifests/manifest.json");
         assert.strictEqual(validation.isValid, false);
-        assert.strictEqual(validation.jsonErrors!.length > 0, true);
+        assert.strictEqual(validation.report!.errors!.length > 0, true);
       });
       it("invalid manifest path", async function() {
         this.timeout(6000);
