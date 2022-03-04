@@ -3,7 +3,7 @@
 
 import * as fs from "fs";
 import * as inquirer from "inquirer";
-
+import * as util from "util";
 import { exec } from "child_process";
 import { ExpectedError } from "office-addin-usage-data";
 
@@ -27,6 +27,7 @@ export async function convertProject(manifestPath: string = "./manifest.xml") {
     return;
   }
   updatePackages();
+  await updateManifestXmlReferences();
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
@@ -64,4 +65,19 @@ function updatePackages(): void {
   command += ` --save-dev`;
   console.log(messageToBePrinted.slice(0, -1));
   exec(command);
+}
+
+async function updateManifestXmlReferences(): Promise<void> {
+  const packageJson = `./package.json`;
+  const readFileAsync = util.promisify(fs.readFile);
+  const data = await readFileAsync(packageJson, "utf8");
+  let content = JSON.parse(data);
+
+  // Change .xml references to .json
+  Object.keys(content.scripts).forEach(function (key) {
+    content.scripts[key] = content.scripts[key].replace(
+      /manifest.xml/gi,
+      `manifest.json`
+    );
+  });
 }
