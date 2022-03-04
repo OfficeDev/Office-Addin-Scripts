@@ -92,9 +92,7 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
 }
 
 function logManifestValidationIssue(issue: ManifestValidationIssue) {
-  console.log(
-    (issue.title ? `${issue.title}: ` : ``) + `${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``)
-  );
+  console.log(`${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``));
 
   if (issue.code) {
     console.log(`  - Details: ${issue.code}`);
