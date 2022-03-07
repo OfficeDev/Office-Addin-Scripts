@@ -80,4 +80,7 @@ async function updateManifestXmlReferences(): Promise<void> {
       `manifest.json`
     );
   });
+  // write updated json to file
+  const writeFileAsync = util.promisify(fs.writeFile);
+  await writeFileAsync(packageJson, JSON.stringify(content, null, 2));
 }
