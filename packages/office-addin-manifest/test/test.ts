@@ -661,7 +661,7 @@ describe("Unit Tests", function() {
     });
   });
   describe("validate.ts", function() {
-    describe("validateManifest()", function() {
+    describe("validateManifest() XML", function() {
       this.slow(5000);
       it("valid manifest", async function() {
         this.timeout(6000);
@@ -752,6 +752,32 @@ describe("Unit Tests", function() {
         assert.strictEqual(validation.report!.notes!.length > 0, true);
         assert.strictEqual(validation.report!.warnings!.length, 0);
         assert.strictEqual(validation.report!.addInDetails!.supportedProducts!.length > 0, true);
+      });
+    });
+
+    describe("validateManifest() JSON", function() {
+      this.slow(5000);
+      it("Valid manifest", async function() {
+        this.timeout(6000);
+        const validation = await validateManifest("test/manifests/teamsManifest.json");
+        assert.strictEqual(validation.isValid, true);
+      });
+      it("Invalid manifest", async function() {
+        this.timeout(6000);
+        const validation = await validateManifest("test/manifests/manifest.json");
+        assert.strictEqual(validation.isValid, false);
+        assert.strictEqual(validation.report!.errors!.length > 0, true);
+      });
+      it("invalid manifest path", async function() {
+        this.timeout(6000);
+        let result: string = "";
+        const invalidManifestPath = path.normalize(`${manifestTestFolder}/foo/manifest.json`);
+        try {
+          await validateManifest(invalidManifestPath);
+        } catch (err: any) {
+          result = err.message;
+        }
+        assert.strictEqual(result.indexOf("ENOENT: no such file or directory") >= 0, true);
       });
     });
   });

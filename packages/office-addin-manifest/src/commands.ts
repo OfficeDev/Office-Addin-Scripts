@@ -148,7 +148,6 @@ export async function validate(
   try {
     const verifyProduction: boolean = command.production;
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
-
     if (validation.report) {
       logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);
