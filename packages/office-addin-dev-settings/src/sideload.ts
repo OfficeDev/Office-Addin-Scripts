@@ -360,7 +360,7 @@ export async function sideloadAddIn(
         if (!isSideloadingSupportedForWebHost(app)) {
           throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
         }
-        const manifestFileName: string = path.basename(manifestPath);
+        const manifestFileName: string = manifestPath;
         sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
         break;
       }
