@@ -9,7 +9,7 @@ import * as fs from "fs";
 export async function registerWithTeams(zipPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (zipPath.endsWith(".zip") && fs.existsSync(zipPath)) {
-      const command = `npx @microsoft/teamsfx-cli@0.11.0-rc.0 provision manifest --file-path ${zipPath}`;
+      const command = `npx @microsoft/teamsfx-cli provision manifest --file-path ${zipPath}`;
 
       childProcess.exec(command, (error, stdout) => {
         if (error) {
