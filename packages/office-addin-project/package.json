@@ -14,12 +14,15 @@
     "office-js"
   ],
   "dependencies": {
+    "archiver": "^5.3.0",
     "commander": "^6.2.1",
     "inquirer": "^7.3.3",
     "office-addin-manifest": "^1.7.8",
-    "office-addin-usage-data": "^1.4.7"
+    "office-addin-usage-data": "^1.4.7",
+    "path": "^0.12.7"
   },
   "devDependencies": {
+    "@types/archiver": "^5.3.1",
     "@types/inquirer": "^6.5.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "^14.17.2",
