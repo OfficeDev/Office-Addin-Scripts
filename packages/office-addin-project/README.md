@@ -19,6 +19,7 @@ Syntax:
 `office-addin-cli convert [options]`
 
 `manifest-path`: path to manifest file.
+`backup-path`: path to the generated backup of the project.
 
 Options:
 
@@ -26,3 +27,8 @@ Options:
 `--manifest <manifest-path>`
 
 Specify the location of the manifest file. If the path is not provided, `./manifest.xml` is used.
+
+`-b <backup-path>`<br>
+`--backup <backup-path>`
+
+Specify the location of the backup file. If the path is not provided, `./backup.zip` is used.
