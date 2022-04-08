@@ -25,6 +25,10 @@ commander
     "-m, --manifest <manifest-path>",
     "Specify the location of the manifest file.  Default is './manifest.xml'"
   )
+  .option(
+    "-b, --backup <backup-path>",
+    "Specify the location of the backup folder for the project.  Default is './backup.zip'"
+  )
   .action(commands.convert);
 
 if (process.argv.length > 2) {
