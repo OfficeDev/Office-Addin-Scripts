@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
+import * as childProcess from "child_process";
 import * as jszip from "jszip";
 import {
   AddInType,
@@ -25,7 +26,7 @@ import * as registry from "./registry";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, __dirname, URL */
+/* global process, __dirname, URL, console */
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -339,6 +340,18 @@ export async function sideloadAddIn(
         if (!isSideloadingSupportedForDesktopHost(app)) {
           throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
         }
+
+        // Converting json to xml manifest . . . Temporary until service is ready.
+        if (manifestPath.endsWith(".json")) {
+          if (isDotnetInstalled()) {
+            // Run json => xml conversion tool.
+            manifestPath = await convertJsonToXmlManifstSync(manifestPath);
+          } else {
+            throw new ExpectedError("No .Net installeation found and is required.");
+          }
+        }
+
+        // do the registration
         await registerAddIn(manifestPath);
         // for Outlook, open Outlook.exe; for other Office apps, open the document
         if (app == OfficeApp.Outlook) {
@@ -384,5 +397,52 @@ export async function sideloadAddIn(
   } catch (err: any) {
     usageDataObject.reportException("sideloadAddIn()", err);
     throw err;
+  }
+}
+
+function isDotnetInstalled(): boolean {
+  try {
+    childProcess.execSync("dotnet --list-runtimes");
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+// async function convertJsonToXmlManifst(manifestPath: string): Promise<string> {
+//   return new Promise((resolve, reject) => {
+//     if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
+//       const command = `convert.exe ${manifestPath}`;
+
+//       childProcess.exec(command, (error, stdout) => {
+//         if (error) {
+//           reject(stdout);
+//         } else {
+//           console.log("Successfully converted manifest to xml");
+//           resolve(stdout);
+//         }
+//       });
+//     } else {
+//       reject(new Error(`The file '${manifestPath}' is not valid`));
+//     }
+//   });
+// }
+
+function convertJsonToXmlManifstSync(manifestPath: string): string {
+  if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
+    console.log("Converting json to back compat xml");
+  //   const command = `convert.exe ${manifestPath}`;
+
+  //   try {
+  //     let result = childProcess.execSync(command);
+  //     console.log("Successfully converted manifest to xml");
+  //     return result.toString("utf-8");
+  //   } catch (err: any) {
+  //     console.log(`Error converting file: ${err}`);
+  //     return "";
+  //   }
+  // } else {
+  //   console.log(`The file '${manifestPath}' is not valid`);
+  //   return "";
   }
 }
