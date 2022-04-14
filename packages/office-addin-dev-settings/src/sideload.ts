@@ -342,14 +342,14 @@ export async function sideloadAddIn(
         }
 
         // Converting json to xml manifest . . . Temporary until service is ready.
-        //if (manifestPath.endsWith(".json")) {
+        if (manifestPath.endsWith(".json")) {
           if (isDotnetInstalled()) {
             // Run json => xml conversion tool.
             // manifestPath = await convertJsonToXmlManifstSync(manifestPath);
           } else {
             throw new ExpectedError(".Net 5 or greater is required for json manifests.");
           }
-        //}
+        }
 
         // do the registration
         await registerAddIn(manifestPath);
