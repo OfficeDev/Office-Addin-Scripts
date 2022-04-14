@@ -342,14 +342,14 @@ export async function sideloadAddIn(
         }
 
         // Converting json to xml manifest . . . Temporary until service is ready.
-        if (manifestPath.endsWith(".json")) {
+        //if (manifestPath.endsWith(".json")) {
           if (isDotnetInstalled()) {
             // Run json => xml conversion tool.
-            manifestPath = await convertJsonToXmlManifstSync(manifestPath);
+            // manifestPath = await convertJsonToXmlManifstSync(manifestPath);
           } else {
-            throw new ExpectedError("No .Net installeation found and is required.");
+            throw new ExpectedError(".Net 5 or greater is required for json manifests.");
           }
-        }
+        //}
 
         // do the registration
         await registerAddIn(manifestPath);
@@ -402,8 +402,20 @@ export async function sideloadAddIn(
 
 function isDotnetInstalled(): boolean {
   try {
-    childProcess.execSync("dotnet --list-runtimes");
-    return true;
+    // Find the .Net runtimes installed
+    let result = childProcess.execSync("dotnet --list-runtimes");
+    const pattern = /(?<=Microsoft.NETCore.App )[\d.]+/g;
+    const matches = result.toString("utf-8").match(pattern);
+
+    // Look for version 5 or greater
+    matches?.forEach((match) => {
+      const major: number = parseInt(match.split(".")[0]);
+      if (major >= 5) {
+        return true;
+      }
+    });
+
+    return false;
   } catch (err) {
     return false;
   }
@@ -445,4 +457,5 @@ function convertJsonToXmlManifstSync(manifestPath: string): string {
   //   console.log(`The file '${manifestPath}' is not valid`);
   //   return "";
   }
+  return manifestPath;
 }
