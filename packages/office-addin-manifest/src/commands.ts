@@ -3,7 +3,7 @@
 
 import chalk from "chalk";
 import * as commander from "commander";
-import { logErrorMessage } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo } from "./manifestInfo";
 import { OfficeAddinManifest } from "./manifestOperations";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
@@ -148,7 +148,6 @@ export async function validate(
   try {
     const verifyProduction: boolean = command.production;
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
-
     if (validation.report) {
       logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);
@@ -177,9 +176,8 @@ export async function exportManifest(command: commander.Command) {
   try {
     const outputPath: string = command.output ?? "";
     const manifestPath: string = command.manifest ?? "./manifest.json";
-    const assetsPath: string = command.assets ?? "./assets";
 
-    await exportMetadataPackage(outputPath, manifestPath, assetsPath);
+    await exportMetadataPackage(outputPath, manifestPath);
     usageDataObject.reportSuccess("export");
   } catch (err: any) {
     usageDataObject.reportException("export", err);

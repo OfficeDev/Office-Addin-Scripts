@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import { logErrorMessage } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo, OfficeApp, parseOfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
@@ -432,7 +432,9 @@ export async function unregister(
   command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
-    if (manifestPath === "all") {
+    if (manifestPath.endsWith(".json")) {
+      console.log("Please navigate to https://dev.teams.microsoft.com/apps to remove add-in");
+    } else if (manifestPath === "all") {
       await devSettings.unregisterAllAddIns();
     } else {
       await devSettings.unregisterAddIn(manifestPath);

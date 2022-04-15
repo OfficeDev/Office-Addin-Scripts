@@ -5,10 +5,12 @@ import * as appInsights from "applicationinsights";
 import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
+import * as sinon from "sinon";
 import * as os from "os";
 import * as defaults from "../src/defaults";
 import * as officeAddinUsageData from "../src/usageData";
 import * as jsonData from "../src/usageDataSettings";
+import * as log from "../src/log";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
 const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
@@ -340,6 +342,38 @@ describe("Test office-addin-usage data-package", function() {
     it("should send exceptions successfully, even when there's no data", () => {
       addInUsageData.reportException("testMethod-reportException", new Error("Test"));
       assert.equal(addInUsageData.getExceptionsSent(), 1);
+    });
+  });
+
+  describe("log.ts", function() {
+    describe("logErrorMessage()", function() {
+      it("called with Error", function() {
+        const spyConsoleError = sinon.spy(console, "error");
+        const spyConsoleLog = sinon.spy(console, "log");
+
+        const message = "This is an error.";
+        const error = new Error(message);
+        log.logErrorMessage(error);
+
+        assert.ok(spyConsoleError.calledOnceWith(`Error: ${message}`));
+        assert.ok(spyConsoleLog.notCalled);
+
+        spyConsoleError.restore();
+        spyConsoleLog.restore();
+      });
+      it("called with string", function() {
+        const spyConsoleError = sinon.spy(console, "error");
+        const spyConsoleLog = sinon.spy(console, "log");
+
+        const message = "This is the error message.";
+        log.logErrorMessage(message);
+
+        assert.ok(spyConsoleError.calledOnceWith(`Error: ${message}`));
+        assert.ok(spyConsoleLog.notCalled);
+
+        spyConsoleError.restore();
+        spyConsoleLog.restore();
+      });
     });
   });
 });

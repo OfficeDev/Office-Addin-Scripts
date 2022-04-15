@@ -115,9 +115,23 @@ Represents a mock Office object.
 #### Constructor
 
 The object parameter provides initial values for the mock object. (Optional)
+The host parameter identifies the host of the tests. (Optional)
 
 ```
-constructor(object?: Object); 
+constructor(object?: Object, host?: OfficeApp | undefined); 
+```
+
+Host can be any of the following:
+
+```Javascript
+OfficeApp {
+  Excel = "excel",
+  OneNote = "onenote",
+  Outlook = "outlook",
+  PowerPoint = "powerpoint",
+  Project = "project",
+  Word = "word",
+}
 ```
 
 #### Methods
