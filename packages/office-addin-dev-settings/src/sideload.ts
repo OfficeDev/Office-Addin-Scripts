@@ -307,7 +307,7 @@ export async function sideloadAddIn(
     }
 
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {
@@ -345,7 +345,7 @@ export async function sideloadAddIn(
         if (manifestPath.endsWith(".json")) {
           if (isDotnetInstalled()) {
             // Run json => xml conversion tool.
-            // manifestPath = await convertJsonToXmlManifstSync(manifestPath);
+            manifestPath = await convertJsonToXmlManifstSync(manifestPath);
           } else {
             throw new ExpectedError(".Net 5 or greater is required for json manifests.");
           }
@@ -406,16 +406,15 @@ function isDotnetInstalled(): boolean {
     let result = childProcess.execSync("dotnet --list-runtimes");
     const pattern = /(?<=Microsoft.NETCore.App )[\d.]+/g;
     const matches = result.toString("utf-8").match(pattern);
+    let foundDotNet = false;
 
     // Look for version 5 or greater
     matches?.forEach((match) => {
       const major: number = parseInt(match.split(".")[0]);
-      if (major >= 5) {
-        return true;
-      }
+      foundDotNet = foundDotNet || major >= 5;
     });
 
-    return false;
+    return foundDotNet;
   } catch (err) {
     return false;
   }
@@ -443,19 +442,19 @@ function isDotnetInstalled(): boolean {
 function convertJsonToXmlManifstSync(manifestPath: string): string {
   if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
     console.log("Converting json to back compat xml");
-  //   const command = `convert.exe ${manifestPath}`;
+    const newManifestPath: string = ".\\";
+    const command = `.\\lib\\DevXTool.exe ${manifestPath} ${newManifestPath}`;
 
-  //   try {
-  //     let result = childProcess.execSync(command);
-  //     console.log("Successfully converted manifest to xml");
-  //     return result.toString("utf-8");
-  //   } catch (err: any) {
-  //     console.log(`Error converting file: ${err}`);
-  //     return "";
-  //   }
-  // } else {
-  //   console.log(`The file '${manifestPath}' is not valid`);
-  //   return "";
+    try {
+      let result = childProcess.execSync(command);
+      console.log(`Successfully converted manifest to xml: ${result.toString("utf-8")}`);
+      return newManifestPath;
+    } catch (err: any) {
+      console.log(`Error converting file: ${err}`);
+      return "";
+    }
+  } else {
+    console.log(`The file '${manifestPath}' is not valid`);
+    return "";
   }
-  return manifestPath;
 }
