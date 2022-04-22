@@ -1,0 +1,56 @@
+{
+    "$schema": "../../../../dll/schema/metaos/metaos.schema.json",
+    "id": "6A7BD4F3-0563-43AF-8C08-79110EEBDFF6",
+    "version": "1.1.0",
+    "name": {
+        "short": "Adobe Sign",
+        "long": "Adobe Sign add-in"
+    },
+    "description": {
+        "short": "Sign any document or send it for e-signature.",
+        "long": "Keep document-signing workflows moving fast with Adobe Sign. You can sign documents, send them for legally binding e-signatures and approvals — all with Microsoft's preferred e-sign solution."
+    },
+    "icons": {
+        "outline": "https://static.echocdn.com/office365integration/icons/as_32.png",
+        "color": "https://static.echocdn.com/office365integration/icons/as_64.png"
+    },
+    "accentColor": "#230201",
+    "publisher": {
+        "name": "Adobe Systems Inc.",
+        "webSiteUrl": "https://acrobat.adobe.com/us/en/sign.html",
+        "privacyUrl": "https://adobe.com/go/privacy",
+        "termsOfUseUrl": "https://adobe.com/go/tos",
+        "supportUrl": "https://adobe.com/go/support"
+    },
+    "localization": {
+        "defaultLanguage": "en-us",
+        "additionalLanguages": [
+            {
+                "language": "de-de",
+                "file": "de-de.json"
+              },
+              {
+                "language": "ja-jp",
+                "file": "ja-jp.json"
+              },
+              {
+                "language": "fr-fr",
+                "file": "fr-fr.json"
+              }
+        ]
+    },
+    "extension": {
+        "requirements": {
+            "scopes": [
+                "document",
+                "presentation",
+                "mail"
+            ],
+            "capabilities": [
+               { "name": "AddinCommands", "minVersion": "1.1" }
+            ]
+        },
+        "runtimes": "extension/runtimes.json",
+        "ribbons": "extension/ribbons.json"
+    }
+}
