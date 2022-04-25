@@ -310,7 +310,7 @@ export async function sideloadAddIn(
     if (manifestPath.endsWith(".json")) {
       if (isDotnetInstalled()) {
         // Run json => xml conversion tool.
-        manifestPath = await convertJsonToXmlManifstSync(manifestPath);
+        manifestPath = await convertJsonToXmlManifest(manifestPath);
       } else {
         throw new ExpectedError(".Net 5 or greater is required for json manifests.");
       }
@@ -422,41 +422,24 @@ function isDotnetInstalled(): boolean {
   }
 }
 
-// async function convertJsonToXmlManifst(manifestPath: string): Promise<string> {
-//   return new Promise((resolve, reject) => {
-//     if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
-//       const command = `convert.exe ${manifestPath}`;
+async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
+      console.log("Converting json to back compat xml");
+      const newManifestPath: string = ".\\";
+      const command = `.\\lib\\DevXTool.exe ${manifestPath} ${newManifestPath}`;
 
-//       childProcess.exec(command, (error, stdout) => {
-//         if (error) {
-//           reject(stdout);
-//         } else {
-//           console.log("Successfully converted manifest to xml");
-//           resolve(stdout);
-//         }
-//       });
-//     } else {
-//       reject(new Error(`The file '${manifestPath}' is not valid`));
-//     }
-//   });
-// }
-
-function convertJsonToXmlManifstSync(manifestPath: string): string {
-  if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
-    console.log("Converting json to back compat xml");
-    const newManifestPath: string = ".\\";
-    const command = `.\\lib\\DevXTool.exe ${manifestPath} ${newManifestPath}`;
-
-    try {
-      let result = childProcess.execSync(command);
-      console.log(`Successfully converted manifest to xml: ${result.toString("utf-8")}`);
-      return path.join(newManifestPath, "output.xml");
-    } catch (err: any) {
-      console.log(`Error converting file: ${err}`);
-      return "";
+      childProcess.exec(command, (error, stdout) => {
+        if (error) {
+          console.log(`Error converting file: ${error}`);
+          reject("");
+        } else {
+          console.log(`Successfully converted manifest to xml:\n ${stdout}`);
+          resolve(path.join(newManifestPath, "output.xml"));
+        }
+      });
+    } else {
+      reject(new Error(`The file '${manifestPath}' is not valid`));
     }
-  } else {
-    console.log(`The file '${manifestPath}' is not valid`);
-    return "";
-  }
+  });
 }
