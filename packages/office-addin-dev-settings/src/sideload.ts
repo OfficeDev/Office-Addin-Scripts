@@ -306,8 +306,20 @@ export async function sideloadAddIn(
       appType = AppType.Desktop;
     }
 
+    // Converting json to xml manifest . . . Temporary until service is ready.
+    if (manifestPath.endsWith(".json")) {
+      if (isDotnetInstalled()) {
+        // Run json => xml conversion tool.
+        manifestPath = await convertJsonToXmlManifstSync(manifestPath);
+      } else {
+        throw new ExpectedError(".Net 5 or greater is required for json manifests.");
+      }
+    }
+
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
+    const appsInManifest: OfficeApp[] = manifestPath.endsWith(".json")
+      ? [OfficeApp.Outlook]
+      : getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {
@@ -339,16 +351,6 @@ export async function sideloadAddIn(
       case AppType.Desktop:
         if (!isSideloadingSupportedForDesktopHost(app)) {
           throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
-        }
-
-        // Converting json to xml manifest . . . Temporary until service is ready.
-        if (manifestPath.endsWith(".json")) {
-          if (isDotnetInstalled()) {
-            // Run json => xml conversion tool.
-            manifestPath = await convertJsonToXmlManifstSync(manifestPath);
-          } else {
-            throw new ExpectedError(".Net 5 or greater is required for json manifests.");
-          }
         }
 
         // do the registration
@@ -448,7 +450,7 @@ function convertJsonToXmlManifstSync(manifestPath: string): string {
     try {
       let result = childProcess.execSync(command);
       console.log(`Successfully converted manifest to xml: ${result.toString("utf-8")}`);
-      return newManifestPath;
+      return path.join(newManifestPath, "output.xml");
     } catch (err: any) {
       console.log(`Error converting file: ${err}`);
       return "";

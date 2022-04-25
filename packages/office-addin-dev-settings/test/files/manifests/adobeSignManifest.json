@@ -24,33 +24,328 @@
     },
     "localization": {
         "defaultLanguage": "en-us",
-        "additionalLanguages": [
-            {
-                "language": "de-de",
-                "file": "de-de.json"
-              },
-              {
-                "language": "ja-jp",
-                "file": "ja-jp.json"
-              },
-              {
-                "language": "fr-fr",
-                "file": "fr-fr.json"
-              }
-        ]
+        "additionalLanguages": []
     },
     "extension": {
         "requirements": {
             "scopes": [
-                "document",
-                "presentation",
                 "mail"
             ],
             "capabilities": [
                { "name": "AddinCommands", "minVersion": "1.1" }
             ]
         },
-        "runtimes": "extension/runtimes.json",
-        "ribbons": "extension/ribbons.json"
+        "runtimes": [
+            {
+                "requirements": {
+                    "capabilities": [
+                        { "name": "AddinCommands", "minVersion": "1.1" },
+                        { "name": "MailBox", "minVersion": "1.1" }
+                    ]
+                },
+                "id": "fillAndSign",
+                "type": "general",
+                "code": {
+                    "page": "https://static.echocdn.com/office365integration/index.html?appVersion=1.1.0.1&locale=en-US&source=command&flow=FSS"
+                },
+                "lifetime": "short",
+                "actions": {
+                    "items": [
+                        {
+                            "id": "fillAndSign.show",
+                            "type": "contextual-launch",
+                            "view": "ADBE_DEFAULT_TASKPANE_ID",
+                            "pinnable": false
+                        }
+                    ]
+                }
+            },
+            {
+                "requirements": {
+                    "capabilities": [
+                        { "name": "AddinCommands", "minVersion": "1.1" },
+                        { "name": "MailBox", "maxVersion": "0.0" }
+                    ]
+                },
+                "id": "fillAndSign",
+                "type": "general",
+                "code": {
+                    "page": "https://static.echocdn.com/office365integration/index.html?appVersion=1.1.0.0&locale=en-US&source=command&flow=FSS"
+                },
+                "lifetime": "short",
+                "actions": {
+                    "items": [
+                        {
+                            "id": "fillAndSign.show",
+                            "type": "contextual-launch",
+                            "view": "ADBE_DEFAULT_TASKPANE_ID"
+                        }
+                    ]
+                }
+            },
+    
+            {
+                "requirements": {
+                    "capabilities": [
+                        { "name": "AddinCommands", "minVersion": "1.1" },
+                        { "name": "MailBox", "minVersion": "1.1" }
+                    ]
+                },
+                "id": "sendForSignature",
+                "type": "general",
+                "code": {
+                    "page": "https://static.echocdn.com/office365integration/index.html?appVersion=1.1.0.1&locale=en-US&source=command&flow=SFS"
+                },
+                "lifetime": "short",
+                "actions": {
+                    "items": [
+                        {
+                            "id": "sendForSignature.show",
+                            "type": "contextual-launch",
+                            "view": "ADBE_DEFAULT_TASKPANE_ID",
+                            "pinnable": false
+                        }
+                    ]
+                }
+            },
+            {
+                "requirements": {
+                    "capabilities": [
+                        { "name": "AddinCommands", "minVersion": "1.1" },
+                        { "name": "MailBox", "maxVersion": "0.0" }
+                    ]
+                },
+                "id": "sendForSignature",
+                "type": "general",
+                "code": {
+                    "page": "https://static.echocdn.com/office365integration/index.html?appVersion=1.1.0.0&locale=en-US&source=command&flow=SFS"
+                },
+                "lifetime": "short",
+                "actions": {
+                    "items": [
+                        {
+                            "id": "sendForSignature.show",
+                            "type": "contextual-launch",
+                            "view": "ADBE_DEFAULT_TASKPANE_ID"
+                        }
+                    ]
+                }
+            },
+            {
+                "requirements": {
+                    "capabilities": [
+                        { "name": "AddinCommands", "minVersion": "1.1" },
+                        { "name": "MailBox", "minVersion": "1.1" }
+                    ]
+                },
+                "id": "agreementStatus",
+                "type": "general",
+                "code": {
+                    "page": "https://static.echocdn.com/office365integration/index.html?appVersion=1.1.0.1&locale=en-US&source=command&flow=TAS"
+                },
+                "lifetime": "short",
+                "actions": {
+                    "items": [
+                        {
+                            "id": "agreementStatus.show",
+                            "type":"contextual-launch",
+                            "view": "ADBE_DEFAULT_TASKPANE_ID",
+                            "pinnable": false
+                        }
+                    ]
+                }
+            },
+            {
+                "requirements": {
+                    "capabilities": [
+                        { "name": "AddinCommands", "minVersion": "1.1" },
+                        { "name": "MailBox", "maxVersion": "0.0" }
+                    ]
+                },
+                "id": "agreementStatus",
+                "type": "general",
+                "code": {
+                    "page": "https://static.echocdn.com/office365integration/index.html?appVersion=1.1.0.0&locale=en-US&source=command&flow=TAS"
+                },
+                "lifetime": "short",
+                "actions": {
+                    "items": [
+                        {
+                            "id": "agreementStatus.show",
+                            "type":"contextual-launch",
+                            "view": "ADBE_DEFAULT_TASKPANE_ID"
+                        }
+                    ]
+                }
+            }
+        ],
+        "ribbons": [
+            {
+                "contexts": [
+                    "default",
+                    "readMail"
+                ],
+                "tabs": [
+                    {
+                        "id": "home",
+                        "groups": [
+                            {
+                                "id": "sign",
+                                "label": "Adobe Sign",
+                                "icons": [
+                                  {
+                                    "size": 16,
+                                    "file": "https://static.echocdn.com/office365integration/icons/as_16.png"
+                                  },
+                                  {
+                                    "size": 32,
+                                    "file": "https://static.echocdn.com/office365integration/icons/as_32.png"
+                                  },
+                                  {
+                                    "size": 80,
+                                    "file": "https://static.echocdn.com/office365integration/icons/as_64.png"
+                                  }
+                                ],
+                                "controls": [
+                                    {
+                                        "id": "fillAndSign",
+                                        "type": "button",
+                                        "label": "Fill and Sign",
+                                        "icons": [
+                                          {
+                                            "size": 16,
+                                            "file": "https://static.echocdn.com/office365integration/icons/FSS_16.png"
+                                          },
+                                          {
+                                            "size": 32,
+                                            "file": "https://static.echocdn.com/office365integration/icons/FSS_32.png"
+                                          },
+                                          {
+                                            "size": 80,
+                                            "file": "https://static.echocdn.com/office365integration/icons/FSS_80.png"
+                                          }
+                                        ],
+                                        "supertip": {
+                                            "title": "Sign the attachments",
+                                            "description": "Easily fill out, sign and return the attached documents."
+                                        },
+                                        "actionId": "fillAndSign.show"
+                                    },
+                                    {
+                                        "id": "sendForSignature",
+                                        "type": "button",
+                                        "label": "Send for Signature",
+                                        "icons": [
+                                          {
+                                            "size": 16,
+                                            "file": "https://static.echocdn.com/office365integration/icons/SFS_16.png"
+                                          },
+                                          {
+                                            "size": 32,
+                                            "file": "https://static.echocdn.com/office365integration/icons/SFS_32.png"
+                                          },
+                                          {
+                                            "size": 80,
+                                            "file": "https://static.echocdn.com/office365integration/icons/SFS_80.png"
+                                          }
+                                        ],
+                                        "supertip": {
+                                            "title": "Send attachments",
+                                            "description": "Request signatures on your documents."
+                                        },
+                                        "actionId": "sendForSignature.show"
+                                    },
+                                    {
+                                        "id": "agreementStatus",
+                                        "type": "button",
+                                        "label": "Agreement Status",
+                                        "icons": [
+                                          {
+                                            "size": 16,
+                                            "file": "https://static.echocdn.com/office365integration/icons/TAS_16.png"
+                                          },
+                                          {
+                                            "size": 32,
+                                            "file": "https://static.echocdn.com/office365integration/icons/TAS_32.png"
+                                          },
+                                          {
+                                            "size": 80,
+                                            "file": "https://static.echocdn.com/office365integration/icons/TAS_80.png"
+                                          }
+                                        ],
+                                        "supertip": {
+                                            "title": "Agreement status",
+                                            "description": "Check the status of your recent agreements."
+                                        },
+                                        "actionId": "agreementStatus.show"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "requirements": {
+                    "capabilities": [
+                        { "name": "MailBox", "minVersion": "1.4" }
+                    ]
+                },
+                "contexts": [
+                    "composeMail"
+                ],
+                "tabs": [
+                    {
+                        "id": "home",
+                        "groups": [
+                            {
+                                "id": "sign",
+                                "label": "Adobe Sign",
+                                "icons": [
+                                  {
+                                    "size": 16,
+                                    "file": "https://static.echocdn.com/office365integration/icons/adobe_sign_16.png"
+                                  },
+                                  {
+                                    "size": 32,
+                                    "file": "https://static.echocdn.com/office365integration/icons/adobe_sign_32.png"
+                                  },
+                                  {
+                                    "size": 80,
+                                    "file": "https://static.echocdn.com/office365integration/icons/adobe_sign_80.png"
+                                  }
+                                ],
+                                "controls": [
+                                    {
+                                        "id": "sendForSignature",
+                                        "type": "button",
+                                        "label": "Send for Signature",
+                                        "icons": [
+                                          {
+                                            "size": 16,
+                                            "file": "https://static.echocdn.com/office365integration/icons/SFS_16.png"
+                                          },
+                                          {
+                                            "size": 32,
+                                            "file": "https://static.echocdn.com/office365integration/icons/SFS_32.png"
+                                          },
+                                          {
+                                            "size": 80,
+                                            "file": "https://static.echocdn.com/office365integration/icons/SFS_80.png"
+                                          }
+                                        ],
+                                        "supertip": {
+                                            "title": "Send attachments",
+                                            "description": "Request signatures on your documents."
+                                        },
+                                        "actionId": "sendForSignature.show"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     }
 }
