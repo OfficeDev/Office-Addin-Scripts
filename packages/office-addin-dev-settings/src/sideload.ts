@@ -426,7 +426,8 @@ async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
       console.log("Converting json to back compat xml");
-      const newManifestPath: string = ".\\";
+      //fspath.join(process.env.TEMP as string, "manifest.zip");
+      const newManifestPath: string = process.env.TEMP as string;
       const command = `.\\lib\\DevXTool.exe ${manifestPath} ${newManifestPath}`;
 
       childProcess.exec(command, (error, stdout) => {
