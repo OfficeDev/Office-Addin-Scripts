@@ -155,6 +155,11 @@ describe("Unit Tests", function() {
         assert.strictEqual(getOfficeAppForManifestHost("document"), OfficeApp.Word);
         assert.strictEqual(getOfficeAppForManifestHost("DOCUMENT"), OfficeApp.Word);
       });
+      it("Mail", function() {
+        assert.strictEqual(getOfficeAppForManifestHost("Mail"), OfficeApp.Outlook);
+        assert.strictEqual(getOfficeAppForManifestHost("mail"), OfficeApp.Outlook);
+        assert.strictEqual(getOfficeAppForManifestHost("MAIL"), OfficeApp.Outlook);
+      });
       it("Mailbox", function() {
         assert.strictEqual(getOfficeAppForManifestHost("Mailbox"), OfficeApp.Outlook);
         assert.strictEqual(getOfficeAppForManifestHost("mailbox"), OfficeApp.Outlook);
@@ -488,7 +493,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.highResolutionIconUrl, "test/assets/icon-32.png");
         assert.strictEqual(info.hosts instanceof Array, true);
         assert.strictEqual(info.hosts!.length, 1);
-        assert.strictEqual(info.hosts![0], "MailBox");
+        assert.strictEqual(info.hosts![0], "mail");
         assert.strictEqual(info.iconUrl, "test/assets/icon-32.png");
         assert.strictEqual(info.officeAppType, "AddinCommands");
         assert.strictEqual(info.permissions, "Mailbox.ReadWrite");
