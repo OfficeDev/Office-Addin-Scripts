@@ -477,21 +477,21 @@ describe("Unit Tests", function() {
     describe("readManifestFile() JSON", function() {
       it("should read the manifest json info", async function() {
         const info: ManifestInfo = await OfficeAddinManifest.readManifestFile(path.normalize("test/manifests/manifest.json"));
-        assert.strictEqual(info.id, "df2fa15f-332a-47aa-87c2-e30c20686eee");
+        assert.strictEqual(info.id, "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
         // assert.strictEqual(info.appDomains instanceof Array, true);
         // assert.strictEqual(info.appDomains!.length, 1);
         // assert.strictEqual(info.appDomains![0], "contoso.com");
         assert.strictEqual(info.appDomains, undefined);
         assert.strictEqual(info.defaultLocale, "en-us");
         assert.strictEqual(info.description, "A template to get started.");
-        assert.strictEqual(info.displayName, "My Office Add-in");
+        assert.strictEqual(info.displayName, "Contoso Task Pane Add-in");
         assert.strictEqual(info.highResolutionIconUrl, "test/assets/icon-32.png");
-        // assert.strictEqual(info.hosts instanceof Array, true);
-        // assert.strictEqual(info.hosts!.length, 1);
-        // assert.strictEqual(info.hosts![0], "Workbook");
+        assert.strictEqual(info.hosts instanceof Array, true);
+        assert.strictEqual(info.hosts!.length, 1);
+        assert.strictEqual(info.hosts![0], "MailBox");
         assert.strictEqual(info.iconUrl, "test/assets/icon-32.png");
-        // assert.strictEqual(info.officeAppType, "TaskPaneApp");
-        // assert.strictEqual(info.permissions, "ReadWriteDocument");
+        assert.strictEqual(info.officeAppType, "AddinCommands");
+        assert.strictEqual(info.permissions, "Mailbox.ReadWrite");
         assert.strictEqual(info.providerName, "Contoso");
         assert.strictEqual(info.supportUrl, "https://www.contoso.com");
         assert.strictEqual(info.version, "1.0.0");
