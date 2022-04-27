@@ -4,30 +4,30 @@
   "version": "1.0.0",
   "manifestVersion": "m365DevPreview",
   "name": {
-      "short": "Contoso Task Pane Add-in",
-      "full": "Contoso Task Pane Add-in"
+    "short": "Contoso Task Pane Add-in",
+    "full": "Contoso Task Pane Add-in"
   },
   "description": {
-      "short": "A template to get started.",
-      "full": "This is the template to get started."
+    "short": "A template to get started.",
+    "full": "This is the template to get started."
   },
   "developer": {
-      "name": "Contoso",
-      "websiteUrl": "https://www.contoso.com",
-      "privacyUrl": "https://www.contoso.com/privacy",
-      "termsOfUseUrl": "https://www.contoso.com/servicesagreement"
+    "name": "Contoso",
+    "websiteUrl": "https://www.contoso.com",
+    "privacyUrl": "https://www.contoso.com/privacy",
+    "termsOfUseUrl": "https://www.contoso.com/servicesagreement"
   },
   "icons": {
-      "outline": "test/assets/icon-32.png",
-      "color": "test/assets/icon-32.png"
+    "outline": "test/assets/icon-32.png",
+    "color": "test/assets/icon-32.png"
   },
   "accentColor": "#230201",
   "localizationInfo": {
     "defaultLanguageTag": "en-us",
     "additionalLanguages": [
         {
-            "languageTag": "es-es",
-            "file": "locales/es-es.json"
+          "languageTag": "es-es",
+          "file": "locales/es-es.json"
         }
     ]
   },
@@ -35,8 +35,8 @@
       "permissions": {
           "resourceSpecific": [
               {
-                  "name": "Mailbox.ReadWrite",
-                  "type": "Delegated"
+                "name": "Mailbox.ReadWrite",
+                "type": "Delegated"
               }
           ]
       }
@@ -47,7 +47,7 @@
   "extension": {
       "requirements": {
           "scopes": [
-              "mail"
+            "mail"
           ],
           "capabilities": [
              { "name": "AddinCommands", "minVersion": "1.1" }
@@ -56,7 +56,7 @@
       "getStartedMessages": [
         {
             "requirements": {
-                "formFactors": ["desktop"]
+              "formFactors": ["desktop"]
             },
             "title": "Get Started",
             "description": "Your sample add-in loaded succesfully. Click the buttons to get started.",
@@ -67,7 +67,7 @@
         {
           "requirements": {
               "capabilities": [
-                  { "name": "MailBox", "minVersion": "1.10" }
+                { "name": "MailBox", "minVersion": "1.10" }
               ]
           },
           "id": "text",
