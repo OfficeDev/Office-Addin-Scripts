@@ -63,9 +63,10 @@ describe("test javascript file as input", function() {
     describe("js test", function() {
         it("basic test", async function() {
             const inputFile = "./test/javascript/testjs.js";
-            const results = await generateCustomFunctionsMetadata(inputFile, true);
+            const results = await generateCustomFunctionsMetadata(inputFile, true, { allowErrorForDataTypeAny: true });
             const j = JSON.parse(results.metadataJson);
 
+            assert.strictEqual(j.allowErrorForDataTypeAny, true, "additional parameter not created properly");
             assert.strictEqual(j.functions[0].id, "TESTADD", "id not created properly");
             assert.strictEqual(j.functions[0].name, "TESTADD", "name not created properly");
             assert.strictEqual(j.functions[0].description, "This function is testing add", "description not created properly");
