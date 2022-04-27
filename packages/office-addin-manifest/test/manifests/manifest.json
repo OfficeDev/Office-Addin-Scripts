@@ -41,6 +41,9 @@
           ]
       }
   },
+  "validDomains": [
+    "contoso.com"
+  ],
   "extension": {
       "requirements": {
           "scopes": [

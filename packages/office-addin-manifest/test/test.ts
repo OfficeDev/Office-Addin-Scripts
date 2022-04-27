@@ -483,10 +483,9 @@ describe("Unit Tests", function() {
       it("should read the manifest json info", async function() {
         const info: ManifestInfo = await OfficeAddinManifest.readManifestFile(path.normalize("test/manifests/manifest.json"));
         assert.strictEqual(info.id, "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
-        // assert.strictEqual(info.appDomains instanceof Array, true);
-        // assert.strictEqual(info.appDomains!.length, 1);
-        // assert.strictEqual(info.appDomains![0], "contoso.com");
-        assert.strictEqual(info.appDomains, undefined);
+        assert.strictEqual(info.appDomains instanceof Array, true);
+        assert.strictEqual(info.appDomains!.length, 1);
+        assert.strictEqual(info.appDomains![0], "contoso.com");
         assert.strictEqual(info.defaultLocale, "en-us");
         assert.strictEqual(info.description, "A template to get started.");
         assert.strictEqual(info.displayName, "Contoso Task Pane Add-in");
