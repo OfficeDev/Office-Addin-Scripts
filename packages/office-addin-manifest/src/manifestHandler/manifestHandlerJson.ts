@@ -37,7 +37,6 @@ export class ManifestHandlerJson extends ManifestHandler {
     }
   }
 
-  // getManifestInfo(teamsAppManifest: TeamsAppManifest): ManifestInfo {
   getManifestInfo(teamsAppManifest: any): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
     manifestInfo.id = teamsAppManifest.id;
@@ -45,11 +44,11 @@ export class ManifestHandlerJson extends ManifestHandler {
     manifestInfo.defaultLocale = teamsAppManifest?.localizationInfo?.defaultLanguageTag;
     manifestInfo.description = teamsAppManifest?.description?.short;
     manifestInfo.displayName = teamsAppManifest?.name?.short;
-    manifestInfo.highResolutionIconUrl = teamsAppManifest?.icons.color;
-    manifestInfo.hosts = teamsAppManifest?.extension?.requirements?.scopes; // We need for the new schema to be published
+    manifestInfo.highResolutionIconUrl = teamsAppManifest?.icons?.color;
+    manifestInfo.hosts = teamsAppManifest?.extension?.requirements?.scopes;
     manifestInfo.iconUrl = teamsAppManifest?.icons?.color;
-    manifestInfo.officeAppType = teamsAppManifest?.extension?.requirements?.capabilities[0]?.name; // We need for the new schema to be published
-    manifestInfo.permissions = teamsAppManifest?.authorization?.permissions?.resourceSpecific[0]?.name; // Still need to find an example where Permissions work. Or the manifest doesn't have it, or it is a wrong vlaue.
+    manifestInfo.officeAppType = teamsAppManifest?.extension?.requirements?.capabilities[0]?.name;
+    manifestInfo.permissions = teamsAppManifest?.authorization?.permissions?.resourceSpecific[0]?.name;
     manifestInfo.providerName = teamsAppManifest?.developer?.name;
     manifestInfo.supportUrl = teamsAppManifest?.developer?.websiteUrl;
     manifestInfo.version = teamsAppManifest?.version;
