@@ -37,6 +37,7 @@ export class ManifestHandlerJson extends ManifestHandler {
     }
   }
 
+  // TODO: change teamsAppManifest type to TeamsAppManifest
   getManifestInfo(teamsAppManifest: any): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
     manifestInfo.id = teamsAppManifest.id;

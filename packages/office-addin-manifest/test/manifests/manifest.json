@@ -15,6 +15,7 @@
     "name": "Contoso",
     "websiteUrl": "https://www.contoso.com",
     "privacyUrl": "https://www.contoso.com/privacy",
+    "supportUrl": "https://www.contoso.com/help",
     "termsOfUseUrl": "https://www.contoso.com/servicesagreement"
   },
   "icons": {
@@ -24,12 +25,7 @@
   "accentColor": "#230201",
   "localizationInfo": {
     "defaultLanguageTag": "en-us",
-    "additionalLanguages": [
-        {
-          "languageTag": "es-es",
-          "file": "locales/es-es.json"
-        }
-    ]
+    "additionalLanguages": []
   },
   "authorization": {
       "permissions": {
