@@ -67,7 +67,7 @@
                 { "name": "MailBox", "minVersion": "1.10" }
               ]
           },
-          "id": "text",
+          "id": "mail",
           "type": "general",
           "code": {
               "page": "https://localhost:3000/taskpane.html",
@@ -77,17 +77,33 @@
           "actions": {
               "items": [
                   {
-                      "id": "text.onMessageSending",
+                      "id": "mail.onMessageSending",
                       "type": "execution",
                       "name": "OnMessageSending"
                   },
                   {
-                      "id": "text.onNewMessageComposeCreated",
+                      "id": "mail.onNewMessageComposeCreated",
                       "type": "execution",
                       "name": "OnNewMessageComposeCreated"
                   }
               ]
           }
+      },
+      {
+        "id": "ShowTaskpane",
+        "type": "general",
+        "code": {
+          "page": "https://localhost:3000/taskpane.html"
+        },
+        "lifetime": "short",
+        "actions": [
+          {
+            "id": "ShowTaskpane.show",
+            "type": "contextual-launch",
+            "view": "",
+            "pinnable": false
+          }
+        ]
       }
     ],
     "contextMenus": [
@@ -101,9 +117,9 @@
                             "type": "menu",
                             "label": "Menu",
                             "icons": [
-                                { "size": 16, "file": "test_16.png" },
-                                { "size": 32, "file": "test_32.png" },
-                                { "size": 80, "file": "test_80.png" }
+                                { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                             ],
                             "supertip": {
                                 "title": "Change text case",
@@ -118,7 +134,7 @@
                                         "title": "Change text to uppercase",
                                         "description": "This will change the text to uppercase."
                                     },
-                                    "actionId": "text.toUppercase"
+                                    "actionId": "mail.toUppercase"
                                 },
                                 {
                                     "id": "menu.lowercase",
@@ -128,7 +144,7 @@
                                         "title": "Change text to lowercase",
                                         "description": "This will change the text to lowercase."
                                     },
-                                    "actionId": "text.toLowercase"
+                                    "actionId": "mail.toLowercase"
                                 }
                             ]
                         },
@@ -137,15 +153,15 @@
                             "type": "button",
                             "label": "Show dashboard",
                             "icons": [
-                                { "size": 16, "file": "test_16.png" },
-                                { "size": 32, "file": "test_32.png" },
-                                { "size": 80, "file": "test_80.png" }
+                                { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                             ],
                             "supertip": {
                                 "title": "Show dashboard",
                                 "description": "click to open dashboard"
                             },
-                            "actionId": "text.showDashboard"
+                            "actionId": "mail.showDashboard"
                         }
                     ]
                 },
@@ -157,9 +173,9 @@
                             "type": "menu",
                             "label": "Menu",
                             "icons": [
-                                { "size": 16, "file": "test_16.png" },
-                                { "size": 32, "file": "test_32.png" },
-                                { "size": 80, "file": "test_80.png" }
+                                { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                             ],
                             "supertip": {
                                 "title": "Change text case",
@@ -174,7 +190,7 @@
                                         "title": "Change text to uppercase",
                                         "description": "This will change the text to uppercase."
                                     },
-                                    "actionId": "text.toUppercase"
+                                    "actionId": "mail.toUppercase"
                                 },
                                 {
                                     "id": "menu.lowercase",
@@ -184,7 +200,7 @@
                                         "title": "Change text to lowercase",
                                         "description": "This will change the text to lowercase."
                                     },
-                                    "actionId": "text.toLowercase"
+                                    "actionId": "mail.toLowercase"
                                 }
                             ]
                         },
@@ -193,15 +209,15 @@
                             "type": "button",
                             "label": "Show dashboard",
                             "icons": [
-                                { "size": 16, "file": "test_16.png" },
-                                { "size": 32, "file": "test_32.png" },
-                                { "size": 80, "file": "test_80.png" }
+                                { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                             ],
                             "supertip": {
                                 "title": "Show dashboard",
                                 "description": "click to open dashboard"
                             },
-                            "actionId": "text.showDashboard"
+                            "actionId": "mail.showDashboard"
                         }
                     ]
                 }
@@ -221,9 +237,9 @@
                             "id": "dashboard",
                             "label": "Controls",
                             "icons": [
-                                { "size": 16, "file": "test_16.png" },
-                                { "size": 32, "file": "test_32.png" },
-                                { "size": 80, "file": "test_80.png" }
+                                { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                             ],
                             "controls": [
                                 {
@@ -231,15 +247,15 @@
                                     "type": "button",
                                     "label": "To uppercase",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Change text to uppercase",
                                         "description": "This will change the text to uppercase."
                                     },
-                                    "actionId": "text.toUppercase"
+                                    "actionId": "mail.toUppercase"
                                 },
                                 {
                                     "id": "lowercase",
@@ -247,24 +263,24 @@
                                     "label": "To lowercase",
                                     "enabled": false,
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Change text to lowercase",
                                         "description": "This will change the text to lowercase."
                                     },
-                                    "actionId": "text.toLowercase"
+                                    "actionId": "mail.toLowercase"
                                 },
                                 {
                                     "id": "menu",
                                     "type": "menu",
                                     "label": "Menu",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Change text case",
@@ -277,15 +293,15 @@
                                             "label": "To uppercase",
                                             "enabled": false,
                                             "icons": [
-                                                { "size": 16, "file": "test_16.png" },
-                                                { "size": 32, "file": "test_32.png" },
-                                                { "size": 80, "file": "test_80.png" }
+                                                { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                                { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                                { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                             ],
                                             "supertip": {
                                                 "title": "Change text to uppercase",
                                                 "description": "This will change the text to uppercase."
                                             },
-                                            "actionId": "text.toUppercase"
+                                            "actionId": "mail.toUppercase"
                                         },
                                         {
                                             "id": "menu.lowercase",
@@ -295,7 +311,7 @@
                                                 "title": "Change text to lowercase",
                                                 "description": "This will change the text to lowercase."
                                             },
-                                            "actionId": "text.toLowercase",
+                                            "actionId": "mail.toLowercase",
                                             "overriddenByRibbonApi": true
                                         }
                                     ]
@@ -305,15 +321,15 @@
                                     "type": "button",
                                     "label": "Show dashboard",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Show dashboard",
                                         "description": "click to open dashboard"
                                     },
-                                    "actionId": "text.showDashboard",
+                                    "actionId": "mail.showDashboard",
                                     "overriddenByRibbonApi": true
                                 }
                             ]
@@ -339,39 +355,39 @@
                                     "type": "button",
                                     "label": "To uppercase",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Change text to uppercase",
                                         "description": "This will change the text to uppercase."
                                     },
-                                    "actionId": "text.toUppercase"
+                                    "actionId": "mail.toUppercase"
                                 },
                                 {
                                     "id": "lowercase",
                                     "type": "button",
                                     "label": "To lowercase",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Change text to lowercase",
                                         "description": "This will change the text to lowercase."
                                     },
-                                    "actionId": "text.toLowercase"
+                                    "actionId": "mail.toLowercase"
                                 },
                                 {
                                     "id": "menu",
                                     "type": "menu",
                                     "label": "Menu",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Change text case",
@@ -386,22 +402,22 @@
                                                 "title": "Change text to uppercase",
                                                 "description": "This will change the text to uppercase."
                                             },
-                                            "actionId": "text.toUppercase"
+                                            "actionId": "mail.toUppercase"
                                         },
                                         {
                                             "id": "menu.lowercase",
                                             "type": "menuItem",
                                             "label": "To lowercase",
                                             "icons": [
-                                                { "size": 16, "file": "test_16.png" },
-                                                { "size": 32, "file": "test_32.png" },
-                                                { "size": 80, "file": "test_80.png" }
+                                                { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                                { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                                { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                             ],
                                             "supertip": {
                                                 "title": "Change text to lowercase",
                                                 "description": "This will change the text to lowercase."
                                             },
-                                            "actionId": "text.toLowercase"
+                                            "actionId": "mail.toLowercase"
                                         }
                                     ]
                                 },
@@ -410,15 +426,15 @@
                                     "type": "button",
                                     "label": "Show dashboard",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Show dashboard",
                                         "description": "click to open dashboard"
                                     },
-                                    "actionId": "text.showDashboard"
+                                    "actionId": "mail.showDashboard"
                                 }
                             ]
                         }
@@ -443,15 +459,15 @@
                                     "type": "button",
                                     "label": "Show dashboard",
                                     "icons": [
-                                        { "size": 16, "file": "test_16.png" },
-                                        { "size": 32, "file": "test_32.png" },
-                                        { "size": 80, "file": "test_80.png" }
+                                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
+                                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
+                                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
                                     ],
                                     "supertip": {
                                         "title": "Show dashboard",
                                         "description": "click to open dashboard"
                                     },
-                                    "actionId": "text.showDashboard"
+                                    "actionId": "mail.showDashboard"
                                 }
                             ]
                         }
@@ -471,15 +487,15 @@
             "shortcuts": [
                 {
                     "key":  "Ctrl+Shift+U",
-                    "actionId": "text.toUppercase"
+                    "actionId": "mail.toUppercase"
                 },
                 {
                     "key": "Ctrl+Shift+L",
-                    "actionId": "text.toLowercase"
+                    "actionId": "mail.toLowercase"
                 },
                 {
                     "key": "Ctrl+Shift+Up",
-                    "actionId": "text.showDashboard"
+                    "actionId": "mail.showDashboard"
                 }
             ]
         },
@@ -493,15 +509,15 @@
             "shortcuts": [
                 {
                     "key": "Command+Shift+U",
-                    "actionId": "text.toUppercase"
+                    "actionId": "mail.toUppercase"
                 },
                 {
                     "key": "Command+Shift+L",
-                    "actionId": "text.toLowercase"
+                    "actionId": "mail.toLowercase"
                 },
                 {
                     "key": "Command+Shift+Up",
-                    "actionId": "text.showDashboard"
+                    "actionId": "mail.showDashboard"
                 }
             ]
         }
@@ -516,11 +532,11 @@
             "events": [
                 {
                     "id": "newMessageComposeCreated",
-                    "actionId": "text.onNewMessageComposeCreated"
+                    "actionId": "mail.onNewMessageComposeCreated"
                 },
                 {
                     "id": "messageSending",
-                    "actionId": "text.onMessageSending",
+                    "actionId": "mail.onMessageSending",
                     "options": {
                         "sendMode": "promptUser"
                     }
