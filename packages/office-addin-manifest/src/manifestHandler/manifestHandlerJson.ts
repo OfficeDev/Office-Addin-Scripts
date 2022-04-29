@@ -37,21 +37,22 @@ export class ManifestHandlerJson extends ManifestHandler {
     }
   }
 
-  getManifestInfo(teamsAppManifest: TeamsAppManifest): ManifestInfo {
+  // TODO: change teamsAppManifest type to TeamsAppManifest
+  getManifestInfo(teamsAppManifest: any): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
     manifestInfo.id = teamsAppManifest.id;
-    manifestInfo.appDomains = teamsAppManifest.validDomains;
-    manifestInfo.defaultLocale = teamsAppManifest.localizationInfo?.defaultLanguageTag;
-    manifestInfo.description = teamsAppManifest.description.short;
-    manifestInfo.displayName = teamsAppManifest.name.short;
-    manifestInfo.highResolutionIconUrl = teamsAppManifest.icons.color;
-    // manifestInfo.hosts = teamsAppManifest.extension.requirements.scopes; // We need for the new schema to be published
-    manifestInfo.iconUrl = teamsAppManifest.icons.color;
-    // manifestInfo.officeAppType = teamsAppManifest.extension.requirements.capabilities.name; // We need for the new schema to be published
-    // manifestInfo.permissions = teamsAppManifest.Permissions; // Still need to find an example where Permissions work. Or the manifest doesn't have it, or it is a wrong vlaue.
-    manifestInfo.providerName = teamsAppManifest.developer.name;
-    manifestInfo.supportUrl = teamsAppManifest.developer.websiteUrl;
-    manifestInfo.version = teamsAppManifest.version;
+    manifestInfo.appDomains = teamsAppManifest?.validDomains;
+    manifestInfo.defaultLocale = teamsAppManifest?.localizationInfo?.defaultLanguageTag;
+    manifestInfo.description = teamsAppManifest?.description?.short;
+    manifestInfo.displayName = teamsAppManifest?.name?.short;
+    manifestInfo.highResolutionIconUrl = teamsAppManifest?.icons?.color;
+    manifestInfo.hosts = teamsAppManifest?.extension?.requirements?.scopes;
+    manifestInfo.iconUrl = teamsAppManifest?.icons?.color;
+    manifestInfo.officeAppType = teamsAppManifest?.extension?.requirements?.capabilities[0]?.name;
+    manifestInfo.permissions = teamsAppManifest?.authorization?.permissions?.resourceSpecific[0]?.name;
+    manifestInfo.providerName = teamsAppManifest?.developer?.name;
+    manifestInfo.supportUrl = teamsAppManifest?.developer?.websiteUrl;
+    manifestInfo.version = teamsAppManifest?.version;
 
     return manifestInfo;
   }

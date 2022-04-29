@@ -1,15 +1,16 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "alwaysStrict": false,
+        "declaration": true,
         "module": "commonjs",
         "moduleResolution": "node",
+        "newLine": "lf",
+        "noImplicitUseStrict": true,
+        "outDir": "lib",
         "skipLibCheck": true,
         "sourceMap": true,
-        "declaration": true,
-        "outDir": "lib",
         "strict": false,
-        "alwaysStrict": false,
-        "noImplicitUseStrict": true,
+        "target": "es5",
         "types": [
             "node",
         ]
