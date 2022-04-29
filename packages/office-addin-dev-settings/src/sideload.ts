@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
+import * as childProcess from "child_process";
 import * as jszip from "jszip";
 import {
   AddInType,
@@ -25,7 +26,7 @@ import * as registry from "./registry";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, __dirname, URL */
+/* global process, __dirname, URL, console */
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -305,8 +306,18 @@ export async function sideloadAddIn(
       appType = AppType.Desktop;
     }
 
+    // Converting json to xml manifest . . . Temporary until service is ready.
+    if (manifestPath.endsWith(".json")) {
+      if (isDotnetInstalled()) {
+        // Run json => xml conversion tool.
+        manifestPath = await convertJsonToXmlManifest(manifestPath);
+      } else {
+        throw new ExpectedError(".Net 5 or greater is required for json manifests.");
+      }
+    }
+
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {
@@ -339,6 +350,8 @@ export async function sideloadAddIn(
         if (!isSideloadingSupportedForDesktopHost(app)) {
           throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
         }
+
+        // do the registration
         await registerAddIn(manifestPath);
         // for Outlook, open Outlook.exe; for other Office apps, open the document
         if (app == OfficeApp.Outlook) {
@@ -384,5 +397,65 @@ export async function sideloadAddIn(
   } catch (err: any) {
     usageDataObject.reportException("sideloadAddIn()", err);
     throw err;
+  }
+}
+
+function isDotnetInstalled(): boolean {
+  try {
+    // Find the .Net runtimes installed
+    let result = childProcess.execSync("dotnet --list-runtimes");
+    const pattern = /(?<=Microsoft.NETCore.App )[\d.]+/g;
+    const matches = result.toString("utf-8").match(pattern);
+    let foundDotNet = false;
+
+    // Look for version 5 or greater
+    matches?.forEach((match) => {
+      const major: number = parseInt(match.split(".")[0]);
+      foundDotNet = foundDotNet || major >= 5;
+    });
+
+    return foundDotNet;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
+      console.log("Converting json to back compat xml");
+      const newManifestPath = path.join(process.env.TEMP as string, "manifest.xml");
+      const command = `.\\lib\\DevXTool.exe ${manifestPath} ${newManifestPath}`;
+
+      childProcess.exec(command, (error, stdout) => {
+        if (error) {
+          console.log(`Error converting file:\n ${stdout}\n ${error}`);
+          reject("");
+        } else {
+          console.log(`Successfully converted manifest to xml:\n ${stdout}`);
+          stripBom(newManifestPath);
+          resolve(newManifestPath);
+        }
+      });
+    } else {
+      reject(new Error(`The file '${manifestPath}' is not valid`));
+    }
+  });
+}
+
+export default function stripBom(manifestPath: string) {
+  try {
+    if (fs.existsSync(manifestPath)) {
+      const fileData: string = fs.readFileSync(manifestPath, "utf8");
+      let updateFileData: string;
+      if (fileData.charCodeAt(0) === 0xfeff) {
+        updateFileData = fileData.slice(1);
+      } else {
+        updateFileData = fileData;
+      }
+      fs.writeFileSync(manifestPath, updateFileData);
+    }
+  } catch (err) {
+    console.log("Error trying to update converted xml");
   }
 }
