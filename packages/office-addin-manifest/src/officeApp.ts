@@ -27,6 +27,8 @@ export function getOfficeAppForManifestHost(host: string): OfficeApp | undefined
   switch (host.toLowerCase()) {
     case "document":
       return OfficeApp.Word;
+    case "mail":
+      return OfficeApp.Outlook;
     case "mailbox":
       return OfficeApp.Outlook;
     case "notebook":
