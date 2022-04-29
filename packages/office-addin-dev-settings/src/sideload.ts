@@ -317,9 +317,7 @@ export async function sideloadAddIn(
     }
 
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest: OfficeApp[] = manifestPath.endsWith(".json")
-      ? [OfficeApp.Outlook]
-      : getOfficeAppsForManifestHosts(manifest.hosts);
+    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {
@@ -426,8 +424,7 @@ async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if (manifestPath.endsWith(".json") && fs.existsSync(manifestPath)) {
       console.log("Converting json to back compat xml");
-      //fspath.join(process.env.TEMP as string, "manifest.zip");
-      const newManifestPath: string = process.env.TEMP as string;
+      const newManifestPath = path.join(process.env.TEMP as string, "manifest.xml");
       const command = `.\\lib\\DevXTool.exe ${manifestPath} ${newManifestPath}`;
 
       childProcess.exec(command, (error, stdout) => {
@@ -436,11 +433,29 @@ async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
           reject("");
         } else {
           console.log(`Successfully converted manifest to xml:\n ${stdout}`);
-          resolve(path.join(newManifestPath, "output.xml"));
+          stripBom(newManifestPath);
+          resolve(newManifestPath);
         }
       });
     } else {
       reject(new Error(`The file '${manifestPath}' is not valid`));
     }
   });
+}
+
+export default function stripBom(manifestPath: string) {
+  try {
+    if (fs.existsSync(manifestPath)) {
+      const fileData: string = fs.readFileSync(manifestPath, "utf8");
+      let updateFileData: string;
+      if (fileData.charCodeAt(0) === 0xfeff) {
+        updateFileData = fileData.slice(1);
+      } else {
+        updateFileData = fileData;
+      }
+      fs.writeFileSync(manifestPath, updateFileData);
+    }
+  } catch (err) {
+    console.log("Error trying to update converted xml");
+  }
 }
