@@ -2,17 +2,17 @@
 // Licensed under the MIT license.
 
 import * as assert from "assert";
-import * as commander from "commander";
 import * as fsextra from "fs-extra";
-import * as inquirer from "inquirer";
-import * as mocha from "mocha";
-import * as officeAddinManifest from "office-addin-manifest";
+import { OfficeApp, ManifestInfo, OfficeAddinManifest, AddInType } from "office-addin-manifest";
 import * as os from "os";
 import * as fspath from "path";
 import * as sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
+import { AppType } from "../../src/appType";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
+import { registerWithTeams } from "../../src/publish";
+import { deleteKey, getStringValue } from "../../src/registry";
 import * as devSettingsSideload from "../../src/sideload";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
 const isWindows = (process.platform === "win32");
@@ -238,11 +238,11 @@ describe("Appcontainer", async function() {
       it("undefined source location", async function() {
         const manifest = {defaultSettings: ""};
         const readManifestFile = sinon.fake.returns(manifest);
-        sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
+        sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
         try {
           await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
           assert.strictEqual(0, 1); // expecting exception
-        } catch (err) {
+        } catch (err: any) {
           assert.strictEqual(err.toString().includes("The source location could not be retrieved from the manifest."), true);
         }
       });
@@ -250,7 +250,7 @@ describe("Appcontainer", async function() {
         const sourceLocation = {sourceLocation: "https://localhost"};
         const manifest = {defaultSettings: sourceLocation};
         const readManifestFile = sinon.fake.returns(manifest);
-        sandbox.stub(officeAddinManifest, "readManifestFile").callsFake(readManifestFile);
+        sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
         const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost");
         assert.strictEqual(appcontainerName, "1_https___localhost04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
       });
@@ -320,29 +320,86 @@ describe("Registration", function() {
         assert.strictEqual(first.id, firstManifestId);
         assert.strictEqual(first.manifestPath, firstRegisteredManifestPath);
       });
-      if (process.platform === "win32") {
-        it("Supports manifest path instead of id for registry value name", async function() {
-          await devSettingsWindows.registerAddIn(secondManifestPath, secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, "");
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-        it("When registered by id, registry value name with manifest path is removed", async function() {
-          await devSettings.registerAddIn(secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, secondManifestId);
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-      }
     });
+    describe("json manifest functionality", function() {
+      it('Error when file does not exist', () => {
+        const zipPath = fspath.resolve(manifestsFolder, "nozip.zip");
+        return registerWithTeams(zipPath)
+          .then(() => {
+              Promise.reject(new Error('Expected method to reject.'));
+            },
+            (error) => {
+              assert.ok(error instanceof Error, "Should throw an error when zip doesn't exist");
+              assert.strictEqual(error.message, `The file '${zipPath}' is not valid`);
+            }
+          );
+      });
+      it('Error when not a zip file', () => {
+        const zipPath = fspath.resolve(manifestsFolder, "manifest.xml");
+        return registerWithTeams(zipPath)
+          .then(() => {
+              Promise.reject(new Error('Expected method to reject.'));
+            },
+            (error) => {
+              assert.ok(error instanceof Error, "Should throw an error when file is not a zip file");
+              assert.strictEqual(error.message, `The file '${zipPath}' is not valid`);
+            }
+          );
+      });
+    });
+
+    if (isWindows) {
+      describe("register Outlook add-in", function() {
+        this.beforeEach(async function() {
+          const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          if (key) {
+            await deleteKey(key);
+          }
+          await devSettings.unregisterAllAddIns();
+        });
+        this.afterEach(async function() {
+          const key = await devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          if (key) {
+            await deleteKey(key);
+          }
+          await devSettings.unregisterAllAddIns();
+        });
+        it("verify OutlookSideloadManifestPath and Developer registry keys set correctly", async function() {
+          const manifestsFolder = fspath.resolve("test/files/manifests");
+          const manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
+          await devSettings.registerAddIn(manifestPath);
+          const registeredAddins = await devSettings.getRegisterAddIns();
+
+          // Verify manifest is set in Developer registry key
+          const [registeredAddin] = registeredAddins;
+          assert.strictEqual(registeredAddins.length, 1);
+          assert.strictEqual(registeredAddin.id, "d0ea1166-7b26-47a6-af8e-b978646d889f");
+          assert.strictEqual(registeredAddin.manifestPath, manifestPath);
+
+          // Verify OutlookSideloadManifestPath is set
+          const key = devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          const value = await getStringValue(key, "");
+          assert.strictEqual(value !== undefined && value === manifestPath, true);
+        });
+        it("verify OutlookSideloadManifestPath key is not set and Develoer registry key is set", async function() {
+          const manifestsFolder = fspath.resolve("test/files/manifests");
+          const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+          await devSettings.registerAddIn(manifestPath);
+
+          // Verify manifest is set in Developer registry key
+          const registeredAddins = await devSettings.getRegisterAddIns();
+          const [registeredAddin] = registeredAddins;
+          assert.strictEqual(registeredAddins.length, 1);
+          assert.strictEqual(registeredAddin.id, "6dd581d2-98d1-4eaf-9506-e0a24be515f5");
+          assert.strictEqual(registeredAddin.manifestPath, manifestPath);
+
+          // Verify OutlookSideloadManifestPath is not set
+          const key = devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
+          const value = await getStringValue(key, "");
+          assert.strictEqual(value === undefined, true);
+        });
+      });
+    }
   }
 });
 
@@ -402,7 +459,7 @@ describe("RuntimeLogging", async function() {
         let error;
         try {
           const path: string = await devSettings.enableRuntimeLogging();
-        } catch (err) {
+        } catch (err: any) {
           error = err;
         }
         assert.ok(error instanceof Error, "should throw an error");
@@ -415,7 +472,7 @@ describe("RuntimeLogging", async function() {
         let error;
         try {
           const path: string = await devSettings.enableRuntimeLogging();
-        } catch (err) {
+        } catch (err: any) {
           error = err;
         }
         assert.ok(error instanceof Error, "should throw an error");
@@ -436,7 +493,7 @@ describe("RuntimeLogging", async function() {
           let error;
           try {
             const path = await devSettings.enableRuntimeLogging(filePath);
-          } catch (err) {
+          } catch (err: any) {
             error = err;
           }
           assert.ok(error instanceof Error, "should throw an error");
@@ -481,7 +538,7 @@ describe("RuntimeLogging", async function() {
             const path = await devSettings.enableRuntimeLogging(filePath);
             assert.strictEqual(path, filePath);
             assert.strictEqual(path, await devSettings.getRuntimeLoggingPath());
-          } catch (err) {
+          } catch (err: any) {
             error = err;
           }
           assert.ok(error instanceof Error, "should throw an error");
@@ -496,27 +553,26 @@ describe("Sideload to Desktop", function() {
   const manifestsFolder = fspath.resolve("test/files/manifests");
   const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
   it("Verify pathToWrite not undefined", async function() {
-    const manifest = await officeAddinManifest.readManifestFile(manifestPath);
-    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(officeAddinManifest.OfficeApp.Excel, manifest);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
+    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(OfficeApp.Excel, manifest);
     assert.notStrictEqual(pathToWrite, undefined);
   });
   it("Specify document - veriy pathToWrite not undefined", async function() {
-    const manifest = await officeAddinManifest.readManifestFile(manifestPath);
-    const document: string | undefined = devSettingsSideload.getTemplatePath(officeAddinManifest.OfficeApp.Excel, officeAddinManifest.AddInType.TaskPane);
-    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(officeAddinManifest.OfficeApp.Excel, manifest, document);
+    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
+    const document: string | undefined = devSettingsSideload.getTemplatePath(OfficeApp.Excel, AddInType.TaskPane);
+    const pathToWrite: string = await devSettingsSideload.generateSideloadFile(OfficeApp.Excel, manifest, document);
     assert.notStrictEqual(pathToWrite, undefined);
   });
   it("Sideload unsupported host (expect error)'", async function() {
     let error;
     const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Project, true /* canPrompt */,
-        devSettingsSideload.AppType.Desktop, undefined /* document */, undefined /* devServerPort */);
-    } catch (err) {
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Project, true /* canPrompt */, AppType.Desktop, undefined /* document */);
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
-    assert.strictEqual(error.message, "Sideload is not supported for project on desktop.");
+    assert.strictEqual(error.message, "Sideload to the Project app is not supported.");
   })
 });
 
@@ -527,29 +583,50 @@ describe("Sideload to web", function() {
   const manifestsFolder = fspath.resolve("test/files/manifests");
   let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
   it("Get sideload url with query params", async function() {
-    const manifest: officeAddinManifest.ManifestInfo = await officeAddinManifest.readManifestFile(manifestPath);
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const manifestFileName = fspath.basename(manifestPath)
     const generatedUrl: string | undefined = await devSettingsSideload.generateSideloadUrl(manifestFileName, manifest, docurl);
     assert.strictEqual(generatedUrl, expectedUrl);
   });
   it("Get sideload url with query params when isTest equals 'true'", async function() {
-    const manifest: officeAddinManifest.ManifestInfo = await officeAddinManifest.readManifestFile(manifestPath);
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const manifestFileName = fspath.basename(manifestPath)
     const generatedUrl: string | undefined = await devSettingsSideload.generateSideloadUrl(manifestFileName, manifest, docurl, true /* isTest */);
     const expectedTestQueryParam: string = "&wdaddintest=true";
     expectedUrl = `${expectedUrl}${expectedTestQueryParam}`;
     assert.strictEqual(generatedUrl, expectedUrl);
-  })
+  });
   it("Sideload unsupported source location (expect error)'", async function() {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, officeAddinManifest.OfficeApp.Excel, true /* canPrompt */,
-        devSettingsSideload.AppType.Web, docurl);
-    } catch (err) {
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web, docurl);
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
     assert.strictEqual(error.message, "The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1.");
+  });
+  it("Sideload no document parameter provided (expect error)'", async function() {
+    let error;
+    let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web);
+    } catch (err: any) {
+      error = err;
+    }
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, `For sideload to web, you need to specify a document url.`);
+  })
+  it("Sideload unsupported Outlook host (expect error)'", async function() {
+    let error;
+    let manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
+    try {
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Outlook, true /* canPrompt */, AppType.Web, docurl);
+    } catch (err: any) {
+      error = err;
+    }
+    assert.ok(error instanceof Error, "should throw an error");
+    assert.strictEqual(error.message, `Sideload to the Outlook web app is not supported.`);
   })
 });

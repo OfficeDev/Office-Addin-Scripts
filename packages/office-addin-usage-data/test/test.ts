@@ -5,13 +5,15 @@ import * as appInsights from "applicationinsights";
 import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
+import * as sinon from "sinon";
 import * as os from "os";
 import * as defaults from "../src/defaults";
 import * as officeAddinUsageData from "../src/usageData";
 import * as jsonData from "../src/usageDataSettings";
+import * as log from "../src/log";
 
 let addInUsageData: officeAddinUsageData.OfficeAddinUsageData;
-const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules//alanced-match/index.js`);
+const err = new Error(`this error contains a file path:C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
 let usageData: string;
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
@@ -158,17 +160,56 @@ describe("Test office-addin-usage data-package", function() {
     });
   });
   describe("Test maskFilePaths method", () => {
-    it("should return a parsed file path error", () => {
+    it("should parse error file paths with slashs", () => {
       addInUsageData.setUsageDataOff();
+      const error = new Error(`this error contains a file path: C:/${os.homedir()}/AppData/Roaming/npm/node_modules/alanced-match/index.js`);
       const compareError = new Error();
-      compareError.name = "TestData-test";
-      compareError.message = "this error contains a file path:C:index.js";
+      compareError.name = "Error";
+      compareError.message = "this error contains a file path: <filepath>";
       // may throw error if change any part of the top of the test file
-      compareError.stack = "this error contains a file path:C:index.js";
-      addInUsageData.maskFilePaths(err);
-      assert.equal(compareError.name, err.name);
-      assert.equal(compareError.message, err.message);
-      assert.equal(err.stack.includes(compareError.stack), true);
+      compareError.stack = "this error contains a file path: <filepath>";
+
+      addInUsageData.maskFilePaths(error);
+
+      assert.strictEqual(compareError.name, error.name);
+      assert.strictEqual(compareError.message, error.message);
+      assert.strictEqual(error.stack.includes(compareError.stack), true);
+    });
+    it("should parse error file paths with backslashs", () => {
+      addInUsageData.setUsageDataOff();
+      const errWithBackslash = new Error(`this error contains a file path: C:\\Users\\admin\\AppData\\Local\\Temp\\excel file .xlsx`);
+      const compareErrorWithBackslash = new Error();
+      compareErrorWithBackslash.message = "this error contains a file path: <filepath>";
+      compareErrorWithBackslash.stack = "this error contains a file path: <filepath>";
+      
+      addInUsageData.maskFilePaths(errWithBackslash);
+
+      assert.strictEqual(compareErrorWithBackslash.message, errWithBackslash.message);
+      assert.strictEqual(errWithBackslash.stack.includes(compareErrorWithBackslash.stack), true);
+    });
+    it("should parse error file paths with slashs and backslashs", () => {
+      addInUsageData.setUsageDataOff();
+      const error = new Error(`this error contains a file path: C:\\Users/\\admin\\AppData\\Local//Temp\\excel_file .xlsx`);
+      const compareError = new Error();
+      compareError.message = "this error contains a file path: <filepath>";
+      compareError.stack = "this error contains a file path: <filepath>";
+      
+      addInUsageData.maskFilePaths(error);
+
+      assert.strictEqual(compareError.message, error.message);
+      assert.strictEqual(error.stack.includes(compareError.stack), true);
+    });
+    it("should handle relative paths", () => {
+      addInUsageData.setUsageDataOff();
+      const error = new Error(`file path: /this is a file path/path/manifestName.xml`);
+      const compareError = new Error();
+      compareError.message = "file path: <filepath>";
+      compareError.stack = "file path: <filepath>";
+      
+      addInUsageData.maskFilePaths(error);
+
+      assert.strictEqual(compareError.message, error.message);
+      assert.strictEqual(error.stack.includes(compareError.stack), true);
     });
   });
 
@@ -263,23 +304,23 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(JSON.stringify(jsonObject.usageDataInstances[usageDataObject.groupName]), JSON.stringify(jsonData.readUsageDataSettings(usageDataObject.groupName)));
     });
   });
-  describe("Test sendUsageDataSuccessEvent", () => {
+  describe("Test reportSuccess", () => {
     it("should send success events successfully", () => {
-      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent", {TestVal: 42, OtherTestVal: "testing"});
+      addInUsageData.reportSuccess("testMethod-reportSuccess", {TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
     it("should send success events successfully, even when there's no additional data", () => {
-      addInUsageData.sendUsageDataSuccessEvent("testMethod-sendUsageDataSuccessEvent");
+      addInUsageData.reportSuccess("testMethod-reportSuccess");
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
-  describe("Test sendUsageDataSuccessfulFailEvent", () => {
+  describe("Test reportExpectedException", () => {
     it("should send successful fail events successfully", () => {
-      addInUsageData.sendUsageDataSuccessfulFailEvent("testMethod-sendUsageDataSuccessfulFailEvent", {TestVal: 42, OtherTestVal: "testing"});
+      addInUsageData.reportExpectedException("testMethod-reportExpectedException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
     it("should send successful fail events successfully, even when there's no additional data", () => {
-      addInUsageData.sendUsageDataSuccessfulFailEvent("testMethod-sendUsageDataSuccessfulFailEvent");
+      addInUsageData.reportExpectedException("testMethod-reportExpectedException", new Error("Test"));
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
@@ -293,14 +334,46 @@ describe("Test office-addin-usage data-package", function() {
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });
-  describe("Test sendUsageDataException", () => {
+  describe("Test reportException", () => {
     it("should send exceptions successfully", () => {
-      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
+      addInUsageData.reportException("testMethod-reportException", new Error("Test"), {TestVal: 42, OtherTestVal: "testing"});
       assert.equal(addInUsageData.getExceptionsSent(), 1);
     });
     it("should send exceptions successfully, even when there's no data", () => {
-      addInUsageData.sendUsageDataException("testMethod-sendUsageDataException", new Error("Test"));
+      addInUsageData.reportException("testMethod-reportException", new Error("Test"));
       assert.equal(addInUsageData.getExceptionsSent(), 1);
+    });
+  });
+
+  describe("log.ts", function() {
+    describe("logErrorMessage()", function() {
+      it("called with Error", function() {
+        const spyConsoleError = sinon.spy(console, "error");
+        const spyConsoleLog = sinon.spy(console, "log");
+
+        const message = "This is an error.";
+        const error = new Error(message);
+        log.logErrorMessage(error);
+
+        assert.ok(spyConsoleError.calledOnceWith(`Error: ${message}`));
+        assert.ok(spyConsoleLog.notCalled);
+
+        spyConsoleError.restore();
+        spyConsoleLog.restore();
+      });
+      it("called with string", function() {
+        const spyConsoleError = sinon.spy(console, "error");
+        const spyConsoleLog = sinon.spy(console, "log");
+
+        const message = "This is the error message.";
+        log.logErrorMessage(message);
+
+        assert.ok(spyConsoleError.calledOnceWith(`Error: ${message}`));
+        assert.ok(spyConsoleLog.notCalled);
+
+        spyConsoleError.restore();
+        spyConsoleLog.restore();
+      });
     });
   });
 });

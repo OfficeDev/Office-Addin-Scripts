@@ -22,7 +22,7 @@ Display or configure settings related to the appcontainer for an Office Add-in.
 
 Syntax:
 
-`office addin-dev-settings appcontainer <manifest> [options]`
+`office-addin-dev-settings appcontainer <manifest> [options]`
 
 `manifest`: path to manifest file.
 
@@ -50,7 +50,7 @@ Clear developer settings for the Office Add-in.
 
 Syntax:
 
-`office addin-debugging clear <manifest>`
+`office-addin-debugging clear <manifest>`
 
 `manifest`: path to manifest file.
 
@@ -61,7 +61,7 @@ Display or configure debugging settings for an Office Add-in.
 
 Syntax:
 
-`office addin-dev-settings debugging <manifest> [options]`
+`office-addin-dev-settings debugging <manifest> [options]`
 
 `manifest`: path to manifest file. 
 
@@ -94,7 +94,7 @@ Display or configure settings related to live reload for an Office Add-in.
 
 Syntax:
 
-`office addin-dev-settings live-reload <manifest> [options]`
+`office-addin-dev-settings live-reload <manifest> [options]`
 
 `manifest`: path to manifest file. 
 
@@ -117,7 +117,7 @@ Registers an Office Add-in for development.
 
 Syntax:
 
-`office addin-dev-settings register <manifest> [options]`
+`office-addin-dev-settings register <manifest> [options]`
 
 `manifest`: path to manifest file. 
 
@@ -128,7 +128,7 @@ Displays the Office Add-ins registered for development.
 
 Syntax:
 
-`office addin-dev-settings registered [options]`
+`office-addin-dev-settings registered [options]`
 
 #
 
@@ -141,7 +141,7 @@ The setting is not specific to a particular Office Add-in. It applies to the run
 
 Syntax:
 
-`office addin-dev-settings runtime-log [options]`
+`office-addin-dev-settings runtime-log [options]`
 
 Without options, displays whether runtime logging is enabled and the log file path (if enabled).
 
@@ -164,13 +164,15 @@ Start Office and open a document so the Office Add-in is loaded.
 
 Syntax:
 
-`office addin-dev-settings sideload <manifest> [options]`
+`office-addin-dev-settings sideload <manifest> [app-type] [options]`
 
-`manifest`: path to manifest file. 
+`manifest`: path to manifest file.
+
+`app-type`: host application type to sideload ("desktop" or "web").
 
 Note:
 
-If the add-in supports more than one Office app, the command will prompt to choose the app unless the `--app` parameter is provided.  
+If the add-in supports more than one Office app and the app-type is "desktop", the command will prompt to choose the app unless the `--app` parameter is provided.  
 
 Options:
 
@@ -178,13 +180,6 @@ Options:
 `--app`
 
 Specify the Office application to load.
-
-`-p`
-`--platform`
-
-Specify the platform to sideload:
-* `desktop`: sideloads in desktop application.
-* `web`: sideloads in Office Online.
 
 `-d`
 `--document`
@@ -207,7 +202,7 @@ http://`HOST`:`PORT`/`PATH` `EXTENSION`
 
 Syntax:
 
-`office addin-dev-settings source-bundle-url [options]`
+`office-addin-dev-settings source-bundle-url [options]`
 
 Without options, displays the current source-bundle-url settings.
 
@@ -239,7 +234,7 @@ Unregisters an Office Add-in for development.
 
 Syntax:
 
-`office addin-dev-settings register <manifest> [options]`
+`office-addin-dev-settings register <manifest> [options]`
 
 `manifest`: path to manifest file. 
 
@@ -252,10 +247,10 @@ Switches the webview runtime in Office for testing and development scenarios.
 
 Syntax:
 
-`office addin-dev-settings webview <manifest> <web-view-type>`
+`office-addin-dev-settings webview <manifest> <web-view-type>`
 
 `manifest`: path to manifest file. 
 
-`runtime`: Office webview to load ('edge' or 'edge-chromium, 'edge-legacy', 'ie', or 'default'). 
+`web-view-type`: Office webview to load ('edge' or 'edge-chromium, 'edge-legacy', 'ie', or 'default'). 
 
 #

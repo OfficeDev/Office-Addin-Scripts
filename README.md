@@ -44,6 +44,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
 
+* [office-addin-mock](packages/office-addin-mock/README.md)
+
+  This package provides a way to unit test the Office JavaScript API.
+
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
@@ -100,6 +104,23 @@ Use `VS Code` to edit, build, test, and debug by opening the package folder in V
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.microsoft.com.
 
 When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+
+### Quickstart with Git
+
+1. Install [Git](https://git-scm.com/downloads), [NodeJs](https://nodejs.org/en/download/) and [VS Code](https://code.visualstudio.com/Download) if you haven’t ready.
+2. Create a GitHub account if you don’t already have one.
+3. Go to [https://github.com/OfficeDev/Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts)
+4. Create a fork of OfficeDev/Office-Addin-Scripts in GitHub
+5. In a command prompt:
+    1. ```git clone https://github.com/OfficeDev/Office-Addin-Scripts```
+    2. ```cd Office-Addin-Scripts```
+    3. ```git remote add {username} https://github.com/{username}/Office-Addin-Scripts.git``` (where “{username}” is your GitHub user name)
+    4. ```git checkout -b my-branch-name``` (recommend using all lowercase with hyphens for branch names)
+6. Make your desired changes
+7. Commit your changes and push the fork you created
+    1. git commit
+    2. git push -u {username} {branch-name}
+8. Go to [Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts) and create a pull request.
 
 ## Feedback
 

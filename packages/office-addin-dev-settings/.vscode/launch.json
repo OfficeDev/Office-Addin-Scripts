@@ -142,7 +142,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["sideload", "c:\\dev\\git\\Office-Addin-TaskPane\\manifest.word.xml"]
+      "args": ["sideload", "c:\\dev\\git\\Office-Addin-TaskPane\\manifest.excel.xml", "web", "-d", "https://1drv.ms/x/s!Au78PotIZz2Q5OEmJ-xvfBs3ODNUYg?e=F64J5i"]
     },
     {
       "name": "Command Line: source-bundle-url",

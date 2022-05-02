@@ -1,18 +1,28 @@
 {
   "name": "root",
   "private": true,
+  "engines": {
+    "node": ">=14.17 <17",
+    "npm": ">=6 <9"
+  },
   "scripts": {
-    "audit": "npm audit -- audit-level=critical & lerna exec --concurrency 1 --no-sort --stream npm audit -- --audit-level=critical",
-    "audit:fix": "npm audit fix & lerna exec --concurrency 1 --no-sort --stream npm audit fix",
+    "audit": "npm audit & npm run exec -- npm audit",
+    "audit:fix": "npm audit fix & npm run exec -- npm audit fix",
     "build": "lerna run build",
-    "dist-tags": "lerna exec --concurrency 1 --no-sort --stream npm dist-tag ls",
+    "clean-install-packages": "npm run exec -- npm ci & npm ci",
+    "dist-tags": "npm run exec -- npm dist-tag ls",
+    "install-packages": "npm run exec -- npm install & npm install",
+    "exec": "lerna exec --concurrency 1 --no-bail --no-sort --stream",
+    "lint": "lerna run lint --parallel",
+    "lint:fix": "lerna run lint:fix --parallel",
     "postinstall": "lerna bootstrap",
+    "prettier": "lerna run prettier --parallel",
     "publish:next": "lerna publish --dist-tag next",
     "test": "lerna run test",
-    "update-latest-dist-tags": "lerna exec --concurrency 1 --no-sort --stream  for /f \"usebackq\" %a in (`npm view . name`) do @for /f \"usebackq\" %b in (`npm view . dist-tags.next`) do @npm dist-tag add %a@%b",
-    "update-packages": "lerna exec --concurrency 1 --no-sort --stream npm update --dev"
+    "update-latest-dist-tags": "npm run exec for /f \"usebackq\" %a in (`npm view . name`) do @for /f \"usebackq\" %b in (`npm view . dist-tags.next`) do @npm dist-tag add %a@%b",
+    "update-packages": "npm run exec -- npm update --dev"
   },
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "lerna": "^4.0.0"
   }
 }

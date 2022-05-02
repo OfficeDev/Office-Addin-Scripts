@@ -13,9 +13,13 @@ Starts debugging.
 
 Syntax:
 
-`office addin-debugging start <manifest> [options]`
+`office-addin-debugging start <manifest> [platform] [options]`
 
 `manifest`: path to manifest file.
+
+`platform`: which type of application:
+* `desktop`: Office app for Windows or Mac
+* `web`: Office app in the web browser
 
 Notes:
 
@@ -23,9 +27,21 @@ Notes:
 
 * `--packager` is needed unless `--debug-method` is `direct` and `--no-live-reload` is specified.
 
-* `--sideload` is needed to open an Office document with the add-in. The command would typically use `office-toolbox sideload -m <manifest> -a <app>`.
-
 Options:
+
+`--app <app`>
+
+Specifies which Office app to use:
+* `excel`
+* `onenote`
+* `outlook`
+* `project`
+* `powerpoint`
+* `word`
+
+If this is not specified, the behavior depends on the `<Hosts>` specified in the manifest. 
+For a single host, it will automatically start that Office app.
+For multiple hosts, it will prompt to choose the desired host.
 
 `--debug-method <method>`
 
@@ -53,6 +69,10 @@ Start without debugging.
 
 Do not enable live-reload.
 
+` --no-sideload`
+
+Do not start the Office app and load the Office add-in.
+
 ` --packager <command>`
 
 If this option is provided, the packager is started with the specified command.
@@ -68,10 +88,6 @@ Port number of the packager. Default: `8081`.
 ` --prod`
 
 Specifies that debugging session is for production mode. Default is development mode.
-
-` --sideload <command>`
-
-Load the add-in using the specified command.
 
 ` --source-bundle-url-host <host>`
 
@@ -100,7 +116,7 @@ Stops debugging.
 
 Syntax:
 
-`office addin-debugging stop <manifest> [options]`
+`office-addin-debugging stop <manifest> [options]`
 
 `manifest`: path to manifest file.
 

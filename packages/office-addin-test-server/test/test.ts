@@ -14,12 +14,6 @@ const testValue: string = "Office-Addin-Test-Infrastructure";
 const testValues: any = [];
 
 describe("End-to-end validation of test server", function() {
-    before(function() {
-        // skip tests on Linux -- need to get dev certs working there
-        if (process.platform == "linux") {
-            this.skip();
-        }
-    })
     describe("Setup test server", function() {
         it("Test server should have started", async function() {
             const startTestServer = await promiseStartTestServer;

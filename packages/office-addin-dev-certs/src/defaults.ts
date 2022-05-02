@@ -7,7 +7,7 @@ import * as usageData from "office-addin-usage-data";
 
 // Default certificate names
 export const certificateDirectoryName = ".office-addin-dev-certs";
-export const certificateDirectory =  path.join(os.homedir(), certificateDirectoryName);
+export const certificateDirectory = path.join(os.homedir(), certificateDirectoryName);
 export const caCertificateFileName = "ca.crt";
 export const caCertificatePath = path.join(certificateDirectory, caCertificateFileName);
 export const localhostCertificateFileName = "localhost.crt";
@@ -25,7 +25,7 @@ export const state = "WA";
 
 // Usage data defaults
 export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData({
-    projectName: "office-addin-dev-certs",
-    instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
-    raisePrompt: false
+  projectName: "office-addin-dev-certs",
+  instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
+  raisePrompt: false,
 });

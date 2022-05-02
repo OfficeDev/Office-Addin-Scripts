@@ -4,28 +4,19 @@
 import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
-import * as ts from "typescript";
-import * as generate from "../../src/generate";
+import { generateCustomFunctionsMetadata, IParseTreeResult, parseTree } from "../../src/generate";
 
-describe("test json file created", function() {
+describe("test json output", function() {
     describe("generate test", function() {
         it("test it", async function() {
             const inputFile = "./test/typescript/testfunctions.ts";
             const output = "test.json";
-            const generateResult = await generate.generate(inputFile, output);
-            assert.strictEqual(fs.existsSync(output), true, "json file not created");
+            const generateResult = await generateCustomFunctionsMetadata(inputFile);
+            const j = JSON.parse(generateResult.metadataJson);
+
             assert.strictEqual(generateResult.associate.length, 20, "associate array not complete");
             assert.strictEqual(generateResult.associate[0].id, "ADD", "associate id not created");
             assert.strictEqual(generateResult.associate[0].functionName, "add", "associate function name not created");
-        });
-    });
-});
-describe("verify json created in file by typescript", function() {
-    describe("verify metadata from typescript", function() {
-        it("test json", function() {
-            const output = "test.json";
-            const jsonCreated = fs.readFileSync(output);
-            const j = JSON.parse(jsonCreated.toString());
             assert.strictEqual(j.functions[0].id, "ADD", "id not created properly");
             assert.strictEqual(j.functions[0].name, "ADD", "name not created properly");
             assert.strictEqual(j.functions[0].description, "Test comments", "description not created properly");
@@ -72,18 +63,9 @@ describe("test javascript file as input", function() {
     describe("js test", function() {
         it("basic test", async function() {
             const inputFile = "./test/javascript/testjs.js";
-            const output = "./testjs.json";
-            await generate.generate(inputFile, output, true);
-            assert.strictEqual(fs.existsSync(output), true, "json file not created");
-        });
-    });
-});
-describe("verify json created in file by javascript", function() {
-    describe("test javascript json", function() {
-        it("test json", function() {
-            const output = "testjs.json";
-            const jsonCreated = fs.readFileSync(output);
-            const j = JSON.parse(jsonCreated.toString());
+            const results = await generateCustomFunctionsMetadata(inputFile, true);
+            const j = JSON.parse(results.metadataJson);
+
             assert.strictEqual(j.functions[0].id, "TESTADD", "id not created properly");
             assert.strictEqual(j.functions[0].name, "TESTADD", "name not created properly");
             assert.strictEqual(j.functions[0].description, "This function is testing add", "description not created properly");
@@ -116,8 +98,7 @@ describe("test errors", function() {
     describe("failure to generate", function() {
         it("test error", async function() {
              const inputFile = "./test/javascript/errorfunctions.js";
-             const output = "./errortest.json";
-             const generateResult = await generate.generate(inputFile, output);
+             const generateResult = await generateCustomFunctionsMetadata(inputFile);
              const errtest: string[] = generateResult.errors;
              const errorIdBad = "ID-BAD";
              const errorNameBad = "1invalidname";
@@ -129,34 +110,7 @@ describe("test errors", function() {
              assert.equal(errtest[2].includes(errorIdBad), true, "Invalid id found");
              assert.equal(errtest[4], `The custom function name "1invalidname" should start with an alphabetic character. (25,19)`);
              assert.equal(errtest[5], `The custom function name "1invalidname" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_). (25,19)`);
-             assert.strictEqual(fs.existsSync(output), false, "json file created");
-        });
-    });
-});
-describe("test bad file paths", function() {
-    describe("failure to generate bad file path", function() {
-        it("test error file path", async function() {
-            const inputFile = "doesnotexist.ts";
-            const output = "./nofile.json";
-            const testError = "File not found";
-            try {
-                await generate.generate(inputFile, output);
-            } catch (error) {
-                assert.ok(error.message.startsWith(testError), "Error message not found");
-                assert.ok(error.message.includes(inputFile), "File name not found in error message");
-
-            }
-            assert.strictEqual(fs.existsSync(output), false, "json file created");
-        });
-    });
-});
-describe("delete test files", function() {
-    describe("deleting files", function() {
-        it("files to delete", function() {
-            const outputJavaScript = "testjs.json";
-            const outputTypeScript = "test.json";
-            fs.unlinkSync(outputJavaScript);
-            fs.unlinkSync(outputTypeScript);
+             assert.equal(generateResult.metadataJson, "", "should not be any metadata");
         });
     });
 });
@@ -165,7 +119,7 @@ describe("test parseTreeResult", function() {
         it("parseTree for errorfunctions", async function() {
             const inputFile = "./test/javascript/errorfunctions.js";
             const sourceCode = fs.readFileSync(inputFile, "utf-8");
-            const parseTreeResult: generate.IParseTreeResult = generate.parseTree(sourceCode, "errorfunctions");
+            const parseTreeResult: IParseTreeResult = parseTree(sourceCode, "errorfunctions");
             assert.equal(parseTreeResult.extras[0].javascriptFunctionName, "testadd", "Function testadd found");
             assert.equal(parseTreeResult.extras[0].errors.length, 1, "Correct number of errors found(1)");
             assert.equal(parseTreeResult.extras[2].javascriptFunctionName, "badId", "Function badId found");

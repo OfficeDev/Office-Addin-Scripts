@@ -29,7 +29,7 @@
             "type": "npm",
             "script": "watch",
             "problemMatcher": [
-                "$tsc-watch"
+                "$watch"
             ],
             "isBackground": true
         },
