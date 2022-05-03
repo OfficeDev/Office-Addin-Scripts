@@ -8,6 +8,7 @@ import XRegExp = require("xregexp");
 /* global console */
 
 export interface ICustomFunctionsMetadata {
+  allowErrorForDataTypeAny?: boolean;
   functions: IFunction[];
 }
 
@@ -134,14 +135,18 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
+export type MetadataOptions = { allowErrorForDataTypeAny: boolean };
+
 /**
  * Generate the metadata of the custom functions
  * @param inputFile - File that contains the custom functions
  * @param outputFileName - Name of the file to create (i.e functions.json)
+ * @param metadataOptions - Additional properties like allowErrorForDataTypeAny
  */
 export async function generateCustomFunctionsMetadata(
   inputFile: string,
-  wantConsoleOutput: boolean = false
+  wantConsoleOutput: boolean = false,
+  metadataOptions?: MetadataOptions | null
 ): Promise<IGenerateResult> {
   const generateResults: IGenerateResult = {
     metadataJson: "",
@@ -160,7 +165,13 @@ export async function generateCustomFunctionsMetadata(
         generateResults.errors.forEach((err) => console.error(err));
       }
     } else {
-      generateResults.metadataJson = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
+      const customFunctionsMetadata: ICustomFunctionsMetadata = {
+        functions: parseTreeResult.functions,
+      };
+      if (metadataOptions?.allowErrorForDataTypeAny != null)
+        customFunctionsMetadata.allowErrorForDataTypeAny = metadataOptions.allowErrorForDataTypeAny;
+
+      generateResults.metadataJson = JSON.stringify(customFunctionsMetadata, null, 4);
       generateResults.associate = [...parseTreeResult.associate];
     }
   } else {
