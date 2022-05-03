@@ -1,19 +1,19 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "alwaysStrict": false,
+        "declaration": true,
+        "esModuleInterop": true,
         "module": "commonjs",
         "moduleResolution": "node",
-        "esModuleInterop": true,
+        "newLine": "lf",
+        "noImplicitUseStrict": true,
+        "outDir": "lib",
         "skipLibCheck": true,
         "sourceMap": true,
-        "declaration": true,
-        "outDir": "lib",
         "strict": true,
-        "alwaysStrict": false,
-        "noImplicitUseStrict": true,
+        "target": "es6",
         "types": [
-            "node",
-            "es6-promise"
+            "node"
         ]
     },
     "include": [

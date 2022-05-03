@@ -9,7 +9,7 @@
  * @format
  */
 /* global __fbBatchedBridge, self, importScripts, postMessage, onmessage: true */
-/* eslint no-unused-vars: 0 */
+/* eslint @typescript-eslint/no-unused-vars: 0 */
 
 import * as fetch from "node-fetch";
 
@@ -41,10 +41,10 @@ process.on("message", (message) => {
       shouldQueueMessages = true;
 
       function evalJS(js: string): void {
-        /* eslint-disable no-eval */
         try {
+          /* eslint-disable-next-line no-eval */
           eval(js.replace(/this\["webpackHotUpdate"\]/g, 'self["webpackHotUpdate"]').replace("GLOBAL", "global"));
-        } catch (error) {
+        } catch (error: any) {
           console.log(`Error Message: ${error.message}`);
           console.log(`Error stack: ${error.stack}`);
         } finally {
@@ -61,7 +61,7 @@ process.on("message", (message) => {
         delete (global as any).__platformBundles;
         for (const [index, pb] of platformBundles.entries()) {
           //console.log(`PB start ${index + 1}/${platformBundles.length}`);
-          eval(pb);
+          eval(pb); // eslint-disable-line no-eval
           //console.log(`PB done  ${index + 1}/${platformBundles.length}`);
         }
       }

@@ -2,7 +2,7 @@
 This package allows for reporting usage data events and exception data to the selected telemetry infrastructure (e.g. ApplicationInsights).
 
 # Privacy
-The Office Addin-Usage-Data package collects anonymized usage data and sends it to Microsoft. For more details on how we use this data and under what circumstances it may be shared, 
+The Office-Addin-Usage-Data package collects anonymized usage data and sends it to Microsoft. For more details on how we use this data and under what circumstances it may be shared, 
 please see the [Microsoft privacy statement](https://privacy.microsoft.com/en-us/privacystatement).
 
 The package collects:

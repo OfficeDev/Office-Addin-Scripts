@@ -19,8 +19,11 @@ function getUninstallCommand(machine: boolean = false): string {
         defaults.certificateName
       }"`;
     }
-    case "darwin": // macOS
-      return `sudo security delete-certificate -c '${defaults.certificateName}'`;
+    case "darwin": {
+      // macOS
+      const script = path.resolve(__dirname, "../scripts/uninstall.sh");
+      return `sudo sh '${script}' '${defaults.certificateName}'`;
+    }
     case "linux":
       return `sudo rm -r /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} && sudo /usr/sbin/update-ca-certificates --fresh`;
     default:
@@ -50,7 +53,7 @@ export async function uninstallCaCertificate(machine: boolean = false, verbose: 
       execSync(command, { stdio: "pipe" });
       console.log(`You no longer have trusted access to https://localhost.`);
       usageDataObject.reportSuccess("uninstallCaCertificate()");
-    } catch (error) {
+    } catch (error: any) {
       usageDataObject.reportException("uninstallCaCertificate()", error);
       throw new Error(`Unable to uninstall the CA certificate.\n${error.stderr.toString()}`);
     }

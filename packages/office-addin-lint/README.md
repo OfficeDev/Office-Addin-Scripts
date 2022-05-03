@@ -14,7 +14,7 @@ Check the source code for problems.
 
 Syntax:
 
-`office addin-lint check [options]`
+`office-addin-lint check [options]`
 
 Options:
 
@@ -29,7 +29,7 @@ Apply fixes for problems found in the source code.
 
 Syntax:
 
-`office addin-lint fix [options]`
+`office-addin-lint fix [options]`
 
 Options:
 
@@ -44,7 +44,7 @@ Make the source code prettier.
 
 Syntax:
 
-`office addin-lint prettier [options]`
+`office-addin-lint prettier [options]`
 
 Options:
 
