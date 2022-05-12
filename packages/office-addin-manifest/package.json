@@ -30,6 +30,7 @@
     "node-fetch": "^2.6.1",
     "office-addin-usage-data": "^1.4.8",
     "path": "^0.12.7",
+    "tslib": "^2.4.0",
     "uuid": "^8.3.2",
     "xml2js": "^0.4.23"
   },
