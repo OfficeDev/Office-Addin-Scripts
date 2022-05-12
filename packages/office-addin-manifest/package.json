@@ -1,6 +1,6 @@
 {
   "name": "office-addin-manifest",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Read and modify Office Add-in manifest files.",
   "main": "./lib/main.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "fs-extra": "^7.0.1",
     "jszip": "^3.7.1",
     "node-fetch": "^2.6.1",
-    "office-addin-usage-data": "^1.4.8",
+    "office-addin-usage-data": "^1.4.9",
     "path": "^0.12.7",
     "tslib": "^2.4.0",
     "uuid": "^8.3.2",
@@ -45,7 +45,7 @@
     "concurrently": "^6.2.2",
     "copy-dir": "^0.4.0",
     "mocha": "^9.1.1",
-    "office-addin-lint": "^2.0.2",
+    "office-addin-lint": "^2.0.3",
     "rimraf": "^3.0.2",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5",
