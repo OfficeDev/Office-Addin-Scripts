@@ -430,11 +430,10 @@ async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
 
       childProcess.exec(command, (error, stdout) => {
         if (error) {
-          console.log(`Error converting file:\n ${stdout}\n ${error}`);
+          console.log(`Error converting file`);
           reject("");
         } else {
-          console.log(`Successfully converted manifest to xml:\n ${stdout}`);
-          stripBom(newManifestPath);
+          console.log(`Successfully converted manifest to xml`);
           resolve(newManifestPath);
         }
       });
