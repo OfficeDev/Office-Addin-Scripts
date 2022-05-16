@@ -63,6 +63,7 @@
             {
               "id": "ShowTaskpane.show",
               "type":"openPage",
+              "view": "dashboard",
               "pinnable": false
             }
           ]
@@ -78,7 +79,7 @@
           "actions": [
             {
               "id": "ExecuteFunction.action",
-              "type": "execute"
+              "type": "executeFunction"
             }
           ]
         }
