@@ -63,8 +63,8 @@
             {
               "id": "ShowTaskpane.show",
               "type":"openPage",
-              "view": "dashboard",
-              "pinnable": false
+              "pinnable": false,
+              "view": "dashboard"
             }
           ]
         },
@@ -79,7 +79,8 @@
           "actions": [
             {
               "id": "ExecuteFunction.action",
-              "type": "executeFunction"
+              "type": "executeFunction",
+              "displayName": "ExecuteFunction.action"
             }
           ]
         }
