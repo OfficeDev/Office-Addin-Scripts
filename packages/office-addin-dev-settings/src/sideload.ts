@@ -434,6 +434,7 @@ async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
           reject("");
         } else {
           console.log(`Successfully converted manifest to xml:\n ${stdout}`);
+          stripBom(newManifestPath);
           resolve(newManifestPath);
         }
       });
