@@ -5,7 +5,6 @@
  * The Office apps which can host Office Add-ins.
  */
 export enum OfficeApp {
-  /* eslint-disable no-unused-vars */
   // the string values should be lowercase
   Excel = "excel",
   OneNote = "onenote",
@@ -28,6 +27,8 @@ export function getOfficeAppForManifestHost(host: string): OfficeApp | undefined
   switch (host.toLowerCase()) {
     case "document":
       return OfficeApp.Word;
+    case "mail":
+      return OfficeApp.Outlook;
     case "mailbox":
       return OfficeApp.Outlook;
     case "notebook":

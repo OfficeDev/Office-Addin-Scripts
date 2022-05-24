@@ -27,7 +27,34 @@ ruleTester.run('call-sync-after-load', rule, {
         await context.sync();
         property.load("props");
         console.log(property.props);`
-    }
+    },
+    {
+      code: `
+        var table = worksheet.getTables();
+        return context.sync().then(function () {
+          table.delete();
+        });`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.getCell(0,0);`
+    },
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("font/fill/color, address");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("*");
+        await context.sync();
+        console.log(range.address);`
+    },
   ],
   invalid: [
     {
@@ -47,6 +74,20 @@ ruleTester.run('call-sync-after-load', rule, {
         property.load("length");
         console.log(property.length);`,
       errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "length" }}]
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load(["font/fill/color", "address"]);
+        console.log(range.font.fill.color);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "font/fill/color" }}]
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("*");
+        console.log(range.address);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "address" }}]
     },
   ]
 });

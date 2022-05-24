@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { writeFileSync } from "fs";
-import { logErrorMessage } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import { generateCustomFunctionsMetadata } from "./generate";
 
 /* global console */

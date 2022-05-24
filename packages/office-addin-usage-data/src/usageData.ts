@@ -13,7 +13,6 @@ import * as defaults from "./defaults";
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
  */
 export enum UsageDataReportingMethod {
-  /* eslint-disable no-unused-vars */
   applicationInsights = "applicationInsights",
 }
 /**
@@ -22,7 +21,6 @@ export enum UsageDataReportingMethod {
  * @enum on: on level of usage data, sends errors and events
  */
 export enum UsageDataLevel {
-  /* eslint-disable no-unused-vars */
   off = "off",
   on = "on",
 }
@@ -182,9 +180,11 @@ export class OfficeAddinUsageData {
    */
   public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      err.name = this.options.isForTesting ? `${errorName}-test` : errorName;
+      let error = Object.create(err);
+
+      error.name = this.options.isForTesting ? `${errorName}-test` : errorName;
       this.usageDataClient.trackException({
-        exception: this.maskFilePaths(err),
+        exception: this.maskFilePaths(error),
       });
       this.exceptionsSent++;
     }
@@ -282,12 +282,12 @@ export class OfficeAddinUsageData {
    */
   public maskFilePaths(err: Error): Error {
     try {
-      const regexRemoveUserFilePaths = /[\/\\](.*)[\/\\]/gim; /* eslint-disable-line no-useless-escape */
-      const regexRemoveAbsoluteUserFilePathsFromStack = /\w:\\(?:[^\\\s]+\\)+/gim;
-      const regexRemoveFirstFilePathFromStack = /\\(.*)\./i;
-      err.message = err.message.replace(regexRemoveUserFilePaths, "\\");
-      err.stack = err.stack.replace(regexRemoveFirstFilePathFromStack, "\\.");
-      err.stack = err.stack.replace(regexRemoveAbsoluteUserFilePathsFromStack, "");
+      const regexRemoveUserFilePaths = /(\w:)*[/\\](.*[/\\]+)*(.+\.)+[a-zA-Z]+/gim;
+      const maskToken: string = "<filepath>";
+
+      err.message = err.message.replace(regexRemoveUserFilePaths, maskToken);
+      err.stack = err.stack.replace(regexRemoveUserFilePaths, maskToken);
+
       return err;
     } catch (err) {
       this.reportError("maskFilePaths", err);
@@ -318,7 +318,7 @@ export class OfficeAddinUsageData {
           return;
         }
 
-        let error = err instanceof Error ? err : new Error(`${this.options.projectName} error: ${err}`);
+        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
@@ -349,7 +349,7 @@ export class OfficeAddinUsageData {
    * @param data Data object(s) sent to Application Insights
    */
   public reportExpectedException(method: string, err: Error | string, data: object = {}) {
-    let error = err instanceof Error ? err : new Error(`${this.options.projectName} error: ${err}`);
+    let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
     error.name = this.getEventName();
     this.maskFilePaths(error);
     const errorMessage = error instanceof Error ? error.message : error;
@@ -387,7 +387,7 @@ export class OfficeAddinUsageData {
   public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        let error = err instanceof Error ? err : new Error(`${this.options.projectName} error: ${err}`);
+        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),

@@ -35,12 +35,23 @@ ruleTester.run('no-empty-load', rule, {
         selectedRange = "new variable";
         selectedRange.load()`
     },
+    {
+      code: `
+        var selectedRange = context.workbook.getSelectedRange();
+        selectedRange.load("*")`
+    },
   ],
   invalid: [
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
-        selectedRange.load()`,
+        selectedRange.load();`,
+      errors: [{ messageId: "emptyLoad"}]
+    },
+    {
+      code: `
+        var selectedRange = context.workbook.getSelectedRange();
+        selectedRange.load("");`,
       errors: [{ messageId: "emptyLoad"}]
     },
     {
@@ -48,6 +59,22 @@ ruleTester.run('no-empty-load', rule, {
         var myRange;
         myRange = context.workbook.worksheets.getSelectedRange();
         myRange.load();
+        console.log(myRange.values);`,
+      errors: [{ messageId: "emptyLoad"}]
+    },
+    {
+      code: `
+        var myRange;
+        myRange = context.workbook.worksheets.getSelectedRange();
+        myRange.load(["address", "values", ""]);
+        console.log(myRange.values);`,
+      errors: [{ messageId: "emptyLoad"}]
+    },
+    {
+      code: `
+        var myRange;
+        myRange = context.workbook.worksheets.getSelectedRange();
+        myRange.load("address, values, ");
         console.log(myRange.values);`,
       errors: [{ messageId: "emptyLoad"}]
     },

@@ -85,6 +85,42 @@ ruleTester.run('load-object-before-read', rule, {
         range.load("format/fill/size");
         console.log(range.format.fill.size);`
     },
+    {
+      code: `
+        var table = worksheet.getTables();
+        return context.sync().then(function () {
+          table.delete();
+        });`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.getCell(0,0);`
+    },
+    {
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load(["font/fill/color", "address"]);
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load("*");
+        await context.sync();
+        console.log(range.address);
+        console.log(range.font);`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load({ format: { fill: { color: true } }, address: true } );
+        await context.sync();
+        console.log(range.format.fill.color);
+        console.log(range.address);`
+    },
   ],
   invalid: [
     {
@@ -149,6 +185,30 @@ ruleTester.run('load-object-before-read', rule, {
       code: `
         var range = worksheet.getRange("A1");
         range.load("range/format/fill/size");
+        console.log(range.format.fill.color);`,
+      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        await context.sync();
+        console.log(range.font.fill.color);`,
+      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "font/fill/color" }  }]
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load({ format: { fill: { color: true } } } );
+        await context.sync();
+        console.log(range.format.fill.color);
+        console.log(range.address);`,
+      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "address" }  }]
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load({ format: { fill: { color: false } } } );
+        await context.sync();
         console.log(range.format.fill.color);`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
     },

@@ -5,7 +5,7 @@ import {
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
 import { isGetFunction } from "../utils/getFunction";
-import { getLoadArgument, isLoadFunction } from "../utils/load";
+import { parseLoadArguments, isLoadFunction } from "../utils/load";
 import { getPropertyType, PropertyType } from "../utils/propertiesType";
 
 export = {
@@ -34,12 +34,23 @@ export = {
       if (!lastProperty) return false;
 
       for (const property of properties) {
-        if (getPropertyType(property) !== PropertyType.navigational) {
+        const propertyType = getPropertyType(property);
+        if (
+          propertyType !== PropertyType.navigational &&
+          propertyType !== PropertyType.ambiguous
+        ) {
           return false;
         }
       }
 
-      return getPropertyType(lastProperty) === PropertyType.scalar;
+      if (lastProperty === "*") {
+        return true;
+      }
+      const propertyType = getPropertyType(lastProperty);
+      return (
+        propertyType === PropertyType.scalar ||
+        propertyType === PropertyType.ambiguous
+      );
     }
 
     function findNavigationalLoad(scope: Scope) {
@@ -65,14 +76,16 @@ export = {
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             isLoadFunction(node.parent)
           ) {
-            const propertyName: string = getLoadArgument(node.parent);
-            if (!isLoadingValidPropeties(propertyName)) {
-              context.report({
-                node: node.parent,
-                messageId: "navigationalLoad",
-                data: { name: node.name, loadValue: propertyName },
-              });
-            }
+            const propertyNames: string[] = parseLoadArguments(node.parent);
+            propertyNames.forEach((propertyName: string) => {
+              if (propertyName && !isLoadingValidPropeties(propertyName)) {
+                context.report({
+                  node: node.parent,
+                  messageId: "navigationalLoad",
+                  data: { name: node.name, loadValue: propertyName },
+                });
+              }
+            });
           }
         });
       });

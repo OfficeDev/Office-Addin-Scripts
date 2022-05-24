@@ -3,7 +3,8 @@
 
 import * as commander from "commander";
 import * as fs from "fs";
-import { logErrorMessage, parseNumber, getPackageJsonScript } from "office-addin-cli";
+import { parseNumber, getPackageJsonScript } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
@@ -105,7 +106,7 @@ export async function start(manifestPath: string, platform: string | undefined, 
     });
 
     usageDataObject.reportSuccess("start");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("start", err);
     logErrorMessage(`Unable to start debugging.\n${err}`);
   }
@@ -124,7 +125,7 @@ export async function stop(manifestPath: string, platform: string | undefined, c
 
     await stopDebugging(manifestPath);
     usageDataObject.reportSuccess("stop");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("stop", err);
     logErrorMessage(`Unable to stop debugging.\n${err}`);
   }

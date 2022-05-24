@@ -44,6 +44,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
 
+* [office-addin-mock](packages/office-addin-mock/README.md)
+
+  This package provides a way to unit test the Office JavaScript API.
+
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
@@ -132,6 +136,14 @@ receive a response within 24 hours. If for some reason you do not, please follow
 email to ensure we received your original message. Further information, including the
 [MSRC PGP](https://technet.microsoft.com/en-us/security/dn606155) key, can be found in
 the [Security TechCenter](https://technet.microsoft.com/en-us/security/default).
+
+## Join the Microsoft 365 Developer Program
+Get a free sandbox, tools, and other resources you need to build solutions for the Microsoft 365 platform.
+- [Free developer sandbox](https://developer.microsoft.com/microsoft-365/dev-program#Subscription) Get a free, renewable 90-day Microsoft 365 E5 developer subscription.
+- [Sample data packs](https://developer.microsoft.com/microsoft-365/dev-program#Sample) Automatically configure your sandbox by installing user data and content to help you build your solutions.
+- [Access to experts](https://developer.microsoft.com/microsoft-365/dev-program#Experts) Access community events to learn from Microsoft 365 experts.
+- [Personalized recommendations](https://developer.microsoft.com/microsoft-365/dev-program#Recommendations) Find developer resources quickly from your personalized dashboard.
+
 
 ## Code of Conduct
 

@@ -3,10 +3,12 @@
 
 import chalk from "chalk";
 import * as commander from "commander";
-import { logErrorMessage } from "office-addin-cli";
-import { OfficeAddinManifest, ManifestInfo } from "./manifestInfo";
+import { logErrorMessage } from "office-addin-usage-data";
+import { ManifestInfo } from "./manifestInfo";
+import { OfficeAddinManifest } from "./manifestOperations";
 import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
 import { usageDataObject } from "./defaults";
+import { exportMetadataPackage } from "./export";
 
 /* global console, process */
 
@@ -22,7 +24,7 @@ export async function info(manifestPath: string) {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("info");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("info", err);
     logErrorMessage(err);
   }
@@ -59,8 +61,9 @@ function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefin
   if (errors) {
     let errorNumber = 1;
     for (const currentError of errors) {
-      console.log(chalk.bold.red(`\nError # ${errorNumber}: `));
+      console.log(chalk.bold.red(`Error #${errorNumber}: `));
       logManifestValidationIssue(currentError);
+      console.log();
       ++errorNumber;
     }
   }
@@ -68,7 +71,7 @@ function logManifestValidationErrors(errors: ManifestValidationIssue[] | undefin
 
 function logManifestValidationInfos(infos: ManifestValidationIssue[] | undefined) {
   if (infos) {
-    console.log(chalk.bold.blue(`\nAdditional information: `));
+    console.log(chalk.bold.blue(`Validation Information: `));
     for (const currentInfo of infos) {
       logManifestValidationIssue(currentInfo);
       console.log();
@@ -80,8 +83,9 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
   if (warnings) {
     let warningNumber = 1;
     for (const currentWarning of warnings) {
-      console.log(chalk.bold.yellow(`\nWarning # ${warningNumber}: `));
+      console.log(chalk.bold.yellow(`Warning #${warningNumber}: `));
       logManifestValidationIssue(currentWarning);
+      console.log();
       ++warningNumber;
     }
   }
@@ -131,7 +135,7 @@ export async function modify(manifestPath: string, command: commander.Command) {
     const manifest = await OfficeAddinManifest.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("modify");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("modify", err);
     logErrorMessage(err);
   }
@@ -139,34 +143,44 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
 export async function validate(
   manifestPath: string,
-  command: commander.Command /* eslint-disable-line no-unused-vars */
+  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
-    const validation: ManifestValidation = await validateManifest(manifestPath);
-
-    if (validation.isValid) {
-      console.log("The manifest is valid.");
-    } else {
-      console.log("The manifest is not valid.");
-    }
-    console.log();
-
+    const verifyProduction: boolean = command.production;
+    const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
     if (validation.report) {
+      logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);
       logManifestValidationWarnings(validation.report.warnings);
-      logManifestValidationInfos(validation.report.notes);
 
       if (validation.isValid) {
         if (validation.report.addInDetails) {
           logManifestValidationSupportedProducts(validation.report.addInDetails.supportedProducts);
+          console.log();
         }
+        console.log(chalk.bold.green("The manifest is valid.\n"));
+      } else {
+        console.log(chalk.bold.red("The manifest is not valid.\n"));
       }
     }
 
     process.exitCode = validation.isValid ? 0 : 1;
     usageDataObject.reportSuccess("validate");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("validate", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function exportManifest(command: commander.Command) {
+  try {
+    const outputPath: string = command.output ?? "";
+    const manifestPath: string = command.manifest ?? "./manifest.json";
+
+    await exportMetadataPackage(outputPath, manifestPath);
+    usageDataObject.reportSuccess("export");
+  } catch (err: any) {
+    usageDataObject.reportException("export", err);
     logErrorMessage(err);
   }
 }

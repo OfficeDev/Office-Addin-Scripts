@@ -4,7 +4,7 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { getLoadArgument, isLoadFunction } from "../utils/load";
+import { parseLoadArguments, isLoadFunction } from "../utils/load";
 import { findPropertiesRead } from "../utils/utils";
 import { isGetFunction } from "../utils/getFunction";
 
@@ -35,6 +35,17 @@ export = {
           return true;
       }
       return false;
+    }
+
+    function hasBeenLoaded(
+      node: TSESTree.Node,
+      loadLocation: Map<string, number>,
+      propertyName: string
+    ): boolean {
+      return (
+        loadLocation.has(propertyName) && // If reference came after load, return
+        node.range[1] > (loadLocation.get(propertyName) ?? 0)
+      );
     }
 
     function findLoadBeforeRead(scope: Scope) {
@@ -75,7 +86,10 @@ export = {
           if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
             if (isLoadFunction(node.parent)) {
               // In case it is a load function
-              loadLocation.set(getLoadArgument(node.parent), node.range[1]);
+              const propertyNames: string[] = parseLoadArguments(node.parent);
+              propertyNames.forEach((propertyName: string) => {
+                loadLocation.set(propertyName, node.range[1]);
+              });
               return;
             }
           }
@@ -83,20 +97,13 @@ export = {
           const propertyName: string | undefined = findPropertiesRead(
             node.parent
           );
-          if (!propertyName) {
-            // There is no property
-            return;
-          }
 
           if (
-            loadLocation.has(propertyName) && // If reference came after load, return
-            node.range[1] > (loadLocation.get(propertyName) ?? 0)
+            !propertyName ||
+            hasBeenLoaded(node, loadLocation, propertyName) ||
+            hasBeenLoaded(node, loadLocation, "*") ||
+            isInsideWriteStatement(node)
           ) {
-            return;
-          }
-
-          if (isInsideWriteStatement(node)) {
-            // Return in case it a write, ie, not read statment
             return;
           }
 

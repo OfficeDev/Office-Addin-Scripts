@@ -11,6 +11,7 @@ import * as appcontainer from "../../src/appcontainer";
 import { AppType } from "../../src/appType";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
+import { registerWithTeams } from "../../src/publish";
 import { deleteKey, getStringValue } from "../../src/registry";
 import * as devSettingsSideload from "../../src/sideload";
 const addinId = "9982ab78-55fb-472d-b969-b52ed294e173";
@@ -241,7 +242,7 @@ describe("Appcontainer", async function() {
         try {
           await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
           assert.strictEqual(0, 1); // expecting exception
-        } catch (err) {
+        } catch (err: any) {
           assert.strictEqual(err.toString().includes("The source location could not be retrieved from the manifest."), true);
         }
       });
@@ -319,28 +320,32 @@ describe("Registration", function() {
         assert.strictEqual(first.id, firstManifestId);
         assert.strictEqual(first.manifestPath, firstRegisteredManifestPath);
       });
-      if (process.platform === "win32") {
-        it("Supports manifest path instead of id for registry value name", async function() {
-          await devSettingsWindows.registerAddIn(secondManifestPath, secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, "");
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-        it("When registered by id, registry value name with manifest path is removed", async function() {
-          await devSettings.registerAddIn(secondManifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-          const [first, second] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 2);
-          assert.strictEqual(first.id, firstManifestId);
-          assert.strictEqual(second.id, secondManifestId);
-          assert.strictEqual(first.manifestPath, firstManifestPath);
-          assert.strictEqual(second.manifestPath, secondManifestPath);
-        });
-      }
+    });
+    describe("json manifest functionality", function() {
+      it('Error when file does not exist', () => {
+        const zipPath = fspath.resolve(manifestsFolder, "nozip.zip");
+        return registerWithTeams(zipPath)
+          .then(() => {
+              Promise.reject(new Error('Expected method to reject.'));
+            },
+            (error) => {
+              assert.ok(error instanceof Error, "Should throw an error when zip doesn't exist");
+              assert.strictEqual(error.message, `The file '${zipPath}' is not valid`);
+            }
+          );
+      });
+      it('Error when not a zip file', () => {
+        const zipPath = fspath.resolve(manifestsFolder, "manifest.xml");
+        return registerWithTeams(zipPath)
+          .then(() => {
+              Promise.reject(new Error('Expected method to reject.'));
+            },
+            (error) => {
+              assert.ok(error instanceof Error, "Should throw an error when file is not a zip file");
+              assert.strictEqual(error.message, `The file '${zipPath}' is not valid`);
+            }
+          );
+      });
     });
 
     if (isWindows) {
@@ -454,7 +459,7 @@ describe("RuntimeLogging", async function() {
         let error;
         try {
           const path: string = await devSettings.enableRuntimeLogging();
-        } catch (err) {
+        } catch (err: any) {
           error = err;
         }
         assert.ok(error instanceof Error, "should throw an error");
@@ -467,7 +472,7 @@ describe("RuntimeLogging", async function() {
         let error;
         try {
           const path: string = await devSettings.enableRuntimeLogging();
-        } catch (err) {
+        } catch (err: any) {
           error = err;
         }
         assert.ok(error instanceof Error, "should throw an error");
@@ -488,7 +493,7 @@ describe("RuntimeLogging", async function() {
           let error;
           try {
             const path = await devSettings.enableRuntimeLogging(filePath);
-          } catch (err) {
+          } catch (err: any) {
             error = err;
           }
           assert.ok(error instanceof Error, "should throw an error");
@@ -533,7 +538,7 @@ describe("RuntimeLogging", async function() {
             const path = await devSettings.enableRuntimeLogging(filePath);
             assert.strictEqual(path, filePath);
             assert.strictEqual(path, await devSettings.getRuntimeLoggingPath());
-          } catch (err) {
+          } catch (err: any) {
             error = err;
           }
           assert.ok(error instanceof Error, "should throw an error");
@@ -563,7 +568,7 @@ describe("Sideload to Desktop", function() {
     const manifestPath = fspath.resolve(manifestsFolder, "manifest.unsupportedhost.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Project, true /* canPrompt */, AppType.Desktop, undefined /* document */);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
@@ -596,7 +601,7 @@ describe("Sideload to web", function() {
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web, docurl);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
@@ -607,7 +612,7 @@ describe("Sideload to web", function() {
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");
@@ -618,7 +623,7 @@ describe("Sideload to web", function() {
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
     try {
       await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Outlook, true /* canPrompt */, AppType.Web, docurl);
-    } catch (err) {
+    } catch (err: any) {
       error = err;
     }
     assert.ok(error instanceof Error, "should throw an error");

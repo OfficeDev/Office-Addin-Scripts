@@ -15,6 +15,11 @@ ruleTester.run('no-navigational-load', rule, {
 		},
 		{
 			code: `
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load("format/font/name");`
+		},
+		{
+			code: `
                 var sheetName = 'Sheet1';
                 var rangeAddress = 'A1:B2';
                 var myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);  
@@ -40,19 +45,60 @@ ruleTester.run('no-navigational-load', rule, {
                 var myRange = context.workbook.worksheets.notAGet();
                 myRange.load('notAProperty');
                 var test = myRange.notAProperty;`
-    	},
+		},
 		{
 			code: `
                 var range = context.workbook.getRange();
                 range.load({borders: { fill: { color: true } } });
                 if (range.borders.fill.color);`
-    	},
+		},
 		{
 			code: `
                 var range = context.workbook.getRange();
                 range.borders.fill.load("color");
                 console.log(range.borders.fill.color);`
-    	},
+		},
+		{
+			code: `
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load(''); // Empty`
+		},
+		{
+			code: `
+                var selectedRange = context.workbook.getSelectedRange();
+                selectedRange.load(); // Empty`
+		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("font/fill/color, address");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load(["font/fill/color", "address"]);
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("*");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`
+		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load({ format: { fill: { color: true } } });
+			  await context.sync();
+			  console.log(range.font.fill.color);`
+		},
 	],
 	invalid: [
 		{
@@ -92,6 +138,15 @@ ruleTester.run('no-navigational-load', rule, {
                 range.borders.load("fill");
                 console.log(range.borders.fill);`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "fill" } }]
+		},
+		{
+			code: `
+			  var range = worksheet.getSelectedRange();
+			  range.load("address, font/fill");
+			  await context.sync();
+			  console.log(range.font.fill.color);
+			  console.log(range.address);`,
+			  errors: [{ messageId: "navigationalLoad", data: { loadValue: "font/fill" } }]
 		},
 	]
 });

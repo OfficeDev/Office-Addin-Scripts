@@ -4,7 +4,7 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import { logErrorMessage } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 
 /* global process */
@@ -20,7 +20,19 @@ commander
   .option("-d, --displayName <name>", "Change the display name.")
   .action(commands.modify);
 
-commander.command("validate <manifest-path>").action(commands.validate);
+commander
+  .command("validate <manifest-path>")
+  .option("-p, --production", "Verify the manifest for production environment")
+  .action(commands.validate);
+
+commander
+  .command("export")
+  .option("-m, --manifest <manfest-path>", "Specify the location of the manifest file.  Default is './manifest.json'")
+  .option(
+    "-o, --output <output-path>",
+    "Specify where to save the package.  Default is next to the manifest file input"
+  )
+  .action(commands.exportManifest);
 
 // if the command is not known, display an error
 commander.on("command:*", function () {

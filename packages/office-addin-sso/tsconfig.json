@@ -1,18 +1,18 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "alwaysStrict": false,
+        "declaration": true,
         "module": "commonjs",
         "moduleResolution": "node",
+        "newLine": "lf",
+        "noImplicitUseStrict": true,
+        "outDir": "lib",
         "skipLibCheck": true,
         "sourceMap": true,
-        "declaration": true,
-        "outDir": "lib",
         "strict": false,
-        "alwaysStrict": false,
-        "noImplicitUseStrict": true,
+        "target": "es6",
         "types": [
-            "node",
-            "es6-promise"
+            "node"
         ],
         "typeRoots": [
             "./node_modules/@types/"

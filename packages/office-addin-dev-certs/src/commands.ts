@@ -2,7 +2,8 @@
 // Licensed under the MIT license.
 
 import * as commander from "commander";
-import { logErrorMessage, parseNumber } from "office-addin-cli";
+import { parseNumber } from "office-addin-cli";
+import { logErrorMessage } from "office-addin-usage-data";
 import * as defaults from "./defaults";
 import { ensureCertificatesAreInstalled } from "./install";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
@@ -32,13 +33,13 @@ export async function install(command: commander.Command) {
 
     await ensureCertificatesAreInstalled(days, command.machine);
     usageDataObject.reportSuccess("install");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("install", err);
     logErrorMessage(err);
   }
 }
 
-export async function verify(command: commander.Command /* eslint-disable-line no-unused-vars */) {
+export async function verify(command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */) {
   try {
     if (await verifyCertificates()) {
       console.log(
@@ -48,7 +49,7 @@ export async function verify(command: commander.Command /* eslint-disable-line n
       console.log(`You need to install certificates for trusted access to https://localhost.`);
     }
     usageDataObject.reportSuccess("verify");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("verify", err);
     logErrorMessage(err);
   }
@@ -59,7 +60,7 @@ export async function uninstall(command: commander.Command) {
     await uninstallCaCertificate(command.machine);
     deleteCertificateFiles(defaults.certificateDirectory);
     usageDataObject.reportSuccess("uninstall");
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("uninstall", err);
     logErrorMessage(err);
   }

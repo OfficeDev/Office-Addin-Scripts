@@ -1,20 +1,21 @@
 {
   // tsconfig for editor must include both src and tests
   "compilerOptions": {
-    "noEmit": true,
-    "rootDir": ".",
-    "strict": true,
     "declaration": true,
-    "noEmitHelpers": true,
+    "esModuleInterop": true,
     "importHelpers": true,
-    "sourceMap": true,
-    "module": "CommonJS",
-    "target": "ES6",
     "lib": ["ES2015"],
-    "types": ["node", "jest"],
-    "resolveJsonModule": true,
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "newLine": "lf",
+    "noEmit": true,
+    "noEmitHelpers": true,
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES6",
+    "types": ["node", "jest"],
   },
   "include": ["src/**/*.ts", "tests/**/*.ts", "node_modules/@types/**/*.d.ts"]
 }

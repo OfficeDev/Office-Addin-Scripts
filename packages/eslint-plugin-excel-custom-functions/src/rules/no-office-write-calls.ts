@@ -45,11 +45,9 @@ export = {
     schema: [],
   },
 
-  create: function (
-    ruleContext: RuleContext<MessageIds, Options>
-  ): {
-    CallExpression: (node: TSESTree.CallExpression) => void; // eslint-disable-line no-unused-vars
-    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void; // eslint-disable-line no-unused-vars
+  create: function (ruleContext: RuleContext<MessageIds, Options>): {
+    CallExpression: (node: TSESTree.CallExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
+    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
   } {
     const services: ParserServices = ESLintUtils.getParserServices(ruleContext);
     const typeChecker: ts.TypeChecker = services.program.getTypeChecker();

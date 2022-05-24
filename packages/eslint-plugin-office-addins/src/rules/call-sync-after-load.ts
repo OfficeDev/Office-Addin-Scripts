@@ -1,6 +1,6 @@
 import { TSESTree } from "@typescript-eslint/experimental-utils";
 import { Reference } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
-import { getLoadArgument } from "../utils/load";
+import { parseLoadArguments } from "../utils/load";
 import {
   findPropertiesRead,
   findOfficeApiReferences,
@@ -13,7 +13,7 @@ export = {
     type: <"problem" | "suggestion" | "layout">"suggestion",
     messages: {
       callSyncAfterLoad:
-        "Call context.sync() after calling load on '{{name}}' for property '{{loadValue}}' and before reading the property.",
+        "Call context.sync() after calling load on '{{name}}' for the property '{{loadValue}}' and before reading the property.",
     },
     docs: {
       description:
@@ -57,8 +57,10 @@ export = {
           variable &&
           identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
         ) {
-          const propertyName: string = getLoadArgument(identifier.parent);
-          needSync.add({ variable: variable.name, property: propertyName });
+          const propertyNames: string[] = parseLoadArguments(identifier.parent);
+          propertyNames.forEach((propertyName: string) => {
+            needSync.add({ variable: variable.name, property: propertyName });
+          });
         }
 
         if (operation === "Sync") {
@@ -71,7 +73,8 @@ export = {
           );
 
           if (
-            needSync.has({ variable: variable.name, property: propertyName })
+            needSync.has({ variable: variable.name, property: propertyName }) ||
+            needSync.has({ variable: variable.name, property: "*" })
           ) {
             const node = reference.identifier;
             context.report({

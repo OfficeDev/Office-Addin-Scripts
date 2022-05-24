@@ -15,7 +15,6 @@ const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 export { toWebViewTypeName } from "./dev-settings-windows";
 
 export enum DebuggingMethod {
-  /* eslint-disable no-unused-vars */
   Direct,
   Proxy,
   /** @deprecated use Proxy */
@@ -23,7 +22,6 @@ export enum DebuggingMethod {
 }
 
 export enum WebViewType {
-  /* eslint-disable no-unused-vars */
   Default = "Default",
   IE = "IE",
   Edge = "Edge",
@@ -229,9 +227,8 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
 export async function registerAddIn(manifestPath: string): Promise<void> {
   switch (process.platform) {
     case "win32": {
-      const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
-      return devSettingsWindows.registerAddIn(manifest.id || "", realManifestPath);
+      return devSettingsWindows.registerAddIn(realManifestPath);
     }
     case "darwin":
       return devSettingsMac.registerAddIn(manifestPath);

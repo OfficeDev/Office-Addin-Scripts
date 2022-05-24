@@ -17,7 +17,6 @@ import { ExpectedError } from "office-addin-usage-data";
 /* global process, console, setTimeout */
 
 export enum AppType {
-  /* eslint-disable no-unused-vars */
   Desktop = "desktop",
   Web = "web",
 }
@@ -94,7 +93,7 @@ export function parsePlatform(text: string): Platform | undefined {
     case "win32":
       return Platform.Win32;
     default:
-      throw new ExpectedError(`The current platform is not supported: ${process.platform}`);
+      throw new ExpectedError(`The current platform is not supported: ${text}`);
   }
 }
 
@@ -379,7 +378,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
       document: document,
       appType: appType,
     });
-  } catch (err) {
+  } catch (err: any) {
     usageDataObject.reportException("startDebugging()", err, {
       app: app,
       document: document,
