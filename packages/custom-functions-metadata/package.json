@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/assert": "^1.4.6",
-    "@types/mocha": "^7.0.2",
+    "@types/mocha": "^9.1.1",
     "@types/node": "^14.17.2",
     "@types/node-fetch": "^2.5.10",
     "@types/xregexp": "^3.0.30",
