@@ -84,8 +84,14 @@ interface IGetParametersArguments {
   extra: IFunctionExtras;
   jsDocParamInfo: { [key: string]: string };
   jsDocParamOptionalInfo: { [key: string]: string };
-  jsDocParamTypeInfo: { [key: string]: string };
+  jsDocParamTypeInfo: { [key: string]: IJsDocParamType };
   parametersToParse: ts.ParameterDeclaration[];
+}
+
+interface IJsDocParamType {
+  type: string;
+  returnType: string;
+  dimensionality: string;
 }
 
 const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
@@ -116,14 +122,8 @@ const TYPE_MAPPINGS = {
 };
 
 const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
-  ["customfunctions.streaminghandler<string>"]: "string",
-  ["customfunctions.streaminghandler<number>"]: "number",
-  ["customfunctions.streaminghandler<boolean>"]: "boolean",
-  ["customfunctions.streaminghandler<any>"]: "any",
-  ["customfunctions.streaminginvocation<string>"]: "string",
-  ["customfunctions.streaminginvocation<number>"]: "number",
-  ["customfunctions.streaminginvocation<boolean>"]: "boolean",
-  ["customfunctions.streaminginvocation<any>"]: "any",
+  ["customfunctions.streaminghandler"]: 1,
+  ["customfunctions.streaminginvocation"]: 2,
 };
 
 const TYPE_CUSTOM_FUNCTION_CANCELABLE = {
@@ -501,7 +501,7 @@ function getResults(
   func: ts.FunctionDeclaration,
   isStreamingFunction: boolean,
   lastParameter: ts.ParameterDeclaration,
-  jsDocParamTypeInfo: { [key: string]: string },
+  jsDocParamTypeInfo: { [key: string]: IJsDocParamType },
   extra: IFunctionExtras,
   enumList: string[]
 ): IFunctionResult {
@@ -522,7 +522,8 @@ function getResults(
       const name = (lastParameter.name as ts.Identifier).text;
       const ptype = jsDocParamTypeInfo[name];
       // @ts-ignore
-      resultType = TYPE_CUSTOM_FUNCTIONS_STREAMING[ptype.toLocaleLowerCase()];
+      resultType = ptype.returnType;
+      resultDim = ptype.dimensionality;
       const paramResultItem: IFunctionResult = {
         dimensionality: resultDim,
         type: resultType,
@@ -834,7 +835,7 @@ function getJSDocParams(node: ts.Node): { [key: string]: string } {
  * This method will parse out all of the @param tags of a JSDoc and return a dictionary
  * @param node - The function to parse the JSDoc params from
  */
-function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
+function getJSDocParamsType(node: ts.Node): { [key: string]: IJsDocParamType } {
   const jsDocParamTypeInfo = {};
 
   ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
@@ -842,13 +843,35 @@ function getJSDocParamsType(node: ts.Node): { [key: string]: string } {
     (tag: ts.JSDocParameterTag) => {
       if (tag.typeExpression) {
         // Should be in the form {string}, so removing the {} around type
-        const paramType = tag.typeExpression.getFullText().slice(1, tag.typeExpression.getFullText().length - 1);
+        const paramType: string = tag.typeExpression
+          .getFullText()
+          .slice(1, tag.typeExpression.getFullText().length - 1);
+        const openBracket: number = paramType.indexOf("<");
+        let insertValue;
+
+        // Check for generic type
+        if (openBracket > -1) {
+          let subType: string = paramType.slice(openBracket + 1, paramType.length - 1);
+          const dimCount: number = (subType.match(/\[/g) || []).length;
+          if (dimCount > 0) {
+            insertValue = {
+              type: paramType.slice(0, openBracket),
+              returnType: subType.slice(0, subType.indexOf("[")),
+              dimensionality: dimCount == 1 ? "scalar" : "matrix",
+            };
+          } else {
+            insertValue = { type: paramType.slice(0, openBracket), returnType: subType };
+          }
+        } else {
+          insertValue = { type: paramType };
+        }
+
         // @ts-ignore
-        jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = paramType;
+        jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = insertValue;
       } else {
         // Set as any
         // @ts-ignore
-        jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = "any";
+        jsDocParamTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = { type: "any" };
       }
     }
   );
@@ -880,14 +903,14 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
  */
 function hasStreamingInvocationParameter(
   param: ts.ParameterDeclaration,
-  jsDocParamTypeInfo: { [key: string]: string }
+  jsDocParamTypeInfo: { [key: string]: IJsDocParamType }
 ): boolean {
   const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
   if (param) {
     const name = (param.name as ts.Identifier).text;
-    if (name) {
-      const ptype = jsDocParamTypeInfo[name];
+    if (name && jsDocParamTypeInfo[name]) {
+      const ptype = jsDocParamTypeInfo[name].type;
       // Check to see if the streaming parameter is defined in the comment section
       if (ptype) {
         const typecheck =
@@ -920,14 +943,14 @@ function hasStreamingInvocationParameter(
  */
 function hasCancelableInvocationParameter(
   param: ts.ParameterDeclaration,
-  jsDocParamTypeInfo: { [key: string]: string }
+  jsDocParamTypeInfo: { [key: string]: IJsDocParamType }
 ): boolean {
   const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
   if (param) {
     const name = (param.name as ts.Identifier).text;
-    if (name) {
-      const ptype = jsDocParamTypeInfo[name];
+    if (name && jsDocParamTypeInfo[name]) {
+      const ptype = jsDocParamTypeInfo[name].type;
       // Check to see if the cancelable parameter is defined in the comment section
       if (ptype) {
         const cancelableTypeCheck =
@@ -956,14 +979,14 @@ function hasCancelableInvocationParameter(
  */
 function hasInvocationParameter(
   param: ts.ParameterDeclaration,
-  jsDocParamTypeInfo: { [key: string]: string }
+  jsDocParamTypeInfo: { [key: string]: IJsDocParamType }
 ): boolean {
   const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
 
   if (param) {
     const name = (param.name as ts.Identifier).text;
-    if (name) {
-      const ptype = jsDocParamTypeInfo[name];
+    if (name && jsDocParamTypeInfo[name]) {
+      const ptype = jsDocParamTypeInfo[name].type;
       // Check to see if the invocation parameter is defined in the comment section
       if (ptype) {
         if (ptype.toLocaleLowerCase() === TYPE_CUSTOM_FUNCTION_INVOCATION) {
