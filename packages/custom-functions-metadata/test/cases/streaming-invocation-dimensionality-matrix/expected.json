@@ -1,0 +1,22 @@
+{
+    "functions": [
+        {
+            "description": "Test function for streaming type",
+            "id": "STREAMINGTEST",
+            "name": "STREAMINGTEST",
+            "options": {
+                "stream": true
+            },
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        }
+    ]
+}

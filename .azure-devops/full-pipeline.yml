@@ -1,0 +1,32 @@
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+jobs:
+  - job: Windows_10_Latest
+    pool:
+      name: OE-OfficeClientApps
+    steps:
+      - template: ./steps/npm-install.yaml
+      - template: ./steps/build.yaml
+      - template: ./steps/devcerts.yml
+      - template: ./steps/edgewebview.yml
+      - template: ./steps/test.yml
+
+  - job: Mac
+    pool:
+      name: OPX Mac Dogfood Pool
+    steps:
+    - template: ./steps/npm-install.yaml
+    - template: ./steps/build.yaml
+    - template: ./steps/test.yml
+    - template: ./steps/cleanup.yaml
+
+  - job: Linux
+    pool:
+      name: Azure Pipelines
+      vmImage: ubuntu-latest
+    steps:
+    - template: ./steps/npm-install.yaml
+    - template: ./steps/build.yaml
+    - template: ./steps/test.yml

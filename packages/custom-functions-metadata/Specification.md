@@ -14,6 +14,7 @@ The function parameter types may be provided using the [@param](#param) tag in J
 * [@helpurl](#helpurl) url
 * [@param](#param) _{type}_ name description
 * [@requiresAddress](#requiresAddress)
+* [@requiresParameterAddresses](#requiresParameterAddresses)
 * [@returns](#returns) _{type}_
 * [@streaming](#streaming)
 * [@volatile](#volatile)
@@ -100,6 +101,13 @@ For detailed description of the @param see: [JSDoc](http://usejsdoc.org/tags-par
 Indicates that the address of the cell where the function is being evaluated should be provided. 
 
 The last function parameter must be of type `CustomFunctions.Invocation` or a derived type. When the function is called, the `address` property will contain the address.
+
+---
+### @requiresParameterAddresses
+
+Indicates that the address of the input parameters where the function is being evaluated should be provided. 
+
+The last function parameter must be of type `CustomFunctions.Invocation` or a derived type. When the function is called, the `parameterAddresses` property will contain an array containing the address of each parameter.
 
 ---
 ### @returns

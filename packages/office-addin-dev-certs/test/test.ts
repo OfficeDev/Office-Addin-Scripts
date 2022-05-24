@@ -13,12 +13,6 @@ import * as install from "../src/install";
 import * as uninstall from "../src/uninstall";
 import * as verify from "../src/verify";
 
-before(function() {
-    // skip tests on Linux -- need to get dev certs working there
-    if (process.platform == "linux") {
-        this.skip();
-    }
-})
 describe("office-addin-dev-certs", function() {
     const sinon = require("sinon");
     const mkcert = require("mkcert");
@@ -46,7 +40,7 @@ describe("office-addin-dev-certs", function() {
                 await generate.generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
-            } catch (err) {
+            } catch (err: any) {
                 assert.strictEqual(err.toString().includes("Unable to create the directory"), true);
             }
             assert.strictEqual(createCert.callCount, 0);
@@ -60,7 +54,7 @@ describe("office-addin-dev-certs", function() {
                 await generate.generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
-            } catch (err) {
+            } catch (err: any) {
                 assert.strictEqual(err.toString().includes("Unable to generate the CA certificate"), true);
             }
             assert.strictEqual(createCert.callCount, 0);
@@ -74,7 +68,7 @@ describe("office-addin-dev-certs", function() {
                 await generate.generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
-            } catch (err) {
+            } catch (err: any) {
                 assert.strictEqual(err.toString().includes("Unable to generate the localhost certificate"), true);
             }
             assert.strictEqual(createCert.callCount, 0);
@@ -90,7 +84,7 @@ describe("office-addin-dev-certs", function() {
                 await generate.generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
                 // expecting exception
                 assert.strictEqual(0, 1);
-            } catch (err) {
+            } catch (err: any) {
                 assert.strictEqual(err.toString().includes("Unable to write generated certificates"), true);
             }
             assert.strictEqual(createCert.callCount, 0);
@@ -118,7 +112,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
                 await install.installCaCertificate(testCaCertificatePath);
-            } catch (err) {
+            } catch (err: any) {
                 assert.strictEqual(err.message, "Unable to install the CA certificate. test error");
             }
         });
@@ -177,7 +171,7 @@ describe("office-addin-dev-certs", function() {
             try {
                 await uninstall.uninstallCaCertificate();
                 assert.strictEqual(0, 1);
-            } catch (err) {
+            } catch (err: any) {
                 assert.strictEqual(err.message, "Unable to uninstall the CA certificate.\ntest error");
             }
         });
@@ -229,7 +223,7 @@ describe("office-addin-dev-certs", function() {
             sandbox.stub(childProcess, "execSync").throws(error);
             try {
                 await verify.isCaCertificateInstalled();
-            } catch (err) {
+            } catch (err: any) {
                 assert.strictEqual(err.message, "test error");
             }
         });
@@ -287,7 +281,7 @@ describe("office-addin-dev-certs", function() {
                 await getHttpsServerOptions();
                 // expecting exception
                 assert.strictEqual(0, 1);
-            } catch (err) {
+            } catch (err: any) {
 
                 assert.strictEqual(err.toString().includes("Unable to read the CA certificate file."), true);
             }

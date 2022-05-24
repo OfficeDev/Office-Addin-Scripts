@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+          "name": "Command Line: check",
+          "type": "node",
+          "request": "launch",
+          "program": "${workspaceFolder}/lib/cli.js",
+          "args": ["check"]
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",

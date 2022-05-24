@@ -1,0 +1,57 @@
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+parameters:
+- name: clean
+  displayName: Checkout clean
+  type: boolean
+  default: true
+  values:
+  - false
+  - true
+
+trigger:
+  branches:
+    include:
+    - master
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: master
+
+jobs:
+- job: Windows
+  pool:
+    name: OPX Windows 1903 Dogfood Pool - GitHub
+  steps:
+  - checkout: self
+    clean: ${{ parameters.clean }}
+  - template: ./steps/npm-install.yaml
+  - template: ./steps/build.yaml
+  - template: ./steps/run-tests.yaml
+  - template: ./steps/cleanup.yaml
+
+- job: Mac
+  pool:
+    name: OPX Mac Dogfood Pool
+  steps:
+  - checkout: self
+    clean: ${{ parameters.clean }}
+  - template: ./steps/npm-install.yaml
+  - template: ./steps/build.yaml
+  - template: ./steps/run-tests.yaml
+  - template: ./steps/cleanup.yaml
+
+- job: Linux
+  pool:
+    name: Azure Pipelines
+    vmImage: ubuntu-latest
+  steps:
+  - checkout: self
+    clean: ${{ parameters.clean }}
+  - template: ./steps/npm-install.yaml
+  - template: ./steps/build.yaml
+  - template: ./steps/run-tests.yaml

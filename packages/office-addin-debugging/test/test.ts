@@ -120,7 +120,7 @@ describe("start/stop functions", function() {
     fs.writeFileSync(debugInfo.getDebuggingInfoPath(), corruptId);
     try {
       badIdValue = debugInfo.readDevServerProcessId();
-    } catch (error) {
+    } catch (error: any) {
       assert.ok(error.message.includes(errorMessageInvalidProcessId), "invalid process id error message found");
     }
     assert.strictEqual(badIdValue, undefined);

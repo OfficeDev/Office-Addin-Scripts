@@ -26,7 +26,7 @@ Creates an SSL certificate for "localhost" signed by a developer CA certificate 
 
 Syntax:
 
-`office addin-dev-certs install [options]`
+`office-addin-dev-certs install [options]`
 
 Options:
 
@@ -45,7 +45,7 @@ Verify the certificate.
 
 Syntax:
 
-`office addin-dev-certs verify`
+`office-addin-dev-certs verify`
  
 #
 
@@ -54,7 +54,7 @@ Uninstall the certificate.
 
 Syntax:
 
-`office addin-dev-certs uninstall [options]`
+`office-addin-dev-certs uninstall [options]`
 
 Options:
 
@@ -69,7 +69,7 @@ Uninstall the CA certificate for all users. You must be an Administrator.
 ```js
 var https = require('https')
 var devCerts = require("office-addin-dev-certs");
-var options =  devCerts.getHttpsServerOptions();
+var options =  await devCerts.getHttpsServerOptions();
 
 var server = https.createServer(options, function (req, res) {
   res.end('This is servered over HTTPS')

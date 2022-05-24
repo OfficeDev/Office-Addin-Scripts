@@ -44,6 +44,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package provides the ability to parse, display, and modify the manifest file for Office Add-ins.
 
+* [office-addin-mock](packages/office-addin-mock/README.md)
+
+  This package provides a way to unit test the Office JavaScript API.
+
 * [office-addin-node-debugger](packages/office-addin-node-debugger/README.md)
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
@@ -101,6 +105,23 @@ This project welcomes contributions and suggestions.  Most contributions require
 
 When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
+### Quickstart with Git
+
+1. Install [Git](https://git-scm.com/downloads), [NodeJs](https://nodejs.org/en/download/) and [VS Code](https://code.visualstudio.com/Download) if you haven’t ready.
+2. Create a GitHub account if you don’t already have one.
+3. Go to [https://github.com/OfficeDev/Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts)
+4. Create a fork of OfficeDev/Office-Addin-Scripts in GitHub
+5. In a command prompt:
+    1. ```git clone https://github.com/OfficeDev/Office-Addin-Scripts```
+    2. ```cd Office-Addin-Scripts```
+    3. ```git remote add {username} https://github.com/{username}/Office-Addin-Scripts.git``` (where “{username}” is your GitHub user name)
+    4. ```git checkout -b my-branch-name``` (recommend using all lowercase with hyphens for branch names)
+6. Make your desired changes
+7. Commit your changes and push the fork you created
+    1. git commit
+    2. git push -u {username} {branch-name}
+8. Go to [Office-Addin-Scripts](https://github.com/OfficeDev/Office-Addin-Scripts) and create a pull request.
+
 ## Feedback
 
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/office-addin-scripts).
@@ -115,6 +136,14 @@ receive a response within 24 hours. If for some reason you do not, please follow
 email to ensure we received your original message. Further information, including the
 [MSRC PGP](https://technet.microsoft.com/en-us/security/dn606155) key, can be found in
 the [Security TechCenter](https://technet.microsoft.com/en-us/security/default).
+
+## Join the Microsoft 365 Developer Program
+Get a free sandbox, tools, and other resources you need to build solutions for the Microsoft 365 platform.
+- [Free developer sandbox](https://developer.microsoft.com/microsoft-365/dev-program#Subscription) Get a free, renewable 90-day Microsoft 365 E5 developer subscription.
+- [Sample data packs](https://developer.microsoft.com/microsoft-365/dev-program#Sample) Automatically configure your sandbox by installing user data and content to help you build your solutions.
+- [Access to experts](https://developer.microsoft.com/microsoft-365/dev-program#Experts) Access community events to learn from Microsoft 365 experts.
+- [Personalized recommendations](https://developer.microsoft.com/microsoft-365/dev-program#Recommendations) Find developer resources quickly from your personalized dashboard.
+
 
 ## Code of Conduct
 
