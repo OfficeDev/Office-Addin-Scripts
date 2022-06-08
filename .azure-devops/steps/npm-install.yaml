@@ -3,4 +3,4 @@ steps:
     displayName: "Install NPM packages"
     inputs:
       command: custom
-      customCommand: "run install-packages"
+      customCommand: "install"
