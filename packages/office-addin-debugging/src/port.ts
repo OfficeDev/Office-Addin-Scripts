@@ -54,7 +54,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
   return new Promise((resolve, reject) => {
     const isWin32 = process.platform === "win32";
     const isLinux = process.platform === "linux";
-    const command = isWin32 ? `netstat -ano` : isLinux ? `netstat -tlpna | grep :${port}` : `lsof -n -i:${port}`;
+    const command = isWin32 ? `netstat -ano | findstr :${port}` : isLinux ? `netstat -tlpna | grep :${port}` : `lsof -n -i:${port}`;
 
     childProcess.exec(command, (error, stdout) => {
       if (error) {
@@ -71,7 +71,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
           lines.forEach((line) => {
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             const [protocol, localAddress, foreignAddress, status, processId] = line.split(" ").filter((text) => text);
-            if (processId !== undefined) {
+            if (processId !== undefined && processId !== '0') {
               const localAddressPort = parsePort(localAddress);
               if (localAddressPort === port) {
                 processIds.add(parseInt(processId, 10));
