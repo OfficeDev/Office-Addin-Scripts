@@ -60,6 +60,10 @@ export interface IParseTreeResult {
   functions: IFunction[];
 }
 
+export interface IParseTreeResultIncludingFields extends IParseTreeResult{
+  fields: Map<string, any>;
+}
+
 export interface IAssociate {
   functionName: string;
   id: string;
@@ -101,6 +105,7 @@ const STREAMING = "streaming";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
+const FIELD = "field";
 
 const TYPE_MAPPINGS_SIMPLE = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -148,11 +153,12 @@ export async function generateCustomFunctionsMetadata(
     associate: [],
     errors: [],
   };
+  const fieldsString = "";
 
   if (fs.existsSync(inputFile)) {
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
-    const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
-    parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
+    const parseTreeResultIncludingFields: IParseTreeResultIncludingFields = parseTree(sourceCode, inputFile);
+    parseTreeResultIncludingFields.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
 
     if (generateResults.errors.length > 0) {
       if (wantConsoleOutput) {
@@ -160,8 +166,10 @@ export async function generateCustomFunctionsMetadata(
         generateResults.errors.forEach((err) => console.error(err));
       }
     } else {
-      generateResults.metadataJson = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
-      generateResults.associate = [...parseTreeResult.associate];
+      const metadataObj = convertIParseTreeResultIncludingFieldsToObject(parseTreeResultIncludingFields);
+      generateResults.metadataJson = JSON.stringify(metadataObj, null, 4);
+      // generateResults.metadataJson = JSON.stringify({ functions: parseTreeResultIncludingFields.functions }, null, 4);
+      generateResults.associate = [...parseTreeResultIncludingFields.associate];      
     }
   } else {
     throw new Error(`File not found: ${inputFile}`);
@@ -176,7 +184,7 @@ export async function generateCustomFunctionsMetadata(
  * @param sourceFileName source code file name or path
  * @param parseTreeOptions options to enable or disable
  */
-export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
+export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResultIncludingFields {
   const associate: IAssociate[] = [];
   const functions: IFunction[] = [];
   const extras: IFunctionExtras[] = [];
@@ -184,17 +192,19 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
   const functionNames: string[] = [];
   const metadataFunctionNames: string[] = [];
   const ids: string[] = [];
+  const fields: Map<string, any> = new Map();
 
   const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
   buildEnums(sourceFile);
   visit(sourceFile);
-  const parseTreeResult: IParseTreeResult = {
+  const parseTreeResultIncludingFields: IParseTreeResultIncludingFields = {
     associate,
     extras,
     functions,
+    fields,
   };
-  return parseTreeResult;
+  return parseTreeResultIncludingFields;
 
   function buildEnums(node: ts.Node) {
     if (ts.isEnumDeclaration(node)) {
@@ -348,6 +358,14 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
         }
       }
     }
+    
+    const commentArray = getAllTagComments(node, FIELD);
+    for(let comment of commentArray){
+      const commentPartArray = comment.split(" ");
+      if(commentPartArray.length > 0){
+        fields.set(commentPartArray[0], convertStringToBoolean(commentPartArray[1] || ""));
+      }
+    }   
 
     ts.forEachChild(node, visit);
   }
@@ -738,11 +756,33 @@ function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
 }
 
 /**
+ * Find all the tag with the specified name.
+ */
+function findAllTags(node: ts.Node, tagName: string): ts.JSDocTag[] {
+  let findResults: ts.JSDocTag[] = [];
+  let tagArray = ts.getJSDocTags(node);
+  tagArray.forEach((tag) => {if((tag.tagName.escapedText as string).toLowerCase() === tagName) findResults.push(tag) });
+  return findResults;
+}
+
+/**
  * If a node contains the named tag, returns the tag comment, otherwise returns "".
  */
 function getTagComment(node: ts.Node, tagName: string): string {
   const tag = findTag(node, tagName);
   return tag?.comment?.toString() || "";
+}
+
+/**
+ * For every tag with the specified name in a node, returns the tag comment or ""  
+ */
+function getAllTagComments(node: ts.Node, tagName: string): string[] {
+  const tags = findAllTags(node, tagName);
+  let commentArray: string[] = [];
+  for(let tag of tags){
+    commentArray.push(tag.comment?.toString() || "");
+  }
+  return commentArray;
 }
 
 /**
@@ -1149,4 +1189,17 @@ export function logError(error: string, position?: ts.LineAndCharacter | null): 
     error = `${error} (${position.line + 1},${position.character + 1})`;
   }
   return error;
+}
+
+function convertStringToBoolean(status: string): boolean {
+  return "true" == status.toLowerCase()
+}
+
+function convertIParseTreeResultIncludingFieldsToObject(parseTreeResultIncludingFields : IParseTreeResultIncludingFields) : Object {
+  let obj = Object.create(null);
+  obj["functions"] = parseTreeResultIncludingFields.functions;
+  for(let [k,v] of parseTreeResultIncludingFields.fields){
+    obj[k] = v;
+  }
+  return obj;
 }
