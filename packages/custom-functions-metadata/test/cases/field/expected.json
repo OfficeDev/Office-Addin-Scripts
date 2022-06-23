@@ -1,0 +1,12 @@
+{
+    "functions": [
+        {
+            "description": "basic custom function",
+            "id": "BASIC",
+            "name": "BASIC",
+            "parameters": [],
+            "result": {}
+        }
+    ],
+    "allowCustomDataForDataTypeAny": true
+}
