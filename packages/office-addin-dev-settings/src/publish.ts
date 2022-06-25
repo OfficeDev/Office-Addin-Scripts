@@ -3,13 +3,15 @@
 
 import * as childProcess from "child_process";
 import * as fs from "fs";
+import * as path from "path";
 
-/* global console */
+/* global console, __dirname */
 
 export async function registerWithTeams(zipPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (zipPath.endsWith(".zip") && fs.existsSync(zipPath)) {
-      const command = `npx @microsoft/teamsfx-cli provision manifest --file-path ${zipPath}`;
+      const cliPath = path.resolve(__dirname, "..\\node_modules\\@microsoft\\teamsfx-cli\\cli.js");
+      const command = `node ${cliPath} provision manifest --file-path ${zipPath}`;
 
       childProcess.exec(command, (error, stdout) => {
         if (error) {
