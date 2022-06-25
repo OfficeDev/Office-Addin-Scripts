@@ -306,18 +306,10 @@ export async function sideloadAddIn(
       appType = AppType.Desktop;
     }
 
-    // Converting json to xml manifest . . . Temporary until service is ready.
-    if (manifestPath.endsWith(".json")) {
-      if (isDotnetInstalled()) {
-        // Run json => xml conversion tool.
-        manifestPath = await convertJsonToXmlManifest(manifestPath);
-      } else {
-        throw new ExpectedError(".Net 5 or greater is required for json manifests.");
-      }
-    }
-
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
+    const appsInManifest: OfficeApp[] = manifestPath.endsWith(".json")
+      ? [OfficeApp.Outlook]
+      : getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {

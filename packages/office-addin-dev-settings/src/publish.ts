@@ -13,7 +13,7 @@ export async function registerWithTeams(zipPath: string): Promise<void> {
 
       childProcess.exec(command, (error, stdout) => {
         if (error) {
-          reject(stdout);
+          reject(error);
         } else {
           console.log("Successfully registered package with https://dev.teams.microsoft.com/apps");
           resolve();
