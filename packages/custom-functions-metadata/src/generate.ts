@@ -62,6 +62,7 @@ export interface IParseTreeResult {
 
 export interface IParseTreeResultIncludingFields extends IParseTreeResult{
   fields: Map<string, any>;
+  fieldErrors: string[];
 }
 
 export interface IAssociate {
@@ -139,6 +140,10 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
+const validFileds = [
+  "allowCustomDataForDataTypeAny"
+];
+
 /**
  * Generate the metadata of the custom functions
  * @param inputFile - File that contains the custom functions
@@ -159,6 +164,7 @@ export async function generateCustomFunctionsMetadata(
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
     const parseTreeResultIncludingFields: IParseTreeResultIncludingFields = parseTree(sourceCode, inputFile);
     parseTreeResultIncludingFields.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
+    parseTreeResultIncludingFields.fieldErrors.forEach((error) => generateResults.errors.push(error));
 
     if (generateResults.errors.length > 0) {
       if (wantConsoleOutput) {
@@ -193,6 +199,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
   const metadataFunctionNames: string[] = [];
   const ids: string[] = [];
   const fields: Map<string, any> = new Map();
+  const fieldErrors: string[] = [];
 
   const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
@@ -203,6 +210,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     extras,
     functions,
     fields,
+    fieldErrors,
   };
   return parseTreeResultIncludingFields;
 
@@ -360,11 +368,20 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     }
     
     const commentArray = getAllTagComments(node, FIELD);
-    for(let comment of commentArray){
-      const commentPartArray = comment.split(" ");
-      if(commentPartArray.length > 0){
-        fields.set(commentPartArray[0], convertStringToBoolean(commentPartArray[1] || ""));
+    const position = getPosition(node);
+    for(let comment of commentArray) {
+      if("" == comment){
+        const errorString = "@field tag doesn't specify a field";
+        fieldErrors.push(logError(errorString, position));
+        continue;
       }
+      const commentPartArray = comment.split(" ");
+      if(checkForValid(validFileds, commentPartArray[0])) {
+        fields.set(commentPartArray[0], convertStringToBoolean(commentPartArray[1] || ""));
+      }else {
+        const errorString = `@field tag specifies a invallid field: ${commentPartArray[0]}`;
+        fieldErrors.push(logError(errorString, position));
+      }        
     }   
 
     ts.forEachChild(node, visit);
@@ -404,7 +421,7 @@ function areStringsEqual(first: string, second: string, ignoreCase = true): bool
  * @param node function, parameter, or node
  */
 function getPosition(
-  node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode,
+  node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode | ts.Node,
   position?: number
 ): ts.LineAndCharacter | null {
   let positionLocation = null;
@@ -1202,4 +1219,15 @@ function convertIParseTreeResultIncludingFieldsToObject(parseTreeResultIncluding
     obj[k] = v;
   }
   return obj;
+}
+
+function checkForValid(list: string[], item: string): boolean {
+  let valid: boolean = false;
+  list.forEach((value: string) => {
+    if(areStringsEqual(value, item)){
+      valid = true;
+    }
+  });
+
+  return valid;
 }
