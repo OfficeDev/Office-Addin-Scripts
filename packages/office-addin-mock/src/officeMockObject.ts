@@ -50,10 +50,12 @@ export class OfficeMockObject {
    * Mock replacement for the sync method in the Office.js API
    */
   async sync() {
-    this._properties.forEach(async (property: OfficeMockObject, key: string) => {
-      await property.sync();
-      this.updatePropertyCall(key);
-    });
+    this._properties.forEach(
+      async (property: OfficeMockObject, key: string) => {
+        await property.sync();
+        this.updatePropertyCall(key);
+      }
+    );
     if (this._loaded) {
       this._value = this._valueBeforeLoaded;
     }
@@ -177,7 +179,11 @@ export class OfficeMockObject {
       const property = objectData[propertyName];
       const dataType: string = typeof property;
 
-      if (dataType === "object" && !Array.isArray(property)) {
+      if (
+        dataType === "object" &&
+        !Array.isArray(property) &&
+        !(property instanceof Date)
+      ) {
         this.addMock(propertyName);
         this[propertyName].populate(property);
       } else {
