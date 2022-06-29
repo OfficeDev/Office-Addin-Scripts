@@ -58,9 +58,6 @@ export interface IParseTreeResult {
   associate: IAssociate[];
   extras: IFunctionExtras[];
   functions: IFunction[];
-}
-
-export interface IParseTreeResultIncludingFields extends IParseTreeResult{
   fields: Map<string, any>;
   fieldErrors: string[];
 }
@@ -140,9 +137,7 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
-const validFileds = [
-  "allowCustomDataForDataTypeAny"
-];
+const validFileds = ["allowCustomDataForDataTypeAny"];
 
 /**
  * Generate the metadata of the custom functions
@@ -158,13 +153,12 @@ export async function generateCustomFunctionsMetadata(
     associate: [],
     errors: [],
   };
-  const fieldsString = "";
 
   if (fs.existsSync(inputFile)) {
     const sourceCode = fs.readFileSync(inputFile, "utf-8");
-    const parseTreeResultIncludingFields: IParseTreeResultIncludingFields = parseTree(sourceCode, inputFile);
-    parseTreeResultIncludingFields.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
-    parseTreeResultIncludingFields.fieldErrors.forEach((error) => generateResults.errors.push(error));
+    const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
+    parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
+    parseTreeResult.fieldErrors.forEach((error) => generateResults.errors.push(error));
 
     if (generateResults.errors.length > 0) {
       if (wantConsoleOutput) {
@@ -172,10 +166,9 @@ export async function generateCustomFunctionsMetadata(
         generateResults.errors.forEach((err) => console.error(err));
       }
     } else {
-      const metadataObj = convertIParseTreeResultIncludingFieldsToObject(parseTreeResultIncludingFields);
+      const metadataObj = convertIParseTreeResult(parseTreeResult);
       generateResults.metadataJson = JSON.stringify(metadataObj, null, 4);
-      // generateResults.metadataJson = JSON.stringify({ functions: parseTreeResultIncludingFields.functions }, null, 4);
-      generateResults.associate = [...parseTreeResultIncludingFields.associate];      
+      generateResults.associate = [...parseTreeResult.associate];
     }
   } else {
     throw new Error(`File not found: ${inputFile}`);
@@ -190,7 +183,7 @@ export async function generateCustomFunctionsMetadata(
  * @param sourceFileName source code file name or path
  * @param parseTreeOptions options to enable or disable
  */
-export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResultIncludingFields {
+export function parseTree(sourceCode: string, sourceFileName: string): IParseTreeResult {
   const associate: IAssociate[] = [];
   const functions: IFunction[] = [];
   const extras: IFunctionExtras[] = [];
@@ -205,14 +198,14 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
   buildEnums(sourceFile);
   visit(sourceFile);
-  const parseTreeResultIncludingFields: IParseTreeResultIncludingFields = {
+  const parseTreeResult: IParseTreeResult = {
     associate,
     extras,
     functions,
     fields,
     fieldErrors,
   };
-  return parseTreeResultIncludingFields;
+  return parseTreeResult;
 
   function buildEnums(node: ts.Node) {
     if (ts.isEnumDeclaration(node)) {
@@ -366,23 +359,23 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
         }
       }
     }
-    
+
     const commentArray = getAllTagComments(node, FIELD);
     const position = getPosition(node);
-    for(let comment of commentArray) {
-      if("" == comment){
+    for (let comment of commentArray) {
+      if ("" == comment) {
         const errorString = "@field tag doesn't specify a field";
         fieldErrors.push(logError(errorString, position));
         continue;
       }
       const commentPartArray = comment.split(" ");
-      if(checkForValid(validFileds, commentPartArray[0])) {
+      if (checkForValid(validFileds, commentPartArray[0])) {
         fields.set(commentPartArray[0], convertStringToBoolean(commentPartArray[1] || ""));
-      }else {
+      } else {
         const errorString = `@field tag specifies a invallid field: ${commentPartArray[0]}`;
         fieldErrors.push(logError(errorString, position));
-      }        
-    }   
+      }
+    }
 
     ts.forEachChild(node, visit);
   }
@@ -778,7 +771,9 @@ function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
 function findAllTags(node: ts.Node, tagName: string): ts.JSDocTag[] {
   let findResults: ts.JSDocTag[] = [];
   let tagArray = ts.getJSDocTags(node);
-  tagArray.forEach((tag) => {if((tag.tagName.escapedText as string).toLowerCase() === tagName) findResults.push(tag) });
+  tagArray.forEach((tag) => {
+    if ((tag.tagName.escapedText as string).toLowerCase() === tagName) findResults.push(tag);
+  });
   return findResults;
 }
 
@@ -791,12 +786,12 @@ function getTagComment(node: ts.Node, tagName: string): string {
 }
 
 /**
- * For every tag with the specified name in a node, returns the tag comment or ""  
+ * For every tag with the specified name in a node, returns the tag comment or ""
  */
 function getAllTagComments(node: ts.Node, tagName: string): string[] {
   const tags = findAllTags(node, tagName);
   let commentArray: string[] = [];
-  for(let tag of tags){
+  for (let tag of tags) {
     commentArray.push(tag.comment?.toString() || "");
   }
   return commentArray;
@@ -1209,14 +1204,14 @@ export function logError(error: string, position?: ts.LineAndCharacter | null): 
 }
 
 function convertStringToBoolean(status: string): boolean {
-  return "true" == status.toLowerCase()
+  return "true" === status.toLowerCase();
 }
 
-function convertIParseTreeResultIncludingFieldsToObject(parseTreeResultIncludingFields : IParseTreeResultIncludingFields) : Object {
+function convertIParseTreeResult(parseTreeResult: IParseTreeResult): Object {
   let obj = Object.create(null);
-  obj["functions"] = parseTreeResultIncludingFields.functions;
-  for(let [k,v] of parseTreeResultIncludingFields.fields){
-    obj[k] = v;
+  obj["functions"] = parseTreeResult.functions;
+  for (let [fieldname, value] of parseTreeResult.fields) {
+    obj[fieldname] = value;
   }
   return obj;
 }
@@ -1224,7 +1219,7 @@ function convertIParseTreeResultIncludingFieldsToObject(parseTreeResultIncluding
 function checkForValid(list: string[], item: string): boolean {
   let valid: boolean = false;
   list.forEach((value: string) => {
-    if(areStringsEqual(value, item)){
+    if (areStringsEqual(value, item)) {
       valid = true;
     }
   });
