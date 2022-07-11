@@ -2,8 +2,10 @@
 // Licensed under the MIT license.
 
 import * as assert from "assert";
+import * as fs from "fs";
 import * as mocha from "mocha";
-import { convertProject } from "../src/convert";
+import * as path from "path";
+import { convertManifest, convertProject } from "../src/convert";
 import { ExpectedError } from "office-addin-usage-data";
 
 describe("office-addin-project tests", function() {
@@ -20,6 +22,22 @@ describe("office-addin-project tests", function() {
           await convertProject("test/test.json");
           assert.fail("The expected Error was not thrown.");
         } catch (err: any) {}
+      });
+    });
+    describe("convertManifest", function() {
+      it("Converts test manifest", async function() {
+        this.timeout(6000);
+        const manifestPath = "./test/test-manifest.xml";
+        const outputPath = "./temp/";
+        convertManifest(manifestPath, outputPath);
+        console.log(path.join(outputPath, "manifest.json"));
+        assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), true);
+      });
+      it("Can't convert malformed manifest", async function() {
+        const manifestPath = "./test/invalid.manifest.xml";
+        const outputPath = "./out";
+        convertManifest(manifestPath, outputPath);
+        assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), false);
       });
     });
   });

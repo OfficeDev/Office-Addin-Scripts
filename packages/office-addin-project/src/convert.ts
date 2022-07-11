@@ -6,14 +6,15 @@ import * as fs from "fs";
 import * as inquirer from "inquirer";
 import * as path from "path";
 import * as util from "util";
-import { exec } from "child_process";
+import { execSync } from "child_process";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
 
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
-  backupPath: string = "./backup.zip"
+  backupPath: string = "./backup.zip",
+  outputPath: string = "./manifest"
 ) {
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
@@ -34,6 +35,7 @@ export async function convertProject(
   await backupProject(backupPath);
   updatePackages();
   await updateManifestXmlReferences();
+  convertManifest(manifestPath, outputPath);
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
@@ -68,6 +70,10 @@ async function backupProject(backupPath: string) {
   });
 }
 
+export function convertManifest(manifestPath: string, outputPath: string) {
+  execSync(`node ./converter/lib/main.js --input ${manifestPath} --output ${outputPath} --verbose false --debug true`);
+}
+
 function updatePackages(): void {
   // Contains name of the package and minimum version
   const depedentPackages: string[] = [
@@ -92,7 +98,7 @@ function updatePackages(): void {
 
   command += ` --save-dev`;
   console.log(messageToBePrinted.slice(0, -1));
-  exec(command);
+  execSync(command);
 }
 
 async function updateManifestXmlReferences(): Promise<void> {

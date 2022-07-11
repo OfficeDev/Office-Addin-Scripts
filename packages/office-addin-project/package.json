@@ -5,8 +5,6 @@
   "main": "./lib/main.js",
   "scripts": {
     "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
-    "convert": "node ./converter/lib/main.js --input ./test/test-manifest.xml --output ./converter/temp --verbose true --debug true",
-    "convert2": "node ./converter/lib/main.js --input ./test/TaskPane.manifest.xml --output ./converter/temp2 --verbose false",
     "lint": "office-addin-lint check",
     "lint:fix": "office-addin-lint fix",
     "prettier": "office-addin-lint prettier",

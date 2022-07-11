@@ -20,6 +20,7 @@ Syntax:
 
 `manifest-path`: path to manifest file.
 `backup-path`: path to the generated backup of the project.
+`output-directory`: path to the output folder for the converted manifest.
 
 Options:
 
@@ -32,3 +33,8 @@ Specify the location of the manifest file. If the path is not provided, `./manif
 `--backup <backup-path>`
 
 Specify the location of the backup file. If the path is not provided, `./backup.zip` is used.
+
+`-o <output-directory>`<br>
+`--output <output-directory>`
+
+Specify the location of output folder for the converted manifest. If the path is not provided, `./manifest` is used.
