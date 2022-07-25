@@ -27,7 +27,8 @@ const testObjectOutlook = {
     font: {
       size: 12,
       type: "arial"
-    }
+    },
+    date: new Date("2022-06-29T11:32:11.447Z"),
   },
   host: "outlook",
 }
@@ -121,7 +122,7 @@ describe("Test OfficeMockObject class", function() {
 
       officeMock.range.address = "C2";
       assert.strictEqual(officeMock.range.address, "C2");
-  
+
       officeMock.range.font.color = "blue";
       assert.strictEqual(officeMock.range.font.color, "blue");
     });
@@ -174,7 +175,7 @@ describe("Test OfficeMockObject class", function() {
       officeMock.load("range/font/size");
       await officeMock.sync();
       assert.strictEqual(officeMock.range.font.size, 12);
-  
+
       assert.throws(() => officeMock.load("range/notANavigational/size"));
       assert.throws(() => officeMock.load("notANavigational/font/size"));
     });
@@ -231,7 +232,7 @@ describe("Test OfficeMockObject class", function() {
       const ContextMockData = {
         items: [ { text: 'A' }, {text2: 'B' } ],
       };
-  
+
       const context = new OfficeMockObject(ContextMockData) as any;
       context.load( { items: [ { text: 'A' }, { text2: 'B' } ] } );
       await context.sync();
@@ -249,6 +250,11 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.color, "blue");
       assert.strictEqual(officeMock.range.font.size, 12);
       assert.strictEqual(officeMock.range.getColor(), "blue");
+      assert.strictEqual(
+        officeMock.range.date.getTime(),
+        new Date("2022-06-29T11:32:11.447Z").getTime()
+      );
+
     });
     it("Invalid load calls", async function() {
       const officeMock = new OfficeMockObject(testObjectOutlook);
