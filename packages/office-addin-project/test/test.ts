@@ -30,10 +30,10 @@ describe("office-addin-project tests", function() {
         const manifestPath = "./test/test-manifest.xml";
         const outputPath = "./temp/";
         convertManifest(manifestPath, outputPath);
-        console.log(path.join(outputPath, "manifest.json"));
-        assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), true);
+        assert.strictEqual(fs.existsSync(path.join(outputPath, "test-manifest.json")), true);
       });
       it("Can't convert malformed manifest", async function() {
+        this.timeout(6000);
         const manifestPath = "./test/invalid.manifest.xml";
         const outputPath = "./out";
         convertManifest(manifestPath, outputPath);

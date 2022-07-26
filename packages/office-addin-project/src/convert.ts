@@ -7,6 +7,7 @@ import * as inquirer from "inquirer";
 import * as path from "path";
 import * as util from "util";
 import { execSync } from "child_process";
+import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
@@ -71,7 +72,7 @@ async function backupProject(backupPath: string) {
 }
 
 export function convertManifest(manifestPath: string, outputPath: string) {
-  execSync(`node ./converter/lib/main.js --input ${manifestPath} --output ${outputPath} --verbose false --debug true`);
+  convert(manifestPath, outputPath);
 }
 
 function updatePackages(): void {
