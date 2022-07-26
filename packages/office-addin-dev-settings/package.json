@@ -4,7 +4,7 @@
   "description": "Configure developer settings for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
-    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "build": "rimraf lib && copyfiles \"src/*.json\" -u 1 lib && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
     "lint": "office-addin-lint check",
     "lint:fix": "office-addin-lint fix",
@@ -22,7 +22,7 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "@microsoft/teamsfx-cli": "1.0.2",
+    "@microsoft/teamsfx-cli": "file:../../../../microsoft-teamsfx-cli-1.0.0-officeaddins.tgz",
     "child_process": "^1.0.2",
     "commander": "^6.2.0",
     "fs-extra": "^9.0.1",

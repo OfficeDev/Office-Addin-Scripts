@@ -11,13 +11,27 @@ export async function registerWithTeams(zipPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (zipPath.endsWith(".zip") && fs.existsSync(zipPath)) {
       const cliPath = path.resolve(__dirname, "..\\node_modules\\@microsoft\\teamsfx-cli\\cli.js");
-      const command = `node ${cliPath} provision manifest --file-path ${zipPath}`;
+      const configPath = path.resolve(__dirname, ".\\sdf.json");
+      const loginCommand = `node ${cliPath} account login m365`;
+      const sideloadCommand = `node ${cliPath} m365 sideloading --file-path ${zipPath} --service-config ${configPath}`;
 
-      childProcess.exec(command, (error, stdout) => {
-        if (error) {
+      console.log(`running: ${loginCommand}`);
+      childProcess.exec(loginCommand, (error, stdout, stderr) => {
+        if (error || stderr.length > 0) {
+          console.log(`Error logging in:\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
           reject(error);
         } else {
-          console.log("Successfully registered package with https://dev.teams.microsoft.com/apps");
+          console.log(`Successfully logged in.\n`);
+          console.log(`running: ${sideloadCommand}`);
+          childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
+            if (error || stderr.length > 0) {
+              console.log(`Error sideloading:\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
+              reject(error);
+            } else {
+              console.log(`Successfully registered package:\n ${stdout}\n`);
+              resolve();
+            }
+          });
           resolve();
         }
       });
