@@ -13,8 +13,7 @@ export async function convert(command: commander.Command) {
     const outputPath: string = command.output ?? "./manifest";
 
     await convertProject(manifestPath, backupPath, outputPath);
-    throw new Error("Upgrade function is not ready yet.");
-    // usageDataObject.reportSuccess("convert");
+    usageDataObject.reportSuccess("convert");
   } catch (err: any) {
     usageDataObject.reportException("convert", err);
     logErrorMessage(err);
