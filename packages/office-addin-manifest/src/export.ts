@@ -41,7 +41,7 @@ function addIconFile(iconPath: string, zip: jszip) {
   if (iconPath && !iconPath.startsWith("https://")) {
     const filePath: string = path.resolve(iconPath);
     if (fs.existsSync(filePath)) {
-      zip.file(iconPath, fs.readFileSync(filePath));
+      zip.file(iconPath.replace(/^\.\//, ""), fs.readFileSync(filePath));
     }
   }
 }
