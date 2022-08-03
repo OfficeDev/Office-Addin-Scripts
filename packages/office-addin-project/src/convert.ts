@@ -36,7 +36,7 @@ export async function convertProject(
   await backupProject(backupPath);
   updatePackages();
   await updateManifestXmlReferences();
-  convertManifest(manifestPath, outputPath);
+  convert(manifestPath, outputPath);
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
@@ -69,10 +69,6 @@ async function backupProject(backupPath: string) {
     });
     archive.finalize();
   });
-}
-
-export function convertManifest(manifestPath: string, outputPath: string) {
-  convert(manifestPath, outputPath);
 }
 
 function updatePackages(): void {
