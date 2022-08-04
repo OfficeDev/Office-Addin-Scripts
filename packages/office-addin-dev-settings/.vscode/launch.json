@@ -103,6 +103,13 @@
       ]
     },
     {
+      "name": "Command Line: m365-account",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": ["m365-account", "logout"]
+    },
+    {
       "name": "Command Line: register",
       "type": "node",
       "request": "launch",

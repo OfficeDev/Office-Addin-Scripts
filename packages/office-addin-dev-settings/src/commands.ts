@@ -16,6 +16,7 @@ import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
+import { updateM365Account } from "./publish";
 
 /* global process, console */
 
@@ -291,6 +292,19 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
       return undefined;
     default:
       throw new ExpectedError(`Please select a valid web view type instead of '${webViewString}'.`);
+  }
+}
+
+export async function m365Account(
+  operation: "login" | "logout",
+  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+) {
+  try {
+    await updateM365Account(operation);
+    usageDataObject.reportSuccess("m365Account");
+  } catch (err: any) {
+    usageDataObject.reportException("m365Account", err);
+    logErrorMessage(err);
   }
 }
 
