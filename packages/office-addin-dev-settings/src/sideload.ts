@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
-import * as childProcess from "child_process";
 import * as jszip from "jszip";
 import {
   AddInType,
@@ -26,7 +25,7 @@ import * as registry from "./registry";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, __dirname, URL, console */
+/* global process, __dirname, URL */
 
 const readFileAsync = util.promisify(fs.readFile);
 
