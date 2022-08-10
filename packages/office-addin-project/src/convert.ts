@@ -14,9 +14,9 @@ import { ExpectedError } from "office-addin-usage-data";
 
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
-  backupPath: string = "./backup.zip",
-  outputPath: string = "./manifest"
+  backupPath: string = "./backup.zip"
 ) {
+  const outputPath: string = "./manifest";
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
       `The convert command only works on xml manifest based projects`

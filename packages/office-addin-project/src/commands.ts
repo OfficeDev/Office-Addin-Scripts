@@ -10,9 +10,8 @@ export async function convert(command: commander.Command) {
   try {
     const manifestPath: string = command.manifest ?? "./manifest.xml";
     const backupPath: string = command.backup ?? "./backup.zip";
-    const outputPath: string = command.output ?? "./manifest";
 
-    await convertProject(manifestPath, backupPath, outputPath);
+    await convertProject(manifestPath, backupPath);
     usageDataObject.reportSuccess("convert");
   } catch (err: any) {
     usageDataObject.reportException("convert", err);

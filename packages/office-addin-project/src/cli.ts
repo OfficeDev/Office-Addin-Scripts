@@ -29,10 +29,6 @@ commander
     "-b, --backup <backup-path>",
     "Specify the location of the backup folder for the project.  Default is './backup.zip'"
   )
-  .option(
-    "-o, --output <output-directory>",
-    "Specify the location of output folder for the converted manifest.  Default is './manifest'"
-  )
   .action(commands.convert);
 
 if (process.argv.length > 2) {
