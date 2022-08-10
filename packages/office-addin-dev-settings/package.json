@@ -22,7 +22,6 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "@microsoft/teamsfx-cli": "1.0.0-officeaddins",
     "child_process": "^1.0.2",
     "commander": "^6.2.0",
     "fs-extra": "^9.0.1",
@@ -34,6 +33,9 @@
     "open": "^6.4.0",
     "whatwg-url": "^7.1.0",
     "winreg": "^1.2.4"
+  },
+  "peerDependencies": {
+    "@microsoft/teamsfx-cli": "1.0.0-officeaddins"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",
