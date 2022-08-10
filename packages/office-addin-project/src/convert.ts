@@ -36,7 +36,7 @@ export async function convertProject(
   await backupProject(backupPath);
   updatePackages();
   await updateManifestXmlReferences();
-  convert(manifestPath, outputPath);
+  await convert(manifestPath, outputPath);
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {

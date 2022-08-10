@@ -5,7 +5,8 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
 import * as path from "path";
-import { convertManifest, convertProject } from "../src/convert";
+import { convertProject } from "../src/convert";
+import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
 describe("office-addin-project tests", function() {
@@ -29,14 +30,14 @@ describe("office-addin-project tests", function() {
         this.timeout(6000);
         const manifestPath = "./test/test-manifest.xml";
         const outputPath = "./temp/";
-        convertManifest(manifestPath, outputPath);
+        await convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "test-manifest.json")), true);
       });
       it("Can't convert malformed manifest", async function() {
         this.timeout(6000);
         const manifestPath = "./test/invalid.manifest.xml";
         const outputPath = "./out";
-        convertManifest(manifestPath, outputPath);
+        convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), false);
       });
     });
