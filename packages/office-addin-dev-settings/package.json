@@ -35,7 +35,7 @@
     "winreg": "^1.2.4"
   },
   "peerDependencies": {
-    "@microsoft/teamsfx-cli": "1.0.0-officeaddins"
+    "@microsoft/teamsfx-cli": "1.0.1-officeaddins"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.1",

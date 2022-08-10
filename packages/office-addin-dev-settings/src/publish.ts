@@ -10,7 +10,7 @@ import * as path from "path";
 export async function registerWithTeams(zipPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (zipPath.endsWith(".zip") && fs.existsSync(zipPath)) {
-      const sideloadCommand = `npx @microsoft/teamsfx-cli m365 sideloading --file-path ${zipPath}`;
+      const sideloadCommand = `npx @microsoft/teamsfx-cli@officeaddins m365 sideloading --file-path ${zipPath}`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
@@ -30,7 +30,7 @@ export async function registerWithTeams(zipPath: string): Promise<void> {
 
 export async function updateM365Account(operation: "login" | "logout"): Promise<void> {
   return new Promise((resolve, reject) => {
-    const loginCommand = `npx @microsoft/teamsfx-cli account ${operation} m365`;
+    const loginCommand = `npx @microsoft/teamsfx-cli@officeaddins account ${operation} m365`;
 
     console.log(`running: ${loginCommand}`);
     childProcess.exec(loginCommand, (error, stdout, stderr) => {
