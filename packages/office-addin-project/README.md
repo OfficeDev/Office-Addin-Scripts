@@ -14,7 +14,6 @@ https://docs.microsoft.com/en-us/office/dev/add-ins/develop/add-in-manifests).
 ### convert
 
 Converts the Office Addin Code from xml to json based manifest.
-The outputed conversion is avaible at `./manifest`.
 
 Syntax:
 
