@@ -14,11 +14,11 @@ export async function registerWithTeams(zipPath: string): Promise<void> {
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
-        if (error || stderr.length > 0) {
+        if (error) {
           console.log(`Error sideloading:\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
           reject(error);
         } else {
-          console.log(`Successfully registered package:\n ${stdout}\n`);
+          console.log(`Successfully registered package:\n ${stdout}\n STDERR: ${stderr}\n`);
           resolve();
         }
       });
