@@ -14,6 +14,7 @@ import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
 import { getGraphData } from "./msgraph-helper";
 import { getAccessToken } from "./ssoauth-helper";
+import { usageDataObject } from "../defaults";
 
 /* global process, require, __dirname */
 
@@ -75,6 +76,12 @@ export class App {
     this.appInstance.get("/getuserdata", async function (req: any, res: any, next: any) {
       const graphTokenResponse = await getAccessToken(req.get("Authorization"));
       if (graphTokenResponse.claims || graphTokenResponse.error) {
+        graphTokenResponse.claims
+          ? usageDataObject.reportEvent("CliamsResponse")
+          : usageDataObject.reportError(
+              "AccessTokenError",
+              new Error("Access Token Error: " + graphTokenResponse.error)
+            );
         res.send(graphTokenResponse);
       } else {
         const graphToken: string = graphTokenResponse.access_token;
@@ -87,8 +94,10 @@ export class App {
         // there will be a code property in the returned object set to a HTTP status (e.g. 401).
         // Relay it to the client. It will caught in the fail callback of `makeGraphApiCall`.
         if (graphData.code) {
+          usageDataObject.reportException("getuserdata()", graphData.code);
           next(createError(graphData.code, "Microsoft Graph error " + JSON.stringify(graphData)));
         } else {
+          usageDataObject.reportSuccess("getuserdata()");
           res.send(graphData);
         }
       }
