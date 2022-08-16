@@ -77,7 +77,7 @@ export class App {
       const graphTokenResponse = await getAccessToken(req.get("Authorization"));
       if (graphTokenResponse.claims || graphTokenResponse.error) {
         graphTokenResponse.claims
-          ? usageDataObject.reportEvent("CliamsResponse")
+          ? usageDataObject.reportEvent("ClaimsResponse")
           : usageDataObject.reportError(
               "AccessTokenError",
               new Error("Access Token Error: " + graphTokenResponse.error)

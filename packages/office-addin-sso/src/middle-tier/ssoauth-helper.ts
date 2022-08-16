@@ -11,7 +11,7 @@ import * as form from "form-urlencoded";
 
 export async function getAccessToken(authorization: string): Promise<any> {
   const scopeName: string = process.env.SCOPE || "User.Read";
-  if (authorization == null) {
+  if (authorization === null) {
     let error = new Error("No Authorization header was found.");
     Promise.reject(error);
   } else {
