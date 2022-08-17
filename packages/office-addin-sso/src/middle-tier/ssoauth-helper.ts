@@ -6,8 +6,12 @@
 
 import * as fetch from "node-fetch";
 import * as form from "form-urlencoded";
+import * as jwt from "jsonwebtoken";
+import { JwksClient } from "jwks-rsa";
 
-/* global process */
+/* global process, console */
+
+const DISCOVERY_KEYS_ENDPOINT = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
 
 export async function getAccessToken(authorization: string): Promise<any> {
   const scopeName: string = process.env.SCOPE || "User.Read";
@@ -44,4 +48,38 @@ export async function getAccessToken(authorization: string): Promise<any> {
       Promise.reject(error);
     }
   }
+}
+
+export function validateJwt(req, res, next): void {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+
+    const validationOptions = {
+      audience: process.env.CLIENT_ID,
+    };
+
+    jwt.verify(token, getSigningKeys, validationOptions, (err, payload) => {
+      //custom logic to regex search for tenant id in the issuer.
+      //test multi tenant setup.
+      //test msa
+
+      if (err) {
+        console.log(err);
+        return res.sendStatus(403);
+      }
+
+      next();
+    });
+  }
+}
+
+function getSigningKeys(header: any, callback: any) {
+  var client: JwksClient = new JwksClient({
+    jwksUri: DISCOVERY_KEYS_ENDPOINT,
+  });
+
+  client.getSigningKey(header.kid, function (err, key) {
+    callback(null, key.getPublicKey());
+  });
 }

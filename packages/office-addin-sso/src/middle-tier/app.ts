@@ -13,7 +13,7 @@ import * as path from "path";
 import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
 import { getGraphData } from "./msgraph-helper";
-import { getAccessToken } from "./ssoauth-helper";
+import { getAccessToken, validateJwt } from "./ssoauth-helper";
 import { usageDataObject } from "../defaults";
 
 /* global process, require, __dirname */
@@ -73,11 +73,11 @@ export class App {
       return res.sendfile("fallbackauthdialog.html");
     });
 
-    this.appInstance.get("/getuserdata", async function (req: any, res: any, next: any) {
+    this.appInstance.get("/getuserdata", validateJwt, async function (req: any, res: any, next: any) {
       const graphTokenResponse = await getAccessToken(req.get("Authorization"));
       if (graphTokenResponse.claims || graphTokenResponse.error) {
         graphTokenResponse.claims
-          ? usageDataObject.reportEvent("CliamsResponse")
+          ? usageDataObject.reportSuccess("getuserdata()", { details: "Got claims response" })
           : usageDataObject.reportError(
               "AccessTokenError",
               new Error("Access Token Error: " + graphTokenResponse.error)
