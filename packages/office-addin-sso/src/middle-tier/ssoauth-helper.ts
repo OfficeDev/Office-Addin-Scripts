@@ -15,7 +15,7 @@ const DISCOVERY_KEYS_ENDPOINT = "https://login.microsoftonline.com/common/discov
 
 export async function getAccessToken(authorization: string): Promise<any> {
   const scopeName: string = process.env.SCOPE || "User.Read";
-  if (authorization == null) {
+  if (authorization === null) {
     let error = new Error("No Authorization header was found.");
     Promise.reject(error);
   } else {
