@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/experimental-utils'
+import { ESLintUtils } from '@typescript-eslint/utils'
 import rule from '../../src/rules/call-sync-before-read';
 
 const ruleTester = new ESLintUtils.RuleTester({

@@ -1,4 +1,4 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { TSESTree } from "@typescript-eslint/utils";
 
 export = {
   name: "no-context-sync-in-loop",

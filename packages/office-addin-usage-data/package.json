@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/mocha": "^5.2.7",
     "@types/node": "^14.17.2",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
     "concurrently": "^6.0.2",
     "eslint": "7.32.0",
     "eslint-plugin-office-addins": "^2.1.0",

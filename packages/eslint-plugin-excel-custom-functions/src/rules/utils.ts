@@ -4,7 +4,7 @@ import {
   ESLintUtils,
   TSESLint,
   TSESTree,
-} from "@typescript-eslint/experimental-utils";
+} from "@typescript-eslint/utils";
 import * as ts from "typescript";
 
 export enum OfficeCalls {

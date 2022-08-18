@@ -1,7 +1,7 @@
 import {
   AST_NODE_TYPES,
   TSESTree,
-} from "@typescript-eslint/experimental-utils";
+} from "@typescript-eslint/utils";
 import { findTopLevelExpression } from "./utils";
 
 export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
