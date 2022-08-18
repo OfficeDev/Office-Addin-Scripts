@@ -179,7 +179,6 @@ function updateFallBackAuthDialogFile(
 
 function projectManifestConfigured(manifestPath: string): boolean {
   if (fs.existsSync(manifestPath)) {
-    // Update manifest with application guid and unique manifest id
     const manifestContent: string = fs.readFileSync(manifestPath, "utf8");
 
     // Check to see if the manifest has already been updated and return if it has
