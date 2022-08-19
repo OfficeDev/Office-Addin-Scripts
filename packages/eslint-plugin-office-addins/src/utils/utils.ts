@@ -1,12 +1,12 @@
 import {
   AST_NODE_TYPES,
   TSESTree,
-} from "@typescript-eslint/experimental-utils";
+} from "@typescript-eslint/utils";
 import {
   Reference,
   Scope,
   Variable,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+} from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { isGetFunction } from "./getFunction";
 import { isLoadReference } from "./load";
 

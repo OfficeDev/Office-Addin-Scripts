@@ -2,7 +2,7 @@ import {
   TSESTree,
   ESLintUtils,
   ParserServices,
-} from "@typescript-eslint/experimental-utils";
+} from "@typescript-eslint/utils";
 import {
   REPO_URL,
   callExpressionAnalysis,
@@ -12,7 +12,7 @@ import {
   RuleContext,
   RuleMetaDataDocs,
   RuleMetaData,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
+} from "@typescript-eslint/utils/dist/ts-eslint";
 import ts from "typescript";
 
 /**
@@ -33,7 +33,7 @@ export = {
   meta: {
     docs: {
       description: "Prevents office write api calls",
-      category: <RuleMetaDataDocs["category"]>"Best Practices",
+      category: "Best Practices",
       recommended: <RuleMetaDataDocs["recommended"]>"error",
       requiresTypeChecking: true,
       url: REPO_URL,

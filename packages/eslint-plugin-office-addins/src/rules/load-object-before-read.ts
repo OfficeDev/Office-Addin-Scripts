@@ -1,9 +1,9 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { TSESTree } from "@typescript-eslint/utils";
 import {
   Reference,
   Scope,
   Variable,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+} from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { parseLoadArguments, isLoadFunction } from "../utils/load";
 import { findPropertiesRead } from "../utils/utils";
 import { isGetFunction } from "../utils/getFunction";
