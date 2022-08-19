@@ -4,11 +4,13 @@
 import * as assert from "assert";
 import * as defaults from "./../src/defaults";
 import * as fs from "fs";
-import * as mocha from "mocha";
 import * as path from 'path';
 import * as server from './../src/server';
 import * as ssoData from './../src/ssoDataSettings';
 import * as testHelper from "office-addin-test-helpers";
+
+/* global process, describe, before, it, after */
+
 const appId: string = '584c9885-baa7-44ef-95b6-6df1064a2e25';
 const port: string = '3000';
 const ssoAppName: string = 'Office-Addin-Taskpane-SSO-Test';
