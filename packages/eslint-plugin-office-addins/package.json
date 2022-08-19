@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-office-addins",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "eslint plugin for office-addins",
   "keywords": [
     "eslint",
@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^5.33.1",
-    "@typescript-eslint/utils": "^5.33.1",
     "@typescript-eslint/parser": "^5.33.1",
+    "@typescript-eslint/utils": "^5.33.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
