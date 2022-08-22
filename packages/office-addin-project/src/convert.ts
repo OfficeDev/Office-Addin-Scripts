@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as archiver from "archiver";
+import * as AdmZip from "adm-zip";
 import * as fs from "fs";
+import * as fsExtra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as path from "path";
 import * as util from "util";
@@ -47,25 +48,25 @@ async function asksForUserConfirmation(): Promise<boolean> {
 }
 
 async function backupProject(backupPath: string) {
-  const stream = fs.createWriteStream(backupPath);
-  const archive = archiver("zip", {
-    zlib: { level: 9 }, // Sets the compression level.
+  const zip: AdmZip = new AdmZip();
+  const outputPath = path.resolve(backupPath);
+
+  const files: string[] = fs.readdirSync(__dirname);
+  files.forEach((entry) => {
+    const entryStats = fs.lstatSync(entry);
+    if (entryStats.isDirectory()) {
+      zip.addLocalFolder(entry);
+    } else {
+      zip.addLocalFile(entry);
+    }
   });
 
-  return new Promise<void>((resolve, reject) => {
-    archive
-      .glob(`{,!(node_modules)/**/}*`)
-      .on("error", (err) => reject(err))
-      .pipe(stream);
-
-    stream.on("close", () => {
-      console.log(
-        `A backup of your project was created to ${path.resolve(backupPath)}`
-      );
-      resolve();
-    });
-    archive.finalize();
-  });
+  fsExtra.ensureDirSync(path.dirname(outputPath));
+  if (await zip.writeZipPromise(outputPath)) {
+    console.log(`A backup of your project was created to ${outputPath}`);
+  } else {
+    throw new Error(`Error writting zip file to ${outputPath}`);
+  }
 }
 
 function updatePackages(): void {

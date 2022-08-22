@@ -489,11 +489,11 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.defaultLocale, "en-us");
         assert.strictEqual(info.description, "A template to get started.");
         assert.strictEqual(info.displayName, "Contoso Task Pane Add-in");
-        assert.strictEqual(info.highResolutionIconUrl, "https://localhost:3000/assets/icon-128.png");
+        assert.strictEqual(info.highResolutionIconUrl, "test/assets/icon-128.png", "highResolutionIconUrl");
         assert.strictEqual(info.hosts instanceof Array, true);
         assert.strictEqual(info.hosts!.length, 1);
         assert.strictEqual(info.hosts![0], "mail");
-        assert.strictEqual(info.iconUrl, "https://localhost:3000/assets/icon-128.png");
+        assert.strictEqual(info.iconUrl, "test/assets/icon-128.png", "iconUrl");
         assert.strictEqual(info.officeAppType, "AddinCommands");
         assert.strictEqual(info.permissions, "Mailbox.ReadWrite");
         assert.strictEqual(info.providerName, "Contoso");
