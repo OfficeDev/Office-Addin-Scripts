@@ -51,15 +51,18 @@ async function asksForUserConfirmation(): Promise<boolean> {
 
 async function backupProject(backupPath: string) {
   const zip: AdmZip = new AdmZip();
-  const outputPath = path.resolve(backupPath);
+  const outputPath: string = path.resolve(backupPath);
+  const rootDir: string = path.resolve(); 
 
-  const files: string[] = fs.readdirSync(__dirname);
+  const files: string[] = fs.readdirSync(rootDir);
   files.forEach((entry) => {
-    const entryStats = fs.lstatSync(entry);
+    const fullPath = path.resolve(entry)
+    const entryStats = fs.lstatSync(fullPath);
+
     if (skipBackup.includes(entry)) {
       // Don't add it to the backup
     } else if (entryStats.isDirectory()) {
-      zip.addLocalFolder(entry);
+      zip.addLocalFolder(entry, entry);
     } else {
       zip.addLocalFile(entry);
     }
