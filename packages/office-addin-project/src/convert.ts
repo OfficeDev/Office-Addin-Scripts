@@ -12,6 +12,8 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
 
+const skipBackup: string[] = [ "node_modules" ]
+
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
   backupPath: string = "./backup.zip"
@@ -54,7 +56,9 @@ async function backupProject(backupPath: string) {
   const files: string[] = fs.readdirSync(__dirname);
   files.forEach((entry) => {
     const entryStats = fs.lstatSync(entry);
-    if (entryStats.isDirectory()) {
+    if (skipBackup.includes(entry)) {
+      // Don't add it to the backup
+    } else if (entryStats.isDirectory()) {
       zip.addLocalFolder(entry);
     } else {
       zip.addLocalFile(entry);
