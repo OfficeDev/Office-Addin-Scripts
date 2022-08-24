@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
-import * as jszip from "jszip";
+import * as AdmZip from "adm-zip";
 import * as path from "path";
 import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
 
@@ -9,7 +9,7 @@ import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
 export async function exportMetadataPackage(output: string = "", manifest: string = "manifest.json"): Promise<string> {
   const manifestPath: string = path.resolve(manifest);
 
-  const zip: jszip = await createZip(manifestPath);
+  const zip: AdmZip = await createZip(manifestPath);
 
   if (output === "") {
     output = path.join(path.dirname(manifestPath), "manifest.zip");
@@ -19,17 +19,15 @@ export async function exportMetadataPackage(output: string = "", manifest: strin
   return Promise.resolve(output);
 }
 
-async function createZip(manifestPath: string = "manifest.json"): Promise<jszip> {
-  const zip = new jszip();
+async function createZip(manifestPath: string = "manifest.json"): Promise<AdmZip> {
+  const zip: AdmZip = new AdmZip();
 
   if (fs.existsSync(manifestPath)) {
-    const manifestData = fs.readFileSync(manifestPath);
-    zip.file("manifest.json", manifestData);
+    zip.addLocalFile(manifestPath);
   } else {
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
-  // Need json manifest manipulation before this can work.
   const manifest: TeamsAppManifest = await ManifestUtil.loadFromPath(manifestPath);
   addIconFile(manifest.icons?.color, zip);
   addIconFile(manifest.icons?.outline, zip);
@@ -37,28 +35,25 @@ async function createZip(manifestPath: string = "manifest.json"): Promise<jszip>
   return Promise.resolve(zip);
 }
 
-function addIconFile(iconPath: string, zip: jszip) {
+function addIconFile(iconPath: string, zip: AdmZip) {
   if (iconPath && !iconPath.startsWith("https://")) {
     const filePath: string = path.resolve(iconPath);
     if (fs.existsSync(filePath)) {
-      zip.file(iconPath, fs.readFileSync(filePath));
+      zip.addLocalFile(iconPath, path.dirname(iconPath));
+    } else {
+      console.log(`Icon File ${filePath} does not exist`);
     }
   }
 }
 
-async function saveZip(zip: jszip, outputPath: string): Promise<void> {
+async function saveZip(zip: AdmZip, outputPath: string): Promise<void> {
   outputPath = path.resolve(outputPath);
 
   fsExtra.ensureDirSync(path.dirname(outputPath));
-  return new Promise<void>((fulfill) =>
-    zip
-      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-      .pipe(fs.createWriteStream(outputPath))
-      .on("finish", function () {
-        // JSZip generates a readable stream with a "end" event,
-        // but is piped here in a writable stream which emits a "finish" event.
-        console.log(`Manifest package saved to ${outputPath}`);
-        fulfill();
-      })
-  );
+  const result: Boolean = await zip.writeZipPromise(outputPath);
+  if (result) {
+    console.log(`Manifest package saved to ${outputPath}`);
+  } else {
+    throw new Error(`Error writting zip file to ${outputPath}`);
+  }
 }
