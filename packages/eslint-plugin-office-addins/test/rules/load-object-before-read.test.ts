@@ -121,6 +121,15 @@ ruleTester.run('load-object-before-read', rule, {
         console.log(range.format.fill.color);
         console.log(range.address);`
     },
+    {
+      code: `
+        const range = context.workbook.getSelectedRange();
+        const first = range.getCell(0, 0);
+        const spillParent = first.getSpillParentOrNullObject();
+        await context.sync();
+        const cell = spillParent.isNullObject ? first : spillParent;
+        console.log(cell);`
+    },
   ],
   invalid: [
     {
