@@ -1,5 +1,5 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
-import { Variable } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { TSESTree } from "@typescript-eslint/utils";
+import { Variable } from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { findTopLevelExpression } from "../utils/utils";
 import { findOfficeApiReferences, OfficeApiReference } from "../utils/utils";
 

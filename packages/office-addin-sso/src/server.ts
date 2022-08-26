@@ -5,7 +5,7 @@
 import * as https from "https";
 import * as devCerts from "office-addin-dev-certs";
 import { OfficeAddinManifest } from "office-addin-manifest";
-import { App } from "./app";
+import { App } from "./middle-tier/app";
 import { getSecretFromCredentialStore } from "./ssoDataSettings";
 import { usageDataObject } from "./defaults";
 

@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/experimental-utils'
+import { ESLintUtils } from '@typescript-eslint/utils'
 import rule from '../../src/rules/no-empty-load';
 
 const ruleTester = new ESLintUtils.RuleTester({

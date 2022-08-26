@@ -1,16 +1,16 @@
 import {
   TSESTree,
   AST_NODE_TYPES,
-} from "@typescript-eslint/experimental-utils";
+} from "@typescript-eslint/utils";
 import {
   Reference,
   Scope,
   Variable,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+} from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import {
   RuleFix,
   RuleFixer,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint";
+} from "@typescript-eslint/utils/dist/ts-eslint";
 import { isGetOrNullObjectFunction } from "../utils/getFunction";
 
 export = {
