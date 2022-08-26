@@ -1,12 +1,12 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { TSESTree } from "@typescript-eslint/utils";
 import {
   Reference,
   Scope,
   Variable,
-} from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+} from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { parseLoadArguments, isLoadFunction } from "../utils/load";
 import { findPropertiesRead } from "../utils/utils";
-import { isGetFunction } from "../utils/getFunction";
+import { isGetFunction, isGetOrNullObjectFunction } from "../utils/getFunction";
 
 export = {
   name: "load-object-before-read",
@@ -61,7 +61,11 @@ export = {
           ) {
             getFound = false; // In case of reassignment
 
-            if (node.parent.init && isGetFunction(node.parent.init)) {
+            if (
+              node.parent.init &&
+              isGetFunction(node.parent.init) &&
+              !isGetOrNullObjectFunction(node.parent.init)
+            ) {
               getFound = true;
               return;
             }
@@ -72,7 +76,10 @@ export = {
           ) {
             getFound = false; // In case of reassignment
 
-            if (isGetFunction(node.parent.right)) {
+            if (
+              isGetFunction(node.parent.right) &&
+              !isGetOrNullObjectFunction(node.parent.right)
+            ) {
               getFound = true;
               return;
             }

@@ -1,6 +1,6 @@
 {
   "name": "office-addin-mock",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Provides mocking support for Office-js APIs",
   "main": "./lib/main.js",
   "scripts": {
@@ -15,8 +15,8 @@
     "office-js"
   ],
   "dependencies": {
-    "office-addin-manifest": "^1.9.0",
-    "office-addin-usage-data": "^1.5.0"
+    "office-addin-manifest": "^1.10.0",
+    "office-addin-usage-data": "^1.6.0"
   },
   "devDependencies": {
     "@types/mocha": "^9.0.0",
@@ -24,7 +24,7 @@
     "assert": "^2.0.0",
     "concurrently": "^6.2.1",
     "mocha": "^9.1.2",
-    "office-addin-lint": "^2.1.0",
+    "office-addin-lint": "^2.2.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"

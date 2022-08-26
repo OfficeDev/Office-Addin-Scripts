@@ -1,4 +1,4 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
+import { TSESTree } from "@typescript-eslint/utils";
 import * as getJson from "./data/getFunctions.json";
 
 const getFunctions: Set<string> = new Set<string>(getJson.getFunctions);

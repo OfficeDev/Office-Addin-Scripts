@@ -12,8 +12,9 @@ import * as express from "express";
 import * as path from "path";
 import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
-import { AuthRouter } from "./authRoute";
 import { getGraphData } from "./msgraph-helper";
+import { getAccessToken, validateJwt } from "./ssoauth-helper";
+import { usageDataObject } from "../defaults";
 
 /* global process, require, __dirname */
 
@@ -52,15 +53,12 @@ export class App {
       this.appInstance.use(express.static(path.join(process.cwd(), "dist")));
     }
 
-    const authRouter = new AuthRouter();
-
     const indexRouter = express.Router();
     indexRouter.get("/", function (req, res) {
       res.render("/taskpane.html");
     });
 
     this.appInstance.use("/", indexRouter);
-    this.appInstance.use("/auth", authRouter.router);
 
     // listen for 'ping'
     this.appInstance.get("/ping", function (req: any, res: any) {
@@ -75,20 +73,33 @@ export class App {
       return res.sendfile("fallbackauthdialog.html");
     });
 
-    this.appInstance.get("/getuserdata", async function (req: any, res: any, next: any) {
-      const graphToken = req.get("access_token");
-      const graphUrlSegment = process.env.GRAPH_URL_SEGMENT || "/me";
-      const graphQueryParamSegment = process.env.QUERY_PARAM_SEGMENT || "";
-
-      const graphData = await getGraphData(graphToken, graphUrlSegment, graphQueryParamSegment);
-
-      // If Microsoft Graph returns an error, such as invalid or expired token,
-      // there will be a code property in the returned object set to a HTTP status (e.g. 401).
-      // Relay it to the client. It will caught in the fail callback of `makeGraphApiCall`.
-      if (graphData.code) {
-        next(createError(graphData.code, "Microsoft Graph error " + JSON.stringify(graphData)));
+    this.appInstance.get("/getuserdata", validateJwt, async function (req: any, res: any, next: any) {
+      const graphTokenResponse = await getAccessToken(req.get("Authorization"));
+      if (graphTokenResponse.claims || graphTokenResponse.error) {
+        graphTokenResponse.claims
+          ? usageDataObject.reportSuccess("getuserdata()", { details: "Got claims response" })
+          : usageDataObject.reportError(
+              "AccessTokenError",
+              new Error("Access Token Error: " + graphTokenResponse.error)
+            );
+        res.send(graphTokenResponse);
       } else {
-        res.send(graphData);
+        const graphToken: string = graphTokenResponse.access_token;
+        const graphUrlSegment: string = process.env.GRAPH_URL_SEGMENT || "/me";
+        const graphQueryParamSegment: string = process.env.QUERY_PARAM_SEGMENT || "";
+
+        const graphData = await getGraphData(graphToken, graphUrlSegment, graphQueryParamSegment);
+
+        // If Microsoft Graph returns an error, such as invalid or expired token,
+        // there will be a code property in the returned object set to a HTTP status (e.g. 401).
+        // Relay it to the client. It will caught in the fail callback of `makeGraphApiCall`.
+        if (graphData.code) {
+          usageDataObject.reportException("getuserdata()", graphData.code);
+          next(createError(graphData.code, "Microsoft Graph error " + JSON.stringify(graphData)));
+        } else {
+          usageDataObject.reportSuccess("getuserdata()");
+          res.send(graphData);
+        }
       }
     });
 
