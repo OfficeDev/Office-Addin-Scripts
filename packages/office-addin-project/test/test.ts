@@ -36,7 +36,7 @@ describe("office-addin-project tests", function() {
       it("Converts TaskPane manifest", async function() {
         this.timeout(6000);
         const manifestPath = "./test/TaskPane.manifest.xml";
-        const outputPath = "./temp2/";
+        const outputPath = "./temp/";
         await convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "TaskPane.manifest.json")), true);
       });
