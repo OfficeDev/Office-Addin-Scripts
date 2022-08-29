@@ -44,7 +44,7 @@ describe("office-addin-project tests", function() {
         this.timeout(6000);
         const manifestPath = "./test/invalid.manifest.xml";
         const outputPath = "./out";
-        await convert(manifestPath, outputPath);
+        convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), false);
       });
     });
