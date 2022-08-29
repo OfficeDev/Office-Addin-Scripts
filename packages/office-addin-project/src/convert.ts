@@ -19,7 +19,7 @@ export async function convertProject(
   manifestPath: string = "./manifest.xml",
   backupPath: string = "./backup.zip"
 ) {
-  const outputPath: string = "./manifest";
+  const outputPath: string = path.dirname(manifestPath);
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
       `The convert command only works on xml manifest based projects`
