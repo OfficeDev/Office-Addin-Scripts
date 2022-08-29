@@ -13,7 +13,7 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
 
-const skipBackup: string[] = [ "node_modules" ]
+const skipBackup: string[] = ["node_modules"];
 
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
@@ -55,11 +55,11 @@ async function asksForUserConfirmation(): Promise<boolean> {
 async function backupProject(backupPath: string) {
   const zip: AdmZip = new AdmZip();
   const outputPath: string = path.resolve(backupPath);
-  const rootDir: string = path.resolve(); 
+  const rootDir: string = path.resolve();
 
   const files: string[] = fs.readdirSync(rootDir);
   files.forEach((entry) => {
-    const fullPath = path.resolve(entry)
+    const fullPath = path.resolve(entry);
     const entryStats = fs.lstatSync(fullPath);
 
     if (skipBackup.includes(entry)) {

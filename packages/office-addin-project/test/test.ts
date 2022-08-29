@@ -7,7 +7,6 @@ import * as mocha from "mocha";
 import * as path from "path";
 import { convertProject } from "../src/convert";
 import { convert } from "office-addin-manifest-converter";
-import { ExpectedError } from "office-addin-usage-data";
 
 describe("office-addin-project tests", function() {
   describe("convert.ts", function() {
