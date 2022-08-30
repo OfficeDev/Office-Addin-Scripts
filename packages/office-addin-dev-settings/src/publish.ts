@@ -7,19 +7,21 @@ import * as path from "path";
 
 /* global console */
 
-export async function registerWithTeams(zipPath: string): Promise<void> {
+export async function registerWithTeams(zipPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if (zipPath.endsWith(".zip") && fs.existsSync(zipPath)) {
       const sideloadCommand = `npx @microsoft/teamsfx-cli m365 sideloading --file-path ${zipPath}`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
-        if (error) {
-          console.log(`Error sideloading:\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
+        let titleIdMatch = stdout.match(/TitleId:\s*(.*)/);
+        let titleId = titleIdMatch !== null ? titleIdMatch[1] : '??';
+        if (error || stderr.match("\"error\"")) {
+          console.log(`\n${stdout}\n--Error sideloading!--\nError: ${error}\nSTDERR:\n${stderr}`);
           reject(error);
         } else {
-          console.log(`Successfully registered package:\n ${stdout}\n STDERR: ${stderr}\n`);
-          resolve();
+          console.log(`\n${stdout}\nSuccessfully registered package! (${titleId})\n STDERR: ${stderr}\n`);
+          resolve(titleId);
         }
       });
     } else {
@@ -39,6 +41,23 @@ export async function updateM365Account(operation: "login" | "logout"): Promise<
         reject(error);
       } else {
         console.log(`Successfully logged in/out.\n`);
+        resolve();
+      }
+    });
+  });
+}
+
+export async function unaquireWithTeams(titleId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const unaquireCommand = `npx @microsoft/teamsfx-cli m365 unacquire --title-id ${titleId}`;
+
+    console.log(`running: ${unaquireCommand}`);
+    childProcess.exec(unaquireCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`\n${stdout}\n--Error unaquireing!--\n${error}\n STDERR: ${stderr}`);
+        reject(error);
+      } else {
+        console.log(`\n${stdout}\nSuccessfully unaquired title!\n STDERR: ${stderr}\n`);
         resolve();
       }
     });
