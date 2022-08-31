@@ -13,7 +13,7 @@ import {
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
-import { registerWithTeams, unaquireWithTeams } from "./publish";
+import { registerWithTeams, unacquireWithTeams } from "./publish";
 import * as fspath from "path";
 
 /* global process */
@@ -286,7 +286,7 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
   if (addinId) {
     const regValue = await registry.getValue(key, addinId);
     if(regValue != undefined && !regValue.data.endsWith(".xml")) {
-      unaquireWithTeams(regValue.data);
+      unacquireWithTeams(regValue.data);
     }
 
     await registry.deleteValue(key, addinId);
@@ -305,7 +305,7 @@ export async function unregisterAllAddIns(): Promise<void> {
   for (const value of values) {
     const regValue = await registry.getValue(key, value.name);
     if(regValue != undefined && !regValue.data.endsWith(".xml")) {
-      unaquireWithTeams(regValue.data);
+      unacquireWithTeams(regValue.data);
     }
 
     await registry.deleteValue(key, value.name);

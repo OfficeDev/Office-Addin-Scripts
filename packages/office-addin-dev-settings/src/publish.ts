@@ -47,17 +47,17 @@ export async function updateM365Account(operation: "login" | "logout"): Promise<
   });
 }
 
-export async function unaquireWithTeams(titleId: string): Promise<void> {
+export async function unacquireWithTeams(titleId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const unaquireCommand = `npx @microsoft/teamsfx-cli m365 unacquire --title-id ${titleId}`;
+    const unacquireCommand = `npx @microsoft/teamsfx-cli m365 unacquire --title-id ${titleId}`;
 
-    console.log(`running: ${unaquireCommand}`);
-    childProcess.exec(unaquireCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.log(`\n${stdout}\n--Error unaquireing!--\n${error}\n STDERR: ${stderr}`);
+    console.log(`running: ${unacquireCommand}`);
+    childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
+      if (error || stderr.match("\"error\"")) {
+        console.log(`\n${stdout}\n--Error unacquireing!--\n${error}\n STDERR: ${stderr}`);
         reject(error);
       } else {
-        console.log(`\n${stdout}\nSuccessfully unaquired title!\n STDERR: ${stderr}\n`);
+        console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
         resolve();
       }
     });
