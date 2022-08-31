@@ -12,8 +12,7 @@ export async function convert(command: commander.Command) {
     const backupPath: string = command.backup ?? "./backup.zip";
 
     await convertProject(manifestPath, backupPath);
-    throw new Error("Upgrade function is not ready yet.");
-    // usageDataObject.reportSuccess("convert");
+    usageDataObject.reportSuccess("convert");
   } catch (err: any) {
     usageDataObject.reportException("convert", err);
     logErrorMessage(err);

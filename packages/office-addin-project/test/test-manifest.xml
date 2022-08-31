@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="MailApp">
+   <Id>cd65cfae-6426-46ae-b778-a36ae2f4f1e5</Id>
+   <Version>1.0.0.0</Version>
+   <ProviderName>Add-in Express Ltd</ProviderName>
+   <DefaultLocale>en-US</DefaultLocale>
+   <DisplayName DefaultValue="Attachments" />
+   <Description DefaultValue="When you are looking for a file in Outlook online, let the Attachments add-in quickly find it for you. Click on its name in any email to get a list of all files used in the conversation, filter them by sender, search attachments, and more." />
+   <IconUrl DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/conversation-attachments-main-icon_64.png" />
+   <HighResolutionIconUrl DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/conversation-attachments-main-icon_128.png" />
+   <SupportUrl DefaultValue="https://www.ablebits.com/outlook-online/attachments/howto.php" />
+   <Hosts>
+      <Host Name="Mailbox" />
+   </Hosts>
+   <Requirements>
+      <Sets>
+         <Set Name="MailBox" MinVersion="1.1" />
+      </Sets>
+   </Requirements>
+   <FormSettings>
+      <Form xsi:type="ItemRead">
+         <DesktopSettings>
+            <SourceLocation DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/appread/index.html" />
+            <RequestedHeight>250</RequestedHeight>
+         </DesktopSettings>
+         <TabletSettings>
+            <SourceLocation DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/appread/index.html" />
+            <RequestedHeight>250</RequestedHeight>
+         </TabletSettings>
+         <PhoneSettings>
+            <SourceLocation DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/appread/index.html" />
+         </PhoneSettings>
+      </Form>
+   </FormSettings>
+   <Permissions>ReadWriteMailbox</Permissions>
+   <Rule xsi:type="RuleCollection" Mode="Or">
+      <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read" />
+   </Rule>
+   <DisableEntityHighlighting>false</DisableEntityHighlighting>
+   <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
+      <Requirements>
+         <bt:Sets DefaultMinVersion="1.3">
+            <bt:Set Name="Mailbox" />
+         </bt:Sets>
+      </Requirements>
+      <Hosts>
+         <Host xsi:type="MailHost">
+            <DesktopFormFactor>
+               <FunctionFile resid="functionFile0" />
+               <ExtensionPoint xsi:type="MessageReadCommandSurface">
+                  <OfficeTab id="TabDefault00">
+                     <Group id="msgReadDemoGroup00">
+                        <Label resid="groupLabel00" />
+                        <!--  Task pane button  -->
+                        <Control xsi:type="Button" id="msgReadOpenPaneButton0">
+                           <Label resid="paneReadButtonLabel" />
+                           <Supertip>
+                              <Title resid="paneReadSupertipTitle" />
+                              <Description resid="paneReadSupertipDescription" />
+                           </Supertip>
+                           <Icon>
+                              <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                              <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                              <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                           </Icon>
+                           <Action xsi:type="ShowTaskpane">
+                              <SourceLocation resid="readTaskPaneUrl0" />
+                           </Action>
+                        </Control>
+                     </Group>
+                  </OfficeTab>
+               </ExtensionPoint>
+               <ExtensionPoint xsi:type="AppointmentOrganizerCommandSurface">
+                  <OfficeTab id="TabDefault01">
+                     <Group id="apptComposeDemoGroup">
+                        <Label resid="groupLabel01" />
+                        <Control xsi:type="Menu" id="apptComposeOpenDisplayDialogMenu">
+                           <Label resid="displayDialogButtonLabel" />
+                           <Supertip>
+                              <Title resid="displayDialogSupertipTitle" />
+                              <Description resid="displayDialogSupertipDescription" />
+                           </Supertip>
+                           <Icon>
+                              <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                              <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                              <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                           </Icon>
+                           <Items>
+                              <Item id="displayDialogApptComposeFunctionButton">
+                                 <Label resid="displayDialogFuncButtonLabel" />
+                                 <Supertip>
+                                    <Title resid="displayDialogSupertipTitle" />
+                                    <Description resid="funcComposeSupertipDescription" />
+                                 </Supertip>
+                                 <Icon>
+                                    <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                                    <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                                    <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                                 </Icon>
+                                 <Action xsi:type="ExecuteFunction">
+                                    <FunctionName>displayDialog</FunctionName>
+                                 </Action>
+                              </Item>
+                              <Item id="displayDialogApptComposeOpenPaneButton">
+                                 <Label resid="displayDialogPaneButtonLabel" />
+                                 <Supertip>
+                                    <Title resid="displayDialogSupertipTitle" />
+                                    <Description resid="paneSupertipDescription" />
+                                 </Supertip>
+                                 <Icon>
+                                    <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                                    <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                                    <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                                 </Icon>
+                                 <Action xsi:type="ShowTaskpane">
+                                    <SourceLocation resid="readTaskPaneUrl0" />
+                                 </Action>
+                              </Item>
+                           </Items>
+                        </Control>
+                     </Group>
+                  </OfficeTab>
+               </ExtensionPoint>
+               <ExtensionPoint xsi:type="LaunchEvent">
+                  <LaunchEvents>
+                     <LaunchEvent Type="OnNewMessageCompose" FunctionName="autoRunFunction" />
+                  </LaunchEvents>
+                  <SourceLocation resid="eventHandlers" />
+               </ExtensionPoint>
+            </DesktopFormFactor>
+         </Host>
+      </Hosts>
+      <Resources>
+         <bt:Images>
+            <bt:Image id="ribbon-attachments-icon-16" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/assets/conversation-attachments-main-icon-ribbon_16.png" />
+            <bt:Image id="ribbon-attachments-icon-32" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/assets/conversation-attachments-main-icon-ribbon_32.png" />
+            <bt:Image id="ribbon-attachments-icon-80" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/assets/conversation-attachments-main-icon-ribbon_80.png" />
+         </bt:Images>
+         <bt:Urls>
+            <bt:Url id="functionFile0" DefaultValue="https://featuretest.olkeco.com/FeatureTest/DisplayDialogPlayground/app/FunctionFile/Functions.html" />
+            <bt:Url id="readTaskPaneUrl0" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/appread/index.html" />
+            <bt:Url id="customPaneUrl" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/appread/index.html" />
+         </bt:Urls>
+         <bt:ShortStrings>
+            <bt:String id="groupLabel00" DefaultValue="Ablebits00" />
+            <bt:String id="groupLabel01" DefaultValue="Ablebits01" />
+            <!--  Read mode  -->
+            <bt:String id="paneReadButtonLabel" DefaultValue="Conversation attachments" />
+            <bt:String id="paneReadSupertipTitle" DefaultValue="Open Attachments add-in" />
+            <bt:String id="displayDialogButtonLabel" DefaultValue="Display Dialog Playground" />
+            <bt:String id="displayDialogSupertipTitle" DefaultValue="Tests Display Dialog" />
+            <bt:String id="displayDialogPaneButtonLabel" DefaultValue="Task pane display dialog" />
+            <bt:String id="displayDialogFuncButtonLabel" DefaultValue="UI-less display dialog" />
+         </bt:ShortStrings>
+         <bt:LongStrings>
+            <!--  Read mode  -->
+            <bt:String id="paneReadSupertipDescription" DefaultValue="Get a list of attachments in this email conversation" />
+            <bt:String id="displayDialogSupertipDescription" DefaultValue="Tests UI-less, non-iframeable, and task pane DisplayDialog" />
+            <bt:String id="funcComposeSupertipDescription" DefaultValue="Tests UI-less display dialog." />
+            <bt:String id="paneSupertipDescription" DefaultValue="Tests task pane display dialog" />
+         </bt:LongStrings>
+      </Resources>
+      <VersionOverrides xsi:type="VersionOverridesV1_1">
+         <Requirements>
+            <bt:Sets DefaultMinVersion="1.3">
+               <bt:Set Name="Mailbox" />
+            </bt:Sets>
+         </Requirements>
+         <Hosts>
+            <Host xsi:type="MailHost">
+               <Runtimes>
+                  <Runtime resid="runtime0">
+                     <Override type="javascript" resid="runtime0Js" />
+                  </Runtime>
+               </Runtimes>
+               <DesktopFormFactor>
+                  <FunctionFile resid="functionFile1" />
+                  <ExtensionPoint xsi:type="MessageReadCommandSurface">
+                     <OfficeTab id="TabDefault10">
+                        <Group id="msgReadDemoGroup1">
+                           <Label resid="groupLabel10" />
+                           <!--  Task pane button  -->
+                           <Control xsi:type="Button" id="msgReadOpenPaneButton1">
+                              <Label resid="paneReadButtonLabel" />
+                              <Supertip>
+                                 <Title resid="paneReadSupertipTitle" />
+                                 <Description resid="paneReadSupertipDescription" />
+                              </Supertip>
+                              <Icon>
+                                 <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                                 <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                                 <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                              </Icon>
+                              <Action xsi:type="ShowTaskpane">
+                                 <SourceLocation resid="readTaskPaneUrl1" />
+                              </Action>
+                           </Control>
+                           <Icon>
+                              <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                              <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                              <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                           </Icon>
+                        </Group>
+                     </OfficeTab>
+                  </ExtensionPoint>
+                  <ExtensionPoint xsi:type="MessageComposeCommandSurface">
+                     <OfficeTab id="TabDefault11">
+                        <InsertAfter>TabHome</InsertAfter>
+                        <Group id="msgComposeDemoGroup">
+                           <Label resid="groupLabel11" />
+                           <Control xsi:type="Menu" id="msgComposeOpenOutlookJsMenu">
+                              <Label resid="outlookJsMenuLabel" />
+                              <Supertip>
+                                 <Title resid="outlookJsMenuLabel" />
+                                 <Description resid="outlookJsSupertipDescription" />
+                              </Supertip>
+                              <Icon>
+                                 <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                                 <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                                 <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                              </Icon>
+                              <Items>
+                                 <Item id="msgComposeOpenPaneButtonOutlookJs">
+                                    <Label resid="paneComposeButtonLabelOutlookJs" />
+                                    <Supertip>
+                                       <Title resid="paneComposeTitleOutlookJs" />
+                                       <Description resid="paneComposeSupertipDescription" />
+                                    </Supertip>
+                                    <Icon>
+                                       <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                                       <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                                       <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                                    </Icon>
+                                    <Action xsi:type="ShowTaskpane">
+                                       <SourceLocation resid="readTaskPaneUrl1" />
+                                    </Action>
+                                 </Item>
+                              </Items>
+                           </Control>
+                        </Group>
+                     </OfficeTab>
+                  </ExtensionPoint>
+                  <ExtensionPoint xsi:type="AppointmentAttendeeCommandSurface">
+                     <OfficeTab id="TabDefault12">
+                        <InsertBefore>TabHome</InsertBefore>
+                        <Group id="apptReadDemoGroup">
+                           <Label resid="groupLabel12" />
+                           <Control xsi:type="Button" id="apptReadOpenPaneButton">
+                              <Label resid="paneReadButtonLabel" />
+                              <Supertip>
+                                 <Title resid="paneReadSupertipTitle" />
+                                 <Description resid="paneReadSupertipDescription" />
+                              </Supertip>
+                              <Icon>
+                                 <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                                 <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                                 <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                              </Icon>
+                              <Action xsi:type="ShowTaskpane">
+                                 <SourceLocation resid="readTaskPaneUrl1" />
+                              </Action>
+                           </Control>
+                           <Control xsi:type="Menu" id="apptReadOpenDisplayDialogMenu">
+                              <Label resid="displayDialogButtonLabel" />
+                              <Supertip>
+                                 <Title resid="displayDialogSupertipTitle" />
+                                 <Description resid="displayDialogSupertipDescription" />
+                              </Supertip>
+                              <Icon>
+                                 <bt:Image size="16" resid="ribbon-attachments-icon-16" />
+                                 <bt:Image size="32" resid="ribbon-attachments-icon-32" />
+                                 <bt:Image size="80" resid="ribbon-attachments-icon-80" />
+                              </Icon>
+                              <Items>
+                                 <Item id="displayDialogApptReadFunctionButton">
+                                    <Label resid="displayDialogFuncButtonLabel" />
+                                    <Supertip>
+                                       <Title resid="displayDialogSupertipTitle" />
+                                       <Description resid="funcComposeSupertipDescription" />
+                                    </Supertip>
+                                    <Action xsi:type="ExecuteFunction">
+                                       <FunctionName>displayDialog</FunctionName>
+                                    </Action>
+                                 </Item>
+                                 <Item id="displayDialogApptReadFunctionButton2">
+                                    <Label resid="displayDialogFuncButtonLabel2" />
+                                    <Supertip>
+                                       <Title resid="displayDialogSupertipTitle" />
+                                       <Description resid="funcReadSupertipDescription" />
+                                    </Supertip>
+                                    <Action xsi:type="ExecuteFunction">
+                                       <FunctionName>displayDialogNonIframeable</FunctionName>
+                                    </Action>
+                                 </Item>
+                              </Items>
+                           </Control>
+                        </Group>
+                     </OfficeTab>
+                  </ExtensionPoint>
+                  <ExtensionPoint xsi:type="LaunchEvent">
+                     <LaunchEvents>
+                        <LaunchEvent Type="OnNewMessageCompose" FunctionName="runLaunchEventMessageTests" />
+                        <LaunchEvent Type="OnNewAppointmentOrganizer" FunctionName="runLaunchEventAppointmentTests" />
+                        <LaunchEvent Type="OnMessageSend" FunctionName="validateSendable" SendMode="PromptUser" />
+                        <LaunchEvent Type="OnAppointmentSend" FunctionName="validateSendable" SendMode="PromptUser" />
+                     </LaunchEvents>
+                     <SourceLocation resid="runtime0" />
+                  </ExtensionPoint>
+               </DesktopFormFactor>
+               <MobileFormFactor>
+                  <FunctionFile resid="mobileFunctionFile" />
+                  <ExtensionPoint xsi:type="MobileOnlineMeetingCommandSurface">
+                     <Control xsi:type="MobileButton" id="msgReadFunctionButton">
+                        <Label resid="addZoomButtonLabel" />
+                        <Icon xsi:type="bt:MobileIconList">
+                           <bt:Image size="25" scale="1" resid="addzoommobile25" />
+                           <bt:Image size="25" scale="2" resid="addzoommobile25" />
+                           <bt:Image size="25" scale="3" resid="addzoommobile25" />
+                           <bt:Image size="32" scale="1" resid="addzoommobile32" />
+                           <bt:Image size="32" scale="2" resid="addzoommobile32" />
+                           <bt:Image size="32" scale="3" resid="addzoommobile32" />
+                           <bt:Image size="48" scale="1" resid="addzoommobile48" />
+                           <bt:Image size="48" scale="2" resid="addzoommobile48" />
+                           <bt:Image size="48" scale="3" resid="addzoommobile48" />
+                        </Icon>
+                        <Action xsi:type="ExecuteFunction">
+                           <FunctionName>oneClickPrepareMeeting</FunctionName>
+                        </Action>
+                     </Control>
+                  </ExtensionPoint>
+               </MobileFormFactor>
+            </Host>
+         </Hosts>
+         <Resources>
+            <bt:Images>
+               <bt:Image id="ribbon-attachments-icon-16" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/assets/conversation-attachments-main-icon-ribbon_16.png" />
+               <bt:Image id="ribbon-attachments-icon-32" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/assets/conversation-attachments-main-icon-ribbon_32.png" />
+               <bt:Image id="ribbon-attachments-icon-80" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/images/assets/conversation-attachments-main-icon-ribbon_80.png" />
+               <bt:Image id="addzoommobile25" DefaultValue="https://st1.zoom.us/assets/addzoom-mobile-25.png" />
+               <bt:Image id="addzoommobile32" DefaultValue="https://st1.zoom.us/assets/addzoom-mobile-32.png" />
+               <bt:Image id="addzoommobile48" DefaultValue="https://st1.zoom.us/assets/addzoom-mobile-48.png" />
+            </bt:Images>
+            <bt:Urls>
+               <bt:Url id="functionFile1" DefaultValue="https://featuretest.olkeco.com/FeatureTest/DisplayDialogPlayground/app/FunctionFile/Functions.html" />
+               <bt:Url id="readTaskPaneUrl1" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/appread/index.html" />
+               <bt:Url id="customPaneUrl1" DefaultValue="https://online-addins.ablebits.com/Dev_conversation-attachments/appread/index.html" />
+               <bt:Url id="runtime0" DefaultValue="https://featuretest.olkeco.com/featureTest/Compose/launchEvent/launchEvent.html" />
+               <bt:Url id="runtime0Js" DefaultValue="https://featuretest.olkeco.com/featureTest/Compose/launchEvent/launchEventWin32.js" />
+               <bt:Url id="mobileFunctionFile" DefaultValue="https://zoom.us/office365/addzoom" />
+            </bt:Urls>
+            <bt:ShortStrings>
+               <bt:String id="groupLabel10" DefaultValue="Ablebits10" />
+               <bt:String id="groupLabel11" DefaultValue="Ablebits11" />
+               <bt:String id="groupLabel12" DefaultValue="Ablebits12" />
+               <bt:String id="addZoomButtonLabel" DefaultValue="Add a Zoom Meeting" />
+               <bt:String id="outlookJsMenuLabel" DefaultValue="Outlook.js" />
+               <!--  Read mode  -->
+               <bt:String id="paneReadButtonLabel" DefaultValue="Conversation attachments" />
+               <bt:String id="paneReadSupertipTitle" DefaultValue="Open Attachments add-in" />
+               <bt:String id="displayDialogButtonLabel" DefaultValue="Display Dialog Playground" />
+               <bt:String id="displayDialogSupertipTitle" DefaultValue="Tests Display Dialog" />
+               <bt:String id="paneComposeButtonLabelOutlookJs" DefaultValue="Step-1 (Compose)" />
+               <bt:String id="paneComposeTitleOutlookJs" DefaultValue="Test Compose Mode APIs" />
+               <bt:String id="displayDialogFuncButtonLabel" DefaultValue="UI-less display dialog" />
+               <bt:String id="displayDialogFuncButtonLabel2" DefaultValue="UI-less non-iframeable dialog" />
+            </bt:ShortStrings>
+            <bt:LongStrings>
+               <!--  Read mode  -->
+               <bt:String id="paneReadSupertipDescription" DefaultValue="Get a list of attachments in this email conversation" />
+               <bt:String id="displayDialogSupertipDescription" DefaultValue="Tests UI-less, non-iframeable, and task pane DisplayDialog" />
+               <bt:String id="funcComposeSupertipDescription" DefaultValue="Tests UI-less display dialog." />
+               <bt:String id="funcReadSupertipDescription" DefaultValue="Tests UI-less non-iframeable dialog" />
+               <bt:String id="outlookJsSupertipDescription" DefaultValue="Tests for outlook.js" />
+               <bt:String id="paneComposeSupertipDescription" DefaultValue="Step-1: Open a New Compose Form -&gt; Click on Start Test -&gt; Wait for all tests to complete -&gt; Note any errors -&gt; Now Send the generated email" />
+            </bt:LongStrings>
+         </Resources>
+         <EquivalentAddins>
+            <EquivalentAddin>
+               <ProgId>BarAddin</ProgId>
+               <DisplayName>Bar Addin</DisplayName>
+               <Type>COM</Type>
+            </EquivalentAddin>
+            <EquivalentAddin>
+               <FileName>foo.xll</FileName>
+               <Type>XLL</Type>
+            </EquivalentAddin>
+         </EquivalentAddins>
+      </VersionOverrides>
+   </VersionOverrides>
+</OfficeApp>
