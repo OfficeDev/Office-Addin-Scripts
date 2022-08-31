@@ -49,17 +49,20 @@ export async function updateM365Account(operation: "login" | "logout"): Promise<
 
 export async function unacquireWithTeams(titleId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const unacquireCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 m365 unacquire --title-id ${titleId}`;
+    console.log(`Unable to unaquire ${titleId} . . . support not availble yet`);
 
-    console.log(`running: ${unacquireCommand}`);
-    childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
-      if (error || stderr.match("\"error\"")) {
-        console.log(`\n${stdout}\n--Error unacquireing!--\n${error}\n STDERR: ${stderr}`);
-        reject(error);
-      } else {
-        console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
-        resolve();
-      }
-    });
+    // Temporaraly disable until teamsfx-cli support is fixed
+    // const unacquireCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 m365 unacquire --title-id ${titleId}`;
+
+    // console.log(`running: ${unacquireCommand}`);
+    // childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
+    //   if (error || stderr.match("\"error\"")) {
+    //     console.log(`\n${stdout}\n--Error unacquireing!--\n${error}\n STDERR: ${stderr}`);
+    //     reject(error);
+    //   } else {
+    //     console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
+    //     resolve();
+    //   }
+    // });
   });
 }
