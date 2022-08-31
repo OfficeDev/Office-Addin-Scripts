@@ -4,7 +4,7 @@
   "description": "Configure developer settings for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
-    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "build": "rimraf lib && cpy src/DevXTool.exe lib --flat && concurrently \"tsc -p tsconfig.json\"",
     "cli": "node lib/cli.js",
     "lint": "office-addin-lint check",
     "lint:fix": "office-addin-lint fix",
