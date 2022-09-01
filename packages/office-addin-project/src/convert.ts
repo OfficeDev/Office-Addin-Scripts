@@ -44,7 +44,7 @@ export async function convertProject(
 
 async function asksForUserConfirmation(): Promise<boolean> {
   const question = {
-    message: `This command will convert your XML manifest to a JSON manifest and upgrade your project dependencies to make it compatible with the new project.\nWould you like to continue?`,
+    message: `This command will convert your current xml manifest to a json manifest and then proceed to upgrade your project dependencies to ensure compatibility with the new project structure.\nHowever, in order for this newly updated project to function correctly you must be on a private environment that has not yet been released publicly.\nWould you like to continue?`,
     name: "didUserConfirm",
     type: "confirm",
   };
