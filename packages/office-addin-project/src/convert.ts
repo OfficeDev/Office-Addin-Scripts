@@ -7,17 +7,19 @@ import * as fsExtra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as path from "path";
 import * as util from "util";
-import { exec } from "child_process";
+import { execSync } from "child_process";
+import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
 
-const skipBackup: string[] = [ "node_modules" ]
+const skipBackup: string[] = ["node_modules"];
 
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
   backupPath: string = "./backup.zip"
 ) {
+  const outputPath: string = path.dirname(manifestPath);
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
       `The convert command only works on xml manifest based projects`
@@ -37,6 +39,7 @@ export async function convertProject(
   await backupProject(backupPath);
   updatePackages();
   await updateManifestXmlReferences();
+  await convert(manifestPath, outputPath, false, false);
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
@@ -52,11 +55,11 @@ async function asksForUserConfirmation(): Promise<boolean> {
 async function backupProject(backupPath: string) {
   const zip: AdmZip = new AdmZip();
   const outputPath: string = path.resolve(backupPath);
-  const rootDir: string = path.resolve(); 
+  const rootDir: string = path.resolve();
 
   const files: string[] = fs.readdirSync(rootDir);
   files.forEach((entry) => {
-    const fullPath = path.resolve(entry)
+    const fullPath = path.resolve(entry);
     const entryStats = fs.lstatSync(fullPath);
 
     if (skipBackup.includes(entry)) {
@@ -100,7 +103,7 @@ function updatePackages(): void {
 
   command += ` --save-dev`;
   console.log(messageToBePrinted.slice(0, -1));
-  exec(command);
+  execSync(command);
 }
 
 async function updateManifestXmlReferences(): Promise<void> {

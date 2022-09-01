@@ -6,6 +6,7 @@ For more information, see the [documentation](
 https://docs.microsoft.com/en-us/office/dev/add-ins/develop/add-in-manifests).
 
 ## Command-Line Interface
+
 * [convert](#info)
 
 #
