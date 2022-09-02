@@ -6,21 +6,64 @@ import * as fs from "fs";
 
 /* global console */
 
-export async function registerWithTeams(zipPath: string): Promise<void> {
+export type AccountOperation = "login" | "logout";
+
+export async function registerWithTeams(zipPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if (zipPath.endsWith(".zip") && fs.existsSync(zipPath)) {
-      const command = `npx @microsoft/teamsfx-cli provision manifest --file-path ${zipPath}`;
+      const sideloadCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 m365 sideloading --file-path ${zipPath}`;
 
-      childProcess.exec(command, (error, stdout) => {
-        if (error) {
-          reject(stdout);
+      console.log(`running: ${sideloadCommand}`);
+      childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
+        let titleIdMatch = stdout.match(/TitleId:\s*(.*)/);
+        let titleId = titleIdMatch !== null ? titleIdMatch[1] : '??';
+        if (error || stderr.match("\"error\"")) {
+          console.log(`\n${stdout}\n--Error sideloading!--\nError: ${error}\nSTDERR:\n${stderr}`);
+          reject(error);
         } else {
-          console.log("Successfully registered package with https://dev.teams.microsoft.com/apps");
-          resolve();
+          console.log(`\n${stdout}\nSuccessfully registered package! (${titleId})\n STDERR: ${stderr}\n`);
+          resolve(titleId);
         }
       });
     } else {
       reject(new Error(`The file '${zipPath}' is not valid`));
     }
+  });
+}
+
+export async function updateM365Account(operation: AccountOperation): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const loginCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 account ${operation} m365`;
+
+    console.log(`running: ${loginCommand}`);
+    childProcess.exec(loginCommand, (error, stdout, stderr) => {
+      if (error || (stderr.length > 0 && /Debugger attached\./.test(stderr) == false)) {
+        console.log(`Error logging in:\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
+        reject(error);
+      } else {
+        console.log(`Successfully logged in/out.\n`);
+        resolve();
+      }
+    });
+  });
+}
+
+export async function unacquireWithTeams(titleId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    console.log(`Unable to unaquire ${titleId} . . . support not availble yet`);
+
+    // Temporaraly disable until teamsfx-cli support is fixed
+    // const unacquireCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 m365 unacquire --title-id ${titleId}`;
+
+    // console.log(`running: ${unacquireCommand}`);
+    // childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
+    //   if (error || stderr.match("\"error\"")) {
+    //     console.log(`\n${stdout}\n--Error unacquireing!--\n${error}\n STDERR: ${stderr}`);
+    //     reject(error);
+    //   } else {
+    //     console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
+    //     resolve();
+    //   }
+    // });
   });
 }

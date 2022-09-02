@@ -256,11 +256,11 @@ export async function setWebView(addinId: string, webViewType: WebViewType | und
 }
 
 export async function unregisterAddIn(manifestPath: string): Promise<void> {
+  const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
   switch (process.platform) {
     case "darwin":
-      return devSettingsMac.unregisterAddIn(manifestPath);
+      return devSettingsMac.unregisterAddIn(manifest.id || "", manifestPath);
     case "win32": {
-      const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
       const realManifestPath = fs.realpathSync(manifestPath);
       return devSettingsWindows.unregisterAddIn(manifest.id || "", realManifestPath);
     }
