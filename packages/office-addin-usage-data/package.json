@@ -23,7 +23,8 @@
   "dependencies": {
     "applicationinsights": "^1.7.3",
     "commander": "^6.2.0",
-    "readline-sync": "^1.4.9"
+    "readline-sync": "^1.4.9",
+    "uuid": "8.3.2"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",

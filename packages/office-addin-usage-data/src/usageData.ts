@@ -59,6 +59,7 @@ export interface IUsageDataOptions {
   usageDataLevel?: UsageDataLevel;
   method?: UsageDataReportingMethod;
   isForTesting?: boolean;
+  sessionID?: string;
 }
 
 /**
@@ -116,7 +117,7 @@ export class OfficeAddinUsageData {
       ) {
         this.usageDataOptIn();
       }
-
+      this.options.sessionID = this.options.sessionID;
       if (this.options.usageDataLevel === UsageDataLevel.on) {
         appInsights.setup(this.options.instrumentationKey).setAutoCollectExceptions(false).start();
         this.usageDataClient = appInsights.defaultClient;
@@ -152,11 +153,11 @@ export class OfficeAddinUsageData {
           usageDataEvent.properties[key] = value;
           usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-
+        usageDataEvent.properties["sessionID"] = this.options.sessionID;
         this.usageDataClient.trackEvent(usageDataEvent);
         this.eventsSent++;
       } catch (err) {
-        this.reportError("sendUsageDataEvents", err);
+        this.reportException("sendUsageDataEvents", err);
         throw new Error(err);
       }
     }
@@ -166,28 +167,20 @@ export class OfficeAddinUsageData {
    * Reports error to usage data structure
    * @param errorName Error name sent to usage data structure
    * @param err Error sent to usage data structure
+   * @Deprecated Use reportException instead
    */
   public async reportError(errorName: string, err: Error): Promise<void> {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      this.reportErrorApplicationInsights(errorName, err);
-    }
+    this.reportException(errorName, err);
   }
 
   /**
    * Reports error to Application Insights
    * @param errorName Error name sent to Application Insights
    * @param err Error sent to Application Insights
+   * @Deprecated Use reportException instead
    */
   public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      let error = Object.create(err);
-
-      error.name = this.options.isForTesting ? `${errorName}-test` : errorName;
-      this.usageDataClient.trackException({
-        exception: this.maskFilePaths(error),
-      });
-      this.exceptionsSent++;
-    }
+    this.reportException(errorName, err);
   }
 
   /**
@@ -210,7 +203,7 @@ export class OfficeAddinUsageData {
       }
       jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
     } catch (err) {
-      this.reportError("UsageDataOptIn", err);
+      this.reportException("UsageDataOptIn", err);
       throw new Error(err);
     }
   }
@@ -290,7 +283,7 @@ export class OfficeAddinUsageData {
 
       return err;
     } catch (err) {
-      this.reportError("maskFilePaths", err);
+      this.reportException("maskFilePaths", err);
       throw new Error(err);
     }
   }
@@ -330,13 +323,13 @@ export class OfficeAddinUsageData {
           ExpectedError: false,
           ...this.defaultData,
           ...data,
+          sessionID: this.options.sessionID,
         }).forEach((entry) => {
           exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
         });
         this.usageDataClient.trackException(exceptionTelemetryObj);
         this.exceptionsSent++;
       } catch (e) {
-        this.reportError("reportException", e);
         throw e;
       }
     }
@@ -378,70 +371,6 @@ export class OfficeAddinUsageData {
   }
 
   /**
-   * Reports custom exception event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param err Error or message about error sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportUnexpectedError` instead.
-   */
-  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      try {
-        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
-        error.name = this.getEventName();
-        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
-          exception: this.maskFilePaths(error),
-          properties: {},
-        };
-        Object.entries({
-          Succeeded: false,
-          Method: method,
-          ...this.defaultData,
-          ...data,
-        }).forEach((entry) => {
-          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
-        });
-        this.usageDataClient.trackException(exceptionTelemetryObj);
-        this.exceptionsSent++;
-      } catch (e) {
-        this.reportError("sendUsageDataException", e);
-        throw e;
-      }
-    }
-  }
-
-  /**
-   * Reports custom success event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportSuccess` instead.
-   */
-  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      Pass: true,
-      ...data,
-    });
-  }
-
-  /**
-   * Reports custom successful fail event object to Application Insights
-   * "Successful fail" means that there was an error as a result of user error, but our code worked properly
-   * @param method Method name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportExpectedError` instead.
-   */
-  public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      Pass: false,
-      ...data,
-    });
-  }
-
-  /**
    * Reports custom event object to Application Insights
    * @param data Data object(s) sent to Application Insights
    */
@@ -453,11 +382,12 @@ export class OfficeAddinUsageData {
         eventTelemetryObj.properties = {
           ...this.defaultData,
           ...data,
+          sessionID: this.options.sessionID,
         };
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;
       } catch (e) {
-        this.reportError("sendUsageDataEvent", e);
+        this.reportException("sendUsageDataEvent", e);
       }
     }
   }
