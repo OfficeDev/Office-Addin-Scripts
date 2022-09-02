@@ -51,7 +51,7 @@ function getSideloadDirectory(app: OfficeApp): string | undefined {
 export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp[]) {
   try {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
-    let key = path.basename(manifestPath);
+    let data = path.basename(manifestPath); // xml will store the file name and json will store the titleId
 
     if (!officeApps) {
       officeApps = getOfficeAppsForManifestHosts(manifest.hosts);
@@ -68,14 +68,14 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
     if (manifestPath.endsWith(".json")) {
       const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
       const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
-      key = await registerWithTeams(zipPath);
+      data = await registerWithTeams(zipPath);
     }
     for (const app of officeApps) {
       const sideloadDirectory = getSideloadDirectory(app);
 
       if (sideloadDirectory) {
         // include manifest id in sideload filename
-        const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${key}`);
+        const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${data}`);
 
         fs.ensureDirSync(sideloadDirectory);
         fs.ensureLinkSync(manifestPath, sideloadPath);

@@ -16,7 +16,7 @@ import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
-import { updateM365Account } from "./publish";
+import { AccountOperation, updateM365Account } from "./publish";
 
 /* global process, console */
 
@@ -296,7 +296,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
 }
 
 export async function m365Account(
-  operation: "login" | "logout",
+  operation: AccountOperation,
   command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {

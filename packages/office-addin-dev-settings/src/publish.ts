@@ -3,9 +3,10 @@
 
 import * as childProcess from "child_process";
 import * as fs from "fs";
-import * as path from "path";
 
 /* global console */
+
+export type AccountOperation = "login" | "logout";
 
 export async function registerWithTeams(zipPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ export async function registerWithTeams(zipPath: string): Promise<string> {
   });
 }
 
-export async function updateM365Account(operation: "login" | "logout"): Promise<void> {
+export async function updateM365Account(operation: AccountOperation): Promise<void> {
   return new Promise((resolve, reject) => {
     const loginCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 account ${operation} m365`;
 

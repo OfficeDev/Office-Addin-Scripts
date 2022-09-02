@@ -178,14 +178,14 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 }
 
 export async function registerAddIn(manifestPath: string): Promise<void> {
-  let keyData = manifestPath;
+  let data = manifestPath; // xml will store the manifest path and json will store the titleId
   const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
   if (manifestPath.endsWith(".json")) {
     const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
     const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
 
-    keyData = await registerWithTeams(zipPath);
+    data = await registerWithTeams(zipPath);
   } else if (manifestPath.endsWith(".xml")) {
     const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
@@ -196,7 +196,7 @@ export async function registerAddIn(manifestPath: string): Promise<void> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
-  return registry.addStringValue(key, manifest.id || "", keyData);
+  return registry.addStringValue(key, manifest.id || "", data);
 }
 
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
@@ -284,11 +284,7 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   if (addinId) {
-    const regValue = await registry.getValue(key, addinId);
-    if(regValue != undefined && !regValue.data.endsWith(".xml")) {
-      unacquireWithTeams(regValue.data);
-    }
-
+    await unacquire(key, addinId);
     await registry.deleteValue(key, addinId);
   }
 
@@ -303,11 +299,14 @@ export async function unregisterAllAddIns(): Promise<void> {
   const values = await registry.getValues(key);
 
   for (const value of values) {
-    const regValue = await registry.getValue(key, value.name);
-    if(regValue != undefined && !regValue.data.endsWith(".xml")) {
-      unacquireWithTeams(regValue.data);
-    }
-
+    await unacquire(key, value.name);
     await registry.deleteValue(key, value.name);
+  }
+}
+
+async function unacquire(key: registry.RegistryKey, id: string) {
+  const regValue = await registry.getValue(key, id);
+  if(regValue != undefined && !regValue.data.endsWith(".xml")) {
+    unacquireWithTeams(regValue.data);
   }
 }
