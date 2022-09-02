@@ -55,7 +55,7 @@ export function modifyUsageDataJsonData(groupName: string, property: any, value:
  */
 export function readSessionID(): string {
   const jsonData = readUsageDataJsonData();
-  return jsonData.usageDataInstances.sessionID ?? "";
+  return jsonData?.sessionID ?? "";
 }
 /**
  * Reads data from the usage data json config file

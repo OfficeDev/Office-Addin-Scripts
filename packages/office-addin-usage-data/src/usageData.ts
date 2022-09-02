@@ -117,7 +117,7 @@ export class OfficeAddinUsageData {
       ) {
         this.usageDataOptIn();
       }
-      this.options.sessionID = this.options.sessionID;
+      this.options.sessionID = jsonData.readSessionID();
       if (this.options.usageDataLevel === UsageDataLevel.on) {
         appInsights.setup(this.options.instrumentationKey).setAutoCollectExceptions(false).start();
         this.usageDataClient = appInsights.defaultClient;
