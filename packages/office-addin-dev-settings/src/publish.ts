@@ -16,8 +16,8 @@ export async function registerWithTeams(zipPath: string): Promise<string> {
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
         let titleIdMatch = stdout.match(/TitleId:\s*(.*)/);
-        let titleId = titleIdMatch !== null ? titleIdMatch[1] : '??';
-        if (error || stderr.match("\"error\"")) {
+        let titleId = titleIdMatch !== null ? titleIdMatch[1] : "??";
+        if (error || stderr.match('"error"')) {
           console.log(`\n${stdout}\n--Error sideloading!--\nError: ${error}\nSTDERR:\n${stderr}`);
           reject(error);
         } else {
@@ -50,20 +50,17 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
 
 export async function unacquireWithTeams(titleId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    console.log(`Unable to unaquire ${titleId} . . . support not availble yet`);
+    const unacquireCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.df7cb43be.0 m365 unacquire --title-id ${titleId}`;
 
-    // Temporaraly disable until teamsfx-cli support is fixed
-    // const unacquireCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.df7cb43be.0 m365 unacquire --title-id ${titleId}`;
-
-    // console.log(`running: ${unacquireCommand}`);
-    // childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
-    //   if (error || stderr.match("\"error\"")) {
-    //     console.log(`\n${stdout}\n--Error unacquireing!--\n${error}\n STDERR: ${stderr}`);
-    //     reject(error);
-    //   } else {
-    //     console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
-    //     resolve();
-    //   }
-    // });
+    console.log(`running: ${unacquireCommand}`);
+    childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
+      if (error || stderr.match('"error"')) {
+        console.log(`\n${stdout}\n--Error unacquireing!--\n${error}\n STDERR: ${stderr}`);
+        reject(error);
+      } else {
+        console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
+        resolve();
+      }
+    });
   });
 }
