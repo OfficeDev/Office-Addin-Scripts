@@ -11,7 +11,7 @@ export type AccountOperation = "login" | "logout";
 export async function registerWithTeams(zipPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if (zipPath.endsWith(".zip") && fs.existsSync(zipPath)) {
-      const sideloadCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 m365 sideloading --file-path ${zipPath}`;
+      const sideloadCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.df7cb43be.0 m365 sideloading --file-path ${zipPath}`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
@@ -33,7 +33,7 @@ export async function registerWithTeams(zipPath: string): Promise<string> {
 
 export async function updateM365Account(operation: AccountOperation): Promise<void> {
   return new Promise((resolve, reject) => {
-    const loginCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 account ${operation} m365`;
+    const loginCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.df7cb43be.0 account ${operation} m365`;
 
     console.log(`running: ${loginCommand}`);
     childProcess.exec(loginCommand, (error, stdout, stderr) => {
@@ -53,7 +53,7 @@ export async function unacquireWithTeams(titleId: string): Promise<void> {
     console.log(`Unable to unaquire ${titleId} . . . support not availble yet`);
 
     // Temporaraly disable until teamsfx-cli support is fixed
-    // const unacquireCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.18494658a.0 m365 unacquire --title-id ${titleId}`;
+    // const unacquireCommand = `npx @microsoft/teamsfx-cli@1.0.6-alpha.df7cb43be.0 m365 unacquire --title-id ${titleId}`;
 
     // console.log(`running: ${unacquireCommand}`);
     // childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
