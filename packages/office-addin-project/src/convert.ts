@@ -91,7 +91,11 @@ function updatePackages(): void {
 
   for (let i = 0; i < depedentPackages.length; i++) {
     const depedentPackage = depedentPackages[i];
-    command += ` ${depedentPackage}@latest`;
+    if (depedentPackage === "@microsoft/teamsfx-cli") {
+      command += ` ${depedentPackage}@1.0.6-alpha.18494658a.0`;
+    } else {
+      command += ` ${depedentPackage}@latest`;
+    }
     messageToBePrinted += ` ${depedentPackage}`;
 
     if (i === depedentPackages.length - 2) {
