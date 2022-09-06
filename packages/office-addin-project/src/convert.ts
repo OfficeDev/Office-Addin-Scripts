@@ -82,7 +82,6 @@ async function backupProject(backupPath: string) {
 function updatePackages(): void {
   // Contains name of the package and minimum version
   const depedentPackages: string[] = [
-    "@microsoft/teamsfx-cli",
     "office-addin-debugging",
     "office-addin-manifest",
   ];
@@ -91,11 +90,7 @@ function updatePackages(): void {
 
   for (let i = 0; i < depedentPackages.length; i++) {
     const depedentPackage = depedentPackages[i];
-    if (depedentPackage === "@microsoft/teamsfx-cli") {
-      command += ` ${depedentPackage}@1.0.6-alpha.18494658a.0`;
-    } else {
-      command += ` ${depedentPackage}@latest`;
-    }
+    command += ` ${depedentPackage}@latest`;
     messageToBePrinted += ` ${depedentPackage}`;
 
     if (i === depedentPackages.length - 2) {
