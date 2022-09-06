@@ -12,7 +12,7 @@
     "test": "mocha -r ts-node/register test/**/*.ts"
   },
   "bin": {
-    "office-addin-project": "lib/cli.js"
+    "office-addin-project": "cli.js"
   },
   "keywords": [
     "office-js"
