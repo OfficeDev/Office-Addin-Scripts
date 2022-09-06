@@ -42,6 +42,11 @@ commander
   .action(commands.liveReload);
 
 commander
+  .command("m365-account <operation>")
+  .description("Update the M365 account used for registration.")
+  .action(commands.m365Account);
+
+commander
   .command("register <manifest-path>")
   .description("Register the Office Add-in for development.")
   .action(commands.register);
