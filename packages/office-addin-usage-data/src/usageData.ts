@@ -305,33 +305,28 @@ export class OfficeAddinUsageData {
    */
   public reportException(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      try {
-        if (err instanceof ExpectedError) {
-          this.reportExpectedException(method, err, data);
-          return;
-        }
-
-        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
-        error.name = this.getEventName();
-        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
-          exception: this.maskFilePaths(error),
-          properties: {},
-        };
-        Object.entries({
-          Succeeded: false,
-          Method: method,
-          ExpectedError: false,
-          ...this.defaultData,
-          ...data,
-          sessionID: this.options.sessionID,
-        }).forEach((entry) => {
-          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
-        });
-        this.usageDataClient.trackException(exceptionTelemetryObj);
-        this.exceptionsSent++;
-      } catch (e) {
-        throw e;
+      if (err instanceof ExpectedError) {
+        this.reportExpectedException(method, err, data);
+        return;
       }
+      let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
+      error.name = this.getEventName();
+      let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
+        exception: this.maskFilePaths(error),
+        properties: {},
+      };
+      Object.entries({
+        Succeeded: false,
+        Method: method,
+        ExpectedError: false,
+        ...this.defaultData,
+        ...data,
+        sessionID: this.options.sessionID,
+      }).forEach((entry) => {
+        exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
+      });
+      this.usageDataClient.trackException(exceptionTelemetryObj);
+      this.exceptionsSent++;
     }
   }
 

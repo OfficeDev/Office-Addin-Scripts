@@ -98,7 +98,6 @@ export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel)
     fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "" &&
     fs.readFileSync(defaults.usageDataJsonFilePath, "utf8") !== "undefined"
   ) {
-    console.log("On first if");
     if (groupNameExists(groupName)) {
       modifyUsageDataJsonData(groupName, "usageDataLevel", level);
     } else {
