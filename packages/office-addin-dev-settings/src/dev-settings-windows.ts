@@ -306,7 +306,7 @@ export async function unregisterAllAddIns(): Promise<void> {
 
 async function unacquire(key: registry.RegistryKey, id: string) {
   const regValue = await registry.getValue(key, id);
-  if(regValue != undefined && !regValue.data.endsWith(".xml")) {
+  if (regValue != undefined && !regValue.data.endsWith(".xml")) {
     unacquireWithTeams(regValue.data);
   }
 }
