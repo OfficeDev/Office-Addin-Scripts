@@ -167,7 +167,7 @@ export class OfficeAddinUsageData {
    * Reports error to usage data structure
    * @param errorName Error name sent to usage data structure
    * @param err Error sent to usage data structure
-   * @Deprecated Use reportException instead
+   * @deprecated Use reportException instead
    */
   public async reportError(errorName: string, err: Error): Promise<void> {
     this.reportException(errorName, err);
@@ -366,6 +366,70 @@ export class OfficeAddinUsageData {
       Succeeded: true,
       Method: method,
       ExpectedError: false,
+      ...data,
+    });
+  }
+
+  /**
+   * Reports custom exception event object to Application Insights
+   * @param method Method name sent to Application Insights
+   * @param err Error or message about error sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   * @deprecated Use `reportUnexpectedError` instead.
+   */
+   public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      try {
+        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
+        error.name = this.getEventName();
+        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
+          exception: this.maskFilePaths(error),
+          properties: {},
+        };
+        Object.entries({
+          Succeeded: false,
+          Method: method,
+          ...this.defaultData,
+          ...data,
+        }).forEach((entry) => {
+          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
+        });
+        this.usageDataClient.trackException(exceptionTelemetryObj);
+        this.exceptionsSent++;
+      } catch (e) {
+        this.reportError("sendUsageDataException", e);
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Reports custom success event object to Application Insights
+   * @param method Method name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   * @deprecated Use `reportSuccess` instead.
+   */
+  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      Pass: true,
+      ...data,
+    });
+  }
+
+  /**
+   * Reports custom successful fail event object to Application Insights
+   * "Successful fail" means that there was an error as a result of user error, but our code worked properly
+   * @param method Method name sent to Application Insights
+   * @param data Data object(s) sent to Application Insights
+   * @deprecated Use `reportExpectedError` instead.
+   */
+  public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
+    this.sendUsageDataEvent({
+      Succeeded: true,
+      Method: method,
+      Pass: false,
       ...data,
     });
   }
