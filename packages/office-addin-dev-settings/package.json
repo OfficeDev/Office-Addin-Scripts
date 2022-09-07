@@ -22,7 +22,7 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "@microsoft/teamsfx-cli": "1.0.6-alpha.18494658a.0",
+    "@microsoft/teamsfx-cli": "1.0.6-alpha.df7cb43be.0",
     "adm-zip": "^0.5.9",
     "child_process": "^1.0.2",
     "commander": "^6.2.0",
