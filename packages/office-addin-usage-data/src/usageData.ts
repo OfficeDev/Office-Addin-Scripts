@@ -377,7 +377,7 @@ export class OfficeAddinUsageData {
    * @param data Data object(s) sent to Application Insights
    * @deprecated Use `reportUnexpectedError` instead.
    */
-   public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
+  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
         let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
