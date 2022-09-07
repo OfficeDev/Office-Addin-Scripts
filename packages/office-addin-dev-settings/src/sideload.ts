@@ -312,7 +312,8 @@ export async function sideloadAddIn(
     }
 
     // Converting json to xml manifest . . . Temporary until service is ready.
-    if (manifestPath.endsWith(".json")) {
+    // depending on environment
+    if (manifestPath.endsWith(".json") && !canSideloadJson()) {
       if (isDotnetInstalled()) {
         // Run json => xml conversion tool.
         manifestPath = await convertJsonToXmlManifest(manifestPath);
@@ -322,7 +323,9 @@ export async function sideloadAddIn(
     }
 
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
+    const appsInManifest: OfficeApp[] = manifestPath.endsWith(".json")
+      ? [OfficeApp.Outlook]
+      : getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {
@@ -464,4 +467,8 @@ export default function stripBom(manifestPath: string) {
   } catch (err) {
     console.log("Error trying to update converted xml");
   }
+}
+
+function canSideloadJson(): boolean {
+  return !!process.env.SIDELOADING_SERVICE_ENDPOINT && !!process.env.SIDELOADING_SERVICE_SCOPE;
 }

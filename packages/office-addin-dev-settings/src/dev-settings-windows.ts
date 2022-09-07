@@ -13,7 +13,7 @@ import {
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
-import { registerWithTeams } from "./publish";
+import { registerWithTeams, unacquireWithTeams } from "./publish";
 import * as fspath from "path";
 
 /* global process */
@@ -177,25 +177,26 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
   return false;
 }
 
-export async function registerAddIn(manifestPath: string) {
+export async function registerAddIn(manifestPath: string): Promise<void> {
+  let data = manifestPath; // xml will store the manifest path and json will store the titleId
+  const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
+
   if (manifestPath.endsWith(".json")) {
     const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
     const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
 
-    return registerWithTeams(zipPath);
+    data = await registerWithTeams(zipPath);
   } else if (manifestPath.endsWith(".xml")) {
-    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
     if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
       enableOutlookSideloading(manifestPath);
     }
-
-    const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
-
-    await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
-    return registry.addStringValue(key, manifest.id || "", manifestPath);
   }
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+
+  await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
+  return registry.addStringValue(key, manifest.id || "", data);
 }
 
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
@@ -283,6 +284,7 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   if (addinId) {
+    await unacquire(key, addinId);
     await registry.deleteValue(key, addinId);
   }
 
@@ -297,6 +299,14 @@ export async function unregisterAllAddIns(): Promise<void> {
   const values = await registry.getValues(key);
 
   for (const value of values) {
+    await unacquire(key, value.name);
     await registry.deleteValue(key, value.name);
+  }
+}
+
+async function unacquire(key: registry.RegistryKey, id: string) {
+  const regValue = await registry.getValue(key, id);
+  if (regValue != undefined && !regValue.data.endsWith(".xml")) {
+    unacquireWithTeams(regValue.data);
   }
 }

@@ -14,7 +14,7 @@ import * as os from "os";
 import * as path from "path";
 import { RegisteredAddin } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
-import { registerWithTeams } from "./publish";
+import { registerWithTeams, unacquireWithTeams } from "./publish";
 import * as fspath from "path";
 
 /* global process */
@@ -51,6 +51,7 @@ function getSideloadDirectory(app: OfficeApp): string | undefined {
 export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp[]) {
   try {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
+    let data = path.basename(manifestPath); // xml will store the file name and json will store the titleId
 
     if (!officeApps) {
       officeApps = getOfficeAppsForManifestHosts(manifest.hosts);
@@ -67,18 +68,17 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
     if (manifestPath.endsWith(".json")) {
       const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
       const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
-      return registerWithTeams(zipPath);
-    } else if (manifestPath.endsWith(".xml")) {
-      for (const app of officeApps) {
-        const sideloadDirectory = getSideloadDirectory(app);
+      data = await registerWithTeams(zipPath);
+    }
+    for (const app of officeApps) {
+      const sideloadDirectory = getSideloadDirectory(app);
 
-        if (sideloadDirectory) {
-          // include manifest id in sideload filename
-          const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${path.basename(manifestPath)}`);
+      if (sideloadDirectory) {
+        // include manifest id in sideload filename
+        const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${data}`);
 
-          fs.ensureDirSync(sideloadDirectory);
-          fs.ensureLinkSync(manifestPath, sideloadPath);
-        }
+        fs.ensureDirSync(sideloadDirectory);
+        fs.ensureLinkSync(manifestPath, sideloadPath);
       }
     }
   } catch (err) {
@@ -86,10 +86,8 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
   }
 }
 
-export async function unregisterAddIn(manifestPath: string): Promise<void> {
-  const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
-
-  if (!manifest.id) {
+export async function unregisterAddIn(addinId: string, manifestPath: string): Promise<void> {
+  if (!addinId) {
     throw new ExpectedError("The manifest file doesn't contain the id of the Office Add-in.");
   }
 
@@ -98,8 +96,11 @@ export async function unregisterAddIn(manifestPath: string): Promise<void> {
   for (const registeredAddIn of registeredAddIns) {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
     const manifestFileName = path.basename(manifestPath);
-    const sideloadFileName = `${manifest.id!}.${manifestFileName}`;
-    if (registeredFileName === manifestFileName || registeredFileName === sideloadFileName) {
+
+    if (registeredFileName === manifestFileName || registeredFileName.startsWith(addinId)) {
+      if (!registeredFileName.endsWith("*.xml")) {
+        unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".")));
+      }
       fs.unlinkSync(registeredAddIn.manifestPath);
     }
   }
@@ -109,6 +110,10 @@ export async function unregisterAllAddIns(): Promise<void> {
   const registeredAddIns = await getRegisteredAddIns();
 
   for (const registeredAddIn of registeredAddIns) {
+    const registeredFileName = path.basename(registeredAddIn.manifestPath);
+    if (!registeredFileName.endsWith("*.xml")) {
+      unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".")));
+    }
     fs.unlinkSync(registeredAddIn.manifestPath);
   }
 }

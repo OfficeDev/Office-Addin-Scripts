@@ -16,6 +16,7 @@ import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
+import { AccountOperation, updateM365Account } from "./publish";
 
 /* global process, console */
 
@@ -294,6 +295,19 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
   }
 }
 
+export async function m365Account(
+  operation: AccountOperation,
+  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+) {
+  try {
+    await updateM365Account(operation);
+    usageDataObject.reportSuccess("m365Account");
+  } catch (err: any) {
+    usageDataObject.reportException("m365Account", err);
+    logErrorMessage(err);
+  }
+}
+
 export async function register(
   manifestPath: string,
   command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
@@ -432,9 +446,7 @@ export async function unregister(
   command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
-    if (manifestPath.endsWith(".json")) {
-      console.log("Please navigate to https://dev.teams.microsoft.com/apps to remove add-in");
-    } else if (manifestPath === "all") {
+    if (manifestPath === "all") {
       await devSettings.unregisterAllAddIns();
     } else {
       await devSettings.unregisterAddIn(manifestPath);
