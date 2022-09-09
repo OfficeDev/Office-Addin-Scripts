@@ -22,9 +22,9 @@
     "commander": "^6.2.1",
     "fs-extra": "^7.0.1",
     "inquirer": "^7.3.3",
-    "office-addin-manifest": "^1.10.0",
+    "office-addin-manifest": "^1.10.1",
     "office-addin-manifest-converter": "^0.1.5",
-    "office-addin-usage-data": "^1.6.0",
+    "office-addin-usage-data": "^1.6.1",
     "path": "^0.12.7"
   },
   "devDependencies": {
