@@ -40,15 +40,21 @@ export class ManifestHandlerJson extends ManifestHandler {
   // TODO: change teamsAppManifest type to TeamsAppManifest
   getManifestInfo(teamsAppManifest: any): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
+
+    // Need to handle mutliple version of the prerelease json manifest schema
+    const extensionElement = teamsAppManifest?.extensions
+      ? teamsAppManifest.extensions[0]
+      : teamsAppManifest?.extension;
+
     manifestInfo.id = teamsAppManifest.id;
     manifestInfo.appDomains = teamsAppManifest?.validDomains;
     manifestInfo.defaultLocale = teamsAppManifest?.localizationInfo?.defaultLanguageTag;
     manifestInfo.description = teamsAppManifest?.description?.short;
     manifestInfo.displayName = teamsAppManifest?.name?.short;
     manifestInfo.highResolutionIconUrl = teamsAppManifest?.icons?.color;
-    manifestInfo.hosts = teamsAppManifest?.extension?.requirements?.scopes;
+    manifestInfo.hosts = extensionElement?.requirements?.scopes;
     manifestInfo.iconUrl = teamsAppManifest?.icons?.color;
-    manifestInfo.officeAppType = teamsAppManifest?.extension?.requirements?.capabilities[0]?.name;
+    manifestInfo.officeAppType = extensionElement?.requirements?.capabilities[0]?.name;
     manifestInfo.permissions = teamsAppManifest?.authorization?.permissions?.resourceSpecific[0]?.name;
     manifestInfo.providerName = teamsAppManifest?.developer?.name;
     manifestInfo.supportUrl = teamsAppManifest?.developer?.websiteUrl;
