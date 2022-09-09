@@ -38,8 +38,13 @@ async function createZip(manifestPath: string = "manifest.json"): Promise<AdmZip
 function addIconFile(iconPath: string, zip: AdmZip) {
   if (iconPath && !iconPath.startsWith("https://")) {
     const filePath: string = path.resolve(iconPath);
+    const fileDir: string = path.dirname(iconPath);
     if (fs.existsSync(filePath)) {
-      zip.addLocalFile(iconPath, path.dirname(iconPath));
+      if (!!fileDir && fileDir != ".") {
+        zip.addLocalFile(iconPath, fileDir);
+      } else {
+        zip.addLocalFile(iconPath);
+      }
     } else {
       console.log(`Icon File ${filePath} does not exist`);
     }
