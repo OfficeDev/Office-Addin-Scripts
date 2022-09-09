@@ -3,8 +3,9 @@
 
 import * as childProcess from "child_process";
 import * as fs from "fs";
+import * as path from "path";
 
-/* global console */
+/* global console, process */
 
 export type AccountOperation = "login" | "logout";
 
@@ -22,6 +23,7 @@ export async function registerWithTeams(zipPath: string): Promise<string> {
           reject(error);
         } else {
           console.log(`\n${stdout}\nSuccessfully registered package! (${titleId})\n STDERR: ${stderr}\n`);
+          forceCacheUpdate();
           resolve(titleId);
         }
       });
@@ -59,8 +61,29 @@ export async function unacquireWithTeams(titleId: string): Promise<void> {
         reject(error);
       } else {
         console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
+        forceCacheUpdate();
         resolve();
       }
     });
   });
+}
+
+function forceCacheUpdate() {
+  const cachePath: string = path.join(process.env.LOCALAPPDATA as string, "Microsoft\\Outlook\\HubAppFileCache");
+
+  if (fs.existsSync(cachePath)) {
+    // Get list of folders with hashed names
+    const subFolders: fs.Dirent[] = fs.readdirSync(cachePath, { withFileTypes: true }).filter((entry: fs.Dirent) => {
+      return entry.isDirectory();
+    });
+
+    // Delete any found file that prevents TAOS service calls
+    subFolders.forEach((folder: fs.Dirent) => {
+      const targetFile: string = path.resolve(cachePath, folder.name, "TaosSource\\PersistedCacheSynced");
+      if (fs.existsSync(targetFile)) {
+        console.log(`Deleting File: ${targetFile}`);
+        fs.unlinkSync(targetFile);
+      }
+    });
+  }
 }
