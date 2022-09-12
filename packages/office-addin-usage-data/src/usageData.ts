@@ -59,7 +59,7 @@ export interface IUsageDataOptions {
   usageDataLevel?: UsageDataLevel;
   method?: UsageDataReportingMethod;
   isForTesting?: boolean;
-  sessionID?: string;
+  deviceID?: string;
 }
 
 /**
@@ -117,7 +117,7 @@ export class OfficeAddinUsageData {
       ) {
         this.usageDataOptIn();
       }
-      this.options.sessionID = jsonData.readSessionID();
+      this.options.deviceID = jsonData.readDeviceID();
       if (this.options.usageDataLevel === UsageDataLevel.on) {
         appInsights.setup(this.options.instrumentationKey).setAutoCollectExceptions(false).start();
         this.usageDataClient = appInsights.defaultClient;
@@ -153,7 +153,7 @@ export class OfficeAddinUsageData {
           usageDataEvent.properties[key] = value;
           usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-        usageDataEvent.properties["sessionID"] = this.options.sessionID;
+        usageDataEvent.properties["deviceID"] = this.options.deviceID;
         this.usageDataClient.trackEvent(usageDataEvent);
         this.eventsSent++;
       } catch (err) {
@@ -321,7 +321,7 @@ export class OfficeAddinUsageData {
         ExpectedError: false,
         ...this.defaultData,
         ...data,
-        sessionID: this.options.sessionID,
+        deviceID: this.options.deviceID,
       }).forEach((entry) => {
         exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
       });
@@ -441,7 +441,7 @@ export class OfficeAddinUsageData {
         eventTelemetryObj.properties = {
           ...this.defaultData,
           ...data,
-          sessionID: this.options.sessionID,
+          deviceID: this.options.deviceID,
         };
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;

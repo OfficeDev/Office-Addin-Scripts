@@ -31,14 +31,14 @@ export function modifyUsageDataJsonData(groupName: string, property: any, value:
         };
       }
       usageDataJsonData.usageDataInstances[groupName][property] = value;
-      if (!usageDataJsonData["sessionID"]) {
-        usageDataJsonData["sessionID"] = uuidv4();
+      if (!usageDataJsonData["deviceID"]) {
+        usageDataJsonData["deviceID"] = uuidv4();
       }
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     } else {
       let usageDataJsonData = {};
       usageDataJsonData[groupName] = value;
-      usageDataJsonData["sessionID"] = uuidv4();
+      usageDataJsonData["deviceID"] = uuidv4();
       usageDataJsonData = { usageDataInstances: usageDataJsonData };
       usageDataJsonData = {
         usageDataInstances: { [groupName]: { [property]: value } },
@@ -53,9 +53,9 @@ export function modifyUsageDataJsonData(groupName: string, property: any, value:
  * Returns the session identifier
  * @returns The uuid of the session identifier
  */
-export function readSessionID(): string {
+export function readDeviceID(): string {
   const jsonData = readUsageDataJsonData();
-  return jsonData?.sessionID ?? "";
+  return jsonData?.deviceID ?? "";
 }
 /**
  * Reads data from the usage data json config file
@@ -106,8 +106,8 @@ export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel)
         usageDataLevel: String,
       };
       usageDataJsonData.usageDataInstances[groupName].usageDataLevel = level;
-      if (!usageDataJsonData["sessionID"]) {
-        usageDataJsonData["sessionID"] = uuidv4();
+      if (!usageDataJsonData["deviceID"]) {
+        usageDataJsonData["deviceID"] = uuidv4();
       }
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     }
@@ -118,7 +118,7 @@ export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel)
     usageDataJsonData = {
       usageDataInstances: { [groupName]: { ["usageDataLevel"]: level } },
     };
-    usageDataJsonData["sessionID"] = uuidv4();
+    usageDataJsonData["deviceID"] = uuidv4();
 
     fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
   }
