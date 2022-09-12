@@ -28,14 +28,14 @@ describe("office-addin-project tests", function() {
       it("Converts test manifest", async function() {
         this.timeout(6000);
         const manifestPath = "./test/test-manifest.xml";
-        const outputPath = "./temp/";
+        const outputPath = "./out/";
         await convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "test-manifest.json")), true);
       });
       it("Converts TaskPane manifest", async function() {
         this.timeout(6000);
         const manifestPath = "./test/TaskPane.manifest.xml";
-        const outputPath = "./temp/";
+        const outputPath = "./out/";
         await convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "TaskPane.manifest.json")), true);
       });
