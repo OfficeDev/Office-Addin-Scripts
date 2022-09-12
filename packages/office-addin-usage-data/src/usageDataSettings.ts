@@ -31,17 +31,16 @@ export function modifyUsageDataJsonData(groupName: string, property: any, value:
         };
       }
       usageDataJsonData.usageDataInstances[groupName][property] = value;
-      if (!usageDataJsonData["deviceID"]) {
-        usageDataJsonData["deviceID"] = uuidv4();
+      if (!usageDataJsonData.usageDataInstances["deviceID"]) {
+        usageDataJsonData.usageDataInstances["deviceID"] = uuidv4();
       }
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     } else {
       let usageDataJsonData = {};
       usageDataJsonData[groupName] = value;
-      usageDataJsonData["deviceID"] = uuidv4();
       usageDataJsonData = { usageDataInstances: usageDataJsonData };
       usageDataJsonData = {
-        usageDataInstances: { [groupName]: { [property]: value } },
+        usageDataInstances: { [groupName]: { [property]: value }, deviceID: uuidv4() },
       };
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     }
@@ -55,7 +54,7 @@ export function modifyUsageDataJsonData(groupName: string, property: any, value:
  */
 export function readDeviceID(): string {
   const jsonData = readUsageDataJsonData();
-  return jsonData?.deviceID ?? "";
+  return jsonData?.usageDataInstances.deviceID ?? "";
 }
 /**
  * Reads data from the usage data json config file
@@ -106,8 +105,8 @@ export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel)
         usageDataLevel: String,
       };
       usageDataJsonData.usageDataInstances[groupName].usageDataLevel = level;
-      if (!usageDataJsonData["deviceID"]) {
-        usageDataJsonData["deviceID"] = uuidv4();
+      if (!usageDataJsonData.usageDataInstances["deviceID"]) {
+        usageDataJsonData.usageDataInstances["deviceID"] = uuidv4();
       }
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
     }
@@ -116,9 +115,8 @@ export function writeUsageDataJsonData(groupName: string, level: UsageDataLevel)
     usageDataJsonData[groupName] = level;
     usageDataJsonData = { usageDataInstances: usageDataJsonData };
     usageDataJsonData = {
-      usageDataInstances: { [groupName]: { ["usageDataLevel"]: level } },
+      usageDataInstances: { [groupName]: { ["usageDataLevel"]: level }, deviceID: uuidv4() },
     };
-    usageDataJsonData["deviceID"] = uuidv4();
 
     fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(usageDataJsonData, null, 2));
   }
