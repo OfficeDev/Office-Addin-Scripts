@@ -168,7 +168,7 @@ export class OfficeAddinUsageData {
    * @param errorName Error name sent to usage data structure
    * @param err Error sent to usage data structure
    */
-  async reportError(errorName: string, err: Error): Promise<void> {
+  public async reportError(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       this.reportErrorApplicationInsights(errorName, err);
     }
