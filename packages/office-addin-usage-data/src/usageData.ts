@@ -167,6 +167,7 @@ export class OfficeAddinUsageData {
    * Reports error to usage data structure
    * @param errorName Error name sent to usage data structure
    * @param err Error sent to usage data structure
+   * @Deprecated Use reportException instead
    */
   public async reportError(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
