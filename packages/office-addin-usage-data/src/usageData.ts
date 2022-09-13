@@ -190,7 +190,8 @@ export class OfficeAddinUsageData {
         exception: this.maskFilePaths(error),
       });
       this.exceptionsSent++;
-    }  }
+    }
+  }
 
   /**
    * Prompts user for usage data participation once and records response
