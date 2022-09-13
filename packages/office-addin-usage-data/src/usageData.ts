@@ -182,8 +182,15 @@ export class OfficeAddinUsageData {
    * @Deprecated Use reportException instead
    */
   public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
-    this.reportException(errorName, err);
-  }
+    if (this.getUsageDataLevel() === UsageDataLevel.on) {
+      let error = Object.create(err);
+
+      error.name = this.options.isForTesting ? `${errorName}-test` : errorName;
+      this.usageDataClient.trackException({
+        exception: this.maskFilePaths(error),
+      });
+      this.exceptionsSent++;
+    }  }
 
   /**
    * Prompts user for usage data participation once and records response
