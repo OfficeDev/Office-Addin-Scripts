@@ -157,7 +157,7 @@ export class OfficeAddinUsageData {
         this.usageDataClient.trackEvent(usageDataEvent);
         this.eventsSent++;
       } catch (err) {
-        this.reportException("sendUsageDataEvents", err);
+        this.reportError("sendUsageDataEvents", err);
         throw new Error(err);
       }
     }
@@ -167,7 +167,6 @@ export class OfficeAddinUsageData {
    * Reports error to usage data structure
    * @param errorName Error name sent to usage data structure
    * @param err Error sent to usage data structure
-   * @Deprecated Use reportException instead
    */
   public async reportError(errorName: string, err: Error): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
@@ -213,7 +212,7 @@ export class OfficeAddinUsageData {
       }
       jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
     } catch (err) {
-      this.reportException("UsageDataOptIn", err);
+      this.reportError("UsageDataOptIn", err);
       throw new Error(err);
     }
   }
@@ -293,7 +292,7 @@ export class OfficeAddinUsageData {
 
       return err;
     } catch (err) {
-      this.reportException("maskFilePaths", err);
+      this.reportError("maskFilePaths", err);
       throw new Error(err);
     }
   }
@@ -461,7 +460,7 @@ export class OfficeAddinUsageData {
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;
       } catch (e) {
-        this.reportException("sendUsageDataEvent", e);
+        this.reportError("sendUsageDataEvent", e);
       }
     }
   }
