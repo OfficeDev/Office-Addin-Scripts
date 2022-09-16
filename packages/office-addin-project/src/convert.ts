@@ -39,7 +39,7 @@ export async function convertProject(
   await backupProject(backupPath);
   try {
     await convert(manifestPath, outputPath, false, false);
-  } catch(err: any) {
+  } catch (err: any) {
     console.log(`Error in conversion.`);
     throw err;
   }
