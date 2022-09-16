@@ -37,9 +37,14 @@ export async function convertProject(
     return;
   }
   await backupProject(backupPath);
+  try {
+    await convert(manifestPath, outputPath, false, false);
+  } catch(err: any) {
+    console.log(`Error in conversion.`);
+    throw err;
+  }
   updatePackages();
   await updateManifestXmlReferences();
-  await convert(manifestPath, outputPath, false, false);
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
