@@ -37,9 +37,15 @@ export async function convertProject(
     return;
   }
   await backupProject(backupPath);
-  updatePackages();
-  await updateManifestXmlReferences();
-  await convert(manifestPath, outputPath, false, false);
+  try {
+    await convert(manifestPath, outputPath, false, false);
+    updatePackages();
+    await updateManifestXmlReferences();
+  } catch (err: any) {
+    console.log(`Error in conversion. Restoring project initial state.`);
+    await restoreBackup(backupPath);
+    throw err;
+  }
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
@@ -77,6 +83,11 @@ async function backupProject(backupPath: string) {
   } else {
     throw new Error(`Error writting zip file to ${outputPath}`);
   }
+}
+
+async function restoreBackup(backupPath: string) {
+  var zip = new AdmZip(backupPath); // reading archives
+  zip.extractAllTo("./", true); // overwrite
 }
 
 function updatePackages(): void {
