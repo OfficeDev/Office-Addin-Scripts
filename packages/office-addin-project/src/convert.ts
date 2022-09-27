@@ -40,7 +40,7 @@ export async function convertProject(
   try {
     await convert(manifestPath, outputPath, false, false);
     updatePackages();
-    await updateManifestXmlReferences();
+    await updateManifestXmlReferences(manifestPath);
   } catch (err: any) {
     console.log(`Error in conversion. Restoring project initial state.`);
     await restoreBackup(backupPath);
@@ -116,7 +116,9 @@ function updatePackages(): void {
   execSync(command);
 }
 
-async function updateManifestXmlReferences(): Promise<void> {
+async function updateManifestXmlReferences(
+  manifestPath: string
+): Promise<void> {
   const packageJson = `./package.json`;
   const readFileAsync = util.promisify(fs.readFile);
   const data = await readFileAsync(packageJson, "utf8");
@@ -132,4 +134,5 @@ async function updateManifestXmlReferences(): Promise<void> {
   // write updated json to file
   const writeFileAsync = util.promisify(fs.writeFile);
   await writeFileAsync(packageJson, JSON.stringify(content, null, 2));
+  fs.unlinkSync(manifestPath);
 }
