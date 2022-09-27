@@ -39,13 +39,13 @@ export async function convertProject(
   await backupProject(backupPath);
   try {
     await convert(manifestPath, outputPath, false, false);
+    updatePackages();
+    await updateManifestXmlReferences();
   } catch (err: any) {
     console.log(`Error in conversion. Restoring project initial state.`);
     await restoreBackup(backupPath);
     throw err;
   }
-  updatePackages();
-  await updateManifestXmlReferences();
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
