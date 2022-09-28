@@ -323,9 +323,7 @@ export async function sideloadAddIn(
     }
 
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest: OfficeApp[] = manifestPath.endsWith(".json")
-      ? [OfficeApp.Outlook]
-      : getOfficeAppsForManifestHosts(manifest.hosts);
+    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
     const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {
