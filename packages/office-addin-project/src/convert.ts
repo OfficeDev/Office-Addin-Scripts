@@ -41,6 +41,7 @@ export async function convertProject(
     await convert(manifestPath, outputPath, false, false);
     updatePackages();
     await updateManifestXmlReferences();
+    fs.unlinkSync(manifestPath);
   } catch (err: any) {
     console.log(`Error in conversion. Restoring project initial state.`);
     await restoreBackup(backupPath);
