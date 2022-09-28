@@ -22,7 +22,6 @@
     "Node Debugger"
   ],
   "dependencies": {
-    "child_process": "^1.0.2",
     "commander": "^6.2.0",
     "node-fetch": "^2.6.1",
     "office-addin-usage-data": "^1.6.2",
