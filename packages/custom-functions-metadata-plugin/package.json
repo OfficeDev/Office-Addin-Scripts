@@ -27,10 +27,10 @@
   },
   "dependencies": {
     "custom-functions-metadata": "^1.4.2",
-    "loader-utils": "^2.0.0"
+    "loader-utils": "^3.2.0"
   },
   "devDependencies": {
-    "@types/loader-utils": "^2.0.2",
+    "@types/loader-utils": "^2.0.3",
     "@types/node": "^14.17.2",
     "concurrently": "^6.2.2",
     "office-addin-lint": "^2.2.2",
