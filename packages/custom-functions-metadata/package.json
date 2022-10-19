@@ -1,6 +1,6 @@
 {
   "name": "custom-functions-metadata",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Generate metadata for Excel Custom Functions.",
   "main": "./lib/main.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "assert": "^1.5.0",
     "commander": "^6.2.0",
     "nconf": "^0.12.0",
-    "office-addin-usage-data": "^1.6.1",
+    "office-addin-usage-data": "^1.6.2",
     "xregexp": "^4.3.0"
   },
   "devDependencies": {
@@ -39,7 +39,7 @@
     "@types/xregexp": "^3.0.30",
     "concurrently": "^6.2.2",
     "mocha": "^9.1.1",
-    "office-addin-lint": "^2.2.1",
+    "office-addin-lint": "^2.2.2",
     "office-addin-prettier-config": "^1.2.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",

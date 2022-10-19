@@ -54,8 +54,8 @@ export class ManifestHandlerJson extends ManifestHandler {
     manifestInfo.highResolutionIconUrl = teamsAppManifest?.icons?.color;
     manifestInfo.hosts = extensionElement?.requirements?.scopes;
     manifestInfo.iconUrl = teamsAppManifest?.icons?.color;
-    manifestInfo.officeAppType = extensionElement?.requirements?.capabilities[0]?.name;
-    manifestInfo.permissions = teamsAppManifest?.authorization?.permissions?.resourceSpecific[0]?.name;
+    manifestInfo.officeAppType = extensionElement?.requirements?.capabilities?.[0]?.name;
+    manifestInfo.permissions = teamsAppManifest?.authorization?.permissions?.resourceSpecific?.[0]?.name;
     manifestInfo.providerName = teamsAppManifest?.developer?.name;
     manifestInfo.supportUrl = teamsAppManifest?.developer?.websiteUrl;
     manifestInfo.version = teamsAppManifest?.version;
