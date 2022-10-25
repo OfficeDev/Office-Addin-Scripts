@@ -79,11 +79,16 @@ function forceCacheUpdate() {
 
     // Delete any found file that prevents TAOS service calls
     subFolders.forEach((folder: fs.Dirent) => {
-      const targetFile: string = path.resolve(cachePath, folder.name, "TaosSource\\PersistedCacheSynced");
-      if (fs.existsSync(targetFile)) {
-        console.log(`Deleting File: ${targetFile}`);
-        fs.unlinkSync(targetFile);
-      }
+      const targetFiles: string[] = [
+        path.resolve(cachePath, folder.name, "TaosSource\\PersistedCacheSynced"),
+        path.resolve(cachePath, folder.name, "TaosSource\\ZplQ1yfT07QnEV2xMoi+GQ==")
+      ]
+      targetFiles.forEach((file) => { 
+        if (fs.existsSync(file)) {
+          console.log(`Deleting File: ${file}`);
+          fs.unlinkSync(file);
+        }
+      });
     });
   }
 }
