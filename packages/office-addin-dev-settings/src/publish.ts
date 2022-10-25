@@ -82,7 +82,7 @@ function forceCacheUpdate() {
       const targetFiles: string[] = [
         path.resolve(cachePath, folder.name, "TaosSource\\CacheProperties"),
         path.resolve(cachePath, folder.name, "TaosSource\\PersistedCacheSynced"),
-        path.resolve(cachePath, folder.name, "TaosSource\\u8qUM7HfoAFQ6YiuZO0RVQ==")
+        path.resolve(cachePath, folder.name, "TaosSource\\u8qUM7HfoAFQ6YiuZO0RVQ=="),
         path.resolve(cachePath, folder.name, "TaosSource\\ZplQ1yfT07QnEV2xMoi+GQ==")
       ]
       targetFiles.forEach((file) => { 
