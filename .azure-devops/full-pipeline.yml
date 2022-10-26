@@ -9,7 +9,6 @@ jobs:
     steps:
       - template: ./steps/npm-install.yaml
       - template: ./steps/build.yaml
-      - template: ./steps/devcerts.yml
       - template: ./steps/edgewebview.yml
       - template: ./steps/test.yml
 
