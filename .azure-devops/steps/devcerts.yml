@@ -1,9 +1,4 @@
 steps:
-  - task: Npm@1
-    displayName: "Install Office-AddinDev-Certs at machine level"
-    inputs:
-      command: custom
-      customCommand: "exec --yes -- office-addin-dev-certs install --machine"
   - script: |
      echo Install Office-AddinDev-Certs at machine level
      call npx --yes office-addin-dev-certs install --machine
