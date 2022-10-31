@@ -11,8 +11,14 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global process */
 
-export function addSecretToCredentialStore(ssoAppName: string, secret: string, isTest: boolean = false): void {
+export function addSecretToCredentialStore(
+  ssoAppName: string,
+  secret: string,
+  isTest: boolean = false,
+  envFilePath: string = defaults.envDataFilePath
+): void {
   try {
+    updateEnvFileSecret(secret, envFilePath);
     switch (process.platform) {
       case "win32": {
         const addSecretToWindowsStoreCommand = `powershell -ExecutionPolicy Bypass -File "${
@@ -105,6 +111,28 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
     }
   } catch (err) {
     const errorMessage: string = `Unable to write SSO application data to .env file: \n${err}`;
+    throw new Error(errorMessage);
+  }
+}
+
+function updateEnvFileSecret(secret: string, envFilePath: string = defaults.envDataFilePath): boolean {
+  try {
+    // Update .ENV file
+    if (fs.existsSync(envFilePath)) {
+      const appDataContent = fs.readFileSync(envFilePath, "utf8");
+      // Check to see if the fallbackauthdialog file has already been updated and return if it has.
+      if (!appDataContent.includes("{CLIENT_SECRET}")) {
+        return false;
+      }
+
+      const updatedAppDataContent = appDataContent.replace("{CLIENT_SECRET}", secret);
+      fs.writeFileSync(envFilePath, updatedAppDataContent);
+      return true;
+    } else {
+      throw new ExpectedError(`${envFilePath} does not exist`);
+    }
+  } catch (err) {
+    const errorMessage: string = `Unable to write SSO application client secret to .env file: \n${err}`;
     throw new Error(errorMessage);
   }
 }
