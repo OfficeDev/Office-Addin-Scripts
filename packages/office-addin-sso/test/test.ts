@@ -24,11 +24,22 @@ describe("Unit Tests", function () {
     });
     describe("addSecretToCredentialStore()/getSecretFromCredentialStore()", function () {
         this.timeout(10000);
+        const copyEnvFile: string = path.resolve(`${__dirname}/copy-test-env`);
+        before("Create copies of original files so we can edit them and then delete the copies at the end of test", function () {
+            fs.copyFileSync(defaults.testEnvDataFilePath, copyEnvFile);
+        });
         it("Add secret and retrieve secret from credential store", function () {
-            ssoData.addSecretToCredentialStore(ssoAppName, secret, true /* isTest */);
+            ssoData.addSecretToCredentialStore(ssoAppName, secret, true /* isTest */, copyEnvFile);
             const retrievedSecret: string = ssoData.getSecretFromCredentialStore(ssoAppName, true /* isTest */).trim();
             assert.strictEqual(secret, retrievedSecret);
+
+            // Read from updated env copy and ensure it contains the appId
+            const envFile = fs.readFileSync(copyEnvFile, 'utf8');
+            assert.equal(envFile.includes(secret), true);
         });        
+        after("Delete copies of test files", function () {
+            fs.unlinkSync(copyEnvFile);
+        });
     });
     describe("writeApplicationData()", function () {
         const copyEnvFile: string = path.resolve(`${__dirname}/copy-test-env`);
