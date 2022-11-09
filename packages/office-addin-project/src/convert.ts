@@ -118,6 +118,11 @@ function updatePackages(): void {
 }
 
 async function updateManifestXmlReferences(): Promise<void> {
+  await updatePackageJson();
+  await updateWebpackConfig();
+}
+
+async function updatePackageJson(): Promise<void> {
   const packageJson = `./package.json`;
   const readFileAsync = util.promisify(fs.readFile);
   const data = await readFileAsync(packageJson, "utf8");
@@ -130,7 +135,21 @@ async function updateManifestXmlReferences(): Promise<void> {
       `manifest.json`
     );
   });
+
   // write updated json to file
   const writeFileAsync = util.promisify(fs.writeFile);
   await writeFileAsync(packageJson, JSON.stringify(content, null, 2));
+}
+
+async function updateWebpackConfig(): Promise<void> {
+  const weppackConfig = `./webpack.config.js`;
+  const readFileAsync = util.promisify(fs.readFile);
+  const data = await readFileAsync(weppackConfig, "utf8");
+
+  // switching to json extension is the easy fix.
+  // TODO: update to remove the manifest copy plugin since it's not needed in webpack
+  let content = data.replace(/"(manifest\*\.)xml"/gi, "\"$1json\"");
+
+  const writeFileAsync = util.promisify(fs.writeFile);
+  await writeFileAsync(weppackConfig, content);
 }
