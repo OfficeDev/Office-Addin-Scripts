@@ -1,6 +1,6 @@
 {
   "name": "office-addin-project",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Provides project wide commands to an Office Addin Project",
   "main": "./lib/main.js",
   "scripts": {
