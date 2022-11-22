@@ -13,6 +13,19 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
 
+export async function install(command: commander.Command) {
+  try {
+    const days = parseDays(command.days);
+    const domains = parseDomains(command.domains);
+
+    await ensureCertificatesAreInstalled(days, domains, command.machine);
+    usageDataObject.reportSuccess("install");
+  } catch (err: any) {
+    usageDataObject.reportException("install", err);
+    logErrorMessage(err);
+  }
+}
+
 function parseDays(optionValue: any): number | undefined {
   const days = parseNumber(optionValue, "--days should specify a number.");
 
@@ -27,14 +40,21 @@ function parseDays(optionValue: any): number | undefined {
   return days;
 }
 
-export async function install(command: commander.Command) {
-  try {
-    const days = parseDays(command.days);
+function parseDomains(optionValue: any): string[] {
+  if (typeof optionValue !== "string") {
+    throw new ExpectedError("--domains value should be a sting.");
+  }
 
-    await ensureCertificatesAreInstalled(days, command.machine);
-    usageDataObject.reportSuccess("install");
+  return optionValue.split(",");
+}
+
+export async function uninstall(command: commander.Command) {
+  try {
+    await uninstallCaCertificate(command.machine);
+    deleteCertificateFiles(defaults.certificateDirectory);
+    usageDataObject.reportSuccess("uninstall");
   } catch (err: any) {
-    usageDataObject.reportException("install", err);
+    usageDataObject.reportException("uninstall", err);
     logErrorMessage(err);
   }
 }
@@ -55,13 +75,3 @@ export async function verify(command: commander.Command /* eslint-disable-line @
   }
 }
 
-export async function uninstall(command: commander.Command) {
-  try {
-    await uninstallCaCertificate(command.machine);
-    deleteCertificateFiles(defaults.certificateDirectory);
-    usageDataObject.reportSuccess("uninstall");
-  } catch (err: any) {
-    usageDataObject.reportException("uninstall", err);
-    logErrorMessage(err);
-  }
-}
