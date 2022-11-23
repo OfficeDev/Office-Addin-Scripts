@@ -31,6 +31,7 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
 
 export async function ensureCertificatesAreInstalled(
   daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires,
+  domains: string[] = defaults.domain,
   machine: boolean = false
 ) {
   try {
@@ -47,7 +48,8 @@ export async function ensureCertificatesAreInstalled(
         defaults.caCertificatePath,
         defaults.localhostCertificatePath,
         defaults.localhostKeyPath,
-        daysUntilCertificateExpires
+        daysUntilCertificateExpires,
+        domains
       );
       await installCaCertificate(defaults.caCertificatePath, machine);
     }

@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/experimental-utils'
+import { ESLintUtils } from '@typescript-eslint/utils'
 import rule from '../../src/rules/test-for-null-using-isNullObject';
 
 const ruleTester = new ESLintUtils.RuleTester({

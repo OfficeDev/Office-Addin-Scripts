@@ -96,7 +96,7 @@ Syntax:
 
 `office-addin-dev-settings live-reload <manifest> [options]`
 
-`manifest`: path to manifest file. 
+`manifest`: path to manifest file.
 
 Without options, displays whether live reload is enabled.
 
@@ -112,19 +112,28 @@ Enable live-reload for the Office Add-in.
  
 #
 
-### register 
-Registers an Office Add-in for development. 
+### m365-account
+Logs in or out of the m365 account used to sideload json manifests
+
+Syntax:
+
+`office-addin-dev-settings m365-account <operation>`
+
+`operation`: 'login' or 'logout'
+
+### register
+Registers an Office Add-in for development.
 
 Syntax:
 
 `office-addin-dev-settings register <manifest> [options]`
 
-`manifest`: path to manifest file. 
+`manifest`: path to manifest file.
 
 #
 
 ### registered 
-Displays the Office Add-ins registered for development. 
+Displays the Office Add-ins registered for development.
 
 Syntax:
 
@@ -196,7 +205,7 @@ The url is composed as:
 http://`HOST`:`PORT`/`PATH` `EXTENSION`
 
 * `HOST`: host name; default is `localhost`
-* `PORT`: port number; default is `8081` 
+* `PORT`: port number; default is `8081`
 * `PATH`: path
 * `EXTENSION`: extension (including period); default is `.bundle`
 

@@ -17,7 +17,8 @@ export async function generateCertificates(
   caCertificatePath: string = defaults.caCertificatePath,
   localhostCertificatePath: string = defaults.localhostCertificatePath,
   localhostKeyPath: string = defaults.localhostKeyPath,
-  daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires
+  daysUntilCertificateExpires: number = defaults.daysUntilCertificateExpires,
+  domains: string[] = defaults.domain
 ) {
   try {
     fsExtra.ensureDirSync(path.dirname(caCertificatePath));
@@ -44,7 +45,7 @@ export async function generateCertificates(
   const localhostCertificateInfo: mkcert.CertificateInfo = {
     caCert: caCertificate.cert,
     caKey: caCertificate.key,
-    domains: defaults.domain,
+    domains,
     validityDays: daysUntilCertificateExpires,
   };
   let localhostCertificate: mkcert.Certificate;

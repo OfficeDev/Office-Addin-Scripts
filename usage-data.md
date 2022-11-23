@@ -11,7 +11,7 @@ For more details on how we use this data and under what circumstances it may be 
 - Selected language for the project (e.g. TypeScript, JavaScript)
 - Exceptions and errors that users hit
 - Whether the project was created successfully
-
+- A random GUID of the device used
 
 ## Disable data collection
 Microsoft uses this data to provide and improve our products, to troubleshoot problems, and to operate our business. 

@@ -5,17 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach",
+      "name": "Command Line: convert",
       "type": "node",
-      "request": "attach",
-      "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
-    },
-    {
-      "name": "Attach by Process ID",
-      "type": "node",
-      "request": "attach",
-      "processId": "${command:PickProcess}"
+      "request": "launch",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [
+        "convert",
+        "-m",
+        "${workspaceFolder}\\test\\TaskPane.manifest.xml",
+        "-b",  
+        "${workspaceFolder}\\..\\temp.zip"
+      ]
     },
     {
       "name": "Debug Tests",
@@ -24,7 +24,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "-u",
-        "bdd",
+        "tdd",
         "--timeout",
         "999999",
         "--colors",
@@ -35,6 +35,6 @@
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "runtimeArgs": ["--preserve-symlinks"]
-    },
+    }
   ]
 }

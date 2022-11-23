@@ -23,6 +23,9 @@
     "update-packages": "npm run exec -- npm update --dev"
   },
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^5.1.6"
+  },
+  "overrides": {
+    "git-url-parse": "^13.0.0"
   }
 }

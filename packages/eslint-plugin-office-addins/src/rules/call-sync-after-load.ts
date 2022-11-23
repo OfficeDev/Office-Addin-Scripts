@@ -1,5 +1,5 @@
-import { TSESTree } from "@typescript-eslint/experimental-utils";
-import { Reference } from "@typescript-eslint/experimental-utils/dist/ts-eslint-scope";
+import { TSESTree } from "@typescript-eslint/utils";
+import { Reference } from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { parseLoadArguments } from "../utils/load";
 import {
   findPropertiesRead,

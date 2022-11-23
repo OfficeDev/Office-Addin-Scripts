@@ -1,4 +1,4 @@
-import { TSESLint, ESLintUtils } from '@typescript-eslint/experimental-utils';
+import { TSESLint, ESLintUtils } from '@typescript-eslint/utils';
 import rule from '../../src/rules/no-office-read-calls';
 import * as path from 'path';
 

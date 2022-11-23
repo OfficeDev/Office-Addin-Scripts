@@ -59,6 +59,7 @@ export interface IUsageDataOptions {
   usageDataLevel?: UsageDataLevel;
   method?: UsageDataReportingMethod;
   isForTesting?: boolean;
+  deviceID?: string;
 }
 
 /**
@@ -116,7 +117,7 @@ export class OfficeAddinUsageData {
       ) {
         this.usageDataOptIn();
       }
-
+      this.options.deviceID = jsonData.readDeviceID();
       if (this.options.usageDataLevel === UsageDataLevel.on) {
         appInsights.setup(this.options.instrumentationKey).setAutoCollectExceptions(false).start();
         this.usageDataClient = appInsights.defaultClient;
@@ -152,7 +153,7 @@ export class OfficeAddinUsageData {
           usageDataEvent.properties[key] = value;
           usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
         }
-
+        usageDataEvent.properties["deviceID"] = this.options.deviceID;
         this.usageDataClient.trackEvent(usageDataEvent);
         this.eventsSent++;
       } catch (err) {
@@ -317,7 +318,6 @@ export class OfficeAddinUsageData {
           this.reportExpectedException(method, err, data);
           return;
         }
-
         let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
@@ -330,6 +330,7 @@ export class OfficeAddinUsageData {
           ExpectedError: false,
           ...this.defaultData,
           ...data,
+          deviceID: this.options.deviceID,
         }).forEach((entry) => {
           exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
         });
@@ -453,6 +454,7 @@ export class OfficeAddinUsageData {
         eventTelemetryObj.properties = {
           ...this.defaultData,
           ...data,
+          deviceID: this.options.deviceID,
         };
         this.usageDataClient.trackEvent(eventTelemetryObj);
         this.eventsSent++;

@@ -3,7 +3,7 @@
 
 import * as fs from "fs";
 import * as childProcess from "child_process";
-import * as jszip from "jszip";
+import * as AdmZip from "adm-zip";
 import {
   AddInType,
   getAddInTypeForManifestOfficeAppType,
@@ -62,9 +62,6 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     throw new ExpectedError(`Sideload is not supported for apptype: ${addInType}.`);
   }
 
-  const templateBuffer = await readFileAsync(templatePath);
-  const zip: jszip = await jszip.loadAsync(templateBuffer);
-
   const appName = getOfficeAppName(app);
   const extension = path.extname(templatePath);
   const pathToWrite: string = makePathUnique(
@@ -79,24 +76,32 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     }
 
     // replace the placeholder id and version
-    const zipFile = zip.file(webExtensionPath);
-    if (!zipFile) {
+    const templateZip: AdmZip = new AdmZip(templatePath);
+    const outZip: AdmZip = new AdmZip();
+    const extEntry = templateZip.getEntry(webExtensionPath);
+
+    if (!extEntry) {
       throw new ExpectedError("webextension was not found.");
     }
-    const webExtensionXml = (await zipFile.async("text"))
+
+    const webExtensionXml = templateZip
+      .readAsText(extEntry)
       .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
       .replace(/1.0.0.0/g, manifest.version);
-    zip.file(webExtensionPath, webExtensionXml);
-  }
 
-  // Write the file
-  await new Promise((resolve, reject) => {
-    zip
-      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-      .pipe(fs.createWriteStream(pathToWrite))
-      .on("error", reject)
-      .on("finish", resolve);
-  });
+    templateZip.getEntries().forEach(function (entry) {
+      var data: Buffer = entry.getData();
+      if (entry == extEntry) {
+        data = Buffer.from(webExtensionXml);
+      }
+      outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
+    });
+
+    // Write the file
+    await outZip.writeZipPromise(pathToWrite);
+  } else {
+    await fs.promises.copyFile(templatePath, pathToWrite);
+  }
 
   return pathToWrite;
 }
@@ -307,7 +312,8 @@ export async function sideloadAddIn(
     }
 
     // Converting json to xml manifest . . . Temporary until service is ready.
-    if (manifestPath.endsWith(".json")) {
+    // depending on environment
+    if (manifestPath.endsWith(".json") && !canSideloadJson()) {
       if (isDotnetInstalled()) {
         // Run json => xml conversion tool.
         manifestPath = await convertJsonToXmlManifest(manifestPath);
@@ -459,4 +465,8 @@ export default function stripBom(manifestPath: string) {
   } catch (err) {
     console.log("Error trying to update converted xml");
   }
+}
+
+function canSideloadJson(): boolean {
+  return !!process.env.SIDELOADING_SERVICE_ENDPOINT && !!process.env.SIDELOADING_SERVICE_SCOPE;
 }

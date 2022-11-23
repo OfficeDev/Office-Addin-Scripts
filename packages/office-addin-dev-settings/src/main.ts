@@ -7,3 +7,4 @@ export * from "./dev-settings";
 export * from "./process";
 export * from "./sideload";
 export { parseWebViewType } from "./commands";
+export { updateM365Account } from "./publish";

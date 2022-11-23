@@ -1,20 +1,25 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as archiver from "archiver";
+import * as AdmZip from "adm-zip";
 import * as fs from "fs";
+import * as fsExtra from "fs-extra";
 import * as inquirer from "inquirer";
 import * as path from "path";
 import * as util from "util";
-import { exec } from "child_process";
+import { execSync } from "child_process";
+import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
+
+const skipBackup: string[] = ["node_modules"];
 
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
   backupPath: string = "./backup.zip"
 ) {
+  const outputPath: string = path.dirname(manifestPath);
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
       `The convert command only works on xml manifest based projects`
@@ -32,13 +37,21 @@ export async function convertProject(
     return;
   }
   await backupProject(backupPath);
-  updatePackages();
-  await updateManifestXmlReferences();
+  try {
+    await convert(manifestPath, outputPath, false, false);
+    updatePackages();
+    await updateManifestXmlReferences();
+    fs.unlinkSync(manifestPath);
+  } catch (err: any) {
+    console.log(`Error in conversion. Restoring project initial state.`);
+    await restoreBackup(backupPath);
+    throw err;
+  }
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
   const question = {
-    message: `This command will convert your XML manifest to a JSON manifest and upgrade your project dependencies to make it compatible with the new project.\nWould you like to continue?`,
+    message: `This command will convert your current xml manifest to a json manifest and then proceed to upgrade your project dependencies to ensure compatibility with the new project structure.\nHowever, in order for this newly updated project to function correctly you must be on a private environment that has not yet been released publicly.\nWould you like to continue?`,
     name: "didUserConfirm",
     type: "confirm",
   };
@@ -47,31 +60,40 @@ async function asksForUserConfirmation(): Promise<boolean> {
 }
 
 async function backupProject(backupPath: string) {
-  const stream = fs.createWriteStream(backupPath);
-  const archive = archiver("zip", {
-    zlib: { level: 9 }, // Sets the compression level.
+  const zip: AdmZip = new AdmZip();
+  const outputPath: string = path.resolve(backupPath);
+  const rootDir: string = path.resolve();
+
+  const files: string[] = fs.readdirSync(rootDir);
+  files.forEach((entry) => {
+    const fullPath = path.resolve(entry);
+    const entryStats = fs.lstatSync(fullPath);
+
+    if (skipBackup.includes(entry)) {
+      // Don't add it to the backup
+    } else if (entryStats.isDirectory()) {
+      zip.addLocalFolder(entry, entry);
+    } else {
+      zip.addLocalFile(entry);
+    }
   });
 
-  return new Promise<void>((resolve, reject) => {
-    archive
-      .glob(`{,!(node_modules)/**/}*`)
-      .on("error", (err) => reject(err))
-      .pipe(stream);
+  fsExtra.ensureDirSync(path.dirname(outputPath));
+  if (await zip.writeZipPromise(outputPath)) {
+    console.log(`A backup of your project was created to ${outputPath}`);
+  } else {
+    throw new Error(`Error writting zip file to ${outputPath}`);
+  }
+}
 
-    stream.on("close", () => {
-      console.log(
-        `A backup of your project was created to ${path.resolve(backupPath)}`
-      );
-      resolve();
-    });
-    archive.finalize();
-  });
+async function restoreBackup(backupPath: string) {
+  var zip = new AdmZip(backupPath); // reading archives
+  zip.extractAllTo("./", true); // overwrite
 }
 
 function updatePackages(): void {
   // Contains name of the package and minimum version
   const depedentPackages: string[] = [
-    "@microsoft/teamsfx",
     "office-addin-debugging",
     "office-addin-manifest",
   ];
@@ -92,10 +114,15 @@ function updatePackages(): void {
 
   command += ` --save-dev`;
   console.log(messageToBePrinted.slice(0, -1));
-  exec(command);
+  execSync(command);
 }
 
 async function updateManifestXmlReferences(): Promise<void> {
+  await updatePackageJson();
+  await updateWebpackConfig();
+}
+
+async function updatePackageJson(): Promise<void> {
   const packageJson = `./package.json`;
   const readFileAsync = util.promisify(fs.readFile);
   const data = await readFileAsync(packageJson, "utf8");
@@ -108,7 +135,21 @@ async function updateManifestXmlReferences(): Promise<void> {
       `manifest.json`
     );
   });
+
   // write updated json to file
   const writeFileAsync = util.promisify(fs.writeFile);
   await writeFileAsync(packageJson, JSON.stringify(content, null, 2));
+}
+
+async function updateWebpackConfig(): Promise<void> {
+  const weppackConfig = `./webpack.config.js`;
+  const readFileAsync = util.promisify(fs.readFile);
+  const data = await readFileAsync(weppackConfig, "utf8");
+
+  // switching to json extension is the easy fix.
+  // TODO: update to remove the manifest copy plugin since it's not needed in webpack
+  let content = data.replace(/"(manifest\*\.)xml"/gi, "\"$1json\"");
+
+  const writeFileAsync = util.promisify(fs.writeFile);
+  await writeFileAsync(weppackConfig, content);
 }

@@ -4,11 +4,13 @@
 import * as assert from "assert";
 import * as defaults from "./../src/defaults";
 import * as fs from "fs";
-import * as mocha from "mocha";
 import * as path from 'path';
 import * as server from './../src/server';
 import * as ssoData from './../src/ssoDataSettings';
 import * as testHelper from "office-addin-test-helpers";
+
+/* global process, describe, before, it, after */
+
 const appId: string = '584c9885-baa7-44ef-95b6-6df1064a2e25';
 const port: string = '3000';
 const ssoAppName: string = 'Office-Addin-Taskpane-SSO-Test';
@@ -22,11 +24,22 @@ describe("Unit Tests", function () {
     });
     describe("addSecretToCredentialStore()/getSecretFromCredentialStore()", function () {
         this.timeout(10000);
+        const copyEnvFile: string = path.resolve(`${__dirname}/copy-test-env`);
+        before("Create copies of original files so we can edit them and then delete the copies at the end of test", function () {
+            fs.copyFileSync(defaults.testEnvDataFilePath, copyEnvFile);
+        });
         it("Add secret and retrieve secret from credential store", function () {
-            ssoData.addSecretToCredentialStore(ssoAppName, secret, true /* isTest */);
+            ssoData.addSecretToCredentialStore(ssoAppName, secret, true /* isTest */, copyEnvFile);
             const retrievedSecret: string = ssoData.getSecretFromCredentialStore(ssoAppName, true /* isTest */).trim();
             assert.strictEqual(secret, retrievedSecret);
+
+            // Read from updated env copy and ensure it contains the appId
+            const envFile = fs.readFileSync(copyEnvFile, 'utf8');
+            assert.equal(envFile.includes(secret), true);
         });        
+        after("Delete copies of test files", function () {
+            fs.unlinkSync(copyEnvFile);
+        });
     });
     describe("writeApplicationData()", function () {
         const copyEnvFile: string = path.resolve(`${__dirname}/copy-test-env`);
