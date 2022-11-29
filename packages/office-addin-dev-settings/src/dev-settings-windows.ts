@@ -178,13 +178,15 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
   return false;
 }
 
-export async function registerAddIn(manifestPath: string): Promise<void> {
+export async function registerAddIn(manifestPath: string, registration?: string): Promise<void> {
   const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
   if (manifestPath.endsWith(".json")) {
-    const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
-    const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
-    const registration = await registerWithTeams(zipPath);
+    if (!registration) {
+      const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
+      const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
+      registration = await registerWithTeams(zipPath);
+    }
 
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
     await registry.addStringValue(key, TitleId, registration);

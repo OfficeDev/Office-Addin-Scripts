@@ -224,11 +224,11 @@ export async function isLiveReloadEnabled(addinId: string): Promise<boolean> {
   }
 }
 
-export async function registerAddIn(manifestPath: string): Promise<void> {
+export async function registerAddIn(manifestPath: string, registration?: string): Promise<void> {
   switch (process.platform) {
     case "win32": {
       const realManifestPath = fs.realpathSync(manifestPath);
-      return devSettingsWindows.registerAddIn(realManifestPath);
+      return devSettingsWindows.registerAddIn(realManifestPath, registration);
     }
     case "darwin":
       return devSettingsMac.registerAddIn(manifestPath);

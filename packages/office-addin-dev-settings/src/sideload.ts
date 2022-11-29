@@ -301,7 +301,8 @@ export async function sideloadAddIn(
   app?: OfficeApp,
   canPrompt: boolean = false,
   appType?: AppType,
-  document?: string
+  document?: string,
+  registration?: string
 ): Promise<void> {
   try {
     if (appType === undefined) {
@@ -347,7 +348,7 @@ export async function sideloadAddIn(
 
     switch (appType) {
       case AppType.Desktop:
-        await registerAddIn(manifestPath);
+        await registerAddIn(manifestPath, registration);
         await launchDesktopApp(app, manifest, document);
         break;
       case AppType.Web: {
