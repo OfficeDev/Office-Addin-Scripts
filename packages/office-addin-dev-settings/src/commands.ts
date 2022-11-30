@@ -375,8 +375,9 @@ export async function sideload(manifestPath: string, type: string | undefined, c
     const canPrompt = true;
     const document: string | undefined = command.document ? command.document : undefined;
     const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
+    const registration: string = command.registration;
 
-    await sideloadAddIn(manifestPath, app, canPrompt, appType, document);
+    await sideloadAddIn(manifestPath, app, canPrompt, appType, document, registration);
     usageDataObject.reportSuccess("sideload");
   } catch (err: any) {
     usageDataObject.reportException("sideload", err);

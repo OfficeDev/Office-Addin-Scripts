@@ -27,6 +27,7 @@ const SourceBundleExtension: string = "SourceBundleExtension";
 const SourceBundleHost: string = "SourceBundleHost";
 const SourceBundlePath: string = "SourceBundlePath";
 const SourceBundlePort: string = "SourceBundlePort";
+const TitleId: string = "TitleId";
 const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
@@ -177,15 +178,18 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
   return false;
 }
 
-export async function registerAddIn(manifestPath: string): Promise<void> {
-  let data = manifestPath; // xml will store the manifest path and json will store the titleId
+export async function registerAddIn(manifestPath: string, registration?: string): Promise<void> {
   const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
   if (manifestPath.endsWith(".json")) {
-    const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
-    const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
+    if (!registration) {
+      const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
+      const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
+      registration = await registerWithTeams(zipPath);
+    }
 
-    data = await registerWithTeams(zipPath);
+    const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
+    await registry.addStringValue(key, TitleId, registration);
   } else if (manifestPath.endsWith(".xml")) {
     const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
@@ -196,7 +200,7 @@ export async function registerAddIn(manifestPath: string): Promise<void> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
-  return registry.addStringValue(key, manifest.id || "", data);
+  return registry.addStringValue(key, manifest.id || "", manifestPath);
 }
 
 export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
@@ -305,8 +309,13 @@ export async function unregisterAllAddIns(): Promise<void> {
 }
 
 async function unacquire(key: registry.RegistryKey, id: string) {
-  const regValue = await registry.getValue(key, id);
-  if (regValue != undefined && !regValue.data.endsWith(".xml")) {
-    unacquireWithTeams(regValue.data);
+  const manifest = await registry.getStringValue(key, id);
+  if (manifest != undefined && manifest.endsWith(".json")) {
+    const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
+    const registration = await registry.getStringValue(key, TitleId);
+    if (registration != undefined) {
+      unacquireWithTeams(registration);
+      registry.deleteValue(key, TitleId);
+    }
   }
 }

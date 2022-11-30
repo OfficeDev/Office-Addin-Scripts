@@ -17,7 +17,6 @@ import open = require("open");
 import semver = require("semver");
 import * as os from "os";
 import * as path from "path";
-import * as util from "util";
 import { AppType } from "./appType";
 import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";
@@ -26,9 +25,7 @@ import * as registry from "./registry";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, __dirname, URL, console */
-
-const readFileAsync = util.promisify(fs.readFile);
+/* global __dirname, Buffer, console, process, URL */
 
 /**
  * Create an Office document in the temporary files directory
@@ -117,14 +114,10 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
 export async function generateSideloadUrl(
   manifestFileName: string,
   manifest: ManifestInfo,
-  documentUrl: string | undefined,
+  documentUrl: string,
   isTest: boolean = false
-): Promise<string | undefined> {
+): Promise<string> {
   const testQueryParam = "&wdaddintest=true";
-
-  if (documentUrl === undefined || documentUrl === "") {
-    return undefined;
-  }
 
   if (!manifest.id) {
     throw new ExpectedError("The manifest does not contain the id for the add-in.");
@@ -244,11 +237,15 @@ async function getOutlookVersion(): Promise<string | undefined> {
   }
 }
 
-async function getOutlookExePath(): Promise<string | undefined> {
+async function getOutlookExePath(): Promise<string> {
   try {
     const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
     const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
     const outlookExePath: string | undefined = await registry.getStringValue(key, "");
+
+    if (!outlookExePath) {
+      throw new Error("Outlook.exe registry empty");
+    }
 
     return outlookExePath;
   } catch (err) {
@@ -304,7 +301,8 @@ export async function sideloadAddIn(
   app?: OfficeApp,
   canPrompt: boolean = false,
   appType?: AppType,
-  document?: string
+  document?: string,
+  registration?: string
 ): Promise<void> {
   try {
     if (appType === undefined) {
@@ -324,7 +322,6 @@ export async function sideloadAddIn(
 
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
-    const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
 
     if (app) {
       if (appsInManifest.indexOf(app) < 0) {
@@ -349,55 +346,20 @@ export async function sideloadAddIn(
       throw new ExpectedError("Please specify the Office app.");
     }
 
-    let sideloadFile: string | undefined;
-
     switch (appType) {
       case AppType.Desktop:
-        if (!isSideloadingSupportedForDesktopHost(app)) {
-          throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
-        }
-
-        // do the registration
-        await registerAddIn(manifestPath);
-        // for Outlook, open Outlook.exe; for other Office apps, open the document
-        if (app == OfficeApp.Outlook) {
-          const version: string | undefined = await getOutlookVersion();
-          if (version && !hasOfficeVersion("16.0.13709", version)) {
-            throw new ExpectedError(
-              `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
-            );
-          }
-          sideloadFile = await getOutlookExePath();
-        } else {
-          sideloadFile = await generateSideloadFile(app, manifest, document);
-        }
+        await registerAddIn(manifestPath, registration);
+        await launchDesktopApp(app, manifest, document);
         break;
       case AppType.Web: {
         if (!document) {
           throw new ExpectedError(`For sideload to web, you need to specify a document url.`);
         }
-        if (!isSideloadingSupportedForWebHost(app)) {
-          throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
-        }
-        const manifestFileName: string = path.basename(manifestPath);
-        sideloadFile = await generateSideloadUrl(manifestFileName, manifest, document, isTest);
+        await launchWebApp(app, manifestPath, manifest, document);
         break;
       }
       default:
         throw new ExpectedError("Sideload is not supported for the specified app type.");
-    }
-
-    if (sideloadFile) {
-      if (app === OfficeApp.Outlook) {
-        // put the Outlook.exe path in quotes if it contains spaces
-        if (sideloadFile.indexOf(" ") >= 0) {
-          sideloadFile = `"${sideloadFile}"`;
-        }
-
-        startDetachedProcess(sideloadFile);
-      } else {
-        await open(sideloadFile, { wait: false });
-      }
     }
     usageDataObject.reportSuccess("sideloadAddIn()");
   } catch (err: any) {
@@ -450,7 +412,7 @@ async function convertJsonToXmlManifest(manifestPath: string): Promise<string> {
   });
 }
 
-export default function stripBom(manifestPath: string) {
+function stripBom(manifestPath: string) {
   try {
     if (fs.existsSync(manifestPath)) {
       const fileData: string = fs.readFileSync(manifestPath, "utf8");
@@ -469,4 +431,48 @@ export default function stripBom(manifestPath: string) {
 
 function canSideloadJson(): boolean {
   return !!process.env.SIDELOADING_SERVICE_ENDPOINT && !!process.env.SIDELOADING_SERVICE_SCOPE;
+}
+
+async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document?: string) {
+  if (!isSideloadingSupportedForDesktopHost(app)) {
+    throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
+  }
+
+  // for Outlook, open Outlook.exe; for other Office apps, open the document
+  if (app == OfficeApp.Outlook) {
+    const version: string | undefined = await getOutlookVersion();
+    if (version && !hasOfficeVersion("16.0.13709", version)) {
+      throw new ExpectedError(
+        `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
+      );
+    }
+    await launchApp(app, await getOutlookExePath());
+  } else {
+    await launchApp(app, await generateSideloadFile(app, manifest, document));
+  }
+}
+
+async function launchWebApp(app: OfficeApp, manifestPath: string, manifest: ManifestInfo, document: string) {
+  if (!isSideloadingSupportedForWebHost(app)) {
+    throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
+  }
+  const manifestFileName: string = path.basename(manifestPath);
+  const isTest: boolean = process.env.WEB_SIDELOAD_TEST !== undefined;
+  await launchApp(app, await generateSideloadUrl(manifestFileName, manifest, document, isTest));
+}
+
+async function launchApp(app: OfficeApp, sideloadFile: string) {
+  console.log(`Launching ${app} via ${sideloadFile}`);
+  if (sideloadFile) {
+    if (app === OfficeApp.Outlook) {
+      // put the Outlook.exe path in quotes if it contains spaces
+      if (sideloadFile.indexOf(" ") >= 0) {
+        sideloadFile = `"${sideloadFile}"`;
+      }
+
+      startDetachedProcess(sideloadFile);
+    } else {
+      await open(sideloadFile, { wait: false });
+    }
+  }
 }
