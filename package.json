@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": ">=14.17 <17",
+    "node": ">=16 <19",
     "npm": ">=6 <9"
   },
   "scripts": {
