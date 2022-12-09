@@ -11,11 +11,15 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global process, Buffer, __dirname */
 
-function getVerifyCommand(): string {
+function getVerifyCommand(returnInvalidCertificate: boolean): string {
   switch (process.platform) {
     case "win32": {
       const script = path.resolve(__dirname, "..\\scripts\\verify.ps1");
-      return `powershell -ExecutionPolicy Bypass -File "${script}" "${defaults.certificateName}"`;
+      const defaultCommand = `powershell -ExecutionPolicy Bypass -File "${script}" -CaCertificateName "${defaults.certificateName}" -CaCertificatePath "${defaults.caCertificatePath}" -LocalhostCertificatePath "${defaults.localhostCertificatePath}"`;
+      if (returnInvalidCertificate) {
+        return defaultCommand + ` -ReturnInvalidCertificate`
+      }
+      return defaultCommand;
     }
     case "darwin": {
       // macOS
@@ -29,8 +33,8 @@ function getVerifyCommand(): string {
   }
 }
 
-export function isCaCertificateInstalled(): boolean {
-  const command = getVerifyCommand();
+export function isCaCertificateInstalled(returnInvalidCertificate: boolean = false): boolean {
+  const command = getVerifyCommand(returnInvalidCertificate);
 
   try {
     const output = execSync(command, { stdio: "pipe" }).toString();

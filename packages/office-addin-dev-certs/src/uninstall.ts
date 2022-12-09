@@ -45,7 +45,7 @@ export function deleteCertificateFiles(certificateDirectory: string = defaults.c
 }
 
 export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
-  if (isCaCertificateInstalled()) {
+  if (isCaCertificateInstalled(/* returnInvalidCertificate */ true)) {
     const command = getUninstallCommand(machine);
 
     try {
