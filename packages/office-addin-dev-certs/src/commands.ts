@@ -40,12 +40,22 @@ function parseDays(optionValue: any): number | undefined {
   return days;
 }
 
-function parseDomains(optionValue: any): string[] {
-  if (typeof optionValue !== "string") {
-    throw new ExpectedError("--domains value should be a sting.");
+function parseDomains(optionValue: any): string[] | undefined {
+  switch (typeof optionValue) {
+    case "string": {
+      try {
+        return optionValue.split(",");
+      } catch (err) {
+        throw new Error("string value not in the correct format");
+      }
+    }
+    case "undefined": {
+      return undefined;
+    }
+    default: {
+      throw new Error("--domains value should be a sting.");
+    }
   }
-
-  return optionValue.split(",");
 }
 
 export async function uninstall(command: commander.Command) {
@@ -74,4 +84,3 @@ export async function verify(command: commander.Command /* eslint-disable-line @
     logErrorMessage(err);
   }
 }
-
