@@ -20,7 +20,10 @@ commander
     "--days <days>",
     `Specifies the validity of CA certificate in days. Default: ${defaults.daysUntilCertificateExpires}`
   )
-  .option("--domains <domains>", "List of IP address and domains separated by commas.")
+  .option(
+    "--domains <domains>",
+    `List of IP address and domains separated by commas. Default: ${defaults.domain.join(",")}`
+  )
   .description(`Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`)
   .action(commands.install);
 

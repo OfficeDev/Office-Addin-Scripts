@@ -17,7 +17,7 @@ function getVerifyCommand(returnInvalidCertificate: boolean): string {
       const script = path.resolve(__dirname, "..\\scripts\\verify.ps1");
       const defaultCommand = `powershell -ExecutionPolicy Bypass -File "${script}" -CaCertificateName "${defaults.certificateName}" -CaCertificatePath "${defaults.caCertificatePath}" -LocalhostCertificatePath "${defaults.localhostCertificatePath}"`;
       if (returnInvalidCertificate) {
-        return defaultCommand + ` -ReturnInvalidCertificate`
+        return defaultCommand + ` -ReturnInvalidCertificate`;
       }
       return defaultCommand;
     }
