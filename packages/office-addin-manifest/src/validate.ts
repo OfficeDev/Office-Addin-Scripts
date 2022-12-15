@@ -107,13 +107,16 @@ export async function validateManifest(
         throw new Error(`Unable to contact the manifest validation service.\n${err}`);
       }
 
-      const text = await response.text();
-      const json = JSON.parse(text.trim());
+      validation.status = response.status;
 
-      if (json) {
-        validation.report = json;
-        validation.status = response.status;
-      }
+      const text = await response.text();
+
+      try {
+        const json = JSON.parse(text.trim());
+        if (json) {
+          validation.report = json;
+        }
+      } catch {} // eslint-disable-line no-empty
 
       if (validation.report) {
         const result = validation.report.status;
