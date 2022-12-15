@@ -56,6 +56,7 @@ export class ManifestValidation {
   public isValid: boolean;
   public report?: ManifestValidationReport;
   public status?: number;
+  public statusText?: string;
 
   constructor() {
     this.isValid = false;
@@ -108,6 +109,7 @@ export async function validateManifest(
       }
 
       validation.status = response.status;
+      validation.statusText = response.statusText
 
       const text = await response.text();
 

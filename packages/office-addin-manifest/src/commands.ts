@@ -149,7 +149,7 @@ export async function validate(
     const verifyProduction: boolean = command.production;
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
     if (validation.status && validation.status != 200) {
-      console.log(`Unable to validate the manifest.\n${validation.status}`);
+      console.log(`Unable to validate the manifest.\n${validation.status}\n${validation.statusText}`);
     } else if (validation.report) {
       logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);
