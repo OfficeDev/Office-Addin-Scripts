@@ -109,7 +109,7 @@ export async function validateManifest(
       }
 
       validation.status = response.status;
-      validation.statusText = response.statusText
+      validation.statusText = response.statusText;
 
       const text = await response.text();
 
