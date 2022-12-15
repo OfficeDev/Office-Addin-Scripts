@@ -53,7 +53,7 @@ function parseDomains(optionValue: any): string[] | undefined {
       return undefined;
     }
     default: {
-      throw new Error("--domains value should be a sting.");
+      throw new Error("--domains value should be a string.");
     }
   }
 }
