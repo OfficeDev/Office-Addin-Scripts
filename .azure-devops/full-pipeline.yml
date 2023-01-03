@@ -5,7 +5,7 @@
 jobs:
   - job: Windows_10_Latest
     pool:
-      name: OE-OfficeClientApps
+      name: OEDevJeff-OfficeClientApps
     steps:
       - template: ./steps/npm-install.yaml
       - template: ./steps/build.yaml
