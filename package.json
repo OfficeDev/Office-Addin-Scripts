@@ -3,7 +3,7 @@
   "private": true,
   "engines": {
     "node": ">=16 <19",
-    "npm": ">=6 <9"
+    "npm": ">=6 <=9"
   },
   "scripts": {
     "audit": "npm audit & npm run exec -- npm audit",
