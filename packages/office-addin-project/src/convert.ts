@@ -4,7 +4,6 @@
 import * as AdmZip from "adm-zip";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
-import * as inquirer from "inquirer";
 import * as path from "path";
 import * as util from "util";
 import { execSync } from "child_process";
@@ -32,10 +31,6 @@ export async function convertProject(
     );
   }
 
-  const shouldContinue = await asksForUserConfirmation();
-  if (!shouldContinue) {
-    return;
-  }
   await backupProject(backupPath);
   try {
     await convert(manifestPath, outputPath, false, false);
@@ -47,16 +42,6 @@ export async function convertProject(
     await restoreBackup(backupPath);
     throw err;
   }
-}
-
-async function asksForUserConfirmation(): Promise<boolean> {
-  const question = {
-    message: `This command will convert your current xml manifest to a json manifest and then proceed to upgrade your project dependencies to ensure compatibility with the new project structure.\nHowever, in order for this newly updated project to function correctly you must be on a private environment that has not yet been released publicly.\nWould you like to continue?`,
-    name: "didUserConfirm",
-    type: "confirm",
-  };
-  const answers = await inquirer.prompt([question]);
-  return (answers as any).didUserConfirm;
 }
 
 async function backupProject(backupPath: string) {
@@ -148,7 +133,7 @@ async function updateWebpackConfig(): Promise<void> {
 
   // switching to json extension is the easy fix.
   // TODO: update to remove the manifest copy plugin since it's not needed in webpack
-  let content = data.replace(/"(manifest\*\.)xml"/gi, "\"$1json\"");
+  let content = data.replace(/"(manifest\*\.)xml"/gi, '"$1json"');
 
   const writeFileAsync = util.promisify(fs.writeFile);
   await writeFileAsync(weppackConfig, content);
