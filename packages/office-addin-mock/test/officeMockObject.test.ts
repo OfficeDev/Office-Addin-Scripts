@@ -200,6 +200,12 @@ describe("Test OfficeMockObject class", function() {
       await officeMock.sync();
       assert.strictEqual(officeMock.range.getColor(), "blue");
     });
+    it("Load with no arguments", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+      officeMock.range.load();
+      await officeMock.sync();
+      assert.strictEqual(officeMock.range.getColor(), "blue");
+    });
     it("Load navigational property", async function() {
       const contextMock = new OfficeMockObject(contextMockData);
       contextMock.workbook.range.load("format/fill");

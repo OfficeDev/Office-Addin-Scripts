@@ -33,7 +33,10 @@ export class OfficeMockObject {
     }
     let properties: string[] = [];
 
-    if (typeof propertyArgument === "string") {
+    if (propertyArgument === undefined) { 
+      // an empty load call mean load all properties
+      properties = ["*"];
+    } else if (typeof propertyArgument === "string") {
       properties = Array(propertyArgument);
     } else if (Array.isArray(propertyArgument)) {
       properties = propertyArgument;
