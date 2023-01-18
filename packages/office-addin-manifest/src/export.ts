@@ -23,7 +23,7 @@ async function createZip(manifestPath: string = "manifest.json"): Promise<AdmZip
   const zip: AdmZip = new AdmZip();
 
   if (fs.existsSync(manifestPath)) {
-    zip.addLocalFile(manifestPath);
+    zip.addLocalFile(manifestPath, "", "manifest.json");
   } else {
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
