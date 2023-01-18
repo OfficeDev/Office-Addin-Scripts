@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as AdmZip from "adm-zip";
 import * as assert from "assert";
 import * as fs from "fs";
 import * as mocha from "mocha";
@@ -828,6 +829,20 @@ describe("Unit Tests", function() {
         assert.strictEqual(outputFile, expectedOutput, "Output path \'" + outputFile + "\' should match the default \'" + expectedOutput + "\'");
         assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
         
+        // Cleanup
+        fs.unlinkSync(outputFile);
+      });
+      it("export manifest with different name", async function() {
+        this.timeout(6000);
+        const manifestPath = path.normalize("test/manifests/manifest.local.json");
+        const expectedOutput = path.join(path.dirname(path.resolve(manifestPath)), "manifest.zip");
+        const outputFile = await exportMetadataPackage("", manifestPath);
+        assert.strictEqual(outputFile, expectedOutput, "Output path \'" + outputFile + "\' should match the default \'" + expectedOutput + "\'");
+        assert.strictEqual(fs.existsSync(outputFile), true, "Output file \'" + outputFile + "\' should exist");
+
+        const zip: AdmZip = new AdmZip(outputFile);
+        const entries = zip.getEntries().filter((entry) => { return entry.name == "manifest.json"});
+        assert.strictEqual(entries.length, 1, "Found manifest.json in zip file");
         // Cleanup
         fs.unlinkSync(outputFile);
       });
