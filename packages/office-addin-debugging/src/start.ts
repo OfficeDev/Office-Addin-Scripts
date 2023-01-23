@@ -3,6 +3,7 @@
 
 import * as AdmZip from "adm-zip";
 import * as fetch from "node-fetch";
+import * as fs from "fs";
 import * as fspath from "path";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
@@ -429,5 +430,12 @@ async function extractManifest(zipPath: string): Promise<string> {
   const targetPath: string = fspath.join(process.env.TEMP as string, "addinManifest");
   const zip = new AdmZip(zipPath); // reading archives
   zip.extractAllTo(targetPath, true); // overwrite
-  return fspath.join(targetPath, "manifest.json");
+
+  const manifestPath = fspath.join(targetPath, "manifest.json");
+  if (fs.existsSync(manifestPath)) {
+    return manifestPath;
+  }
+  else {
+    throw new Error(`The zip file '${zipPath}' does not contain a "manifest.json" file`);
+  }
 }
