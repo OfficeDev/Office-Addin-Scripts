@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as AdmZip from "adm-zip";
 import * as fetch from "node-fetch";
+import * as fspath from "path";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
 import * as os from "os";
@@ -291,6 +293,9 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     console.log(enableDebugging ? "Debugging is being started..." : "Starting without debugging...");
     console.log(`App type: ${appType}`);
 
+    if (manifestPath.endsWith(".zip")) {
+      manifestPath = await extractManifest(manifestPath);
+    }
     const manifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     if (!manifestInfo.id) {
@@ -418,4 +423,11 @@ export async function waitUntilPackagerIsRunning(
   retryDelay: number = 1000
 ): Promise<boolean> {
   return waitUntil(async () => await isPackagerRunning(statusUrl), retryCount, retryDelay);
+}
+
+async function extractManifest(zipPath: string): Promise<string> {
+  const targetPath: string = fspath.join(process.env.TEMP as string, "addinManifest");
+  const zip = new AdmZip(zipPath); // reading archives
+  zip.extractAllTo(targetPath, true); // overwrite
+  return fspath.join(targetPath, "manifest.json");
 }
