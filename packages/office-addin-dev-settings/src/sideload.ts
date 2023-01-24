@@ -310,7 +310,7 @@ export async function sideloadAddIn(
     }
 
     if (manifestPath.endsWith(".json") && !canSideloadJson()) {
-      throw new ExpectedError("Development envionrment doesn't support json manifests.");
+      throw new ExpectedError("Development environment doesn't support json manifests.");
     }
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
