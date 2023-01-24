@@ -19,8 +19,8 @@
     "termsOfUseUrl": "https://www.contoso.com/servicesagreement"
   },
   "icons": {
-    "outline": "test/assets/icon-64.png",
-    "color": "test/assets/icon-128.png"
+    "outline": "../assets/icon-64.png",
+    "color": "../assets/icon-128.png"
   },
   "accentColor": "#230201",
   "localizationInfo": {
