@@ -29,7 +29,7 @@ export async function convert(command: commander.Command) {
 
 async function asksForUserConfirmation(): Promise<boolean> {
   const question = {
-    message: `This command will convert your current xml manifest to a json manifest and then proceed to upgrade your project dependencies to ensure compatibility with the new project structure.\nHowever, in order for this newly updated project to function correctly you must be on a private environment that has not yet been released publicly.\nWould you like to continue?`,
+    message: `This command will convert your current xml manifest to a json manifest and then proceed to upgrade your project dependencies to ensure compatibility with the new project structure.\nHowever, in order for this newly updated project to function correctly you must be a compatible version of Outlook.\nWould you like to continue?`,
     name: "didUserConfirm",
     type: "confirm",
   };
