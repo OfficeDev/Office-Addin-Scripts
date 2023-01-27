@@ -28,21 +28,21 @@ describe("office-addin-project tests", function() {
       it("Converts test manifest", async function() {
         this.timeout(6000);
         const manifestPath = "./test/test-manifest.xml";
-        const outputPath = "./temp/";
+        const outputPath = path.join(process.env.TEMP as string, "ConvertManifstTest");
         await convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), true);
       });
       it("Converts TaskPane manifest", async function() {
         this.timeout(6000);
         const manifestPath = "./test/TaskPane.manifest.xml";
-        const outputPath = "./temp/";
+        const outputPath = path.join(process.env.TEMP as string, "ConvertTaskpaneManifestTest");
         await convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), true);
       });
       it("Can't convert malformed manifest", async function() {
         this.timeout(6000);
         const manifestPath = "./test/invalid.manifest.xml";
-        const outputPath = "./out";
+        const outputPath = path.join(process.env.TEMP as string, "ConvertMalformedManifestTest");
         convert(manifestPath, outputPath);
         assert.strictEqual(fs.existsSync(path.join(outputPath, "manifest.json")), false);
       });
