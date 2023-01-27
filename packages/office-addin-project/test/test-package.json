@@ -35,7 +35,6 @@
       "watch": "webpack --mode development --watch"
     },
     "dependencies": {
-      "core-js": "^3.9.1",
       "regenerator-runtime": "^0.13.7"
     },
     "devDependencies": {
