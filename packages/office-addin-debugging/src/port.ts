@@ -74,7 +74,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
         if (isWin32) {
           lines.forEach((line) => {
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            const [protocol, localAddress, foreignAddress, status, processId] = line.split(" ").filter((text) => text);
+            const [protocol, localAddress, foreignAddress, status, processId] = line.trim().split(" ").filter((text) => text);
             if (processId !== undefined && processId !== '0') {
               const localAddressPort = parsePort(localAddress);
               if (localAddressPort === port) {
@@ -86,6 +86,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
           lines.forEach((line) => {
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             const [proto, recv, send, local_address, remote_address, state, program] = line
+              .trim()
               .split(" ")
               .filter((text) => text);
             if (local_address !== undefined && local_address.endsWith(`:${port}`) && program !== undefined) {
@@ -99,6 +100,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
           lines.forEach((line) => {
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             const [process, processId, user, fd, type, device, size, node, name] = line
+              .trim()
               .split(" ")
               .filter((text) => text);
             if (processId !== undefined && processId !== "PID") {
