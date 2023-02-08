@@ -4,8 +4,8 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import { parseLoadArguments, isLoadFunction } from "../utils/load";
-import { findPropertiesRead } from "../utils/utils";
+import { isLoadFunction, parsePropertiesArgument } from "../utils/load";
+import { findPropertiesRead, findTopLevelExpression } from "../utils/utils";
 import { isGetFunction, isGetOrNullObjectFunction } from "../utils/getFunction";
 
 export = {
@@ -55,16 +55,17 @@ export = {
 
         variable.references.forEach((reference: Reference) => {
           const node: TSESTree.Node = reference.identifier;
+          const parent = node.parent;
 
           if (
-            node.parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
+            parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
           ) {
             getFound = false; // In case of reassignment
 
             if (
-              node.parent.init &&
-              isGetFunction(node.parent.init) &&
-              !isGetOrNullObjectFunction(node.parent.init)
+              parent.init &&
+              isGetFunction(parent.init) &&
+              !isGetOrNullObjectFunction(parent.init)
             ) {
               getFound = true;
               return;
@@ -72,13 +73,13 @@ export = {
           }
 
           if (
-            node.parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression
+            parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression
           ) {
             getFound = false; // In case of reassignment
 
             if (
-              isGetFunction(node.parent.right) &&
-              !isGetOrNullObjectFunction(node.parent.right)
+              isGetFunction(parent.right) &&
+              !isGetOrNullObjectFunction(parent.right)
             ) {
               getFound = true;
               return;
@@ -90,10 +91,16 @@ export = {
             return;
           }
 
-          if (node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
-            if (isLoadFunction(node.parent)) {
-              // In case it is a load function
-              const propertyNames: string[] = parseLoadArguments(node.parent);
+          // Look for <obj>.load(...) call
+          if (parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
+            const topParent = findTopLevelExpression(parent);
+
+            if (
+              isLoadFunction(topParent) &&
+              topParent.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+            ) {
+              const argument = topParent.parent.arguments[0];
+              let propertyNames: string[] = argument ? parsePropertiesArgument(argument) : ["*"];
               propertyNames.forEach((propertyName: string) => {
                 loadLocation.set(propertyName, node.range[1]);
               });
@@ -101,9 +108,20 @@ export = {
             }
           }
 
-          const propertyName: string | undefined = findPropertiesRead(
-            node.parent
-          );
+          // Look for context.load(<obj>, "...") call
+          if (parent?.type === TSESTree.AST_NODE_TYPES.CallExpression) {
+            const callee: TSESTree.MemberExpression = parent?.callee as TSESTree.MemberExpression;
+            const args: TSESTree.CallExpressionArgument[] = parent?.arguments;
+            if (isLoadFunction(callee) && args[0] == node && args.length < 3) {
+              const propertyNames: string[] = args[1] ? parsePropertiesArgument(args[1]) : ["*"];
+              propertyNames.forEach((propertyName: string) => {
+                loadLocation.set(propertyName, node.range[1]);
+              });
+              return;
+            }
+          }
+
+          const propertyName: string = findPropertiesRead(parent);
 
           if (
             !propertyName ||

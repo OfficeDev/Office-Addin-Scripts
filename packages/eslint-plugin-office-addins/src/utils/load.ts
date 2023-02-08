@@ -77,24 +77,26 @@ export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
       return [];
     }
 
-    let properties: string[] = [];
-    if (argument.type === AST_NODE_TYPES.ArrayExpression) {
-      argument.elements.forEach((element) => {
-        if (element.type === TSESTree.AST_NODE_TYPES.Literal) {
-          properties = properties.concat(
-            parseLoadStringArgument(element.value as string)
-          );
-        }
-      });
-    } else if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
-      properties = properties.concat(
-        parseLoadStringArgument(argument.value as string)
-      );
-    } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
-      properties = properties.concat(parseObjectExpressionProperty(argument));
-    }
-
-    return properties;
+    return parsePropertiesArgument(argument);
   }
-  throw new Error("error in getLoadArgument function.");
+  throw new Error("error in parseLoadArgument function.");
+}
+
+export function parsePropertiesArgument(argument: TSESTree.CallExpressionArgument): string[] {
+  let properties: string[] = [];
+  if (argument.type === AST_NODE_TYPES.ArrayExpression) {
+    argument.elements.forEach((element) => {
+      if (element.type === TSESTree.AST_NODE_TYPES.Literal) {
+        properties = properties.concat(
+          parseLoadStringArgument(element.value as string)
+        );
+      }
+    });
+  } else if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
+    properties = parseLoadStringArgument(argument.value as string);
+  } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
+    properties = parseObjectExpressionProperty(argument);
+  }
+
+  return properties;
 }
