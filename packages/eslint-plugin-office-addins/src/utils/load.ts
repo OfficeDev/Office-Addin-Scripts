@@ -1,7 +1,4 @@
-import {
-  AST_NODE_TYPES,
-  TSESTree,
-} from "@typescript-eslint/utils";
+import { AST_NODE_TYPES, TSESTree } from "@typescript-eslint/utils";
 import { findTopLevelExpression } from "./utils";
 
 export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
@@ -82,7 +79,9 @@ export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
   throw new Error("error in parseLoadArgument function.");
 }
 
-export function parsePropertiesArgument(argument: TSESTree.CallExpressionArgument): string[] {
+export function parsePropertiesArgument(
+  argument: TSESTree.CallExpressionArgument
+): string[] {
   let properties: string[] = [];
   if (argument.type === AST_NODE_TYPES.ArrayExpression) {
     argument.elements.forEach((element) => {

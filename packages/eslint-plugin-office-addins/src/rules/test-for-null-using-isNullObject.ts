@@ -1,16 +1,10 @@
-import {
-  TSESTree,
-  AST_NODE_TYPES,
-} from "@typescript-eslint/utils";
+import { TSESTree, AST_NODE_TYPES } from "@typescript-eslint/utils";
 import {
   Reference,
   Scope,
   Variable,
 } from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import {
-  RuleFix,
-  RuleFixer,
-} from "@typescript-eslint/utils/dist/ts-eslint";
+import { RuleFix, RuleFixer } from "@typescript-eslint/utils/dist/ts-eslint";
 import { isGetOrNullObjectFunction } from "../utils/getFunction";
 
 export = {

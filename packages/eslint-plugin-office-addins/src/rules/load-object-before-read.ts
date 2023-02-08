@@ -57,9 +57,7 @@ export = {
           const node: TSESTree.Node = reference.identifier;
           const parent = node.parent;
 
-          if (
-            parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
-          ) {
+          if (parent?.type === TSESTree.AST_NODE_TYPES.VariableDeclarator) {
             getFound = false; // In case of reassignment
 
             if (
@@ -72,9 +70,7 @@ export = {
             }
           }
 
-          if (
-            parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression
-          ) {
+          if (parent?.type === TSESTree.AST_NODE_TYPES.AssignmentExpression) {
             getFound = false; // In case of reassignment
 
             if (
@@ -100,7 +96,9 @@ export = {
               topParent.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
             ) {
               const argument = topParent.parent.arguments[0];
-              let propertyNames: string[] = argument ? parsePropertiesArgument(argument) : ["*"];
+              let propertyNames: string[] = argument
+                ? parsePropertiesArgument(argument)
+                : ["*"];
               propertyNames.forEach((propertyName: string) => {
                 loadLocation.set(propertyName, node.range[1]);
               });
@@ -110,10 +108,13 @@ export = {
 
           // Look for context.load(<obj>, "...") call
           if (parent?.type === TSESTree.AST_NODE_TYPES.CallExpression) {
-            const callee: TSESTree.MemberExpression = parent?.callee as TSESTree.MemberExpression;
+            const callee: TSESTree.MemberExpression =
+              parent?.callee as TSESTree.MemberExpression;
             const args: TSESTree.CallExpressionArgument[] = parent?.arguments;
             if (isLoadFunction(callee) && args[0] == node && args.length < 3) {
-              const propertyNames: string[] = args[1] ? parsePropertiesArgument(args[1]) : ["*"];
+              const propertyNames: string[] = args[1]
+                ? parsePropertiesArgument(args[1])
+                : ["*"];
               propertyNames.forEach((propertyName: string) => {
                 loadLocation.set(propertyName, node.range[1]);
               });
