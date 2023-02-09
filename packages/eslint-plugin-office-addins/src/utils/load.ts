@@ -19,6 +19,17 @@ export function isLoadReference(node: TSESTree.Identifier) {
   );
 }
 
+export function isContextLoadArgumentReference(node: TSESTree.Identifier) {
+  return (
+    node.parent?.type === AST_NODE_TYPES.CallExpression &&
+    node.parent.callee.type === AST_NODE_TYPES.MemberExpression &&
+    node.parent.callee.object.type === AST_NODE_TYPES.Identifier &&
+    node.parent.callee.object.name === "context" &&
+    node.parent.callee.property.type === AST_NODE_TYPES.Identifier &&
+    node.parent.callee.property.name === "load"
+  );
+}
+
 function parseObjectExpressionProperty(
   objectExpression: TSESTree.ObjectExpression
 ): string[] {

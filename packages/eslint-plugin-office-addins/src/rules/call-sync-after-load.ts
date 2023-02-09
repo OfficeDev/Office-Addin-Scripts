@@ -1,10 +1,15 @@
 import { TSESTree } from "@typescript-eslint/utils";
 import { Reference } from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import { parseLoadArguments } from "../utils/load";
+import {
+  isLoadFunction,
+  parseLoadArguments,
+  parsePropertiesArgument,
+} from "../utils/load";
 import {
   findPropertiesRead,
   findOfficeApiReferences,
   OfficeApiReference,
+  findTopLevelExpression,
 } from "../utils/utils";
 
 export = {
@@ -52,15 +57,53 @@ export = {
         const identifier: TSESTree.Node = reference.identifier;
         const variable = reference.resolved;
 
-        if (
-          operation === "Load" &&
-          variable &&
-          identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
-        ) {
-          const propertyNames: string[] = parseLoadArguments(identifier.parent);
-          propertyNames.forEach((propertyName: string) => {
-            needSync.add({ variable: variable.name, property: propertyName });
-          });
+        if (operation === "Load" && variable) {
+          if (
+            identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
+          ) {
+            // Look for <obj>.load(...) call
+            const topParent = findTopLevelExpression(identifier.parent);
+
+            if (
+              isLoadFunction(topParent) &&
+              topParent.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+            ) {
+              const argument = topParent.parent.arguments[0];
+              let propertyNames: string[] = argument
+                ? parsePropertiesArgument(argument)
+                : ["*"];
+              propertyNames.forEach((propertyName: string) => {
+                needSync.add({
+                  variable: variable.name,
+                  property: propertyName,
+                });
+              });
+              return;
+            }
+          } else if (
+            // Look for context.load(<obj>, "...") call
+            identifier.parent?.type == TSESTree.AST_NODE_TYPES.CallExpression
+          ) {
+            const callee: TSESTree.MemberExpression = identifier.parent
+              .callee as TSESTree.MemberExpression;
+            const args: TSESTree.CallExpressionArgument[] =
+              identifier.parent.arguments;
+            if (
+              isLoadFunction(callee) &&
+              args[0] == identifier &&
+              args.length < 3
+            ) {
+              const propertyNames: string[] = args[1]
+                ? parsePropertiesArgument(args[1])
+                : ["*"];
+              propertyNames.forEach((propertyName: string) => {
+                needSync.add({
+                  variable: variable.name,
+                  property: propertyName,
+                });
+              });
+            }
+          }
         }
 
         if (operation === "Sync") {

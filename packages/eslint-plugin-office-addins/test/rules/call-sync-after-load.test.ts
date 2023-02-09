@@ -55,6 +55,27 @@ ruleTester.run('call-sync-after-load', rule, {
         await context.sync();
         console.log(range.address);`
     },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load();
+        await context.sync();
+        console.log(range.address);`
+    },
+    {
+      code: `
+        var property = worksheet.getItem("sheet");
+        context.load(property, "values");
+        await context.sync();
+        console.log(property.values);`
+    },
+    {
+      code: `
+        var property = worksheet.getItem("sheet");
+        context.load(property);
+        await context.sync();
+        console.log(property.values);`
+    },
   ],
   invalid: [
     {
@@ -88,6 +109,43 @@ ruleTester.run('call-sync-after-load', rule, {
         range.load("*");
         console.log(range.address);`,
       errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "address" }}]
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
+        range.load();
+        console.log(range.address);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "range", loadValue: "address" }}]
+    },
+    {
+      code: `
+        var property = worksheet.getItem("sheet");
+        await context.sync();
+        context.load(property, "values");
+        console.log(property.values);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "values" }}]
+    },
+    {
+      code: `
+        var property = worksheet.getItem("sheet");
+        context.load(property, "values");
+        console.log(property.values);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "values" }}]
+    },
+    {
+      code: `
+        var property = worksheet.getItem("sheet");
+        await context.sync();
+        context.load(property);
+        console.log(property.values);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "values" }}]
+    },
+    {
+      code: `
+        var property = worksheet.getItem("sheet");
+        context.load(property);
+        console.log(property.values);`,
+      errors: [{ messageId: "callSyncAfterLoad", data: { name: "property", loadValue: "values" }}]
     },
   ]
 });

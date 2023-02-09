@@ -5,15 +5,15 @@ import {
   Variable,
 } from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { isGetFunction } from "./getFunction";
-import { isLoadReference } from "./load";
+import { isContextLoadArgumentReference, isLoadReference } from "./load";
 
-export function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
+function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
   return (
     node.name === "context" &&
     node.parent?.type === AST_NODE_TYPES.MemberExpression &&
-    node.parent?.parent?.type === AST_NODE_TYPES.CallExpression &&
-    node.parent?.property.type === AST_NODE_TYPES.Identifier &&
-    node.parent?.property.name === "sync"
+    node.parent.parent?.type === AST_NODE_TYPES.CallExpression &&
+    node.parent.property.type === AST_NODE_TYPES.Identifier &&
+    node.parent.property.name === "sync"
   );
 }
 
@@ -67,6 +67,10 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
       proxyVariables.has(reference.resolved)
     ) {
       if (isLoadReference(node)) {
+        // <obj>.load(...)
+        apiReferences.push({ operation: "Load", reference: reference });
+      } else if (isContextLoadArgumentReference(node)) {
+        // context.load(<obj>, ...)
         apiReferences.push({ operation: "Load", reference: reference });
       } else if (isMethodReference(node)) {
         apiReferences.push({ operation: "Method", reference: reference });
@@ -87,7 +91,7 @@ function isMethod(node: TSESTree.MemberExpression): boolean {
   );
 }
 
-export function isMethodReference(node: TSESTree.Identifier) {
+function isMethodReference(node: TSESTree.Identifier) {
   return (
     node.parent &&
     node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
