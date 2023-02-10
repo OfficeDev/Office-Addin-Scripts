@@ -17,7 +17,7 @@ function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
   );
 }
 
-export function findTopLevelExpression(
+export function findTopMemberExpression(
   node: TSESTree.MemberExpression
 ): TSESTree.MemberExpression {
   while (node.parent && node.parent.type === AST_NODE_TYPES.MemberExpression) {
@@ -25,6 +25,19 @@ export function findTopLevelExpression(
   }
 
   return node;
+}
+
+export function findCallExpression(
+  node: TSESTree.MemberExpression
+): TSESTree.CallExpression | undefined {
+  while (node.parent && node.parent.type === AST_NODE_TYPES.MemberExpression) {
+    node = node.parent;
+  }
+
+  if (node.parent?.type === AST_NODE_TYPES.CallExpression) {
+    return node.parent;
+  }
+  return undefined;
 }
 
 export type OfficeApiReference = {
@@ -84,7 +97,8 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
 }
 
 function isMethod(node: TSESTree.MemberExpression): boolean {
-  const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
+  const topExpression: TSESTree.MemberExpression =
+    findTopMemberExpression(node);
   return (
     topExpression.parent?.type === AST_NODE_TYPES.CallExpression &&
     topExpression.parent.callee === topExpression

@@ -1,15 +1,11 @@
 import { TSESTree } from "@typescript-eslint/utils";
 import { Reference } from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import {
-  isLoadFunction,
-  parseLoadArguments,
-  parsePropertiesArgument,
-} from "../utils/load";
+import { isLoadCall, parsePropertiesArgument } from "../utils/load";
 import {
   findPropertiesRead,
   findOfficeApiReferences,
   OfficeApiReference,
-  findTopLevelExpression,
+  findCallExpression,
 } from "../utils/utils";
 
 export = {
@@ -58,59 +54,19 @@ export = {
         const variable = reference.resolved;
 
         if (operation === "Load" && variable) {
-          if (
-            identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
-          ) {
-            // Look for <obj>.load(...) call
-            const topParent = findTopLevelExpression(identifier.parent);
-
-            if (
-              isLoadFunction(topParent) &&
-              topParent.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
-            ) {
-              const argument = topParent.parent.arguments[0];
-              let propertyNames: string[] = argument
-                ? parsePropertiesArgument(argument)
-                : ["*"];
-              propertyNames.forEach((propertyName: string) => {
-                needSync.add({
-                  variable: variable.name,
-                  property: propertyName,
-                });
-              });
-              return;
-            }
-          } else if (
-            // Look for context.load(<obj>, "...") call
-            identifier.parent?.type == TSESTree.AST_NODE_TYPES.CallExpression
-          ) {
-            const callee: TSESTree.MemberExpression = identifier.parent
-              .callee as TSESTree.MemberExpression;
-            const args: TSESTree.CallExpressionArgument[] =
-              identifier.parent.arguments;
-            if (
-              isLoadFunction(callee) &&
-              args[0] == identifier &&
-              args.length < 3
-            ) {
-              const propertyNames: string[] = args[1]
-                ? parsePropertiesArgument(args[1])
-                : ["*"];
-              propertyNames.forEach((propertyName: string) => {
-                needSync.add({
-                  variable: variable.name,
-                  property: propertyName,
-                });
-              });
-            }
-          }
-        }
-
-        if (operation === "Sync") {
+          const propertiesArgument = getPropertiesArgument(identifier);
+          const propertyNames: string[] = propertiesArgument
+            ? parsePropertiesArgument(propertiesArgument)
+            : ["*"];
+          propertyNames.forEach((propertyName: string) => {
+            needSync.add({
+              variable: variable.name,
+              property: propertyName,
+            });
+          });
+        } else if (operation === "Sync") {
           needSync.clear();
-        }
-
-        if (operation === "Read" && variable) {
+        } else if (operation === "Read" && variable) {
           const propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );
@@ -128,6 +84,37 @@ export = {
           }
         }
       });
+    }
+
+    function getPropertiesArgument(
+      identifier: TSESTree.Identifier
+    ): TSESTree.CallExpressionArgument | undefined {
+      let propertiesArgument;
+      if (
+        identifier.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
+      ) {
+        // Look for <obj>.load(...) call
+        const methodCall = findCallExpression(identifier.parent);
+
+        if (methodCall && isLoadCall(methodCall)) {
+          propertiesArgument = methodCall.arguments[0];
+        }
+      } else if (
+        identifier.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+      ) {
+        // Look for context.load(<obj>, "...") call
+        const args: TSESTree.CallExpressionArgument[] =
+          identifier.parent.arguments;
+        if (
+          isLoadCall(identifier.parent) &&
+          args[0] == identifier &&
+          args.length < 3
+        ) {
+          propertiesArgument = args[1];
+        }
+      }
+
+      return propertiesArgument;
     }
 
     return {

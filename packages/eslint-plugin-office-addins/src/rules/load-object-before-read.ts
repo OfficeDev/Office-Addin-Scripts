@@ -4,8 +4,8 @@ import {
   Scope,
   Variable,
 } from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import { isLoadFunction, parsePropertiesArgument } from "../utils/load";
-import { findPropertiesRead, findTopLevelExpression } from "../utils/utils";
+import { isLoadCall, parsePropertiesArgument } from "../utils/load";
+import { findCallExpression, findPropertiesRead } from "../utils/utils";
 import { isGetFunction, isGetOrNullObjectFunction } from "../utils/getFunction";
 
 export = {
@@ -89,13 +89,10 @@ export = {
 
           // Look for <obj>.load(...) call
           if (parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression) {
-            const topParent = findTopLevelExpression(parent);
+            const methodCall = findCallExpression(parent);
 
-            if (
-              isLoadFunction(topParent) &&
-              topParent.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
-            ) {
-              const argument = topParent.parent.arguments[0];
+            if (methodCall && isLoadCall(methodCall)) {
+              const argument = methodCall.arguments[0];
               let propertyNames: string[] = argument
                 ? parsePropertiesArgument(argument)
                 : ["*"];
@@ -108,10 +105,8 @@ export = {
 
           // Look for context.load(<obj>, "...") call
           if (parent?.type === TSESTree.AST_NODE_TYPES.CallExpression) {
-            const callee: TSESTree.MemberExpression =
-              parent?.callee as TSESTree.MemberExpression;
             const args: TSESTree.CallExpressionArgument[] = parent?.arguments;
-            if (isLoadFunction(callee) && args[0] == node && args.length < 3) {
+            if (isLoadCall(parent) && args[0] == node && args.length < 3) {
               const propertyNames: string[] = args[1]
                 ? parsePropertiesArgument(args[1])
                 : ["*"];

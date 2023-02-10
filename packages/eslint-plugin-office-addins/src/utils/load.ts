@@ -1,13 +1,17 @@
 import { AST_NODE_TYPES, TSESTree } from "@typescript-eslint/utils";
-import { findTopLevelExpression } from "./utils";
+import { findCallExpression } from "./utils";
 
 export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
-  node = findTopLevelExpression(node);
+  const methodCall = findCallExpression(node);
+  return methodCall !== undefined && isLoadCall(methodCall);
+}
 
+export function isLoadCall(node: TSESTree.CallExpression): boolean {
   return (
-    node.parent?.type === AST_NODE_TYPES.CallExpression &&
-    node.property.type === TSESTree.AST_NODE_TYPES.Identifier &&
-    node.property.name === "load"
+    node &&
+    node.callee.type === AST_NODE_TYPES.MemberExpression &&
+    node.callee.property.type === AST_NODE_TYPES.Identifier &&
+    node.callee.property.name === "load"
   );
 }
 
@@ -74,13 +78,10 @@ function parseLoadStringArgument(argument: string): string[] {
 }
 
 export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
-  node = findTopLevelExpression(node);
+  const methodCall = findCallExpression(node);
 
-  if (
-    isLoadFunction(node) &&
-    node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
-  ) {
-    const argument = node.parent.arguments[0];
+  if (methodCall && isLoadCall(methodCall)) {
+    const argument = methodCall.arguments[0];
     if (!argument) {
       return [];
     }
