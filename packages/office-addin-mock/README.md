@@ -2,7 +2,7 @@
 
 This library makes it much easier to unit test the Office JavaScript API. It works with any JavaScript unit testing framework.
 
-For details about the library and how to use it, see [Unit testing in Office Add-ins](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing).
+For details about the library and how to use it, see [Unit testing in Office Add-ins](https://learn.microsoft.com/office/dev/add-ins/testing/unit-testing).
 
 ## Installation
 
@@ -14,7 +14,7 @@ npm i office-addin-mock --save-dev
 
 ## Examples
 
-For basic examples that use the [Jest](https://jestjs.io) framework, see [Unit testing in Office Add-ins - Examples](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/unit-testing#examples). Below are some examples using other frameworks.
+For basic examples that use the [Jest](https://jestjs.io) framework, see [Unit testing in Office Add-ins - Examples](https://learn.microsoft.com/office/dev/add-ins/testing/unit-testing#examples). Below are some examples using other frameworks.
 
 ### Testing with Mocha for Excel platform
 
