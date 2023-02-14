@@ -2,8 +2,7 @@
 
 This package provides the ability to do project wide commands for Office Add-ins, such as conversion.
 
-For more information, see the [documentation](
-https://docs.microsoft.com/en-us/office/dev/add-ins/develop/add-in-manifests).
+For more information, see the [documentation](https://learn.microsoft.com/office/dev/add-ins/develop/add-in-manifests).
 
 ## Command-Line Interface
 
@@ -13,7 +12,7 @@ https://docs.microsoft.com/en-us/office/dev/add-ins/develop/add-in-manifests).
 
 ### convert
 
-Converts the Office Addin Code from xml to json based manifest.
+Converts the Office Add-in Code from an XML to JSON-based manifest.
 
 Syntax:
 
