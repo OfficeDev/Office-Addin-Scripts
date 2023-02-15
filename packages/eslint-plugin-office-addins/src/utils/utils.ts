@@ -1,26 +1,23 @@
-import {
-  AST_NODE_TYPES,
-  TSESTree,
-} from "@typescript-eslint/utils";
+import { AST_NODE_TYPES, TSESTree } from "@typescript-eslint/utils";
 import {
   Reference,
   Scope,
   Variable,
 } from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { isGetFunction } from "./getFunction";
-import { isLoadReference } from "./load";
+import { isContextLoadArgumentReference, isLoadReference } from "./load";
 
-export function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
+function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
   return (
     node.name === "context" &&
     node.parent?.type === AST_NODE_TYPES.MemberExpression &&
-    node.parent?.parent?.type === AST_NODE_TYPES.CallExpression &&
-    node.parent?.property.type === AST_NODE_TYPES.Identifier &&
-    node.parent?.property.name === "sync"
+    node.parent.parent?.type === AST_NODE_TYPES.CallExpression &&
+    node.parent.property.type === AST_NODE_TYPES.Identifier &&
+    node.parent.property.name === "sync"
   );
 }
 
-export function findTopLevelExpression(
+export function findTopMemberExpression(
   node: TSESTree.MemberExpression
 ): TSESTree.MemberExpression {
   while (node.parent && node.parent.type === AST_NODE_TYPES.MemberExpression) {
@@ -28,6 +25,19 @@ export function findTopLevelExpression(
   }
 
   return node;
+}
+
+export function findCallExpression(
+  node: TSESTree.MemberExpression
+): TSESTree.CallExpression | undefined {
+  while (node.parent && node.parent.type === AST_NODE_TYPES.MemberExpression) {
+    node = node.parent;
+  }
+
+  if (node.parent?.type === AST_NODE_TYPES.CallExpression) {
+    return node.parent;
+  }
+  return undefined;
 }
 
 export type OfficeApiReference = {
@@ -70,6 +80,10 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
       proxyVariables.has(reference.resolved)
     ) {
       if (isLoadReference(node)) {
+        // <obj>.load(...)
+        apiReferences.push({ operation: "Load", reference: reference });
+      } else if (isContextLoadArgumentReference(node)) {
+        // context.load(<obj>, ...)
         apiReferences.push({ operation: "Load", reference: reference });
       } else if (isMethodReference(node)) {
         apiReferences.push({ operation: "Method", reference: reference });
@@ -83,14 +97,15 @@ function findOfficeApiReferencesInScope(scope: Scope): void {
 }
 
 function isMethod(node: TSESTree.MemberExpression): boolean {
-  const topExpression: TSESTree.MemberExpression = findTopLevelExpression(node);
+  const topExpression: TSESTree.MemberExpression =
+    findTopMemberExpression(node);
   return (
     topExpression.parent?.type === AST_NODE_TYPES.CallExpression &&
     topExpression.parent.callee === topExpression
   );
 }
 
-export function isMethodReference(node: TSESTree.Identifier) {
+function isMethodReference(node: TSESTree.Identifier) {
   return (
     node.parent &&
     node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&

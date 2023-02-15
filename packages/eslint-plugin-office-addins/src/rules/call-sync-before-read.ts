@@ -1,6 +1,6 @@
 import { TSESTree } from "@typescript-eslint/utils";
 import { Variable } from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import { findTopLevelExpression } from "../utils/utils";
+import { findTopMemberExpression } from "../utils/utils";
 import { findOfficeApiReferences, OfficeApiReference } from "../utils/utils";
 
 export = {
@@ -26,7 +26,7 @@ export = {
 
     function checkPropertyIsRead(node: TSESTree.MemberExpression): boolean {
       const topExpression: TSESTree.MemberExpression =
-        findTopLevelExpression(node);
+        findTopMemberExpression(node);
       switch (topExpression.parent?.type) {
         case TSESTree.AST_NODE_TYPES.AssignmentExpression:
           return topExpression.parent.right === topExpression;

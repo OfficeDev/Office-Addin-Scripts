@@ -1,16 +1,17 @@
-import {
-  AST_NODE_TYPES,
-  TSESTree,
-} from "@typescript-eslint/utils";
-import { findTopLevelExpression } from "./utils";
+import { AST_NODE_TYPES, TSESTree } from "@typescript-eslint/utils";
+import { findCallExpression } from "./utils";
 
 export function isLoadFunction(node: TSESTree.MemberExpression): boolean {
-  node = findTopLevelExpression(node);
+  const methodCall = findCallExpression(node);
+  return methodCall !== undefined && isLoadCall(methodCall);
+}
 
+export function isLoadCall(node: TSESTree.CallExpression): boolean {
   return (
-    node.parent?.type === AST_NODE_TYPES.CallExpression &&
-    node.property.type === TSESTree.AST_NODE_TYPES.Identifier &&
-    node.property.name === "load"
+    node &&
+    node.callee.type === AST_NODE_TYPES.MemberExpression &&
+    node.callee.property.type === AST_NODE_TYPES.Identifier &&
+    node.callee.property.name === "load"
   );
 }
 
@@ -19,6 +20,17 @@ export function isLoadReference(node: TSESTree.Identifier) {
     node.parent &&
     node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
     isLoadFunction(node.parent)
+  );
+}
+
+export function isContextLoadArgumentReference(node: TSESTree.Identifier) {
+  return (
+    node.parent?.type === AST_NODE_TYPES.CallExpression &&
+    node.parent.callee.type === AST_NODE_TYPES.MemberExpression &&
+    node.parent.callee.object.type === AST_NODE_TYPES.Identifier &&
+    node.parent.callee.object.name === "context" &&
+    node.parent.callee.property.type === AST_NODE_TYPES.Identifier &&
+    node.parent.callee.property.name === "load"
   );
 }
 
@@ -66,35 +78,36 @@ function parseLoadStringArgument(argument: string): string[] {
 }
 
 export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
-  node = findTopLevelExpression(node);
+  const methodCall = findCallExpression(node);
 
-  if (
-    isLoadFunction(node) &&
-    node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
-  ) {
-    const argument = node.parent.arguments[0];
+  if (methodCall && isLoadCall(methodCall)) {
+    const argument = methodCall.arguments[0];
     if (!argument) {
       return [];
     }
 
-    let properties: string[] = [];
-    if (argument.type === AST_NODE_TYPES.ArrayExpression) {
-      argument.elements.forEach((element) => {
-        if (element.type === TSESTree.AST_NODE_TYPES.Literal) {
-          properties = properties.concat(
-            parseLoadStringArgument(element.value as string)
-          );
-        }
-      });
-    } else if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
-      properties = properties.concat(
-        parseLoadStringArgument(argument.value as string)
-      );
-    } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
-      properties = properties.concat(parseObjectExpressionProperty(argument));
-    }
-
-    return properties;
+    return parsePropertiesArgument(argument);
   }
-  throw new Error("error in getLoadArgument function.");
+  throw new Error("error in parseLoadArgument function.");
+}
+
+export function parsePropertiesArgument(
+  argument: TSESTree.CallExpressionArgument
+): string[] {
+  let properties: string[] = [];
+  if (argument.type === AST_NODE_TYPES.ArrayExpression) {
+    argument.elements.forEach((element) => {
+      if (element.type === TSESTree.AST_NODE_TYPES.Literal) {
+        properties = properties.concat(
+          parseLoadStringArgument(element.value as string)
+        );
+      }
+    });
+  } else if (argument.type === TSESTree.AST_NODE_TYPES.Literal) {
+    properties = parseLoadStringArgument(argument.value as string);
+  } else if (argument.type === TSESTree.AST_NODE_TYPES.ObjectExpression) {
+    properties = parseObjectExpressionProperty(argument);
+  }
+
+  return properties;
 }

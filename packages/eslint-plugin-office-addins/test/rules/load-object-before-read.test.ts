@@ -116,6 +116,14 @@ ruleTester.run('load-object-before-read', rule, {
     {
       code: `
         var range = worksheet.getSelectedRange();
+        range.load();
+        await context.sync();
+        console.log(range.address);
+        console.log(range.font);`
+    },
+    {
+      code: `
+        var range = worksheet.getSelectedRange();
         range.load({ format: { fill: { color: true } }, address: true } );
         await context.sync();
         console.log(range.format.fill.color);
@@ -129,6 +137,24 @@ ruleTester.run('load-object-before-read', rule, {
         await context.sync();
         const cell = spillParent.isNullObject ? first : spillParent;
         console.log(cell);`
+    },
+    {
+      code: `
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        context.load(myRange, 'values');
+        console.log(myRange.values);`
+    },
+    {
+      code: `
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        context.load(myRange);
+        console.log(myRange.values);`
+    },
+    {
+      code: `
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        context.load(myRange, ['values', 'address']);
+        console.log(myRange.values);`
     },
   ],
   invalid: [
@@ -220,6 +246,20 @@ ruleTester.run('load-object-before-read', rule, {
         await context.sync();
         console.log(range.format.fill.color);`,
       errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
+    },
+    {
+      code: `
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        context.load("myRange", "values");
+        console.log(myRange.values);`,
+        errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]  
+    },
+    {
+      code: `
+        var myRange = context.workbook.worksheets.getSelectedRange();
+        context.load(myRange, "values", "address");
+        console.log(myRange.values);`,
+        errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]  
     },
   ]
 });

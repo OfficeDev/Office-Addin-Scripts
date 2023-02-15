@@ -1,10 +1,11 @@
 import { TSESTree } from "@typescript-eslint/utils";
 import { Reference } from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import { parseLoadArguments } from "../utils/load";
+import { isLoadCall, parsePropertiesArgument } from "../utils/load";
 import {
   findPropertiesRead,
   findOfficeApiReferences,
   OfficeApiReference,
+  findCallExpression,
 } from "../utils/utils";
 
 export = {
@@ -52,22 +53,20 @@ export = {
         const identifier: TSESTree.Node = reference.identifier;
         const variable = reference.resolved;
 
-        if (
-          operation === "Load" &&
-          variable &&
-          identifier.parent?.type == TSESTree.AST_NODE_TYPES.MemberExpression
-        ) {
-          const propertyNames: string[] = parseLoadArguments(identifier.parent);
+        if (operation === "Load" && variable) {
+          const propertiesArgument = getPropertiesArgument(identifier);
+          const propertyNames: string[] = propertiesArgument
+            ? parsePropertiesArgument(propertiesArgument)
+            : ["*"];
           propertyNames.forEach((propertyName: string) => {
-            needSync.add({ variable: variable.name, property: propertyName });
+            needSync.add({
+              variable: variable.name,
+              property: propertyName,
+            });
           });
-        }
-
-        if (operation === "Sync") {
+        } else if (operation === "Sync") {
           needSync.clear();
-        }
-
-        if (operation === "Read" && variable) {
+        } else if (operation === "Read" && variable) {
           const propertyName: string = findPropertiesRead(
             reference.identifier.parent
           );
@@ -85,6 +84,37 @@ export = {
           }
         }
       });
+    }
+
+    function getPropertiesArgument(
+      identifier: TSESTree.Identifier
+    ): TSESTree.CallExpressionArgument | undefined {
+      let propertiesArgument;
+      if (
+        identifier.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression
+      ) {
+        // Look for <obj>.load(...) call
+        const methodCall = findCallExpression(identifier.parent);
+
+        if (methodCall && isLoadCall(methodCall)) {
+          propertiesArgument = methodCall.arguments[0];
+        }
+      } else if (
+        identifier.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+      ) {
+        // Look for context.load(<obj>, "...") call
+        const args: TSESTree.CallExpressionArgument[] =
+          identifier.parent.arguments;
+        if (
+          isLoadCall(identifier.parent) &&
+          args[0] == identifier &&
+          args.length < 3
+        ) {
+          propertiesArgument = args[1];
+        }
+      }
+
+      return propertiesArgument;
     }
 
     return {

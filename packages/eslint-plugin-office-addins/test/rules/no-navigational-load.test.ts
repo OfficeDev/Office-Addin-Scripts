@@ -115,6 +115,12 @@ ruleTester.run('no-navigational-load', rule, {
 		},
 		{
 			code: `
+                var property = worksheet.getItem("sheet");
+                context.load(property, 'styles'); // Navigational`,
+			errors: [{ messageId: "navigationalLoad", data: { loadValue: "styles" } }]
+		},
+		{
+			code: `
                 var range = worksheet.getRange("A1");
                 range.load('fill'); // Navigational`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "fill" } }]
@@ -122,7 +128,20 @@ ruleTester.run('no-navigational-load', rule, {
 		{
 			code: `
                 var range = worksheet.getRange("A1");
+                context.load(range, 'fill'); // Navigational`,
+			errors: [{ messageId: "navigationalLoad", data: { loadValue: "fill" } }]
+		},
+		{
+			code: `
+                var range = worksheet.getRange("A1");
                 range.load("borders/fill");
+                console.log(range.borders.fill); // Navigational`,
+			errors: [{ messageId: "navigationalLoad", data: { loadValue: "borders/fill" } }]
+		},
+		{
+			code: `
+                var range = worksheet.getRange("A1");
+                context.load(range, "borders/fill");
                 console.log(range.borders.fill); // Navigational`,
 			errors: [{ messageId: "navigationalLoad", data: { loadValue: "borders/fill" } }]
 		},

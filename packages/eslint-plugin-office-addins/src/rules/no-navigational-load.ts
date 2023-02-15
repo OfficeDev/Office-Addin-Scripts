@@ -5,7 +5,11 @@ import {
   Variable,
 } from "@typescript-eslint/utils/dist/ts-eslint-scope";
 import { isGetFunction } from "../utils/getFunction";
-import { parseLoadArguments, isLoadFunction } from "../utils/load";
+import {
+  parseLoadArguments,
+  isLoadFunction,
+  parsePropertiesArgument,
+} from "../utils/load";
 import { getPropertyType, PropertyType } from "../utils/propertiesType";
 
 export = {
@@ -76,6 +80,7 @@ export = {
             node.parent?.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
             isLoadFunction(node.parent)
           ) {
+            // <obj>.load(...) call
             const propertyNames: string[] = parseLoadArguments(node.parent);
             propertyNames.forEach((propertyName: string) => {
               if (propertyName && !isLoadingValidPropeties(propertyName)) {
@@ -86,6 +91,26 @@ export = {
                 });
               }
             });
+          } else if (
+            node.parent?.type === TSESTree.AST_NODE_TYPES.CallExpression
+          ) {
+            //context.load(<obj>, "...") call
+            const callee: TSESTree.MemberExpression = node.parent
+              .callee as TSESTree.MemberExpression;
+            const args: TSESTree.CallExpressionArgument[] =
+              node.parent.arguments;
+            if (isLoadFunction(callee) && args[0] == node && args.length < 3) {
+              const propertyNames: string[] = parsePropertiesArgument(args[1]);
+              propertyNames.forEach((propertyName: string) => {
+                if (propertyName && !isLoadingValidPropeties(propertyName)) {
+                  context.report({
+                    node: node.parent,
+                    messageId: "navigationalLoad",
+                    data: { name: node.name, loadValue: propertyName },
+                  });
+                }
+              });
+            }
           }
         });
       });
