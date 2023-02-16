@@ -98,8 +98,8 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
     const manifestFileName = path.basename(manifestPath);
 
     if (registeredFileName === manifestFileName || registeredFileName.startsWith(addinId)) {
-      if (!registeredFileName.endsWith("*.xml")) {
-        unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".")));
+      if (!registeredFileName.endsWith(".xml")) {
+        unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
       }
       fs.unlinkSync(registeredAddIn.manifestPath);
     }
@@ -111,8 +111,8 @@ export async function unregisterAllAddIns(): Promise<void> {
 
   for (const registeredAddIn of registeredAddIns) {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
-    if (!registeredFileName.endsWith("*.xml")) {
-      unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".")));
+    if (!registeredFileName.endsWith(".xml")) {
+      unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
     }
     fs.unlinkSync(registeredAddIn.manifestPath);
   }
