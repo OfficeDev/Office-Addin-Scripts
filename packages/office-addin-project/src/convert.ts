@@ -33,7 +33,7 @@ export async function convertProject(
 
   await backupProject(backupPath);
   try {
-    await convert(manifestPath, outputPath, false, false);
+    await convert(manifestPath, outputPath, false /* imageDownload */, true /* imageUrls */);
     updatePackages();
     await updateManifestXmlReferences();
     fs.unlinkSync(manifestPath);
