@@ -309,9 +309,6 @@ export async function sideloadAddIn(
       appType = AppType.Desktop;
     }
 
-    if (manifestPath.endsWith(".json") && !canSideloadJson()) {
-      throw new ExpectedError("Development environment doesn't support json manifests.");
-    }
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
 
@@ -358,10 +355,6 @@ export async function sideloadAddIn(
     usageDataObject.reportException("sideloadAddIn()", err);
     throw err;
   }
-}
-
-function canSideloadJson(): boolean {
-  return !!process.env.SIDELOADING_SERVICE_ENDPOINT && !!process.env.SIDELOADING_SERVICE_SCOPE;
 }
 
 async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document?: string) {
