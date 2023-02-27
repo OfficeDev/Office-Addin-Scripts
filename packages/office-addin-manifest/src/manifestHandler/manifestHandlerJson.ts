@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
+import { devPreview, ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
 import { v4 as uuidv4 } from "uuid";
 import { ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
@@ -10,19 +10,19 @@ export class ManifestHandlerJson extends ManifestHandler {
   /* eslint-disable @typescript-eslint/no-unused-vars */
   async modifyManifest(guid?: string, displayName?: string): Promise<TeamsAppManifest> {
     try {
-      const teamsAppManifest: TeamsAppManifest = await ManifestUtil.loadFromPath(this.manifestPath);
+      const appManifest: TeamsAppManifest = await ManifestUtil.loadFromPath(this.manifestPath);
 
       if (typeof guid !== "undefined") {
         if (!guid || guid === "random") {
           guid = uuidv4();
         }
-        teamsAppManifest.id = guid;
+        appManifest.id = guid;
       }
 
       if (typeof displayName !== "undefined") {
-        teamsAppManifest.name.short = displayName;
+        appManifest.name.short = displayName;
       }
-      return teamsAppManifest;
+      return appManifest;
     } catch (err) {
       throw new Error(`Unable to modify json data for manifest file: ${this.manifestPath}. \n${err}`);
     }
@@ -30,35 +30,32 @@ export class ManifestHandlerJson extends ManifestHandler {
 
   async parseManifest(): Promise<ManifestInfo> {
     try {
-      const file: TeamsAppManifest = await ManifestUtil.loadFromPath(this.manifestPath);
+      const file: devPreview.DevPreviewSchema = await ManifestUtil.loadFromPath(this.manifestPath);
       return this.getManifestInfo(file);
     } catch (err) {
       throw new Error(`Unable to read data for manifest file: ${this.manifestPath}. \n${err}`);
     }
   }
 
-  // TODO: change teamsAppManifest type to TeamsAppManifest
-  getManifestInfo(teamsAppManifest: any): ManifestInfo {
+  getManifestInfo(appManifest: devPreview.DevPreviewSchema): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
 
     // Need to handle mutliple version of the prerelease json manifest schema
-    const extensionElement = teamsAppManifest?.extensions
-      ? teamsAppManifest.extensions[0]
-      : teamsAppManifest?.extension;
+    const extensionElement = appManifest.extensions?.[0];
 
-    manifestInfo.id = teamsAppManifest.id;
-    manifestInfo.appDomains = teamsAppManifest?.validDomains;
-    manifestInfo.defaultLocale = teamsAppManifest?.localizationInfo?.defaultLanguageTag;
-    manifestInfo.description = teamsAppManifest?.description?.short;
-    manifestInfo.displayName = teamsAppManifest?.name?.short;
-    manifestInfo.highResolutionIconUrl = teamsAppManifest?.icons?.color;
+    manifestInfo.id = appManifest.id;
+    manifestInfo.appDomains = appManifest.validDomains;
+    manifestInfo.defaultLocale = appManifest.localizationInfo?.defaultLanguageTag;
+    manifestInfo.description = appManifest.description.short;
+    manifestInfo.displayName = appManifest.name.short;
+    manifestInfo.highResolutionIconUrl = appManifest.icons.color;
     manifestInfo.hosts = extensionElement?.requirements?.scopes;
-    manifestInfo.iconUrl = teamsAppManifest?.icons?.color;
+    manifestInfo.iconUrl = appManifest.icons.color;
     manifestInfo.officeAppType = extensionElement?.requirements?.capabilities?.[0]?.name;
-    manifestInfo.permissions = teamsAppManifest?.authorization?.permissions?.resourceSpecific?.[0]?.name;
-    manifestInfo.providerName = teamsAppManifest?.developer?.name;
-    manifestInfo.supportUrl = teamsAppManifest?.developer?.websiteUrl;
-    manifestInfo.version = teamsAppManifest?.version;
+    manifestInfo.permissions = appManifest.authorization?.permissions?.resourceSpecific?.[0]?.name;
+    manifestInfo.providerName = appManifest.developer.name;
+    manifestInfo.supportUrl = appManifest.developer.websiteUrl;
+    manifestInfo.version = appManifest.version;
 
     return manifestInfo;
   }
