@@ -114,7 +114,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/lib/cli.js",
-      "args": ["register", "~/dev/git/Office-Addin-TaskPane/manifest.xml"]
+      "args": ["register", "${workspaceFolder}/test/files/manifests/json/manifest.json"]
     },
     {
       "name": "Command Line: registered",

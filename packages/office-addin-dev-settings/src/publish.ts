@@ -69,28 +69,31 @@ export async function unacquireWithTeams(titleId: string): Promise<void> {
 }
 
 function forceCacheUpdate() {
-  const cachePath: string = path.join(process.env.LOCALAPPDATA as string, "Microsoft\\Outlook\\HubAppFileCache");
+  // TODO: find HubAppFileCache on Mac and do the same targeted delete
+  if (process.platform === "win32") {
+    const cachePath: string = path.join(process.env.LOCALAPPDATA as string, "Microsoft\\Outlook\\HubAppFileCache");
 
-  if (fs.existsSync(cachePath)) {
-    // Get list of folders with hashed names
-    const subFolders: fs.Dirent[] = fs.readdirSync(cachePath, { withFileTypes: true }).filter((entry: fs.Dirent) => {
-      return entry.isDirectory();
-    });
-
-    // Delete any found file that prevents TAOS service calls
-    subFolders.forEach((folder: fs.Dirent) => {
-      const targetFiles: string[] = [
-        path.resolve(cachePath, folder.name, "TaosSource\\CacheProperties"),
-        path.resolve(cachePath, folder.name, "TaosSource\\PersistedCacheSynced"),
-        path.resolve(cachePath, folder.name, "TaosSource\\u8qUM7HfoAFQ6YiuZO0RVQ=="),
-        path.resolve(cachePath, folder.name, "TaosSource\\ZplQ1yfT07QnEV2xMoi+GQ==")
-      ]
-      targetFiles.forEach((file) => { 
-        if (fs.existsSync(file)) {
-          console.log(`Deleting File: ${file}`);
-          fs.unlinkSync(file);
-        }
+    if (fs.existsSync(cachePath)) {
+      // Get list of folders with hashed names
+      const subFolders: fs.Dirent[] = fs.readdirSync(cachePath, { withFileTypes: true }).filter((entry: fs.Dirent) => {
+        return entry.isDirectory();
       });
-    });
+
+      // Delete any found file that prevents TAOS service calls
+      subFolders.forEach((folder: fs.Dirent) => {
+        const targetFiles: string[] = [
+          path.resolve(cachePath, folder.name, "TaosSource\\CacheProperties"),
+          path.resolve(cachePath, folder.name, "TaosSource\\PersistedCacheSynced"),
+          path.resolve(cachePath, folder.name, "TaosSource\\u8qUM7HfoAFQ6YiuZO0RVQ=="),
+          path.resolve(cachePath, folder.name, "TaosSource\\ZplQ1yfT07QnEV2xMoi+GQ=="),
+        ];
+        targetFiles.forEach((file) => {
+          if (fs.existsSync(file)) {
+            console.log(`Deleting File: ${file}`);
+            fs.unlinkSync(file);
+          }
+        });
+      });
+    }
   }
 }

@@ -9,6 +9,7 @@ import {
   getOfficeAppsForManifestHosts,
   OfficeApp,
   OfficeAddinManifest,
+  ManifestInfo,
 } from "office-addin-manifest";
 import * as os from "os";
 import * as path from "path";
@@ -48,10 +49,9 @@ function getSideloadDirectory(app: OfficeApp): string | undefined {
   }
 }
 
-export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp[]) {
+export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp[], registration?: string) {
   try {
-    const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
-    let data = path.basename(manifestPath); // xml will store the file name and json will store the titleId
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     if (!officeApps) {
       officeApps = getOfficeAppsForManifestHosts(manifest.hosts);
@@ -66,16 +66,26 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
     }
 
     if (manifestPath.endsWith(".json")) {
-      const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
-      const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
-      data = await registerWithTeams(zipPath);
+      if (!registration) {
+        const targetPath: string = fspath.join(os.tmpdir(), "manifest.zip");
+        const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
+        registration = await registerWithTeams(zipPath);
+      }
+
+      // TODO: when mac outlook support dev sideload
+      // Save registration in "OutlookSideloadManifestPath" as "TitleId"
+    } else if (manifestPath.endsWith("*.xml")) {
+      // TODO: when mac outlook support dev sideload
+      // Look for "Outlook" in manifests.hosts and enable outlook sideloading if there.
     }
+
+    // Save manifest path in "registry"
     for (const app of officeApps) {
       const sideloadDirectory = getSideloadDirectory(app);
 
       if (sideloadDirectory) {
         // include manifest id in sideload filename
-        const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${data}`);
+        const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${path.basename(manifestPath)}`);
 
         fs.ensureDirSync(sideloadDirectory);
         fs.ensureLinkSync(manifestPath, sideloadPath);
