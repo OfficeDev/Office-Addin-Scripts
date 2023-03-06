@@ -74,7 +74,7 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
 
       // TODO: when mac outlook support dev sideload
       // Save registration in "OutlookSideloadManifestPath" as "TitleId"
-    } else if (manifestPath.endsWith("*.xml")) {
+    } else if (manifestPath.endsWith(".xml")) {
       // TODO: when mac outlook support dev sideload
       // Look for "Outlook" in manifests.hosts and enable outlook sideloading if there.
     }
