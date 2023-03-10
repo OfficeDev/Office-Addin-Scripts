@@ -16,7 +16,7 @@ program
   .command("generate")
   .argument(
     "<source-files>",
-    "The path to the source file (or comma seperated list of files) for custom functions.",
+    "The path to the source file (or comma separated list of files) for custom functions.",
     commaSeparatedList
   )
   .argument("[output-file]", "The path to the output file for the metadata.")
