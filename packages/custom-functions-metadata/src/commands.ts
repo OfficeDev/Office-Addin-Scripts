@@ -7,12 +7,12 @@ import { generateCustomFunctionsMetadata } from "./generate";
 
 /* global console */
 
-export async function generate(inputPath: string, outputPath: string) {
+export async function generate(input: string, outputPath: string) {
   try {
-    if (!inputPath) {
+    if (!input) {
       throw new Error("You need to provide the path to the source file for custom functions.");
     }
-    const results = await generateCustomFunctionsMetadata(inputPath);
+    const results = await generateCustomFunctionsMetadata(input);
     if (results.errors.length > 0) {
       console.error("Errors found:");
       results.errors.forEach((err) => console.log(err));

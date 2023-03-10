@@ -61,6 +61,7 @@ export interface IParseTreeResult {
 }
 
 export interface IAssociate {
+  sourceFileName: string;
   functionName: string;
   id: string;
 }
@@ -140,31 +141,43 @@ type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
  * @param outputFileName - Name of the file to create (i.e functions.json)
  */
 export async function generateCustomFunctionsMetadata(
-  inputFile: string,
+  input: string | string[],
   wantConsoleOutput: boolean = false
 ): Promise<IGenerateResult> {
+  const inputFiles: string[] = Array.isArray(input) ? input : [input];
+  const functions: IFunction[] = [];
   const generateResults: IGenerateResult = {
     metadataJson: "",
     associate: [],
     errors: [],
   };
 
-  if (fs.existsSync(inputFile)) {
-    const sourceCode = fs.readFileSync(inputFile, "utf-8");
-    const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
-    parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
+  if (input && inputFiles.length > 0) {
+    inputFiles.forEach((inputFile) => {
+      if (!inputFile) {
+        throw new Error(`Input file name is empty or has a comma at the beginning or end.\n Input: ${input}`);
+      } else if (fs.existsSync(inputFile)) {
+        const sourceCode = fs.readFileSync(inputFile, "utf-8");
+        const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
+        parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
 
-    if (generateResults.errors.length > 0) {
-      if (wantConsoleOutput) {
-        console.error("Errors in file: " + inputFile);
-        generateResults.errors.forEach((err) => console.error(err));
+        if (generateResults.errors.length > 0) {
+          if (wantConsoleOutput) {
+            console.error("Errors in file: " + inputFile);
+            generateResults.errors.forEach((err) => console.error(err));
+          }
+        } else {
+          functions.push(...parseTreeResult.functions);
+          generateResults.associate.push(...parseTreeResult.associate);
+        }
+      } else {
+        throw new Error(`File not found: ${inputFile}`);
       }
-    } else {
-      generateResults.metadataJson = JSON.stringify({ functions: parseTreeResult.functions }, null, 4);
-      generateResults.associate = [...parseTreeResult.associate];
+    });
+
+    if (functions.length > 0) {
+      generateResults.metadataJson = JSON.stringify({ functions: functions }, null, 4);
     }
-  } else {
-    throw new Error(`File not found: ${inputFile}`);
   }
 
   return generateResults;
@@ -289,7 +302,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           }
 
           ids.push(id);
-          associate.push({ functionName, id });
+          associate.push({ sourceFileName, functionName, id });
 
           const functionMetadata: IFunction = {
             description,
