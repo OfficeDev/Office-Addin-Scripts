@@ -154,9 +154,12 @@ export async function generateCustomFunctionsMetadata(
 
   if (input && inputFiles.length > 0) {
     inputFiles.forEach((inputFile) => {
+      inputFile = inputFile.trim();
       if (!inputFile) {
-        throw new Error(`Input file name is empty or has a comma at the beginning or end.\n Input: ${input}`);
-      } else if (fs.existsSync(inputFile)) {
+        // ignore empty strings
+      } else if (!fs.existsSync(inputFile)) {
+        throw new Error(`File not found: ${inputFile}`);
+      } else {
         const sourceCode = fs.readFileSync(inputFile, "utf-8");
         const parseTreeResult: IParseTreeResult = parseTree(sourceCode, inputFile);
         parseTreeResult.extras.forEach((extra) => extra.errors.forEach((err) => generateResults.errors.push(err)));
@@ -170,8 +173,6 @@ export async function generateCustomFunctionsMetadata(
           functions.push(...parseTreeResult.functions);
           generateResults.associate.push(...parseTreeResult.associate);
         }
-      } else {
-        throw new Error(`File not found: ${inputFile}`);
       }
     });
 

@@ -38,6 +38,7 @@ if (process.argv.length > 2) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function commaSeparatedList(value: string, dummyPrevious: string): string | string[] {
+  value = value.trim();
   if (value.indexOf(",") < 0) {
     return value;
   } else {

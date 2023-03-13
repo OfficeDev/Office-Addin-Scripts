@@ -7,7 +7,7 @@ import { generateCustomFunctionsMetadata } from "./generate";
 
 /* global console */
 
-export async function generate(input: string, outputPath: string) {
+export async function generate(input: string | string[], outputPath: string) {
   try {
     if (!input) {
       throw new Error("You need to provide the path to the source file for custom functions.");
