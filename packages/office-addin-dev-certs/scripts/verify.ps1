@@ -30,7 +30,7 @@ if ($PSVersionTable.PSVersion.Major -le 5) {
 if(Get-Command -name Import-Certificate -ErrorAction SilentlyContinue){
     $result = Get-ChildItem cert:\\CurrentUser\\Root | Where-Object Issuer -like "*CN=$CaCertificateName*"
     if (!$ReturnInvalidCertificate) {
-        $result = $result | Where-Object { $_.NotAfter -gt (Get-Date) }
+        $result = $result | Where-Object { $_.NotAfter -gt (Get-Date).AddDays(1) }
         if ($result -and ($result.Length -eq 1) -and (Test-Path $CaCertificatePath) -and (Test-Path $LocalhostCertificatePath)) {
             # Check that CA certificate in store is the same as ca.crt
             $caCert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($CaCertificatePath)
@@ -59,5 +59,5 @@ if(Get-Command -name Import-Certificate -ErrorAction SilentlyContinue){
 }
 else{
     # Legacy system support
-    Get-ChildItem cert:\\CurrentUser\\Root | Where-Object { $_.Subject -like "*CN=$CaCertificateName*"} | Where-Object { $_.NotAfter -gt (Get-Date) } | Format-List
+    Get-ChildItem cert:\\CurrentUser\\Root | Where-Object { $_.Subject -like "*CN=$CaCertificateName*"} | Where-Object { $_.NotAfter -gt (Get-Date).AddDays(1) } | Format-List
 }
