@@ -26,14 +26,17 @@ describe("test cases", function() {
     const testCases = fs.readdirSync(testCasesDirPath);
 
     testCases.forEach((testCaseDirName: string) => {
+        const testCaseDirPath = path.resolve(testCasesDirPath, testCaseDirName);
+        const testCaseFiles = fs.readdirSync(testCaseDirPath);
         ["ts", "js"].forEach((scriptType: string) => {
-            const testCaseDirPath = path.resolve(testCasesDirPath, testCaseDirName);
-            const sourceFileName = `functions.${scriptType}`;
-            const sourceFile = path.resolve(testCaseDirPath, sourceFileName);
-            const source: string | undefined = readFileIfExists(sourceFile);
+            const nameTest = new RegExp(`^functions\\d*\\.${scriptType}$`);
+            const sourceFileNames: string[] = testCaseFiles.filter((file) => {
+                return nameTest.test(file);
+            });
+            const sourceFiles: string[] = sourceFileNames.map((file) => { return path.resolve(testCaseDirPath, file); });
 
-            if (source) {
-                it(`${testCaseDirName}\\${sourceFileName}`, async function() {
+            if (sourceFiles.length > 0) {
+                it(`${testCaseDirName}\\${scriptType} => ${sourceFiles.length} file(s)`, async function() {
                     // add a file named "skip" to skip the test case
                     // add an expression in the file and it will be skipped if not true
                     const skip: string | undefined = readFileIfExists(path.resolve(testCaseDirPath, "skip"));
@@ -55,7 +58,8 @@ describe("test cases", function() {
                         }
 
                         // generate metadata
-                        const result = await generateCustomFunctionsMetadata(sourceFile);
+                        const testArg = sourceFiles.length === 1 ? sourceFiles[0] : sourceFiles;
+                        const result = await generateCustomFunctionsMetadata(testArg);
 
                         const actualMetadata = result.metadataJson;
                         const actualErrors = (result.errors.length > 0) ? result.errors.join("\n") : undefined;

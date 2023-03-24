@@ -1,0 +1,18 @@
+{
+    "functions": [
+        {
+            "description": "basic custom function",
+            "id": "BASIC",
+            "name": "BASIC",
+            "parameters": [],
+            "result": {}
+        },
+        {
+            "description": "basic custom function 2",
+            "id": "BASIC2",
+            "name": "BASIC2",
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}
