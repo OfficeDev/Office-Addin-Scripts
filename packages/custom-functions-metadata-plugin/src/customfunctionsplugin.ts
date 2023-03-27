@@ -6,7 +6,13 @@ import {
   IGenerateResult,
 } from "custom-functions-metadata";
 import * as path from "path";
-import { Compiler, sources, WebpackError, NormalModule } from "webpack";
+import {
+  Compiler,
+  Compilation,
+  sources,
+  WebpackError,
+  NormalModule,
+} from "webpack";
 
 /* global require */
 
@@ -24,20 +30,20 @@ class CustomFunctionsMetadataPlugin {
   public static generateResults: Record<string, IGenerateResult> = {};
 
   public apply(compiler: Compiler) {
-    const inputFilePath = path.resolve(this.options.input);
+    let input: string[] = Array.isArray(this.options.input)
+      ? this.options.input
+      : [this.options.input];
     let generateResult: IGenerateResult;
+    input = input.map((file) => path.resolve(file));
 
     compiler.hooks.beforeCompile.tapPromise(pluginName, async () => {
-      generateResult = await generateCustomFunctionsMetadata(
-        inputFilePath,
-        true
-      );
+      generateResult = await generateCustomFunctionsMetadata(input, true);
     });
 
-    compiler.hooks.compilation.tap(pluginName, (compilation) => {
+    compiler.hooks.compilation.tap(pluginName, (compilation: Compilation) => {
       if (generateResult.errors.length > 0) {
         generateResult.errors.forEach((err: string) =>
-          compilation.errors.push(new WebpackError(inputFilePath + " " + err))
+          compilation.errors.push(new WebpackError(input + " " + err))
         );
       } else {
         compilation.assets[this.options.output] = new sources.RawSource(
@@ -47,14 +53,17 @@ class CustomFunctionsMetadataPlugin {
           generateResult;
       }
 
+      // trigger the loader to add code to the functions files
       NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(
         pluginName,
         (_, module) => {
-          if (module.userRequest.endsWith(inputFilePath)) {
+          const found = input.find((item) => module.userRequest.endsWith(item));
+          if (found) {
             module.loaders.push({
               loader: require.resolve("./loader.js"),
               options: {
                 input: this.options.input,
+                file: found,
               },
               ident: null,
               type: null,
