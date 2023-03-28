@@ -29,3 +29,12 @@ Options:
 `--backup <backup-path>`
 
 `backup-path`: Specify the location of the backup file. If the path is not provided, `./backup.zip` is used.
+
+`-p, --project <project-path>`<br>
+`--project <project-path>`<br>
+
+`project-path`: Specify the location of the root directory of the project.  If the path is not provided, the directory of the manifest file is used.
+
+`--confirm`
+
+Confirm the operation without being prompted
