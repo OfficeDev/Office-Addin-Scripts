@@ -6,19 +6,26 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as util from "util";
-import { execSync } from "child_process";
+import { exec, execSync } from "child_process";
 import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
 
+const execAsync = util.promisify(exec);
 const skipBackup: string[] = ["node_modules"];
 
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
-  backupPath: string = "./backup.zip"
+  backupPath: string = "./backup.zip",
+  projectDir: string = ""
 ) {
   const outputPath: string = path.dirname(manifestPath);
+
+  // assume project dir is the same as manifest dir if not specified
+  projectDir = projectDir === "" ? outputPath : projectDir; 
+  process.chdir(projectDir);
+
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
       `The convert command only works on xml manifest based projects`
@@ -34,7 +41,7 @@ export async function convertProject(
   await backupProject(backupPath);
   try {
     await convert(manifestPath, outputPath, false /* imageDownload */, true /* imageUrls */);
-    updatePackages();
+    await updatePackages();
     await updateManifestXmlReferences();
     fs.unlinkSync(manifestPath);
   } catch (err: any) {
@@ -76,7 +83,7 @@ async function restoreBackup(backupPath: string) {
   zip.extractAllTo("./", true); // overwrite
 }
 
-function updatePackages(): void {
+async function updatePackages(): Promise<void> {
   // Contains name of the package and minimum version
   const depedentPackages: string[] = [
     "office-addin-debugging",
@@ -99,7 +106,7 @@ function updatePackages(): void {
 
   command += ` --save-dev`;
   console.log(messageToBePrinted.slice(0, -1));
-  execSync(command);
+  await execAsync(command);
 }
 
 async function updateManifestXmlReferences(): Promise<void> {

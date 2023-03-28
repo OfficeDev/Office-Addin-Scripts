@@ -14,7 +14,8 @@
         "-m",
         "${workspaceFolder}\\test\\TaskPane.manifest.xml",
         "-b",  
-        "${workspaceFolder}\\..\\temp.zip"
+        "${workspaceFolder}\\..\\temp.zip",
+        "--confirm"
       ]
     },
     {
