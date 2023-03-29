@@ -9,13 +9,16 @@ import * as defaults from "./defaults";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+// On win32 this is a unique hash used with PowerShell command to reliably delineate command output
+export const outputMarker = process.platform === "win32" ? `[${crypto.createHash("md5").update(`${defaults.certificateName}${defaults.caCertificatePath}`).digest("hex")}]` : "";
+
 /* global process, Buffer, __dirname */
 
 function getVerifyCommand(returnInvalidCertificate: boolean): string {
   switch (process.platform) {
     case "win32": {
       const script = path.resolve(__dirname, "..\\scripts\\verify.ps1");
-      const defaultCommand = `powershell -ExecutionPolicy Bypass -File "${script}" -CaCertificateName "${defaults.certificateName}" -CaCertificatePath "${defaults.caCertificatePath}" -LocalhostCertificatePath "${defaults.localhostCertificatePath}"`;
+      const defaultCommand = `powershell -ExecutionPolicy Bypass -File "${script}" -CaCertificateName "${defaults.certificateName}" -CaCertificatePath "${defaults.caCertificatePath}" -LocalhostCertificatePath "${defaults.localhostCertificatePath}" -OutputMarker "${outputMarker}"`;
       if (returnInvalidCertificate) {
         return defaultCommand + ` -ReturnInvalidCertificate`;
       }
@@ -38,6 +41,10 @@ export function isCaCertificateInstalled(returnInvalidCertificate: boolean = fal
 
   try {
     const output = execSync(command, { stdio: "pipe" }).toString();
+    if (process.platform === "win32") {
+      // Remove any PowerShell output that preceeds invoking the actual certificate check command
+      return output.slice(output.lastIndexOf(outputMarker) + outputMarker.length).trim().length !== 0;
+    }
     // script files return empty string if the certificate not found or expired
     if (output.length !== 0) {
       return true;
