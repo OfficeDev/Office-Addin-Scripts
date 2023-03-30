@@ -11,10 +11,11 @@ export async function convert(command: commander.Command) {
   try {
     const manifestPath: string = command.manifest ?? "./manifest.xml";
     const backupPath: string = command.backup ?? "./backup.zip";
+    const projectPath: string = command.project ?? "";
+    const shouldContinue = command.confirm ?? await asksForUserConfirmation();
 
-    const shouldContinue = await asksForUserConfirmation();
     if (shouldContinue) {
-      await convertProject(manifestPath, backupPath);
+      await convertProject(manifestPath, backupPath, projectPath);
       usageDataObject.reportSuccess("convert", { result: "Project converted" });
     } else {
       usageDataObject.reportSuccess("convert", {

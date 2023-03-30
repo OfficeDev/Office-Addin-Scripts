@@ -29,6 +29,11 @@ commander
     "-b, --backup <backup-path>",
     "Specify the location of the backup folder for the project.  Default is './backup.zip'"
   )
+  .option(
+    "-p, --project <project-path>",
+    "Specify the location of the root directory of the project.  Default is the directory of the manifest file."
+  )
+  .option( "--confirm", "Confirmes the conversion")
   .action(commands.convert);
 
 if (process.argv.length > 2) {
