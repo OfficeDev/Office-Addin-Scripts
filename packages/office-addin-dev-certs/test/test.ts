@@ -232,7 +232,8 @@ describe("office-addin-dev-certs", function() {
             if (process.platform === "darwin") {
                 execSync = sandbox.fake.throws("test error");
             } else {
-                execSync = sandbox.fake.returns("");
+                // output marker is an empty string on platforms other than win32
+                execSync = sandbox.fake.returns(verify.outputMarker);
             }
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
@@ -245,7 +246,8 @@ describe("office-addin-dev-certs", function() {
             }
         });
         it("certificate found in trusted store case", async function() {
-            const execSync = sandbox.fake.returns("Certificate details");
+            // output marker is an empty string on platforms other than win32
+            const execSync = sandbox.fake.returns(`${verify.outputMarker}Certificate details`);
             sandbox.stub(childProcess, "execSync").callsFake(execSync);
             try {
                 const ret = await verify.isCaCertificateInstalled();

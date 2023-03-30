@@ -14,9 +14,19 @@ Param (
     [string]
     $LocalhostCertificatePath,
 
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $OutputMarker,
+
     [switch]
     $ReturnInvalidCertificate
 )
+
+# An optional output marker that can be used to find the beginning of this script's output
+if ($OutputMarker) {
+    Write-Output $OutputMarker
+}
 
 # Without this, the script always succeeds (exit code = 0)
 $ErrorActionPreference = 'Stop'
