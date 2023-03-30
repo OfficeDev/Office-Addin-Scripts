@@ -20,12 +20,6 @@ export async function convertProject(
   backupPath: string = "./backup.zip",
   projectDir: string = ""
 ) {
-  const outputPath: string = path.dirname(manifestPath);
-
-  // assume project dir is the same as manifest dir if not specified
-  projectDir = projectDir === "" ? outputPath : projectDir; 
-  process.chdir(projectDir);
-
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
       `The convert command only works on xml manifest based projects`
@@ -38,8 +32,15 @@ export async function convertProject(
     );
   }
 
+  const outputPath: string = path.dirname(manifestPath);
+  const currentDir: string = process.cwd();
+
   await backupProject(backupPath);
   try {
+    // assume project dir is the same as manifest dir if not specified
+    projectDir = projectDir === "" ? outputPath : projectDir; 
+    process.chdir(projectDir);
+  
     await convert(manifestPath, outputPath, false /* imageDownload */, true /* imageUrls */);
     await updatePackages();
     await updateManifestXmlReferences();
@@ -48,6 +49,8 @@ export async function convertProject(
     console.log(`Error in conversion. Restoring project initial state.`);
     await restoreBackup(backupPath);
     throw err;
+  } finally {
+    process.chdir(currentDir);
   }
 }
 
