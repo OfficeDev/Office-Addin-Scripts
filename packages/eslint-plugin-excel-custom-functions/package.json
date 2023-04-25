@@ -9,7 +9,6 @@
     "dist"
   ],
   "scripts": {
-    "ct": "git-cz",
     "prebuild": "rimraf dist",
     "build": "tsc --build tsconfig.build.json",
     "build:w": "npm run build -- --watch",
@@ -31,8 +30,6 @@
     "typescript": "^4.7.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-conventional": "^11.0.0",
     "@microsoft/office-js": "^1.1.43",
     "@types/jest": "^27.0.2",
     "@types/node": "^14.17.2",
@@ -53,11 +50,6 @@
   },
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
   },
   "lint-staged": {
     "src/**/*": [
