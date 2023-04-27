@@ -3,16 +3,17 @@
 
 import { writeFileSync } from "fs";
 import { logErrorMessage } from "office-addin-usage-data";
-import { generateCustomFunctionsMetadata } from "./generate";
+import { generateCustomFunctionsMetadata, MetadataOptions } from "./generate";
 
 /* global console */
 
-export async function generate(input: string | string[], outputPath: string) {
+export async function generate(input: string | string[], outputPath: string, options: any) {
   try {
     if (!input) {
       throw new Error("You need to provide the path to the source file for custom functions.");
     }
-    const results = await generateCustomFunctionsMetadata(input);
+    const additionalOptions: MetadataOptions | null = options;
+    const results = await generateCustomFunctionsMetadata(input, false, additionalOptions);
     if (results.errors.length > 0) {
       console.error("Errors found:");
       results.errors.forEach((err) => console.log(err));

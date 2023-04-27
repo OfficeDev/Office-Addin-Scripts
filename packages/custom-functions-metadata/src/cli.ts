@@ -20,6 +20,7 @@ program
     commaSeparatedList
   )
   .argument("[output-file]", "The path to the output file for the metadata.")
+  .option("--allow-custom-data-for-data-type-any", "Allow custom functions to return FormattedNumberCellValues.")
   .description("Generate the metadata for the custom functions from the source code files.")
   .action(commands.generate);
 

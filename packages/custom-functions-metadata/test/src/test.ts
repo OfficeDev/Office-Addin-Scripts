@@ -56,6 +56,59 @@ describe("test json output", function() {
             assert.strictEqual(j.functions[18].options.stream, true, "CustomFunctions.StreamingInvocation - options stream not created properly");
             assert.strictEqual(j.functions[18].options.requiresAddress, undefined, "CustomFunctions.StreamingInvocation requiresAddress - should not be present");
             assert.strictEqual(j.functions[19].name, "UPPERCASE", "uppercased function name not created properly");
+            assert.strictEqual(j.allowCustomDataForDataTypeAny, undefined, "Additional property allowCustomDataForDataTypeAny - should not be present")
+        });
+    });
+    describe("generate test with additional properties", function() {
+        it("test it", async function() {
+            const inputFile = "./test/typescript/testfunctions.ts";
+            const output = "test.json";
+            const generateResult = await generateCustomFunctionsMetadata(inputFile, undefined, { allowCustomDataForDataTypeAny: true });
+            const j = JSON.parse(generateResult.metadataJson);
+
+            assert.strictEqual(generateResult.associate.length, 20, "associate array not complete");
+            assert.strictEqual(generateResult.associate[0].id, "ADD", "associate id not created");
+            assert.strictEqual(generateResult.associate[0].functionName, "add", "associate function name not created");
+            assert.strictEqual(j.functions[0].id, "ADD", "id not created properly");
+            assert.strictEqual(j.functions[0].name, "ADD", "name not created properly");
+            assert.strictEqual(j.functions[0].description, "Test comments", "description not created properly");
+            assert.strictEqual(j.functions[0].helpUrl, "https://docs.microsoft.com/office/dev/add-ins", "helpUrl not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].name, "first", "parameter name not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].description, "the first number", "description not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].type, "number", "type not created properly");
+            assert.strictEqual(j.functions[0].parameters[0].optional, undefined, "optional not created properly");
+            assert.strictEqual(j.functions[0].result.type, "number", "result type not created properly");
+            assert.strictEqual(j.functions[0].options.volatile, true, "options volatile not created properly");
+            assert.strictEqual(j.functions[0].options.stream, true, "options stream not created properly");
+            assert.strictEqual(j.functions[0].options.cancelable, true, "options cancelable not created properly");
+            assert.strictEqual(j.functions[1].result.dimensionality, "matrix", "result dimensionality matrix not created properly");
+            assert.strictEqual(j.functions[2].parameters[0].type, "boolean", "type boolean not created properly");
+            assert.strictEqual(j.functions[2].result.type, "boolean", "result type boolean not created properly");
+            assert.strictEqual(j.functions[4].parameters[0].type, "string", "type string not created properly");
+            assert.strictEqual(j.functions[4].result.type, "string", "result type string not created properly");
+            assert.strictEqual(j.functions[5].result.type, undefined, "void type - result type any not created properly");
+            assert.strictEqual(j.functions[6].parameters[0].type, "any", "object type - type any not created properly");
+            assert.strictEqual(j.functions[6].result.type, undefined, "object type - result type any not created properly");
+            assert.strictEqual(j.functions[8].parameters[0].type, "any", "enum type - type any not created properly");
+            assert.strictEqual(j.functions[8].result.type, undefined, "enum type - result type any not created properly");
+            assert.strictEqual(j.functions[9].parameters[0].type, "any", "tuple type - type any not created properly");
+            assert.strictEqual(j.functions[9].result.type, undefined, "tuple type - result type any not created properly");
+            assert.strictEqual(j.functions[10].options.stream, true, "CustomFunctions.StreamingHandler - options stream not created properly");
+            assert.strictEqual(j.functions[10].result.type, "number", "CustomFunctions.StreamingHandler - result type number not created properly");
+            assert.strictEqual(j.functions[11].parameters[0].optional, true, "optional true not created properly");
+            assert.strictEqual(j.functions[12].parameters[0].type, "any", "any type - type any not created properly");
+            assert.strictEqual(j.functions[12].result.type, undefined, "any type - result type any not created properly");
+            assert.strictEqual(j.functions[13].options.cancelable, true, "CustomFunctions.CancelableHandler type not created properly");
+            assert.strictEqual(j.functions[14].id, "UPDATEID", "@CustomFunction id not created properly");
+            assert.strictEqual(j.functions[14].name, "updateName", "@CustomFunction name not created properly");
+            assert.strictEqual(j.functions[15].options.requiresAddress, true, "requiresAddress tag not created properly");
+            assert.strictEqual(j.functions[16].options.requiresAddress, true, "CustomFunctions.Invocation requiresAddress tag not created properly");
+            assert.strictEqual(j.functions[17].options.cancelable, true, "CustomFunctions.CancelableInvocation type not created properly");
+            assert.strictEqual(j.functions[17].options.requiresAddress, true, "CustomFunctions.CancelableInvocation requiresAdress type not created properly");
+            assert.strictEqual(j.functions[18].options.stream, true, "CustomFunctions.StreamingInvocation - options stream not created properly");
+            assert.strictEqual(j.functions[18].options.requiresAddress, undefined, "CustomFunctions.StreamingInvocation requiresAddress - should not be present");
+            assert.strictEqual(j.functions[19].name, "UPPERCASE", "uppercased function name not created properly");
+            assert.strictEqual(j.allowCustomDataForDataTypeAny, true, "Global metadata allowCustomDataForDataTypeAny not set properly")
         });
     });
 });

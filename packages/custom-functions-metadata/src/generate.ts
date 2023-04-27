@@ -8,6 +8,7 @@ import XRegExp = require("xregexp");
 /* global console */
 
 export interface ICustomFunctionsMetadata {
+  allowCustomDataForDataTypeAny?: boolean;
   functions: IFunction[];
 }
 
@@ -135,6 +136,8 @@ const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
+export type MetadataOptions = { allowCustomDataForDataTypeAny: boolean };
+
 /**
  * Generate the metadata of the custom functions
  * @param inputFile - File that contains the custom functions
@@ -142,7 +145,8 @@ type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
  */
 export async function generateCustomFunctionsMetadata(
   input: string | string[],
-  wantConsoleOutput: boolean = false
+  wantConsoleOutput: boolean = false,
+  metadataOptions?: MetadataOptions | null
 ): Promise<IGenerateResult> {
   const inputFiles: string[] = Array.isArray(input) ? input : [input];
   const functions: IFunction[] = [];
@@ -177,7 +181,13 @@ export async function generateCustomFunctionsMetadata(
     });
 
     if (functions.length > 0) {
-      generateResults.metadataJson = JSON.stringify({ functions: functions }, null, 4);
+      const customFunctionsMetadata: ICustomFunctionsMetadata = {
+        functions: functions
+      };
+      if (metadataOptions)
+        customFunctionsMetadata.allowCustomDataForDataTypeAny = metadataOptions.allowCustomDataForDataTypeAny;
+      
+      generateResults.metadataJson = JSON.stringify(customFunctionsMetadata, null, 4);
     }
   }
 
