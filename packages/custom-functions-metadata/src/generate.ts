@@ -140,8 +140,9 @@ export type MetadataOptions = { allowCustomDataForDataTypeAny: boolean };
 
 /**
  * Generate the metadata of the custom functions
- * @param inputFile - File that contains the custom functions
- * @param outputFileName - Name of the file to create (i.e functions.json)
+ * @param input The input string of functions to be processed
+ * @param wantConsoleOutput If set, errors will be written to the console and returned in the errors array
+ * @param metadataOptions Any non-function specific metadata to be set
  */
 export async function generateCustomFunctionsMetadata(
   input: string | string[],
