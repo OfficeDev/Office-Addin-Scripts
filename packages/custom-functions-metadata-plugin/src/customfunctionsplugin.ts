@@ -4,6 +4,7 @@
 import {
   generateCustomFunctionsMetadata,
   IGenerateResult,
+  MetadataOptions,
 } from "custom-functions-metadata";
 import * as path from "path";
 import {
@@ -18,7 +19,7 @@ import {
 
 const pluginName = "CustomFunctionsMetadataPlugin";
 
-type Options = { input: string; output: string };
+type Options = { input: string; output: string; options?: MetadataOptions };
 
 class CustomFunctionsMetadataPlugin {
   private options: Options;
@@ -37,7 +38,11 @@ class CustomFunctionsMetadataPlugin {
     input = input.map((file) => path.resolve(file));
 
     compiler.hooks.beforeCompile.tapPromise(pluginName, async () => {
-      generateResult = await generateCustomFunctionsMetadata(input, true);
+      generateResult = await generateCustomFunctionsMetadata(
+        input,
+        true,
+        this.options.options
+      );
     });
 
     compiler.hooks.compilation.tap(pluginName, (compilation: Compilation) => {

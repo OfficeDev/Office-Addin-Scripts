@@ -183,11 +183,11 @@ export async function generateCustomFunctionsMetadata(
 
     if (functions.length > 0) {
       const customFunctionsMetadata: ICustomFunctionsMetadata = {
-        functions: functions
+        functions: functions,
       };
       if (metadataOptions)
         customFunctionsMetadata.allowCustomDataForDataTypeAny = metadataOptions.allowCustomDataForDataTypeAny;
-      
+
       generateResults.metadataJson = JSON.stringify(customFunctionsMetadata, null, 4);
     }
   }
