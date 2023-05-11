@@ -75,7 +75,7 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
           lines.forEach((line) => {
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             const [protocol, localAddress, foreignAddress, status, processId] = line.trim().split(" ").filter((text) => text);
-            if (processId !== undefined && processId !== '0') {
+            if (processId !== undefined && processId.trim() !== '0') {
               const localAddressPort = parsePort(localAddress);
               if (localAddressPort === port) {
                 processIds.add(parseInt(processId, 10));
