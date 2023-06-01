@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { devPreview, ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
+import { devPreview, ManifestUtil } from "@microsoft/teams-manifest";
 import { v4 as uuidv4 } from "uuid";
 import { ManifestInfo } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 
 export class ManifestHandlerJson extends ManifestHandler {
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  async modifyManifest(guid?: string, displayName?: string): Promise<TeamsAppManifest> {
+  async modifyManifest(guid?: string, displayName?: string): Promise<devPreview.DevPreviewSchema> {
     try {
-      const appManifest: TeamsAppManifest = await ManifestUtil.loadFromPath(this.manifestPath);
+      const appManifest: devPreview.DevPreviewSchema = await ManifestUtil.loadFromPath(this.manifestPath);
 
       if (typeof guid !== "undefined") {
         if (!guid || guid === "random") {
@@ -60,7 +60,7 @@ export class ManifestHandlerJson extends ManifestHandler {
     return manifestInfo;
   }
 
-  async writeManifestData(manifestData: TeamsAppManifest): Promise<void> {
+  async writeManifestData(manifestData: devPreview.DevPreviewSchema): Promise<void> {
     await ManifestUtil.writeToPath(this.manifestPath, manifestData);
   }
   /* eslint-enable @typescript-eslint/no-unused-vars */
