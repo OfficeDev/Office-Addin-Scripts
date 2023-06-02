@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import * as AdmZip from "adm-zip";
 import * as path from "path";
-import { ManifestUtil, TeamsAppManifest } from "@microsoft/teams-manifest";
+import { ManifestUtil, devPreview } from "@microsoft/teams-manifest";
 
 /* global console */
 
@@ -28,7 +28,7 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
-  const manifest: TeamsAppManifest = await ManifestUtil.loadFromPath(manifestPath);
+  const manifest: devPreview.DevPreviewSchema = await ManifestUtil.loadFromPath(manifestPath);
   addIconFile(manifest.icons?.color, manifestDir, zip);
   addIconFile(manifest.icons?.outline, manifestDir, zip);
 
