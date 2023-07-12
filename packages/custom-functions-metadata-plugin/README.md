@@ -5,13 +5,29 @@ A WebPack plugin which generates the metadata for custom functions.
 
 # Webpack example (webpack.config.js)
 
-const CustomFunctionsPlugin = require("custom-functions-metadata-plugin");
+```js
+const CustomFunctionsMetadataPlugin = require("custom-functions-metadata-plugin");
+```
 
+```js
 plugins: [
-      new CustomFunctionsPlugin({
+      new CustomFunctionsMetadataPlugin({
         input: './src/functions/functions.ts',
         output: 'functions.json'})
     ]
+```
+
+For multiple function source files:
+
+```js
+new CustomFunctionsMetadataPlugin({
+  input: [
+            "./src/functions/someFunctions.js", 
+            "./src/functions/otherFunctions.js"
+          ], 
+  output: "functions.json"
+}),
+```
 
 # Contributing
 
