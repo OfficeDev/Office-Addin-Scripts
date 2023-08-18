@@ -25,7 +25,8 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
       const keychainFile = machine ? "/Library/Keychains/System.keychain" : "~/Library/Keychains/login.keychain-db"
       return `${prefix}security add-trusted-cert -d -r trustRoot -k ${keychainFile} '${caCertificatePath}'`;
     case "linux":
-      return `sudo mkdir -p /usr/local/share/ca-certificates/office-addin-dev-certs && sudo cp ${caCertificatePath} /usr/local/share/ca-certificates/office-addin-dev-certs && sudo /usr/sbin/update-ca-certificates`;
+      const script = path.resolve(__dirname, "../scripts/install_linux.sh");
+      return `sudo sh '${script}' '${caCertificatePath}'`;
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}`);
   }
