@@ -180,23 +180,25 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 
 export async function registerAddIn(manifestPath: string, registration?: string): Promise<void> {
   const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
+  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
-  if (manifestPath.endsWith(".json")) {
+  // Register using the service
+  if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
     if (!registration) {
-      const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
-      const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
-      registration = await registerWithTeams(zipPath);
+      let filePath = "";
+      if (manifestPath.endsWith(".json")) {
+        const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
+        filePath = await exportMetadataPackage(targetPath, manifestPath);
+      } else if (manifestPath.endsWith(".xml")) {
+        filePath = manifestPath;
+      }
+      registration = await registerWithTeams(filePath);
     }
 
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
     await registry.addStringValue(key, TitleId, registration);
-  } else if (manifestPath.endsWith(".xml")) {
-    const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
-
-    if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
-      enableOutlookSideloading(manifestPath);
-    }
   }
+
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
@@ -310,7 +312,7 @@ export async function unregisterAllAddIns(): Promise<void> {
 
 async function unacquire(key: registry.RegistryKey, id: string) {
   const manifest = await registry.getStringValue(key, id);
-  if (manifest != undefined && manifest.endsWith(".json")) {
+  if (manifest != undefined) {
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
     const registration = await registry.getStringValue(key, TitleId);
     if (registration != undefined) {

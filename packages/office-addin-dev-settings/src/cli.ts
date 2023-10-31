@@ -68,7 +68,7 @@ commander
   .description("Launch Office with the Office Add-in loaded.")
   .option("-a,--app <app>", `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`)
   .option("-d,--document <document>", `The file path or url of the Office document to open.`)
-  .option("--registration <registration>", `Id of the registered json add-in`)
+  .option("--registration <registration>", `Id of the registered add-in`)
   .action(commands.sideload)
   .on("--help", () => {
     console.log("\n[app-type] specifies the type of Office app::\n");
