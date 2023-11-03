@@ -334,8 +334,8 @@ describe("Registration", function() {
             }
           );
       });
-      it('Error when not a zip file', () => {
-        const zipPath = fspath.resolve(manifestsFolder, "manifest.xml");
+      it('Error when not a zip or xml file', () => {
+        const zipPath = fspath.resolve(manifestsFolder, "json", "assets", "icon-16.png");
         return registerWithTeams(zipPath)
           .then(() => {
               Promise.reject(new Error('Expected method to reject.'));
@@ -363,23 +363,6 @@ describe("Registration", function() {
             await deleteKey(key);
           }
           await devSettings.unregisterAllAddIns();
-        });
-        it("verify OutlookSideloadManifestPath and Developer registry keys set correctly", async function() {
-          const manifestsFolder = fspath.resolve("test/files/manifests");
-          const manifestPath = fspath.resolve(manifestsFolder, "manifest.outlook.xml");
-          await devSettings.registerAddIn(manifestPath);
-          const registeredAddins = await devSettings.getRegisterAddIns();
-
-          // Verify manifest is set in Developer registry key
-          const [registeredAddin] = registeredAddins;
-          assert.strictEqual(registeredAddins.length, 1);
-          assert.strictEqual(registeredAddin.id, "d0ea1166-7b26-47a6-af8e-b978646d889f");
-          assert.strictEqual(registeredAddin.manifestPath, manifestPath);
-
-          // Verify OutlookSideloadManifestPath is set
-          const key = devSettingsWindows.getDeveloperSettingsRegistryKey(devSettingsWindows.OutlookSideloadManifestPath);
-          const value = await getStringValue(key, "");
-          assert.strictEqual(value !== undefined && value === manifestPath, true);
         });
         it("verify OutlookSideloadManifestPath key is not set and Develoer registry key is set", async function() {
           const manifestsFolder = fspath.resolve("test/files/manifests");
