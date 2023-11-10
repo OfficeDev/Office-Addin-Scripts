@@ -32,7 +32,7 @@
     "open": "^6.4.0",
     "string_decoder": "1.3.0",
     "whatwg-url": "^7.1.0",
-    "winreg": "^1.2.4"
+    "winreg": "1.2.4"
   },
   "peerDependencies": {
     "@microsoft/teamsfx-cli": "2.0.3-alpha.e5db52f29.0"
