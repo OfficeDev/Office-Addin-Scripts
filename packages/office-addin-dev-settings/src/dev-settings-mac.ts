@@ -72,11 +72,12 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
         registration = await registerWithTeams(zipPath);
       }
 
-      // TODO: when mac outlook support dev sideload
-      // Save registration in "OutlookSideloadManifestPath" as "TitleId"
+      // TODO: Save registration in "OutlookSideloadManifestPath" as "TitleId"
+      // and add support for refreshing add-ins in Outlook via registry key
+
     } else if (manifestPath.endsWith(".xml")) {
-      // TODO: when mac outlook support dev sideload
-      // Look for "Outlook" in manifests.hosts and enable outlook sideloading if there.
+      // TODO: Look for "Outlook" in manifests.hosts and enable outlook sideloading if there.
+      // and add support for refreshing add-ins in Outlook via registry key
     }
 
     // Save manifest path in "registry"
@@ -110,6 +111,7 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
     if (registeredFileName === manifestFileName || registeredFileName.startsWith(addinId)) {
       if (!registeredFileName.endsWith(".xml")) {
         unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
+        // TODO: Add support for refreshing add-ins in Outlook via registry key
       }
       fs.unlinkSync(registeredAddIn.manifestPath);
     }
@@ -123,7 +125,8 @@ export async function unregisterAllAddIns(): Promise<void> {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
     if (!registeredFileName.endsWith(".xml")) {
       unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
-    }
+        // TODO: Add support for refreshing add-ins in Outlook via registry key
+      }
     fs.unlinkSync(registeredAddIn.manifestPath);
   }
 }
