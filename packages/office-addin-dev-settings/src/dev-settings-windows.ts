@@ -22,6 +22,7 @@ const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Micro
 
 const OpenDevTools: string = "OpenDevTools";
 export const OutlookSideloadManifestPath: string = "OutlookSideloadManifestPath";
+const RefreshAddins: string = "RefreshAddins";
 const RuntimeLogging: string = "RuntimeLogging";
 const SourceBundleExtension: string = "SourceBundleExtension";
 const SourceBundleHost: string = "SourceBundleHost";
@@ -71,12 +72,6 @@ export async function enableDebugging(
 export async function enableLiveReload(addinId: string, enable: boolean = true): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   return registry.addBooleanValue(key, UseLiveReload, enable);
-}
-
-async function enableOutlookSideloading(manifestPath: string): Promise<void> {
-  const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
-
-  return registry.addStringValue(key, "", manifestPath); // empty string for the default value
 }
 
 export async function enableRuntimeLogging(path: string): Promise<void> {
@@ -193,6 +188,7 @@ export async function registerAddIn(manifestPath: string, registration?: string)
         filePath = manifestPath;
       }
       registration = await registerWithTeams(filePath);
+      enableRefreshAddins();
     }
 
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
@@ -318,6 +314,12 @@ async function unacquire(key: registry.RegistryKey, id: string) {
     if (registration != undefined) {
       unacquireWithTeams(registration);
       registry.deleteValue(key, TitleId);
+      enableRefreshAddins();
     }
   }
+}
+
+async function enableRefreshAddins() {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  await registry.addBooleanValue(key, RefreshAddins, true);
 }
