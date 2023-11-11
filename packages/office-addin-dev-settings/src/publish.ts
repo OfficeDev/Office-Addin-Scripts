@@ -13,7 +13,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if ((filePath.endsWith(".zip") || filePath.endsWith(".xml")) && fs.existsSync(filePath)) {
       const pathSwitch = filePath.endsWith(".zip") ? "--file-path" : "--xml-path";
-      const sideloadCommand = `npx -p @microsoft/teamsfx-cli@2.0.3-alpha.e5db52f29.0 teamsfx m365 sideloading ${pathSwitch} ${filePath}`;
+      const sideloadCommand = `npx -p @microsoft/teamsfx-cli@2.0.3-alpha.e5db52f29.0 teamsfx m365 sideloading ${pathSwitch} "${filePath}"`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
