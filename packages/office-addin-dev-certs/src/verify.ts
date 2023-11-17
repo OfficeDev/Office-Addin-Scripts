@@ -31,7 +31,7 @@ function getVerifyCommand(returnInvalidCertificate: boolean): string {
     }
     case "linux":
       const script = path.resolve(__dirname, "../scripts/verify_linux.sh");
-      return `sh '${script}' '${defaults.certificateName}'`;
+      return `sh '${script}' '${defaults.caCertificateFileName}'`;
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}`);
   }
