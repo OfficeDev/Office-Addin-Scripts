@@ -26,7 +26,7 @@ function getUninstallCommand(machine: boolean = false): string {
     }
     case "linux":
       const script = path.resolve(__dirname, "../scripts/uninstall_linux.sh");
-      return `sudo sh '${script}' '${defaults.certificateName}'`;
+      return `sudo sh '${script}' '${defaults.caCertificateFileName}'`;
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}`);
   }
