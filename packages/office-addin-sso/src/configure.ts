@@ -54,7 +54,12 @@ export async function isAzureCliInstalled(): Promise<boolean> {
       case "win32": {
         const appsInstalledWindowsCommand: string = `powershell -ExecutionPolicy Bypass -File "${defaults.getInstalledAppsPath}"`;
         const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
-        cliInstalled = appsWindows.filter((app) => app.DisplayName === "Microsoft Azure CLI").length > 0;
+        cliInstalled = appsWindows.filter((app) => {
+          if (app!==null && app.DisplayName!==null){
+            if (app.DisplayName.includes("Microsoft Azure CLI")) return true;
+          }
+          return false;
+        });
         // Send usage data
         usageDataObject.reportSuccess("isAzureCliInstalled()", {
           cliInstalled: cliInstalled,
