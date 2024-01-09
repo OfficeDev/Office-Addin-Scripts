@@ -13,7 +13,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if ((filePath.endsWith(".zip") || filePath.endsWith(".xml")) && fs.existsSync(filePath)) {
       const pathSwitch = filePath.endsWith(".zip") ? "--file-path" : "--xml-path";
-      const sideloadCommand = `npx -p @microsoft/teamsfx-cli@2.0.3-alpha.e5db52f29.0 teamsfx m365 sideloading ${pathSwitch} "${filePath}"`;
+      const sideloadCommand = `npx -p @microsoft/teamsfx-cli@2.1.0 teamsfx m365 sideloading ${pathSwitch} "${filePath}"`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
@@ -35,7 +35,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
 
 export async function updateM365Account(operation: AccountOperation): Promise<void> {
   return new Promise((resolve, reject) => {
-    const loginCommand = `npx -p @microsoft/teamsfx-cli@2.0.3-alpha.e5db52f29.0 teamsfx account ${operation} m365`;
+    const loginCommand = `npx -p @microsoft/teamsfx-cli@2.1.0 teamsfx account ${operation} m365`;
 
     console.log(`running: ${loginCommand}`);
     childProcess.exec(loginCommand, (error, stdout, stderr) => {
@@ -52,7 +52,7 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
 
 export async function unacquireWithTeams(titleId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const unacquireCommand = `npx -p @microsoft/teamsfx-cli@2.0.3-alpha.e5db52f29.0 teamsfx m365 unacquire --title-id ${titleId}`;
+    const unacquireCommand = `npx -p @microsoft/teamsfx-cli@2.1.0 teamsfx m365 unacquire --title-id ${titleId}`;
 
     console.log(`running: ${unacquireCommand}`);
     childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
