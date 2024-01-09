@@ -35,7 +35,7 @@
     "winreg": "1.2.4"
   },
   "peerDependencies": {
-    "@microsoft/teamsfx-cli": "2.0.3-alpha.e5db52f29.0"
+    "@microsoft/teamsfx-cli": "2.1.0"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.0",
