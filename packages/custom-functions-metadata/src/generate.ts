@@ -177,7 +177,10 @@ export async function generateCustomFunctionsMetadata(
     });
 
     if (functions.length > 0) {
-      generateResults.metadataJson = JSON.stringify({ functions: functions }, null, 4);
+      generateResults.metadataJson = JSON.stringify({
+        functions: functions,
+        allowCustomDataForDataTypeAny: true,
+      }, null, 4);
     }
   }
 
