@@ -20,5 +20,6 @@
             "parameters": [],
             "result": {}
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }

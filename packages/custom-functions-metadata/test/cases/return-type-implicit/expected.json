@@ -84,5 +84,6 @@
             "parameters": [],
             "result": {}
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }

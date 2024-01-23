@@ -15,5 +15,6 @@
             ],
             "result": {}
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }

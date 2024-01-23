@@ -114,5 +114,6 @@
                 "type": "string"
             }
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }

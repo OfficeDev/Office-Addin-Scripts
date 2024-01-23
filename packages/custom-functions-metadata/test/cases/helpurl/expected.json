@@ -27,5 +27,6 @@
             "parameters": [],
             "result": {}
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }

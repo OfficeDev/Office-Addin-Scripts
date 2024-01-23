@@ -18,5 +18,6 @@
                 "type": "string"
             }
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }

@@ -177,10 +177,11 @@ export async function generateCustomFunctionsMetadata(
     });
 
     if (functions.length > 0) {
-      generateResults.metadataJson = JSON.stringify({
+      const metadata = {
         functions: functions,
         allowCustomDataForDataTypeAny: true,
-      }, null, 4);
+      }
+      generateResults.metadataJson = JSON.stringify(metadata, null, 4);
     }
   }
 

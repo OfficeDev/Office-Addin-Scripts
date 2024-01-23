@@ -17,5 +17,6 @@
                 "type": "string"
             }
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }

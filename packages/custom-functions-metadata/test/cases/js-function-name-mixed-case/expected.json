@@ -7,5 +7,6 @@
             "parameters": [],
             "result": {}
         }
-    ]
+    ],
+    "allowCustomDataForDataTypeAny": true
 }
