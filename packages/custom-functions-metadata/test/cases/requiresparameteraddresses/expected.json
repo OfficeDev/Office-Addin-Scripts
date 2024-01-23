@@ -1,4 +1,6 @@
 {
+    "allowCustomDataTypeForDataTypeAny": true,
+    "allowErrorsForDataTypeAny": true,
     "functions": [
         {
             "description": "Test the requiresParameterAddresses tag",

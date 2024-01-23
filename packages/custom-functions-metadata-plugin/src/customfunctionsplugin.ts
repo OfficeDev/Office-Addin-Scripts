@@ -54,9 +54,16 @@ class CustomFunctionsMetadataPlugin {
       }
 
       // trigger the loader to add code to the functions files
-      NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(
-        pluginName,
-        (_, module) => {
+      let hooks = undefined;
+
+      try {
+        hooks = NormalModule.getCompilationHooks(compilation);
+      } catch (err) {
+        // skip error
+      }
+
+      if (hooks && hooks.beforeLoaders) {
+        hooks.beforeLoaders.tap(pluginName, (_, module: NormalModule) => {
           const found = input.find((item) => module.userRequest.endsWith(item));
           if (found) {
             module.loaders.push({
@@ -69,8 +76,8 @@ class CustomFunctionsMetadataPlugin {
               type: null,
             });
           }
-        }
-      );
+        });
+      }
     });
   }
 }

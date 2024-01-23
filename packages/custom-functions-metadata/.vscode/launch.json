@@ -3,11 +3,11 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [        
+    "configurations": [
         {
             "name": "Command Line",
             "type": "node",
-            "request": "launch",            
+            "request": "launch",
             "program": "${workspaceFolder}/lib/cli.js",
             "args": []
         },

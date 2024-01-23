@@ -1,4 +1,6 @@
 {
+    "allowCustomDataTypeForDataTypeAny": true,
+    "allowErrorsForDataTypeAny": true,
     "functions": [
         {
             "helpUrl": "https://www.contoso.com/help",

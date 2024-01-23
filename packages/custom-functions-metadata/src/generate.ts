@@ -145,7 +145,7 @@ export async function generateCustomFunctionsMetadata(
   wantConsoleOutput: boolean = false
 ): Promise<IGenerateResult> {
   const inputFiles: string[] = Array.isArray(input) ? input : [input];
-  const functions: IFunction[] = [];
+  const functions: IFunction[] = [];  
   const generateResults: IGenerateResult = {
     metadataJson: "",
     associate: [],
@@ -177,7 +177,12 @@ export async function generateCustomFunctionsMetadata(
     });
 
     if (functions.length > 0) {
-      generateResults.metadataJson = JSON.stringify({ functions: functions }, null, 4);
+      const metadata = {
+        allowCustomDataTypeForDataTypeAny: true,
+        allowErrorsForDataTypeAny: true,
+        functions: functions
+      };
+      generateResults.metadataJson = JSON.stringify(metadata, null, 4);
     }
   }
 

@@ -2,10 +2,10 @@
     "compilerOptions": {
         "alwaysStrict": false,
         "declaration": true,
+        "forceConsistentCasingInFileNames": true,
         "module": "commonjs",
         "moduleResolution": "node",
         "newLine": "lf",
-        "noImplicitUseStrict": true,
         "outDir": "lib",
         "skipLibCheck": true,
         "sourceMap": true,
