@@ -178,8 +178,8 @@ export async function generateCustomFunctionsMetadata(
 
     if (functions.length > 0) {
       const metadata = {
-        functions: functions,
         allowCustomDataForDataTypeAny: true,
+        functions: functions,
       }
       generateResults.metadataJson = JSON.stringify(metadata, null, 4);
     }

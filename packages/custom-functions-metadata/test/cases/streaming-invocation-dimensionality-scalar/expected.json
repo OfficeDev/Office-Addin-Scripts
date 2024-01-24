@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "description": "Test function for streaming type",
@@ -17,6 +18,5 @@
                 "type": "string"
             }
         }
-    ],
-    "allowCustomDataForDataTypeAny": true
+    ]
 }

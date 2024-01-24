@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "description": "Parameter type not specified",
@@ -60,6 +61,5 @@
             ],
             "result": {}
         }
-    ],
-    "allowCustomDataForDataTypeAny": true
+    ]
 }

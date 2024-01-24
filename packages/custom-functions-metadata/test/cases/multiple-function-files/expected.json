@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "description": "basic custom function",
@@ -14,6 +15,5 @@
             "parameters": [],
             "result": {}
         }
-    ],
-    "allowCustomDataForDataTypeAny": true
+    ]
 }

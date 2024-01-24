@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "description": "Test default string parameter",
@@ -81,6 +82,5 @@
             ],
             "result": {}
         }
-    ],
-    "allowCustomDataForDataTypeAny": true
+    ]
 }

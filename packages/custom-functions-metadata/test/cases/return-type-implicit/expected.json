@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "id": "RETURNSBOOLEAN",
@@ -84,6 +85,5 @@
             "parameters": [],
             "result": {}
         }
-    ],
-    "allowCustomDataForDataTypeAny": true
+    ]
 }

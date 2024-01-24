@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "helpUrl": "https://www.contoso.com/help",
@@ -27,6 +28,5 @@
             "parameters": [],
             "result": {}
         }
-    ],
-    "allowCustomDataForDataTypeAny": true
+    ]
 }
