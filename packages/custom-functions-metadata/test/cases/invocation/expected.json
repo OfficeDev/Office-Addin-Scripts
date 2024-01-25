@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "description": "Test support for the CustomFunctions.Invocation",

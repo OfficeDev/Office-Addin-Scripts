@@ -177,7 +177,11 @@ export async function generateCustomFunctionsMetadata(
     });
 
     if (functions.length > 0) {
-      generateResults.metadataJson = JSON.stringify({ functions: functions }, null, 4);
+      const metadata = {
+        allowCustomDataForDataTypeAny: true,
+        functions: functions,
+      }
+      generateResults.metadataJson = JSON.stringify(metadata, null, 4);
     }
   }
 

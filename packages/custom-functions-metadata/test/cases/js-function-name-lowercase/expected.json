@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "description": "Lowercase function name test",
