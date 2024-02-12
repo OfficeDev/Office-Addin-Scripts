@@ -1,6 +1,6 @@
 {
   "name": "custom-functions-metadata",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "Generate metadata for Excel Custom Functions.",
   "main": "./lib/main.js",
   "scripts": {
