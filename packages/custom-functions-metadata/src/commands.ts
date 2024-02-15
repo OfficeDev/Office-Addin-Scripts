@@ -3,7 +3,7 @@
 
 import { writeFileSync } from "fs";
 import { logErrorMessage } from "office-addin-usage-data";
-import { generateCustomFunctionsMetadata } from "./generate";
+import { generateCustomFunctionsMetadata } from "./generateCustomFunctionsMetadata";
 
 /* global console */
 

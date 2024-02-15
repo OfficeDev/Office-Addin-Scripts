@@ -3,11 +3,11 @@
 This package allows metadata for custom functions to be generated automatically from JSDoc tags and the function parameter types.
 
 ## Command-Line Interface
+
 * [generate](#generate)
 
-#
-
-## generate 
+## generate
+ 
 Generates metadata for custom functions from source code. 
 
 Syntax:
