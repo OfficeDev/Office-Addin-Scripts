@@ -4,8 +4,6 @@
 import * as ts from "typescript";
 import XRegExp = require("xregexp");
 
-/* global console */
-
 export interface ICustomFunctionsMetadata {
   functions: IFunction[];
 }

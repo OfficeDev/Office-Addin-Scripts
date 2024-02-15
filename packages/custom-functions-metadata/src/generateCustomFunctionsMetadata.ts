@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { IGenerateResult, IFunction, IParseTreeResult, parseTree } from "./parseTree";
+/* global console */
 
 /**
  * Generate the metadata of the custom functions
