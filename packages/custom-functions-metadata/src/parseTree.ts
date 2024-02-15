@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as ts from "typescript";
-import XRegExp = require("xregexp");
+import * as XRegExp from "xregexp";
 
 export interface ICustomFunctionsMetadata {
   functions: IFunction[];
