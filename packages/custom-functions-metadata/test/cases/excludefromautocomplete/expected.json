@@ -1,0 +1,15 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test the excludeFromAutoComplete tag",
+            "id": "EXCLUDEFROMAUTOCOMPLETETEST",
+            "name": "EXCLUDEFROMAUTOCOMPLETETEST",
+            "options": {
+                "excludeFromAutoComplete": true
+            },
+            "parameters": [],
+            "result": {}
+        }
+    ]
+}

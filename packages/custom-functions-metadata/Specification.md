@@ -11,7 +11,9 @@ The function parameter types may be provided using the [@param](#param) tag in J
 ## Tags
 * [@cancelable](#cancelable)
 * [@customfunction](#customfunction) id name
+* [@excludeFromAutoComplete](#excludeFromAutoComplete)
 * [@helpurl](#helpurl) url
+* [@linkedEntityDataProvider](#linkedEntityDataProvider)
 * [@param](#param) _{type}_ name description
 * [@requiresAddress](#requiresAddress)
 * [@requiresParameterAddresses](#requiresParameterAddresses)
@@ -60,11 +62,32 @@ Provides the display name for the custom function.
 * Maximum length is 128 characters.
 
 ---
+### @excludeFromAutoComplete
+
+Indicates that the function will be excluded from the autocomplete drop-down list and Formula Builder.
+
+If the function is manually spelled correctly in the grid, the function will still execute.
+
+A function cannot have both `@excludeFromAutoComplete` and `@linkedEntityDataProvider` tags.
+
+---
 ### @helpurl
 
 Syntax: @helpurl _url_
 
 The provided _url_ is displayed in Excel.
+
+---
+### @linkedEntityDataProvider
+
+Indicates that the function is a "special" custom function that is meant to act as the "loadFunction" for user defined `LinkedDataType`s. 
+
+The function will be excluded from the autocomplete drop-down list and Formula Builder since it should only callable by the Excel runtime.
+
+* Must accept and return a single non-repeating, non-optional, scalar parameter of type `Any`.
+* Must not be a XLL-compatible custom function.
+* Must allow rich data as input.
+* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, or `@excludeFromAutoComplete` tags.
 
 ---
 ### @param 
