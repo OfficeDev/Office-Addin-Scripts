@@ -111,6 +111,7 @@ const TYPE_MAPPINGS_SIMPLE = {
   [ts.SyntaxKind.StringKeyword]: "string",
   [ts.SyntaxKind.BooleanKeyword]: "boolean",
   [ts.SyntaxKind.AnyKeyword]: "any",
+  [ts.SyntaxKind.UnknownKeyword]: "any",
 };
 
 const TYPE_MAPPINGS = {
@@ -123,6 +124,7 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.EnumKeyword]: "any",
   [ts.SyntaxKind.ObjectKeyword]: "any",
   [ts.SyntaxKind.VoidKeyword]: "any",
+  [ts.SyntaxKind.UnknownKeyword]: "any",
 };
 
 const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
