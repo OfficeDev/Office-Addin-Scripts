@@ -3,11 +3,11 @@
 
 /**
  * Test the linkedEntityDataProvider tag in combination with the volatile tag
- * @param {unknown} linkedEntityId Unique `LinkedEntityId` of the `LinkedEntityCellValue`s which is being requested for resolution/refresh.
+ * @param linkedEntityId Unique `LinkedEntityId` of the `LinkedEntityCellValue`s which is being requested for resolution/refresh.
  * @customfunction
  * @linkedEntityDataProvider
  * @volatile
- * @returns {Promise<any>} Resolved/Updated `LinkedEntityCellValue` that was requested by the passed-in id.
+ * @returns Resolved/Updated `LinkedEntityCellValue` that was requested by the passed-in id.
  */
 async function linkedEntityDataProviderTest(linkedEntityId: unknown): Promise<any> {
     // Empty
