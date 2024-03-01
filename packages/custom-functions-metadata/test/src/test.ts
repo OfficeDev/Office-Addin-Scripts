@@ -2,9 +2,10 @@
 // Licensed under the MIT license.
 
 import * as assert from "assert";
-import * as fs from "fs";
+import { readFileSync } from "fs";
 import * as mocha from "mocha";
-import { generateCustomFunctionsMetadata, IParseTreeResult, parseTree } from "../../src/generate";
+import { generateCustomFunctionsMetadata } from "../../src/generate";
+import { IParseTreeResult, parseTree } from "../../src/parseTree";
 
 describe("test json output", function() {
     describe("generate test", function() {
@@ -118,7 +119,7 @@ describe("test parseTreeResult", function() {
     describe("parseTreeResult", function() {
         it("parseTree for errorfunctions", async function() {
             const inputFile = "./test/javascript/errorfunctions.js";
-            const sourceCode = fs.readFileSync(inputFile, "utf-8");
+            const sourceCode = readFileSync(inputFile, "utf-8");
             const parseTreeResult: IParseTreeResult = parseTree(sourceCode, "errorfunctions");
             assert.equal(parseTreeResult.extras[0].javascriptFunctionName, "testadd", "Function testadd found");
             assert.equal(parseTreeResult.extras[0].errors.length, 1, "Correct number of errors found(1)");
