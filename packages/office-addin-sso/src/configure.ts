@@ -55,7 +55,7 @@ export async function isAzureCliInstalled(): Promise<boolean> {
         const appsInstalledWindowsCommand: string = `powershell -ExecutionPolicy Bypass -File "${defaults.getInstalledAppsPath}"`;
         const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
         cliInstalled = appsWindows.filter((app) => {
-          if (app!==null && app.DisplayName!==null){
+          if (app!==null && app.DisplayName && typeof app.DisplayName === "string"){
             if (app.DisplayName.includes("Microsoft Azure CLI")) return true;
           }
           return false;
@@ -153,14 +153,14 @@ export async function logIntoAzure(): Promise<Object> {
   );
   if (Object.keys(userJson).length < 1) {
     // Try alternate login
-    logoutAzure();
+    await logoutAzure();
     userJson = await promiseExecuteCommand("az login");
   }
   return userJson;
 }
 
 export async function logoutAzure(): Promise<Object> {
-  return await promiseExecuteCommand("az logout");
+  return await promiseExecuteCommand("az logout", true /* returnJson */, true /* expectError */);
 }
 
 async function promiseExecuteCommand(
