@@ -1,0 +1,21 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test the linkedEntityDataProvider tag",
+            "id": "LINKEDENTITYDATAPROVIDERTEST",
+            "name": "LINKEDENTITYDATAPROVIDERTEST",
+            "options": {
+                "linkedEntityDataProvider": true
+            },
+            "parameters": [
+                {
+                    "description": "Unique `LinkedEntityId` of the `LinkedEntityCellValue`s which is being requested for resolution/refresh.",
+                    "name": "linkedEntityId",
+                    "type": "any"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

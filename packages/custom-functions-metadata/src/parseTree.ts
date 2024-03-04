@@ -26,6 +26,8 @@ export interface IFunctionOptions {
   stream?: boolean;
   volatile?: boolean;
   requiresParameterAddresses?: boolean;
+  excludeFromAutoComplete?: boolean;
+  linkedEntityDataProvider?: boolean;
 }
 
 export interface IFunctionParameter {
@@ -101,12 +103,15 @@ const STREAMING = "streaming";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
+const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
+const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
 
 const TYPE_MAPPINGS_SIMPLE = {
   [ts.SyntaxKind.NumberKeyword]: "number",
   [ts.SyntaxKind.StringKeyword]: "string",
   [ts.SyntaxKind.BooleanKeyword]: "boolean",
   [ts.SyntaxKind.AnyKeyword]: "any",
+  [ts.SyntaxKind.UnknownKeyword]: "any",
 };
 
 const TYPE_MAPPINGS = {
@@ -119,6 +124,7 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.EnumKeyword]: "any",
   [ts.SyntaxKind.ObjectKeyword]: "any",
   [ts.SyntaxKind.VoidKeyword]: "any",
+  [ts.SyntaxKind.UnknownKeyword]: "any",
 };
 
 const TYPE_CUSTOM_FUNCTIONS_STREAMING = {
@@ -270,7 +276,9 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.requiresAddress &&
             !options.stream &&
             !options.volatile &&
-            !options.requiresParameterAddresses
+            !options.requiresParameterAddresses &&
+            !options.excludeFromAutoComplete &&
+            !options.linkedEntityDataProvider
           ) {
             delete functionMetadata.options;
           } else {
@@ -292,6 +300,14 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.requiresParameterAddresses) {
               delete options.requiresParameterAddresses;
+            }
+
+            if (!options.excludeFromAutoComplete) {
+              delete options.excludeFromAutoComplete;
+            }
+
+            if (!options.linkedEntityDataProvider) {
+              delete options.linkedEntityDataProvider;
             }
           }
 
@@ -434,6 +450,8 @@ function getOptions(
     stream: isStreaming(func, isStreamingFunction),
     volatile: isVolatile(func),
     requiresParameterAddresses: isRequiresParameterAddresses(func),
+    excludeFromAutoComplete: isExcludedFromAutoComplete(func),
+    linkedEntityDataProvider: isLinkedEntityDataProvider(func),
   };
 
   if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
@@ -450,6 +468,22 @@ function getOptions(
       const errorString = `${errorParam} cannot be used with @streaming.`;
       extra.errors.push(logError(errorString, functionPosition));
     }
+  }
+
+  if (optionsItem.linkedEntityDataProvider && (optionsItem.excludeFromAutoComplete || optionsItem.volatile || optionsItem.stream)) {
+    let errorParam: string = "";
+    const functionPosition = getPosition(func);
+
+    if (optionsItem.excludeFromAutoComplete) {
+      errorParam = "@excludeFromAutoComplete";
+    } else if (optionsItem.volatile) {
+      errorParam = "@volatile";
+    } else if (optionsItem.stream) {
+      errorParam = "@streaming";
+    }
+
+    const errorString = `${errorParam} cannot be used with @linkedEntityDataProvider.`;
+    extra.errors.push(logError(errorString, functionPosition));
   }
 
   return optionsItem;
@@ -748,6 +782,22 @@ function isAddressRequired(node: ts.Node): boolean {
  */
 function isRequiresParameterAddresses(node: ts.Node): boolean {
   return hasTag(node, REQUIRESPARAMETERADDRESSES);
+}
+
+/**
+ * Returns true if excludedFromAutoComplete tag found in comments
+ * @param node jsDocs node
+ */
+function isExcludedFromAutoComplete(node: ts.Node): boolean {
+  return hasTag(node, EXCLUDEFROMAUTOCOMPLETE);
+}
+
+/**
+ * Returns true if linkedEntityDataProvider tag found in comments
+ * @param node jsDocs node
+ */
+function isLinkedEntityDataProvider(node: ts.Node): boolean {
+  return hasTag(node, LINKEDENTITYDATAPROVIDER);
 }
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
