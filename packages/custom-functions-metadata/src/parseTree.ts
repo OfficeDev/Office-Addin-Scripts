@@ -470,7 +470,12 @@ function getOptions(
     }
   }
 
-  if (optionsItem.linkedEntityDataProvider && (optionsItem.excludeFromAutoComplete || optionsItem.volatile || optionsItem.stream)) {
+  if (optionsItem.linkedEntityDataProvider &&
+    (optionsItem.excludeFromAutoComplete ||
+      optionsItem.volatile ||
+      optionsItem.stream ||
+      optionsItem.requiresAddress ||
+      optionsItem.requiresParameterAddresses)) {
     let errorParam: string = "";
     const functionPosition = getPosition(func);
 
@@ -480,6 +485,10 @@ function getOptions(
       errorParam = "@volatile";
     } else if (optionsItem.stream) {
       errorParam = "@streaming";
+    } else if (optionsItem.requiresAddress) {
+      errorParam = "@requiresAddress";
+    } else if (optionsItem.requiresParameterAddresses) {
+      errorParam = "@requiresParameterAddresses";
     }
 
     const errorString = `${errorParam} cannot be used with @linkedEntityDataProvider.`;

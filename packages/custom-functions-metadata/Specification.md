@@ -80,14 +80,14 @@ The provided _url_ is displayed in Excel.
 ---
 ### @linkedEntityDataProvider
 
-Indicates that the function is a "special" custom function that is meant to act as the "loadFunction" for user defined `LinkedDataType`s. 
+Indicates that the function is a "special" custom function that is meant to act as the "loadFunction" for user defined `LinkedEntityDataDomain`s. 
 
 The function will be excluded from the autocomplete drop-down list and Formula Builder since it should only callable by the Excel runtime.
 
 * Must accept and return a single non-repeating, non-optional, scalar parameter of type `unknown`.
 * Must not be a XLL-compatible custom function.
 * Must allow rich data as input.
-* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, or `@excludeFromAutoComplete` tags.
+* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, or `@excludeFromAutoComplete` tags.
 
 ---
 ### @param 
