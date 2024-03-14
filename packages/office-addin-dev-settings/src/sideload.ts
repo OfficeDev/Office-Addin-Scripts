@@ -254,6 +254,23 @@ async function getOutlookExePath(): Promise<string> {
   }
 }
 
+async function getWXPExePath(app: OfficeApp): Promise<string> {
+  try {
+    const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${app}.EXE`;
+    const key = new registry.RegistryKey(`${InstallPathRegistryKey}`);
+    const ExePath: string | undefined = await registry.getStringValue(key, "");
+
+    if (!ExePath) {
+      throw new Error(".exe registry empty");
+    }
+
+    return ExePath;
+  } catch (err) {
+    const errorMessage: string = `Unable to find install location: \n${err}`;
+    throw new Error(errorMessage);
+  }
+}
+
 /**
  * Given a file path, returns a unique file path where the file doesn't exist by
  * appending a period and a numeric suffix, starting from 2.
@@ -338,7 +355,7 @@ export async function sideloadAddIn(
     switch (appType) {
       case AppType.Desktop:
         await registerAddIn(manifestPath, registration);
-        await launchDesktopApp(app, manifest, document);
+        await launchDesktopApp(app, manifestPath,manifest, document);
         break;
       case AppType.Web: {
         if (!document) {
@@ -357,7 +374,7 @@ export async function sideloadAddIn(
   }
 }
 
-async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document?: string) {
+async function launchDesktopApp(app: OfficeApp, manifestPath: string, manifest: ManifestInfo, document?: string) {
   if (!isSideloadingSupportedForDesktopHost(app)) {
     throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
   }
@@ -371,7 +388,11 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
       );
     }
     await launchApp(app, await getOutlookExePath());
-  } else {
+  } else if (manifestPath.endsWith(".json"))
+  {
+    await launchApp(app, await getWXPExePath(app));
+  } else
+  {
     await launchApp(app, await generateSideloadFile(app, manifest, document));
   }
 }

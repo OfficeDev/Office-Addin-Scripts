@@ -178,7 +178,7 @@ export async function registerAddIn(manifestPath: string, registration?: string)
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
   // Register using the service
-  if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
+  if (manifestPath.endsWith(".json") || appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
     if (!registration) {
       let filePath = "";
       if (manifestPath.endsWith(".json")) {
