@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as childProcess from "child_process";
-import inquirer = require("inquirer");
+import * as inquirer from "inquirer";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 import { ExpectedError } from "office-addin-usage-data";
