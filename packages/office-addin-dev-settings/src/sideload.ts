@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import * as fs from "fs";
-import * as childProcess from "child_process";
 import * as AdmZip from "adm-zip";
 import {
   AddInType,
