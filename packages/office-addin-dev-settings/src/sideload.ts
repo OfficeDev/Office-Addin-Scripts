@@ -237,36 +237,34 @@ async function getOutlookVersion(): Promise<string | undefined> {
   }
 }
 
-async function getOutlookExePath(): Promise<string> {
+async function getWXPOExePath(app: OfficeApp): Promise<string> {
+  let HostApp: string = "";
   try {
-    const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
-    const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
-    const outlookExePath: string | undefined = await registry.getStringValue(key, "");
-
-    if (!outlookExePath) {
-      throw new Error("Outlook.exe registry empty");
+    switch (app) {
+      case OfficeApp.Excel:
+        HostApp = "EXCEL";
+        break;
+      case OfficeApp.Outlook:
+        HostApp = "OUTLOOK";
+        break;
+      case OfficeApp.Word:
+        HostApp = "WINWORD";
+        break;
+      case OfficeApp.PowerPoint:
+        HostApp = "POWERPNT";
+        break;
     }
 
-    return outlookExePath;
-  } catch (err) {
-    const errorMessage: string = `Unable to find Outlook install location: \n${err}`;
-    throw new Error(errorMessage);
-  }
-}
-
-async function getWXPExePath(app: OfficeApp): Promise<string> {
-  try {
-    const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${app}.EXE`;
+    const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${HostApp}.EXE`;
     const key = new registry.RegistryKey(`${InstallPathRegistryKey}`);
     const ExePath: string | undefined = await registry.getStringValue(key, "");
 
     if (!ExePath) {
-      throw new Error(".exe registry empty");
+      throw new Error(`${HostApp}.exe registry empty`);
     }
-
     return ExePath;
   } catch (err) {
-    const errorMessage: string = `Unable to find install location: \n${err}`;
+    const errorMessage: string = `Unable to find "${HostApp}" install location: \n${err}`;    
     throw new Error(errorMessage);
   }
 }
@@ -355,7 +353,7 @@ export async function sideloadAddIn(
     switch (appType) {
       case AppType.Desktop:
         await registerAddIn(manifestPath, registration);
-        await launchDesktopApp(app, manifestPath,manifest, document);
+        await launchDesktopApp(app, manifestPath, manifest, document);
         break;
       case AppType.Web: {
         if (!document) {
@@ -379,7 +377,8 @@ async function launchDesktopApp(app: OfficeApp, manifestPath: string, manifest: 
     throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
   }
 
-  // for Outlook, open Outlook.exe; for other Office apps, open the document
+  // for Outlook, Word, Excel, PowerPoint open {Host}.exe; for other Office apps, open the document
+  let path: string;
   if (app == OfficeApp.Outlook) {
     const version: string | undefined = await getOutlookVersion();
     if (version && !hasOfficeVersion("16.0.13709", version)) {
@@ -387,14 +386,14 @@ async function launchDesktopApp(app: OfficeApp, manifestPath: string, manifest: 
         `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
       );
     }
-    await launchApp(app, await getOutlookExePath());
-  } else if (manifestPath.endsWith(".json"))
-  {
-    await launchApp(app, await getWXPExePath(app));
-  } else
-  {
-    await launchApp(app, await generateSideloadFile(app, manifest, document));
+    path = await getWXPOExePath(app);
+  } else if (manifestPath.endsWith(".json")) {
+    path = await getWXPOExePath(app);
+  } else {
+    path = await generateSideloadFile(app, manifest, document);
   }
+
+  await launchApp(app, path);
 }
 
 async function launchWebApp(app: OfficeApp, manifestPath: string, manifest: ManifestInfo, document: string) {
