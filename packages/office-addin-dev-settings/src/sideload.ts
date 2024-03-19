@@ -237,34 +237,36 @@ async function getOutlookVersion(): Promise<string | undefined> {
   }
 }
 
-async function getWXPOExePath(app: OfficeApp): Promise<string> {
-  let HostApp: string = "";
+async function getOfficeExePath(app: OfficeApp): Promise<string> {
+  let hostApp: string = "";
   try {
     switch (app) {
       case OfficeApp.Excel:
-        HostApp = "EXCEL";
+        hostApp = "excel.exe";
         break;
       case OfficeApp.Outlook:
-        HostApp = "OUTLOOK";
+        hostApp = "OUTLOOK.EXE";
         break;
       case OfficeApp.Word:
-        HostApp = "WINWORD";
+        hostApp = "Winword.exe";
         break;
       case OfficeApp.PowerPoint:
-        HostApp = "POWERPNT";
+        hostApp = "powerpnt.exe";
         break;
+      default:
+        hostApp = "OUTLOOK.EXE";
     }
 
-    const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${HostApp}.EXE`;
+    const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${hostApp}`;
     const key = new registry.RegistryKey(`${InstallPathRegistryKey}`);
     const ExePath: string | undefined = await registry.getStringValue(key, "");
 
     if (!ExePath) {
-      throw new Error(`${HostApp}.exe registry empty`);
+      throw new Error(`${hostApp} registry empty`);
     }
     return ExePath;
   } catch (err) {
-    const errorMessage: string = `Unable to find "${HostApp}" install location: \n${err}`;    
+    const errorMessage: string = `Unable to find "${hostApp}" install location: \n${err}`;    
     throw new Error(errorMessage);
   }
 }
@@ -386,9 +388,9 @@ async function launchDesktopApp(app: OfficeApp, manifestPath: string, manifest: 
         `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
       );
     }
-    path = await getWXPOExePath(app);
+    path = await getOfficeExePath(app);
   } else if (manifestPath.endsWith(".json")) {
-    path = await getWXPOExePath(app);
+    path = await getOfficeExePath(app);
   } else {
     path = await generateSideloadFile(app, manifest, document);
   }
