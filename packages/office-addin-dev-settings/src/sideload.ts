@@ -255,6 +255,7 @@ async function getOfficeExePath(app: OfficeApp): Promise<string> {
         break;
       default:
         hostApp = "OUTLOOK.EXE";
+        break;
     }
 
     const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${hostApp}`;
