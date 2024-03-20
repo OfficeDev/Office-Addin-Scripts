@@ -12,6 +12,7 @@ import {
   ManifestInfo,
   OfficeApp,
   OfficeAddinManifest,
+  ManifestType,
 } from "office-addin-manifest";
 import open = require("open");
 import semver = require("semver");
@@ -356,7 +357,7 @@ export async function sideloadAddIn(
     switch (appType) {
       case AppType.Desktop:
         await registerAddIn(manifestPath, registration);
-        await launchDesktopApp(app, manifestPath, manifest, document);
+        await launchDesktopApp(app, manifest, document);
         break;
       case AppType.Web: {
         if (!document) {
@@ -375,7 +376,7 @@ export async function sideloadAddIn(
   }
 }
 
-async function launchDesktopApp(app: OfficeApp, manifestPath: string, manifest: ManifestInfo, document?: string) {
+async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document?: string) {
   if (!isSideloadingSupportedForDesktopHost(app)) {
     throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
   }
@@ -390,7 +391,7 @@ async function launchDesktopApp(app: OfficeApp, manifestPath: string, manifest: 
       );
     }
     path = await getOfficeExePath(app);
-  } else if (manifestPath.endsWith(".json")) {
+  } else if (manifest.manifestType === ManifestType.JSON) {
     path = await getOfficeExePath(app);
   } else {
     path = await generateSideloadFile(app, manifest, document);
