@@ -13,7 +13,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if ((filePath.endsWith(".zip") || filePath.endsWith(".xml")) && fs.existsSync(filePath)) {
       const pathSwitch = filePath.endsWith(".zip") ? "--file-path" : "--xml-path";
-      const sideloadCommand = `npx -p @microsoft/teamsfx-cli@2.1.0 teamsfx m365 sideloading ${pathSwitch} "${filePath}"`;
+      const sideloadCommand = `npx @microsoft/teamsapp-cli install ${pathSwitch} "${filePath}"`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
@@ -35,34 +35,39 @@ export async function registerWithTeams(filePath: string): Promise<string> {
 
 export async function updateM365Account(operation: AccountOperation): Promise<void> {
   return new Promise((resolve, reject) => {
-    const loginCommand = `npx -p @microsoft/teamsfx-cli@2.1.0 teamsfx account ${operation} m365`;
+    const authCommand = `npx @microsoft/teamsapp-cli auth ${operation} m365`;
 
-    console.log(`running: ${loginCommand}`);
-    childProcess.exec(loginCommand, (error, stdout, stderr) => {
+    console.log(`running: ${authCommand}`);
+    childProcess.exec(authCommand, (error, stdout, stderr) => {
       if (error || (stderr.length > 0 && /Debugger attached\./.test(stderr) == false)) {
-        console.log(`Error logging in:\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
+        console.log(`Error running auth command\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
         reject(error);
       } else {
-        console.log(`Successfully logged in/out.\n`);
+        console.log(`Successfully ran auth command.\n`);
         resolve();
       }
     });
   });
 }
 
-export async function unacquireWithTeams(titleId: string): Promise<void> {
+export async function uninstallWithTeams(id: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const unacquireCommand = `npx -p @microsoft/teamsfx-cli@2.1.0 teamsfx m365 unacquire --title-id ${titleId}`;
+    if(id.startsWith("U_")) {
+      const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall "--title-id" ${id}`;
 
-    console.log(`running: ${unacquireCommand}`);
-    childProcess.exec(unacquireCommand, (error, stdout, stderr) => {
-      if (error || stderr.match('"error"')) {
-        console.log(`\n${stdout}\n--Error unacquireing!--\n${error}\n STDERR: ${stderr}`);
-        reject(error);
-      } else {
-        console.log(`\n${stdout}\nSuccessfully unacquired title!\n STDERR: ${stderr}\n`);
-        resolve();
-      }
-    });
+      console.log(`running: ${uninstallCommand}`);
+      childProcess.exec(uninstallCommand, (error, stdout, stderr) => {
+        if (error || stderr.match('"error"')) {
+          console.log(`\n${stdout}\n--Error uninstalling!--\n${error}\n STDERR: ${stderr}`);
+          reject(error);
+        } else {
+          console.log(`\n${stdout}\nSuccessfully uninstalled!\n STDERR: ${stderr}\n`);
+          resolve();
+        }
+      });
+    } else {
+      console.error(`Error: Invalid title id \"${id}\".  Add-in is still installed.`);
+      resolve();
+    }
   });
 }

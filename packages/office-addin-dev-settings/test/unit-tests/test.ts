@@ -236,7 +236,7 @@ describe("Appcontainer", async function() {
         sandbox.restore();
       });
       it("undefined source location", async function() {
-        const manifest = {defaultSettings: ""};
+        const manifest: ManifestInfo = {defaultSettings: {}};
         const readManifestFile = sinon.fake.returns(manifest);
         sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
         try {
@@ -248,7 +248,7 @@ describe("Appcontainer", async function() {
       });
       it("valid source location", async function() {
         const sourceLocation = {sourceLocation: "https://localhost"};
-        const manifest = {defaultSettings: sourceLocation};
+        const manifest: ManifestInfo = {defaultSettings: sourceLocation};
         const readManifestFile = sinon.fake.returns(manifest);
         sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
         const appcontainerName =  await appcontainer.getAppcontainerNameFromManifest("https://localhost");
