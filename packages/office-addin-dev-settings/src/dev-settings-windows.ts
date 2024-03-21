@@ -14,7 +14,7 @@ import {
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
-import { registerWithTeams, unacquireWithTeams } from "./publish";
+import { registerWithTeams, uninstallWithTeams } from "./publish";
 import * as fspath from "path";
 
 /* global process */
@@ -313,7 +313,7 @@ async function unacquire(key: registry.RegistryKey, id: string) {
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
     const registration = await registry.getStringValue(key, TitleId);
     if (registration != undefined) {
-      unacquireWithTeams(registration);
+      uninstallWithTeams(registration);
       registry.deleteValue(key, TitleId);
       enableRefreshAddins();
     }

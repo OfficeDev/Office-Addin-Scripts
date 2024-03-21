@@ -1,6 +1,6 @@
 {
   "name": "office-addin-mock",
-  "version": "2.3.17",
+  "version": "2.3.18",
   "description": "Provides mocking support for Office-js APIs",
   "main": "./lib/main.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "office-js"
   ],
   "dependencies": {
-    "office-addin-manifest": "^1.12.10",
+    "office-addin-manifest": "^1.12.11",
     "office-addin-usage-data": "^1.6.9"
   },
   "devDependencies": {

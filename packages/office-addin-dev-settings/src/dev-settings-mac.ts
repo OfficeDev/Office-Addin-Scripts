@@ -15,7 +15,7 @@ import * as os from "os";
 import * as path from "path";
 import { RegisteredAddin } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
-import { registerWithTeams, unacquireWithTeams } from "./publish";
+import { registerWithTeams, uninstallWithTeams } from "./publish";
 import * as fspath from "path";
 
 /* global process */
@@ -110,7 +110,7 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
 
     if (registeredFileName === manifestFileName || registeredFileName.startsWith(addinId)) {
       if (!registeredFileName.endsWith(".xml")) {
-        unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
+        uninstallWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
         // TODO: Add support for refreshing add-ins in Outlook via registry key
       }
       fs.unlinkSync(registeredAddIn.manifestPath);
@@ -124,7 +124,7 @@ export async function unregisterAllAddIns(): Promise<void> {
   for (const registeredAddIn of registeredAddIns) {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
     if (!registeredFileName.endsWith(".xml")) {
-      unacquireWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
+      uninstallWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
         // TODO: Add support for refreshing add-ins in Outlook via registry key
       }
     fs.unlinkSync(registeredAddIn.manifestPath);
