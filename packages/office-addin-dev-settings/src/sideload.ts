@@ -381,15 +381,15 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
 
   // for Outlook, Word, Excel, PowerPoint open {Host}.exe; for other Office apps, open the document
   let path: string;
-  if (manifest.manifestType === ManifestType.JSON && app == OfficeApp.Outlook) {
-    const version: string | undefined = await getOutlookVersion();
-    if (version && !hasOfficeVersion("16.0.13709", version)) {
-      throw new ExpectedError(
-        `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
-      );
+  if (manifest.manifestType === ManifestType.JSON) {
+    if (app == OfficeApp.Outlook) {
+      const version: string | undefined = await getOutlookVersion();
+      if (version && !hasOfficeVersion("16.0.13709", version)) {
+        throw new ExpectedError(
+          `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
+        );
+      }
     }
-    path = await getOfficeExePath(app);
-  } else if (manifest.manifestType === ManifestType.JSON) {
     path = await getOfficeExePath(app);
   } else {
     path = await generateSideloadFile(app, manifest, document);
