@@ -9,6 +9,7 @@ import {
   ManifestInfo,
   OfficeApp,
   OfficeAddinManifest,
+  ManifestType,
 } from "office-addin-manifest";
 import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
@@ -178,7 +179,7 @@ export async function registerAddIn(manifestPath: string, registration?: string)
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
   // Register using the service
-  if (manifestPath.endsWith(".json") || appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
+  if (manifest.manifestType === ManifestType.JSON || appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
     if (!registration) {
       let filePath = "";
       if (manifestPath.endsWith(".json")) {

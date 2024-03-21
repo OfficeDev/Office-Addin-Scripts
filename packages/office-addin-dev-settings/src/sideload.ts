@@ -255,8 +255,7 @@ async function getOfficeExePath(app: OfficeApp): Promise<string> {
         hostApp = "powerpnt.exe";
         break;
       default:
-        hostApp = "OUTLOOK.EXE";
-        break;
+        throw new Error("The Office host not supported.");
     }
 
     const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${hostApp}`;
@@ -383,7 +382,7 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
 
   // for Outlook, Word, Excel, PowerPoint open {Host}.exe; for other Office apps, open the document
   let path: string;
-  if (app == OfficeApp.Outlook) {
+  if (manifest.manifestType === ManifestType.JSON && app == OfficeApp.Outlook) {
     const version: string | undefined = await getOutlookVersion();
     if (version && !hasOfficeVersion("16.0.13709", version)) {
       throw new ExpectedError(
