@@ -51,7 +51,7 @@ export class ManifestHandlerJson extends ManifestHandler {
     manifestInfo.highResolutionIconUrl = appManifest.icons.color;
     manifestInfo.hosts = extensionElement?.requirements?.scopes;
     manifestInfo.iconUrl = appManifest.icons.color;
-    manifestInfo.officeAppType = extensionElement?.requirements?.capabilities?.[0]?.name;
+    manifestInfo.officeAppType = "TaskPaneApp"; 
     manifestInfo.permissions = appManifest.authorization?.permissions?.resourceSpecific?.[0]?.name;
     manifestInfo.providerName = appManifest.developer.name;
     manifestInfo.supportUrl = appManifest.developer.websiteUrl;

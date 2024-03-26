@@ -80,18 +80,24 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     if (!extEntry) {
       throw new ExpectedError("webextension was not found.");
     }
-
+    
     const webExtensionXml = templateZip
-      .readAsText(extEntry)
-      .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
-      .replace(/1.0.0.0/g, manifest.version);
-
+    .readAsText(extEntry)
+    .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
+    .replace(/1.0.0.0/g, manifest.version);
+    
     templateZip.getEntries().forEach(function (entry) {
       var data: Buffer = entry.getData();
-      if (entry == extEntry) {
+      if (entry == extEntry && manifest.manifestType == ManifestType.XML) {
         data = Buffer.from(webExtensionXml);
       }
       outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
+      
+      const webExtensionFolderPath = webExtensionPath.replace(/(\/[^\/]*)$/, '');
+      // If manifestType is JSON, remove the web extension folder
+      if (entry.entryName.startsWith(webExtensionFolderPath) && manifest.manifestType == ManifestType.JSON) {
+        outZip.deleteFile(entry.entryName);
+      }
     });
 
     // Write the file
@@ -237,36 +243,19 @@ async function getOutlookVersion(): Promise<string | undefined> {
   }
 }
 
-async function getOfficeExePath(app: OfficeApp): Promise<string> {
-  let hostApp: string = "";
+async function getOutlookExePath(): Promise<string> {
   try {
-    switch (app) {
-      case OfficeApp.Excel:
-        hostApp = "excel.exe";
-        break;
-      case OfficeApp.Outlook:
-        hostApp = "OUTLOOK.EXE";
-        break;
-      case OfficeApp.Word:
-        hostApp = "Winword.exe";
-        break;
-      case OfficeApp.PowerPoint:
-        hostApp = "powerpnt.exe";
-        break;
-      default:
-        throw new Error("The Office host not supported.");
+    const OutlookInstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\OUTLOOK.EXE`;
+    const key = new registry.RegistryKey(`${OutlookInstallPathRegistryKey}`);
+    const outlookExePath: string | undefined = await registry.getStringValue(key, "");
+
+    if (!outlookExePath) {
+      throw new Error("Outlook.exe registry empty");
     }
 
-    const InstallPathRegistryKey: string = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${hostApp}`;
-    const key = new registry.RegistryKey(`${InstallPathRegistryKey}`);
-    const ExePath: string | undefined = await registry.getStringValue(key, "");
-
-    if (!ExePath) {
-      throw new Error(`${hostApp} registry empty`);
-    }
-    return ExePath;
+    return outlookExePath;
   } catch (err) {
-    const errorMessage: string = `Unable to find "${hostApp}" install location: \n${err}`;    
+    const errorMessage: string = `Unable to find Outlook install location: \n${err}`;
     throw new Error(errorMessage);
   }
 }
@@ -381,16 +370,14 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
 
   // for Outlook, Word, Excel, PowerPoint open {Host}.exe; for other Office apps, open the document
   let path: string;
-  if (manifest.manifestType === ManifestType.JSON) {
-    if (app == OfficeApp.Outlook) {
-      const version: string | undefined = await getOutlookVersion();
-      if (version && !hasOfficeVersion("16.0.13709", version)) {
-        throw new ExpectedError(
-          `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
-        );
-      }
+  if (manifest.manifestType === ManifestType.JSON && app == OfficeApp.Outlook) {
+    const version: string | undefined = await getOutlookVersion();
+    if (version && !hasOfficeVersion("16.0.13709", version)) {
+      throw new ExpectedError(
+        `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
+      );
     }
-    path = await getOfficeExePath(app);
+    path = await getOutlookExePath();
   } else {
     path = await generateSideloadFile(app, manifest, document);
   }
