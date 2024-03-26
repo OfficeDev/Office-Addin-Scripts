@@ -85,7 +85,7 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     .readAsText(extEntry)
     .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
     .replace(/1.0.0.0/g, manifest.version);
-    
+
     templateZip.getEntries().forEach(function (entry) {
       var data: Buffer = entry.getData();
       if (entry == extEntry && manifest.manifestType == ManifestType.XML) {
