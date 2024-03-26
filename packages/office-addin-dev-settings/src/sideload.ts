@@ -80,11 +80,11 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
     if (!extEntry) {
       throw new ExpectedError("webextension was not found.");
     }
-    
+
     const webExtensionXml = templateZip
-    .readAsText(extEntry)
-    .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
-    .replace(/1.0.0.0/g, manifest.version);
+      .readAsText(extEntry)
+      .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
+      .replace(/1.0.0.0/g, manifest.version);
 
     templateZip.getEntries().forEach(function (entry) {
       var data: Buffer = entry.getData();
@@ -92,8 +92,8 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
         data = Buffer.from(webExtensionXml);
       }
       outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
-      
-      const webExtensionFolderPath = webExtensionPath.replace(/(\/[^\/]*)$/, '');
+
+      const webExtensionFolderPath = webExtensionPath.substring(0, webExtensionPath.lastIndexOf("/"))
       // If manifestType is JSON, remove the web extension folder
       if (entry.entryName.startsWith(webExtensionFolderPath) && manifest.manifestType == ManifestType.JSON) {
         outZip.deleteFile(entry.entryName);
@@ -368,7 +368,7 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
     throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
   }
 
-  // for Outlook, Word, Excel, PowerPoint open {Host}.exe; for other Office apps, open the document
+  // for Outlook, open Outlook.exe; for other Office apps, open the document
   let path: string;
   if (manifest.manifestType === ManifestType.JSON && app == OfficeApp.Outlook) {
     const version: string | undefined = await getOutlookVersion();
@@ -377,12 +377,10 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
         `The current version of Outlook does not support sideload. Please use version 16.0.13709 or greater.`
       );
     }
-    path = await getOutlookExePath();
+    await launchApp(app, await getOutlookExePath());
   } else {
-    path = await generateSideloadFile(app, manifest, document);
+    await launchApp(app, await generateSideloadFile(app, manifest, document));
   }
-
-  await launchApp(app, path);
 }
 
 async function launchWebApp(app: OfficeApp, manifestPath: string, manifest: ManifestInfo, document: string) {
