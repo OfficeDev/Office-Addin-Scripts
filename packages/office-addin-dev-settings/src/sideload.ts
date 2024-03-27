@@ -86,17 +86,17 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
       .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
       .replace(/1.0.0.0/g, manifest.version);
 
+    const webExtensionFolderPath = webExtensionPath.substring(0, webExtensionPath.lastIndexOf("/"))
     templateZip.getEntries().forEach(function (entry) {
       var data: Buffer = entry.getData();
       if (entry == extEntry && manifest.manifestType == ManifestType.XML) {
         data = Buffer.from(webExtensionXml);
       }
-      outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
-
-      const webExtensionFolderPath = webExtensionPath.substring(0, webExtensionPath.lastIndexOf("/"))
       // If manifestType is JSON, remove the web extension folder
       if (entry.entryName.startsWith(webExtensionFolderPath) && manifest.manifestType == ManifestType.JSON) {
         outZip.deleteFile(entry.entryName);
+      } else {
+        outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
       }
     });
 
