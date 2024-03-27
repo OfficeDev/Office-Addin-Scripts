@@ -369,7 +369,6 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
   }
 
   // for Outlook, open Outlook.exe; for other Office apps, open the document
-  let path: string;
   if (manifest.manifestType === ManifestType.JSON && app == OfficeApp.Outlook) {
     const version: string | undefined = await getOutlookVersion();
     if (version && !hasOfficeVersion("16.0.13709", version)) {
