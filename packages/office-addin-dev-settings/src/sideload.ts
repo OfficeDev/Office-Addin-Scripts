@@ -93,9 +93,7 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
         data = Buffer.from(webExtensionXml);
       }
       // If manifestType is JSON, remove the web extension folder
-      if (entry.entryName.startsWith(webExtensionFolderPath) && manifest.manifestType == ManifestType.JSON) {
-        outZip.deleteFile(entry.entryName);
-      } else {
+      if (!entry.entryName.startsWith(webExtensionFolderPath) || manifest.manifestType !== ManifestType.JSON) {
         outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
       }
     });
