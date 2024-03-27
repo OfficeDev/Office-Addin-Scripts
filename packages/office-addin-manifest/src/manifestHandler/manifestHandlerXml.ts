@@ -6,7 +6,7 @@ import * as util from "util";
 import { v4 as uuidv4 } from "uuid";
 import * as xml2js from "xml2js";
 import * as xmlMethods from "../xml";
-import { DefaultSettings, ManifestInfo } from "../manifestInfo";
+import { DefaultSettings, ManifestInfo, ManifestType } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 const writeFileAsync = util.promisify(fs.writeFile);
 export type Xml = xmlMethods.Xml;
@@ -45,6 +45,7 @@ export class ManifestHandlerXml extends ManifestHandler {
       manifest.providerName = xmlMethods.getXmlElementValue(officeApp, "ProviderName");
       manifest.supportUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "SupportUrl");
       manifest.version = xmlMethods.getXmlElementValue(officeApp, "Version");
+      manifest.manifestType = ManifestType.XML;
 
       if (defaultSettingsXml) {
         const defaultSettings: DefaultSettings = new DefaultSettings();

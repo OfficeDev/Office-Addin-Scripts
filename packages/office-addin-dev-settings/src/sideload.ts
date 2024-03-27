@@ -11,6 +11,7 @@ import {
   ManifestInfo,
   OfficeApp,
   OfficeAddinManifest,
+  ManifestType,
 } from "office-addin-manifest";
 import open = require("open");
 import semver = require("semver");
@@ -85,12 +86,16 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
       .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
       .replace(/1.0.0.0/g, manifest.version);
 
+    const webExtensionFolderPath = webExtensionPath.substring(0, webExtensionPath.lastIndexOf("/"))
     templateZip.getEntries().forEach(function (entry) {
       var data: Buffer = entry.getData();
-      if (entry == extEntry) {
+      if (entry == extEntry && manifest.manifestType == ManifestType.XML) {
         data = Buffer.from(webExtensionXml);
       }
-      outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
+      // If manifestType is JSON, remove the web extension folder
+      if (!entry.entryName.startsWith(webExtensionFolderPath) || manifest.manifestType !== ManifestType.JSON) {
+        outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
+      }
     });
 
     // Write the file
