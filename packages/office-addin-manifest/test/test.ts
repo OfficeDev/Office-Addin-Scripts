@@ -495,7 +495,7 @@ describe("Unit Tests", function() {
         assert.strictEqual(info.hosts!.length, 1);
         assert.strictEqual(info.hosts![0], "mail");
         assert.strictEqual(info.iconUrl, "../assets/icon-128.png", "iconUrl");
-        assert.strictEqual(info.officeAppType, "AddinCommands");
+        assert.strictEqual(info.officeAppType, "TaskPaneApp");
         assert.strictEqual(info.permissions, "Mailbox.ReadWrite");
         assert.strictEqual(info.providerName, "Contoso");
         assert.strictEqual(info.supportUrl, "https://www.contoso.com");
