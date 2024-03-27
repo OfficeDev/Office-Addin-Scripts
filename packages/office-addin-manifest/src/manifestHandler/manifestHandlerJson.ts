@@ -51,7 +51,7 @@ export class ManifestHandlerJson extends ManifestHandler {
     manifestInfo.highResolutionIconUrl = appManifest.icons.color;
     manifestInfo.hosts = extensionElement?.requirements?.scopes;
     manifestInfo.iconUrl = appManifest.icons.color;
-    manifestInfo.officeAppType = "TaskPaneApp"; 
+    manifestInfo.officeAppType = "TaskPaneApp"; // Should check "ContentRuntimes" in JSON the tell if the Office type is "ContentApp". Hard code here because web extension will be removed after all.
     manifestInfo.permissions = appManifest.authorization?.permissions?.resourceSpecific?.[0]?.name;
     manifestInfo.providerName = appManifest.developer.name;
     manifestInfo.supportUrl = appManifest.developer.websiteUrl;
