@@ -131,8 +131,13 @@ export async function ensureLoopbackIsEnabled(
 
   if (!isEnabled) {
     if (!askForConfirmation || (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))) {
-      await addLoopbackExemptionForAppcontainer(name);
-      isEnabled = true;
+      try {
+        await addLoopbackExemptionForAppcontainer(name);
+        isEnabled = true;
+      } catch (error) {
+        console.log("\nFailed to add loopback exemption.\nTry to sideload the Office Add-in without loopback exemption.\n")
+        isEnabled = false;
+      }
     }
   }
 
