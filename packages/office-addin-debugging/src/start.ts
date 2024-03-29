@@ -306,7 +306,18 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     // enable loopback for Edge
     if (isWindowsPlatform && parseInt(os.release(), 10) === 10) {
       const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
-      await devSettings.ensureLoopbackIsEnabled(name);
+      try {
+        await devSettings.ensureLoopbackIsEnabled(name);
+      } catch (err: any) {
+        // if add loopback exemption failed, report the error then continue
+        console.error(err)
+        console.warn("Failed to add loopback exemption.\nTry to sideload the Office Add-in without loopback exemption.\nThe Office Add-in may not load correctly.\n")
+        usageDataObject.reportException("startDebugging()", err, {
+          app: app,
+          document: document,
+          appType: appType,
+        });
+      }
     }
 
     // enable debugging
