@@ -311,7 +311,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
       } catch (err: any) {
         // if add loopback exemption failed, report the error then continue
         console.error(err)
-        console.warn("Failed to add loopback exemption.\nTry to sideload the Office Add-in without loopback exemption.\nThe Office Add-in may not load correctly.\n")
+        console.warn("Failed to add loopback exemption.\nWill try to sideload the Office Add-in without the loopback exemption, but it might not load correctly from localhost.\n")
         usageDataObject.reportException("startDebugging()", err, {
           app: app,
           document: document,
