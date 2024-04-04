@@ -3,11 +3,11 @@ import {
   Reference,
   Scope,
   Variable,
-} from "@typescript-eslint/utils/dist/ts-eslint-scope";
+} from "@typescript-eslint/scope-manager";
 import { isGetFunction } from "./getFunction";
 import { isContextLoadArgumentReference, isLoadReference } from "./load";
 
-function isContextSyncIdentifier(node: TSESTree.Identifier): boolean {
+function isContextSyncIdentifier(node: TSESTree.Identifier | TSESTree.JSXIdentifier): boolean {
   return (
     node.name === "context" &&
     node.parent?.type === AST_NODE_TYPES.MemberExpression &&
@@ -105,7 +105,7 @@ function isMethod(node: TSESTree.MemberExpression): boolean {
   );
 }
 
-function isMethodReference(node: TSESTree.Identifier) {
+function isMethodReference(node: TSESTree.Identifier | TSESTree.JSXIdentifier) {
   return (
     node.parent &&
     node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&

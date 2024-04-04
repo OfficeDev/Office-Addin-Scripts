@@ -1,11 +1,11 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
+import { RuleTester, TestCaseError } from '@typescript-eslint/rule-tester'
 import rule from '../../src/rules/test-for-null-using-isNullObject';
 
-const ruleTester = new ESLintUtils.RuleTester({
+const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',
 });
 
-const errors = [{ messageId: "useIsNullObject", data: { name: "dataSheet" } }];
+const errors: TestCaseError<"useIsNullObject">[] = [{ messageId: "useIsNullObject", data: { name: "dataSheet" } }];
 
 ruleTester.run('test-for-null-using-isNullObject', rule, {
   valid: [ 
