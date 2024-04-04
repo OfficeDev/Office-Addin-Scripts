@@ -12,6 +12,13 @@
           "args": ["check"]
         },
         {
+            "name": "Command Line: prettier",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/lib/cli.js",
+            "args": ["prettier"]
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",

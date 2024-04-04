@@ -11,7 +11,7 @@ const eslintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
 const eslintDir = path.parse(eslintPath).dir;
 const eslintFilePath = path.resolve(eslintDir, "../bin/eslint.js");
-const prettierFilePath = path.resolve(prettierPath, "../bin-prettier.js");
+const prettierFilePath = path.resolve(prettierPath, "../bin/prettier.cjs");
 const eslintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
 const eslintTestConfigPath = path.resolve(__dirname, "../config/.eslintrc.test.json");
 
