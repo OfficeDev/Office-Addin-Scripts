@@ -1,0 +1,1 @@
+Custom function does not support cell value type: Excel.ReferenceCellValue (16,37)
