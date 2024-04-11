@@ -1078,7 +1078,7 @@ function getParamType(node: ts.TypeNode, extra: IFunctionExtras, enumList: strin
     node = arrayType.node;
   }
 
-  // We currently accepts the following types of reference node: enum will be converted to "any",
+  // We currently accept the following types of reference node: enum will be converted to "any",
   // Excel.CellValue will be converted accordingly. Anything else is invalid. (Array reference node has already been covered above.)
   if (ts.isTypeReferenceNode(node)) {
     const typeReferenceNode = node as ts.TypeReferenceNode;
