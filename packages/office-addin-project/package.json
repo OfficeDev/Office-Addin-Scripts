@@ -23,7 +23,7 @@
     "fs-extra": "^7.0.1",
     "inquirer": "^7.3.3",
     "office-addin-manifest": "^1.12.11",
-    "office-addin-manifest-converter": "^0.2.4",
+    "office-addin-manifest-converter": "^0.3.0",
     "office-addin-usage-data": "^1.6.9",
     "path": "^0.12.7"
   },
