@@ -1,6 +1,6 @@
 {
   "name": "office-addin-lint",
-  "version": "2.2.9",
+  "version": "2.3.0",
   "description": "Provide eslint and prettier integration",
   "main": "./lib/main.js",
   "scripts": {
