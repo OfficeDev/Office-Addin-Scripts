@@ -640,12 +640,9 @@ function getResults(
     type: resultType,
   };
 
-  // We only support cell value types as input and not return type for now.
-  // This can be removed once we support cell values as return type.
+  // We convert cell value types to "any".
   if (Object.values(CELLVALUETYPE_MAPPINGS).includes(resultType)) {
-    const errorString = `Invalid result type at`;
-    extra.errors.push(logError(errorString, lastParameterPosition));
-    return defaultResultItem;
+    resultType = "any"
   }
 
   // Only return dimensionality = matrix.  Default assumed scalar

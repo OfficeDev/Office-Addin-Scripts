@@ -1,0 +1,19 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Cell Value type in return type will convert to \"any\" (thus omitted).",
+            "id": "CELLVALUEMATRIXASRETURNTYPE",
+            "name": "CELLVALUEMATRIXASRETURNTYPE",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "any"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix"
+            }
+        }
+    ]
+}

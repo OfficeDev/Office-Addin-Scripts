@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 
 /**
- * Cell Value types are not supported as return types
+ * Cell Value type in return type will convert to "any" (thus omitted).
  * @customfunction
  */
-function testUnsupportedCellValue(x): Excel.BooleanCellValue {
+function cellValueAsReturnType(x): Excel.BooleanCellValue {
     // empty
 }

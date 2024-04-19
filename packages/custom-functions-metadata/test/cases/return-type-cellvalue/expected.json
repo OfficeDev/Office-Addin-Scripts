@@ -1,0 +1,17 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Cell Value type in return type will convert to \"any\" (thus omitted).",
+            "id": "CELLVALUEASRETURNTYPE",
+            "name": "CELLVALUEASRETURNTYPE",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "any"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}
