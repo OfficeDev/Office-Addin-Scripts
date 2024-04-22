@@ -1,7 +1,7 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
+import { RuleTester } from '@typescript-eslint/rule-tester'
 import rule from '../../src/rules/call-sync-after-load';
 
-const ruleTester = new ESLintUtils.RuleTester({
+const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',
 });
 

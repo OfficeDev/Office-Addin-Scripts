@@ -1,5 +1,5 @@
-import { TSESTree } from "@typescript-eslint/utils";
-import { Reference } from "@typescript-eslint/utils/dist/ts-eslint-scope";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
+import { Reference } from "@typescript-eslint/scope-manager";
 import { isLoadCall, parsePropertiesArgument } from "../utils/load";
 import {
   findPropertiesRead,
@@ -8,10 +8,13 @@ import {
   findCallExpression,
 } from "../utils/utils";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
+)({
   name: "call-sync-after-load",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"suggestion",
+    type: "suggestion",
     messages: {
       callSyncAfterLoad:
         "Call context.sync() after calling load on '{{name}}' for the property '{{loadValue}}' and before reading the property.",
@@ -19,11 +22,6 @@ export = {
     docs: {
       description:
         "Always call context.sync() between loading one or more properties on objects and reading any of those properties.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Best Practices",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
     },
     schema: [],
   },
@@ -68,7 +66,7 @@ export = {
           needSync.clear();
         } else if (operation === "Read" && variable) {
           const propertyName: string = findPropertiesRead(
-            reference.identifier.parent
+            reference.identifier.parent,
           );
 
           if (
@@ -87,7 +85,7 @@ export = {
     }
 
     function getPropertiesArgument(
-      identifier: TSESTree.Identifier
+      identifier: TSESTree.Identifier | TSESTree.JSXIdentifier,
     ): TSESTree.CallExpressionArgument | undefined {
       let propertiesArgument;
       if (
@@ -130,4 +128,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});

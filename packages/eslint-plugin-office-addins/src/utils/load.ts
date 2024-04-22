@@ -15,7 +15,9 @@ export function isLoadCall(node: TSESTree.CallExpression): boolean {
   );
 }
 
-export function isLoadReference(node: TSESTree.Identifier) {
+export function isLoadReference(
+  node: TSESTree.Identifier | TSESTree.JSXIdentifier,
+) {
   return (
     node.parent &&
     node.parent.type === TSESTree.AST_NODE_TYPES.MemberExpression &&
@@ -23,7 +25,9 @@ export function isLoadReference(node: TSESTree.Identifier) {
   );
 }
 
-export function isContextLoadArgumentReference(node: TSESTree.Identifier) {
+export function isContextLoadArgumentReference(
+  node: TSESTree.Identifier | TSESTree.JSXIdentifier,
+) {
   return (
     node.parent?.type === AST_NODE_TYPES.CallExpression &&
     node.parent.callee.type === AST_NODE_TYPES.MemberExpression &&
@@ -35,7 +39,7 @@ export function isContextLoadArgumentReference(node: TSESTree.Identifier) {
 }
 
 function parseObjectExpressionProperty(
-  objectExpression: TSESTree.ObjectExpression
+  objectExpression: TSESTree.ObjectExpression,
 ): string[] {
   let composedProperties: string[] = [];
 
@@ -50,7 +54,7 @@ function parseObjectExpressionProperty(
         const composedProperty = parseObjectExpressionProperty(property.value);
         if (composedProperty.length !== 0) {
           composedProperties = composedProperties.concat(
-            propertyName + "/" + composedProperty
+            propertyName + "/" + composedProperty,
           );
         }
       } else if (
@@ -92,14 +96,14 @@ export function parseLoadArguments(node: TSESTree.MemberExpression): string[] {
 }
 
 export function parsePropertiesArgument(
-  argument: TSESTree.CallExpressionArgument
+  argument: TSESTree.CallExpressionArgument,
 ): string[] {
   let properties: string[] = [];
   if (argument.type === AST_NODE_TYPES.ArrayExpression) {
     argument.elements.forEach((element) => {
-      if (element.type === TSESTree.AST_NODE_TYPES.Literal) {
+      if (element != null && element.type === TSESTree.AST_NODE_TYPES.Literal) {
         properties = properties.concat(
-          parseLoadStringArgument(element.value as string)
+          parseLoadStringArgument(element.value as string),
         );
       }
     });

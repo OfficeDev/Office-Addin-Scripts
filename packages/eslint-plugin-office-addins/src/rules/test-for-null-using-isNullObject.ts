@@ -1,33 +1,33 @@
-import { TSESTree, AST_NODE_TYPES } from "@typescript-eslint/utils";
 import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/utils/dist/ts-eslint-scope";
-import { RuleFix, RuleFixer } from "@typescript-eslint/utils/dist/ts-eslint";
+  ESLintUtils,
+  TSESTree,
+  AST_NODE_TYPES,
+} from "@typescript-eslint/utils";
+import { Reference, Scope, Variable } from "@typescript-eslint/scope-manager";
+import { RuleFix, RuleFixer } from "@typescript-eslint/utils/ts-eslint";
 import { isGetOrNullObjectFunction } from "../utils/getFunction";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#ornullobject-methods-and-properties",
+)({
   name: "test-for-null-using-isNullObject",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"problem",
+    type: "problem",
     messages: {
       useIsNullObject: "Test the isNullObject property of '{{name}}'.",
     },
     docs: {
       description:
         "Do not test the truthiness of an object returned by an OrNullObject method or property. Test it's isNullObject property.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Possible Errors",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#ornullobject-methods-and-properties",
     },
     schema: [],
     fixable: <"code" | "whitespace">"code",
   },
   create: function (context: any) {
-    function isConditionalTestExpression(node: TSESTree.Identifier): boolean {
+    function isConditionalTestExpression(
+      node: TSESTree.Identifier | TSESTree.JSXIdentifier,
+    ): boolean {
       return (
         node.parent != undefined &&
         (node.parent.type === AST_NODE_TYPES.IfStatement ||
@@ -39,7 +39,9 @@ export = {
       );
     }
 
-    function isInUnaryNullTest(node: TSESTree.Identifier): boolean {
+    function isInUnaryNullTest(
+      node: TSESTree.Identifier | TSESTree.JSXIdentifier,
+    ): boolean {
       return (
         node.parent != undefined &&
         node.parent.type === AST_NODE_TYPES.UnaryExpression &&
@@ -48,7 +50,9 @@ export = {
       );
     }
 
-    function isInBinaryNullTest(node: TSESTree.Identifier): boolean {
+    function isInBinaryNullTest(
+      node: TSESTree.Identifier | TSESTree.JSXIdentifier,
+    ): boolean {
       return (
         node.parent != undefined &&
         node.parent.type === AST_NODE_TYPES.BinaryExpression &&
@@ -61,7 +65,9 @@ export = {
       );
     }
 
-    function isInNullTest(node: TSESTree.Identifier): boolean {
+    function isInNullTest(
+      node: TSESTree.Identifier | TSESTree.JSXIdentifier,
+    ): boolean {
       return (
         isConditionalTestExpression(node) ||
         node.parent?.type === AST_NODE_TYPES.LogicalExpression ||
@@ -94,10 +100,11 @@ export = {
         const variable: Variable = variables[i];
         const references: Reference[] = variable.references;
         let nullObjectCall: boolean = false;
-        const nullTests: TSESTree.Identifier[] = [];
+        const nullTests: (TSESTree.Identifier | TSESTree.JSXIdentifier)[] = [];
 
         for (let ref = 0; ref < references.length; ref++) {
-          const identifier: TSESTree.Identifier = references[ref].identifier;
+          const identifier: TSESTree.Identifier | TSESTree.JSXIdentifier =
+            references[ref].identifier;
 
           if (isNullObjectNode(identifier.parent)) {
             nullObjectCall = true;
@@ -140,4 +147,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});
