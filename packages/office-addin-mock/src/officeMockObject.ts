@@ -33,7 +33,7 @@ export class OfficeMockObject {
     }
     let properties: string[] = [];
 
-    if (propertyArgument === undefined) { 
+    if (propertyArgument === undefined) {
       // an empty load call mean load all properties
       properties = ["*"];
     } else if (typeof propertyArgument === "string") {
@@ -47,6 +47,8 @@ export class OfficeMockObject {
     properties.forEach((property: string) => {
       this.loadMultipleProperties(property);
     });
+
+    return this;
   }
 
   /**

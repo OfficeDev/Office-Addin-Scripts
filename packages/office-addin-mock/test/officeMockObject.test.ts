@@ -95,6 +95,13 @@ describe("Test OfficeMockObject class", function() {
 
       assert.strictEqual(officeMock.notAProperty, undefined);
     });
+    it("Load call with assignment", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+
+      const range = officeMock.range.load("color");
+      await officeMock.sync();
+      assert.strictEqual(range.color, "blue");
+    });
     it("Missing load", async function() {
       const officeMock = new OfficeMockObject(testObject);
       assert.strictEqual(officeMock.range.color, "Error, property was not loaded");
