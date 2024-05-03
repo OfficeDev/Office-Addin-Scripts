@@ -1,38 +1,58 @@
 {
-    "$schema": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-app-schema/preview/DevPreview/MicrosoftTeams.schema.json",
-    "id": "df2fa15f-332a-47aa-87c2-e30c20686eee",
-    "manifestVersion": "m365DevPreview",
-    "version": "1.0.0",
-    "name": {
-      "short": "My Office Add-in",
-      "full": "My Office Add-in"
-    },
-    "description": {
-      "short": "A template to get started.",
-      "full": "A template to get started."
-    },
-    "icons": {
-      "outline": "",
-      "color": ""
-    },
-    "accentColor": "#FFFFFF",
-    "developer": {
-      "name": "Contoso",
-      "websiteUrl": "https://www.contoso.com",
-      "privacyUrl": "https://www.contoso.com/privacy",
-      "termsOfUseUrl": "https://www.contoso.com/terms"
-    },
-    "localizationInfo": {
-      "defaultLanguageTag": "en-us"
-    },
-    "extension": {
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "name": {
+    "short": "Contoso Task Pane Add-in",
+    "full": "Contoso Task Pane Add-in"
+  },
+  "description": {
+    "short": "A template to get started.",
+    "full": "This is the template to get started."
+  },
+  "developer": {
+    "name": "Contoso",
+    "websiteUrl": "https://www.contoso.com",
+    "privacyUrl": "https://www.contoso.com/privacy",
+    "termsOfUseUrl": "https://www.contoso.com/servicesagreement"
+  },
+  "icons": {
+    "outline": "assets/outline.png",
+    "color": "assets/color.png"
+  },
+  "accentColor": "#230201",
+  "localizationInfo": {
+    "defaultLanguageTag": "en-us",
+    "additionalLanguages": []
+  },
+  "authorization": {
+    "permissions": {
+      "resourceSpecific": [
+        {
+          "name": "MailboxItem.Read.User",
+          "type": "Delegated"
+        }
+      ]
+    }
+  },
+  "validDomains": ["contoso.com"],
+  "extensions": [
+    {
       "requirements": {
-        "scopes": ["Mailbox"],
-        "capabilities": [{ "name": "Mailbox", "minVersion": "1.3" }]
+        "scopes": ["mail"],
+        "capabilities": [
+          { "name": "Mailbox", "minVersion": "1.3" }
+        ]
       },
       "runtimes": [
         {
-          "id": "ShowTaskpane",
+          "requirements": {
+            "capabilities": [
+              { "name": "Mailbox", "minVersion": "1.3" }
+            ]
+          },
+          "id": "TaskPaneRuntime",
           "type": "general",
           "code": {
             "page": "https://localhost:3000/taskpane.html"
@@ -40,15 +60,15 @@
           "lifetime": "short",
           "actions": [
             {
-              "id": "ShowTaskpane.show",
-              "type": "contextual-launch",
-              "view": "",
-              "pinnable": false
+              "id": "TaskPaneRuntimeShow",
+              "type":"openPage",
+              "pinnable": false,
+              "view": "dashboard"
             }
           ]
         },
         {
-          "id": "ExecuteFunction",
+          "id": "CommandsRuntime",
           "type": "general",
           "code": {
             "page": "https://localhost:3000/commands.html",
@@ -57,58 +77,60 @@
           "lifetime": "short",
           "actions": [
             {
-              "id": "ExecuteFunction.action",
-              "type": "execution",
-              "name": "action"
+              "id": "action",
+              "type": "executeFunction",
+              "displayName": "action"
             }
           ]
         }
       ],
       "ribbons": [
         {
-          "contexts": [ "MessageReadCommandSurface" ],
+          "contexts": [
+            "mailRead"
+          ],
           "tabs": [
             {
-              "id": "TabDefault",
+              "builtInTabId": "TabDefault",
               "groups": [
                 {
                   "id": "msgReadGroup",
                   "label": "Contoso Add-in",
                   "icons": [
-                    { "size": 16, "file": "" },
-                    { "size": 32, "file": "" },
-                    { "size": 80, "file": "" }
+                    { "size": 16, "url": "https://localhost:3000/assets/icon-16.png" },
+                    { "size": 32, "url": "https://localhost:3000/assets/icon-32.png" },
+                    { "size": 80, "url": "https://localhost:3000/assets/icon-80.png" }
                   ],
                   "controls": [
                     {
                       "id": "msgReadOpenPaneButton",
-                      "type": "Button",
+                      "type": "button",
                       "label": "Show Taskpane",
                       "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
+                        { "size": 16, "url": "https://localhost:3000/assets/icon-16.png" },
+                        { "size": 32, "url": "https://localhost:3000/assets/icon-32.png" },
+                        { "size": 80, "url": "https://localhost:3000/assets/icon-80.png" }
                       ],
                       "supertip": {
                         "title": "Show Taskpane",
                         "description": "Opens a pane displaying all available properties."
                       },
-                      "action": "ShowTaskpane.show"
+                      "actionId": "TaskPaneRuntimeShow"
                     },
                     {
                       "id": "ActionButton",
-                      "type": "Button",
+                      "type": "button",
                       "label": "Perform an action",
                       "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
+                        { "size": 16, "url": "https://localhost:3000/assets/icon-16.png" },
+                        { "size": 32, "url": "https://localhost:3000/assets/icon-32.png" },
+                        { "size": 80, "url": "https://localhost:3000/assets/icon-80.png" }
                       ],
                       "supertip": {
                         "title": "Perform an action",
                         "description": "Perform an action when clicked."
                       },
-                      "action": "ExecuteFunction.action"
+                      "actionId": "action"
                     }
                   ]
                 }
@@ -118,5 +140,5 @@
         
       ]
     }
-  }
-  
+  ]
+}

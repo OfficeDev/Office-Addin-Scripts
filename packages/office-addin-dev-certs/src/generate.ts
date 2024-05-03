@@ -28,12 +28,12 @@ export async function generateCertificates(
     throw new Error(`Unable to create the directory.\n${err}`);
   }
 
-  const cACertificateInfo: mkcert.CACertificateInfo = {
+  const cACertificateInfo: mkcert.CertificateAuthorityOptions = {
     countryCode: defaults.countryCode,
     locality: defaults.locality,
     organization: defaults.certificateName,
     state: defaults.state,
-    validityDays: daysUntilCertificateExpires,
+    validity: daysUntilCertificateExpires,
   };
   let caCertificate: mkcert.Certificate;
   try {
@@ -42,11 +42,10 @@ export async function generateCertificates(
     throw new Error(`Unable to generate the CA certificate.\n${err}`);
   }
 
-  const localhostCertificateInfo: mkcert.CertificateInfo = {
-    caCert: caCertificate.cert,
-    caKey: caCertificate.key,
+  const localhostCertificateInfo: mkcert.CertificateOptions = {
+    ca: caCertificate,
     domains,
-    validityDays: daysUntilCertificateExpires,
+    validity: daysUntilCertificateExpires,
   };
   let localhostCertificate: mkcert.Certificate;
   try {
