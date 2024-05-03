@@ -4,7 +4,7 @@
 import * as assert from "assert";
 import * as childProcess from "child_process";
 import * as fsExtra from "fs-extra";
-import * as mocha from "mocha";
+import { describe, beforeEach, afterEach, it } from "mocha";
 import * as path from "path";
 import * as defaults from "../src/defaults";
 import * as generate from "../src/generate";
@@ -78,7 +78,7 @@ describe("office-addin-dev-certs", function() {
             const error = "test error";
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").resolves(cert);
-            sandbox.stub(fs, "writeSync").throws(error);
+            sandbox.stub(fs, "writeFileSync").throws(error);
 
             try {
                 await generate.generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
@@ -93,7 +93,7 @@ describe("office-addin-dev-certs", function() {
             const writeSync = sandbox.fake();
             sandbox.stub(mkcert, "createCA").resolves(cert);
             sandbox.stub(mkcert, "createCert").resolves(cert);
-            sandbox.stub(fs, "writeSync").callsFake(writeSync);
+            sandbox.stub(fs, "writeFileSync").callsFake(writeSync);
             sandbox.stub(fs, "existsSync").returns(false);
             await generate.generateCertificates(testCaCertificatePath, testCertificatePath, testKeyPath, 30);
             assert.strictEqual(writeSync.callCount, 3);
