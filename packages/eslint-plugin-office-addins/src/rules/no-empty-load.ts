@@ -1,27 +1,21 @@
-import { TSESTree } from "@typescript-eslint/utils";
-import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/utils/dist/ts-eslint-scope";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
+import { Reference, Scope, Variable } from "@typescript-eslint/scope-manager";
 import { isGetFunction } from "../utils/getFunction";
 import { parseLoadArguments, isLoadFunction } from "../utils/load";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#calling-load-without-parameters-not-recommended",
+)({
   name: "no-empty-load",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"problem",
+    type: "problem",
     messages: {
       emptyLoad: "Calling load without any argument slows down your add-in.",
     },
     docs: {
       description:
         "Calling load without any argument causes unneeded data to load and slows down your add-in.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Best Practices",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#calling-load-without-parameters-not-recommended",
     },
     schema: [],
   },
@@ -83,4 +77,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});

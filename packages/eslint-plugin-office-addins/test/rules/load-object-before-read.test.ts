@@ -1,12 +1,12 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import rule from '../../src/rules/load-object-before-read';
+import { RuleTester } from "@typescript-eslint/rule-tester";
+import rule from "../../src/rules/load-object-before-read";
 
-const ruleTester = new ESLintUtils.RuleTester({
-  parser: '@typescript-eslint/parser',
+const ruleTester = new RuleTester({
+  parser: "@typescript-eslint/parser",
 });
 
-ruleTester.run('load-object-before-read', rule, {
-  valid: [ 
+ruleTester.run("load-object-before-read", rule, {
+  valid: [
     {
       code: `
         var sheetName = 'Sheet1';
@@ -16,33 +16,33 @@ ruleTester.run('load-object-before-read', rule, {
         context.sync()
           .then(function () {
             console.log (myRange.address);   // ok
-          });`
+          });`,
     },
     {
       code: `
         var property = worksheet.getItem("sheet");
         property.load('G2');
-        var variableName = property.G2;`
+        var variableName = property.G2;`,
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load('values');
-        if(selectedRange.values === [2]){}`
+        if(selectedRange.values === [2]){}`,
     },
     {
       code: `
         var selectedRange;
         var selectedRange = context.workbook.getSelectedRange();
         selectedRange.load('values');
-        console.log(selectedRange.values);`
+        console.log(selectedRange.values);`,
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
         myRange.load('values');
-        console.log(myRange.values);`
+        console.log(myRange.values);`,
     },
     {
       code: `
@@ -50,68 +50,68 @@ ruleTester.run('load-object-before-read', rule, {
         myRange.load('values');
         myRange.load('address');
         console.log(myRange.address);
-        console.log(myRange.values);`
+        console.log(myRange.values);`,
     },
     {
       code: `
         var myRange = context.thisIsNotAGetFunction();
         myRange.load('values')
         var test = myRange.values;
-        var myRange = context.workbook.worksheets.getSelectedRange();`
+        var myRange = context.workbook.worksheets.getSelectedRange();`,
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         myRange = context.notAGetFunction;
         myRange.load('values');
-        var test = myRange.values;`
+        var test = myRange.values;`,
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         myRange = context.notAGetFunction;
-        var test = myRange.values;`
+        var test = myRange.values;`,
     },
     {
       code: `
         var range = worksheet.getRange("A1");
         range.format.fill.color = "red";
         range.numberFormat = "0.00%";
-        range.values = [[1]];`
+        range.values = [[1]];`,
     },
     {
       code: `
         var range = worksheet.getRange("A1");
         range.load("format/fill/size");
-        console.log(range.format.fill.size);`
+        console.log(range.format.fill.size);`,
     },
     {
       code: `
         var table = worksheet.getTables();
         return context.sync().then(function () {
           table.delete();
-        });`
+        });`,
     },
     {
       code: `
         var range = worksheet.getSelectedRange();
-        range.getCell(0,0);`
+        range.getCell(0,0);`,
     },
     {
-			code: `
+      code: `
 			  var range = worksheet.getSelectedRange();
 			  range.load(["font/fill/color", "address"]);
 			  await context.sync();
 			  console.log(range.font.fill.color);
-			  console.log(range.address);`
-		},
+			  console.log(range.address);`,
+    },
     {
       code: `
         var range = worksheet.getSelectedRange();
         range.load("*");
         await context.sync();
         console.log(range.address);
-        console.log(range.font);`
+        console.log(range.font);`,
     },
     {
       code: `
@@ -119,7 +119,7 @@ ruleTester.run('load-object-before-read', rule, {
         range.load();
         await context.sync();
         console.log(range.address);
-        console.log(range.font);`
+        console.log(range.font);`,
     },
     {
       code: `
@@ -127,7 +127,7 @@ ruleTester.run('load-object-before-read', rule, {
         range.load({ format: { fill: { color: true } }, address: true } );
         await context.sync();
         console.log(range.format.fill.color);
-        console.log(range.address);`
+        console.log(range.address);`,
     },
     {
       code: `
@@ -136,25 +136,25 @@ ruleTester.run('load-object-before-read', rule, {
         const spillParent = first.getSpillParentOrNullObject();
         await context.sync();
         const cell = spillParent.isNullObject ? first : spillParent;
-        console.log(cell);`
+        console.log(cell);`,
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         context.load(myRange, 'values');
-        console.log(myRange.values);`
+        console.log(myRange.values);`,
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         context.load(myRange);
-        console.log(myRange.values);`
+        console.log(myRange.values);`,
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         context.load(myRange, ['values', 'address']);
-        console.log(myRange.values);`
+        console.log(myRange.values);`,
     },
   ],
   invalid: [
@@ -169,66 +169,116 @@ ruleTester.run('load-object-before-read', rule, {
           .then(function () {
             console.log (myRange.values);  // not ok as it was not loaded
           });`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" } }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "myRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         if(selectedRange.values === ["sampleText"]){}`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" } }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "selectedRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getItem("sheet").getRange("A1");
         console.log (myRange.adress);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "adress" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "myRange", loadValue: "adress" },
+        },
+      ],
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         console.log(selectedRange.values);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "selectedRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         console.log(selectedRange.values);
         selectedRange.load('values')`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "selectedRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var selectedRange = context.workbook.getSelectedRange();
         var test = selectedRange.values;`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "selectedRange", loadValue: "values" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "selectedRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var myRange;
         myRange = context.workbook.worksheets.getSelectedRange();
         var test = myRange.values;`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "myRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         myRange = context.workbook.worksheets.getItem(sheetName).getRange(rangeAddress);
         var test = myRange.values;`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "myRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var range = worksheet.getRange("A1");
         range.load("range/format/fill/size");
         console.log(range.format.fill.color);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "range", loadValue: "format/fill/color" },
+        },
+      ],
     },
     {
       code: `
         var range = worksheet.getSelectedRange();
         await context.sync();
         console.log(range.font.fill.color);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "font/fill/color" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "range", loadValue: "font/fill/color" },
+        },
+      ],
     },
     {
       code: `
@@ -237,7 +287,12 @@ ruleTester.run('load-object-before-read', rule, {
         await context.sync();
         console.log(range.format.fill.color);
         console.log(range.address);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "address" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "range", loadValue: "address" },
+        },
+      ],
     },
     {
       code: `
@@ -245,21 +300,36 @@ ruleTester.run('load-object-before-read', rule, {
         range.load({ format: { fill: { color: false } } } );
         await context.sync();
         console.log(range.format.fill.color);`,
-      errors: [{ messageId: "loadBeforeRead", data: { name: "range", loadValue: "format/fill/color" }  }]
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "range", loadValue: "format/fill/color" },
+        },
+      ],
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         context.load("myRange", "values");
         console.log(myRange.values);`,
-        errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]  
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "myRange", loadValue: "values" },
+        },
+      ],
     },
     {
       code: `
         var myRange = context.workbook.worksheets.getSelectedRange();
         context.load(myRange, "values", "address");
         console.log(myRange.values);`,
-        errors: [{ messageId: "loadBeforeRead", data: { name: "myRange", loadValue: "values" }  }]  
+      errors: [
+        {
+          messageId: "loadBeforeRead",
+          data: { name: "myRange", loadValue: "values" },
+        },
+      ],
     },
-  ]
+  ],
 });

@@ -1,8 +1,8 @@
 {
-  "$schema": "http://zlatkom2:32080/metaos/schema/metaos.public.schema.json#",
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
   "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "manifestVersion": "1.17",
   "version": "1.0.0",
-  "manifestVersion": "m365DevPreview",
   "name": {
     "short": "Contoso Task Pane Add-in",
     "full": "Contoso Task Pane Add-in"
@@ -18,8 +18,8 @@
     "termsOfUseUrl": "https://www.contoso.com/servicesagreement"
   },
   "icons": {
-    "outline": "../assets/icon-64.png",
-    "color": "../assets/icon-128.png"
+    "outline": "assets/outline.png",
+    "color": "assets/color.png"
   },
   "accentColor": "#230201",
   "localizationInfo": {
@@ -30,7 +30,7 @@
     "permissions": {
       "resourceSpecific": [
         {
-          "name": "Mailbox.ReadWrite",
+          "name": "MailboxItem.Read.User",
           "type": "Delegated"
         }
       ]
@@ -42,45 +42,17 @@
       "requirements": {
         "scopes": ["mail"],
         "capabilities": [
-          { "name": "AddinCommands", "minVersion": "1.1" },
-          { "name": "Mailbox", "minVersion": "1.10" }
+          { "name": "Mailbox", "minVersion": "1.3" }
         ]
       },
-      "getStartedMessages": [
-        {
-          "requirements": {
-            "formFactors": ["desktop"]
-          },
-          "title": "Get Started",
-          "description": "Your sample add-in loaded succesfully. Click the buttons to get started.",
-          "learnMoreUrl": "https://www.contoso.com/learnmore"
-        }
-      ],
       "runtimes": [
         {
           "requirements": {
-            "capabilities": [{ "name": "MailBox", "minVersion": "1.10" }]
+            "capabilities": [
+              { "name": "Mailbox", "minVersion": "1.3" }
+            ]
           },
-          "id": "mail",
-          "type": "general",
-          "code": {
-            "page": "https://localhost:3000/taskpane.html",
-            "script": "https://localhost:3000/taskpane.js"
-          },
-          "lifetime": "short",
-          "actions": [
-            {
-              "id": "mail.onMessageSending",
-              "type": "executeFunction"
-            },
-            {
-              "id": "mail.onNewMessageComposeCreated",
-              "type": "executeFunction"
-            }
-          ]
-        },
-        {
-          "id": "ShowTaskpane",
+          "id": "TaskPaneRuntime",
           "type": "general",
           "code": {
             "page": "https://localhost:3000/taskpane.html"
@@ -88,456 +60,83 @@
           "lifetime": "short",
           "actions": [
             {
-              "id": "ShowTaskpane.show",
-              "type": "openPage",
-              "view": "",
-              "pinnable": false
+              "id": "TaskPaneRuntimeShow",
+              "type":"openPage",
+              "pinnable": false,
+              "view": "dashboard"
             }
           ]
-        }
-      ],
-      "contextMenus": [
+        },
         {
-          "menus": [
+          "id": "CommandsRuntime",
+          "type": "general",
+          "code": {
+            "page": "https://localhost:3000/commands.html",
+            "script": "https://localhost:3000/commands.js"
+          },
+          "lifetime": "short",
+          "actions": [
             {
-              "type": "cell",
-              "controls": [
-                {
-                  "id": "menuForCell",
-                  "type": "menu",
-                  "label": "Menu",
-                  "icons": [
-                    { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                    { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                    { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                  ],
-                  "supertip": {
-                    "title": "Change text case",
-                    "description": "This allow you to change text to lowercase or uppercase."
-                  },
-                  "items": [
-                    {
-                      "id": "menu.uppercase",
-                      "type": "menuItem",
-                      "label": "To uppercase",
-                      "supertip": {
-                        "title": "Change text to uppercase",
-                        "description": "This will change the text to uppercase."
-                      },
-                      "actionId": "mail.toUppercase"
-                    },
-                    {
-                      "id": "menu.lowercase",
-                      "type": "menuItem",
-                      "label": "To lowercase",
-                      "supertip": {
-                        "title": "Change text to lowercase",
-                        "description": "This will change the text to lowercase."
-                      },
-                      "actionId": "mail.toLowercase"
-                    }
-                  ]
-                },
-                {
-                  "id": "showDashboard",
-                  "type": "button",
-                  "label": "Show dashboard",
-                  "icons": [
-                    { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                    { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                    { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                  ],
-                  "supertip": {
-                    "title": "Show dashboard",
-                    "description": "click to open dashboard"
-                  },
-                  "actionId": "mail.showDashboard"
-                }
-              ]
-            },
-            {
-              "type": "text",
-              "controls": [
-                {
-                  "id": "menuForText",
-                  "type": "menu",
-                  "label": "Menu",
-                  "icons": [
-                    { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                    { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                    { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                  ],
-                  "supertip": {
-                    "title": "Change text case",
-                    "description": "This allow you to change text to lowercase or uppercase."
-                  },
-                  "items": [
-                    {
-                      "id": "menu.uppercase",
-                      "type": "menuItem",
-                      "label": "To uppercase",
-                      "supertip": {
-                        "title": "Change text to uppercase",
-                        "description": "This will change the text to uppercase."
-                      },
-                      "actionId": "mail.toUppercase"
-                    },
-                    {
-                      "id": "menu.lowercase",
-                      "type": "menuItem",
-                      "label": "To lowercase",
-                      "supertip": {
-                        "title": "Change text to lowercase",
-                        "description": "This will change the text to lowercase."
-                      },
-                      "actionId": "mail.toLowercase"
-                    }
-                  ]
-                },
-                {
-                  "id": "showDashboard",
-                  "type": "button",
-                  "label": "Show dashboard",
-                  "icons": [
-                    { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                    { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                    { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                  ],
-                  "supertip": {
-                    "title": "Show dashboard",
-                    "description": "click to open dashboard"
-                  },
-                  "actionId": "mail.showDashboard"
-                }
-              ]
+              "id": "action",
+              "type": "executeFunction",
+              "displayName": "action"
             }
           ]
         }
       ],
       "ribbons": [
         {
-          "contexts": ["default"],
+          "contexts": [
+            "mailRead"
+          ],
           "tabs": [
             {
               "builtInTabId": "TabDefault",
               "groups": [
                 {
-                  "id": "dashboard",
-                  "label": "Controls",
+                  "id": "msgReadGroup",
+                  "label": "Contoso Add-in",
                   "icons": [
-                    { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                    { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                    { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
+                    { "size": 16, "url": "https://localhost:3000/assets/icon-16.png" },
+                    { "size": 32, "url": "https://localhost:3000/assets/icon-32.png" },
+                    { "size": 80, "url": "https://localhost:3000/assets/icon-80.png" }
                   ],
                   "controls": [
                     {
-                      "id": "uppercase",
+                      "id": "msgReadOpenPaneButton",
                       "type": "button",
-                      "label": "To uppercase",
+                      "label": "Show Taskpane",
                       "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
+                        { "size": 16, "url": "https://localhost:3000/assets/icon-16.png" },
+                        { "size": 32, "url": "https://localhost:3000/assets/icon-32.png" },
+                        { "size": 80, "url": "https://localhost:3000/assets/icon-80.png" }
                       ],
                       "supertip": {
-                        "title": "Change text to uppercase",
-                        "description": "This will change the text to uppercase."
+                        "title": "Show Taskpane",
+                        "description": "Opens a pane displaying all available properties."
                       },
-                      "actionId": "mail.toUppercase"
+                      "actionId": "TaskPaneRuntimeShow"
                     },
                     {
-                      "id": "lowercase",
+                      "id": "ActionButton",
                       "type": "button",
-                      "label": "To lowercase",
-                      "enabled": false,
+                      "label": "Perform an action",
                       "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
+                        { "size": 16, "url": "https://localhost:3000/assets/icon-16.png" },
+                        { "size": 32, "url": "https://localhost:3000/assets/icon-32.png" },
+                        { "size": 80, "url": "https://localhost:3000/assets/icon-80.png" }
                       ],
                       "supertip": {
-                        "title": "Change text to lowercase",
-                        "description": "This will change the text to lowercase."
+                        "title": "Perform an action",
+                        "description": "Perform an action when clicked."
                       },
-                      "actionId": "mail.toLowercase"
-                    },
-                    {
-                      "id": "menu",
-                      "type": "menu",
-                      "label": "Menu",
-                      "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                      ],
-                      "supertip": {
-                        "title": "Change text case",
-                        "description": "This allow you to change text to lowercase or uppercase."
-                      },
-                      "items": [
-                        {
-                          "id": "menu.uppercase",
-                          "type": "menuItem",
-                          "label": "To uppercase",
-                          "enabled": false,
-                          "icons": [
-                            { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                            { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                            { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                          ],
-                          "supertip": {
-                            "title": "Change text to uppercase",
-                            "description": "This will change the text to uppercase."
-                          },
-                          "actionId": "mail.toUppercase"
-                        },
-                        {
-                          "id": "menu.lowercase",
-                          "type": "menuItem",
-                          "label": "To lowercase",
-                          "supertip": {
-                            "title": "Change text to lowercase",
-                            "description": "This will change the text to lowercase."
-                          },
-                          "actionId": "mail.toLowercase",
-                          "overriddenByRibbonApi": true
-                        }
-                      ]
-                    },
-                    {
-                      "id": "showDashboard",
-                      "type": "button",
-                      "label": "Show dashboard",
-                      "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                      ],
-                      "supertip": {
-                        "title": "Show dashboard",
-                        "description": "click to open dashboard"
-                      },
-                      "actionId": "mail.showDashboard",
-                      "overriddenByRibbonApi": true
+                      "actionId": "action"
                     }
                   ]
                 }
               ]
             }
           ]
-        },
-        {
-          "contexts": ["mailCompose"],
-          "tabs": [
-            {
-              "builtInTabId": "TabDefault",
-              "groups": [
-                {
-                  "id": "dashboard",
-                  "label": "Controls",
-                  "controls": [
-                    {
-                      "id": "uppercase",
-                      "type": "button",
-                      "label": "To uppercase",
-                      "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                      ],
-                      "supertip": {
-                        "title": "Change text to uppercase",
-                        "description": "This will change the text to uppercase."
-                      },
-                      "actionId": "mail.toUppercase"
-                    },
-                    {
-                      "id": "lowercase",
-                      "type": "button",
-                      "label": "To lowercase",
-                      "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                      ],
-                      "supertip": {
-                        "title": "Change text to lowercase",
-                        "description": "This will change the text to lowercase."
-                      },
-                      "actionId": "mail.toLowercase"
-                    },
-                    {
-                      "id": "menu",
-                      "type": "menu",
-                      "label": "Menu",
-                      "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                      ],
-                      "supertip": {
-                        "title": "Change text case",
-                        "description": "This allow you to change text to lowercase or uppercase."
-                      },
-                      "items": [
-                        {
-                          "id": "menu.uppercase",
-                          "type": "menuItem",
-                          "label": "To uppercase",
-                          "supertip": {
-                            "title": "Change text to uppercase",
-                            "description": "This will change the text to uppercase."
-                          },
-                          "actionId": "mail.toUppercase"
-                        },
-                        {
-                          "id": "menu.lowercase",
-                          "type": "menuItem",
-                          "label": "To lowercase",
-                          "icons": [
-                            { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                            { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                            { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                          ],
-                          "supertip": {
-                            "title": "Change text to lowercase",
-                            "description": "This will change the text to lowercase."
-                          },
-                          "actionId": "mail.toLowercase"
-                        }
-                      ]
-                    },
-                    {
-                      "id": "showDashboard",
-                      "type": "button",
-                      "label": "Show dashboard",
-                      "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                      ],
-                      "supertip": {
-                        "title": "Show dashboard",
-                        "description": "click to open dashboard"
-                      },
-                      "actionId": "mail.showDashboard"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "contexts": ["mailRead"],
-          "tabs": [
-            {
-              "builtInTabId": "TabDefault",
-              "groups": [
-                {
-                  "id": "dashboard",
-                  "label": "Controls",
-                  "controls": [
-                    {
-                      "id": "showDashboard",
-                      "type": "button",
-                      "label": "Show dashboard",
-                      "icons": [
-                        { "size": 16, "file": "https://localhost:3000/assets/icon-16.png" },
-                        { "size": 32, "file": "https://localhost:3000/assets/icon-32.png" },
-                        { "size": 80, "file": "https://localhost:3000/assets/icon-80.png" }
-                      ],
-                      "supertip": {
-                        "title": "Show dashboard",
-                        "description": "click to open dashboard"
-                      },
-                      "actionId": "mail.showDashboard"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "keyboards": [
-        {
-          "requirements": {
-            "capabilities": [{ "name": "SharedRuntime", "minVersion": "1.1" }],
-            "platforms": ["windows", "web"]
-          },
-          "shortcuts": [
-            {
-              "key": "Ctrl+Shift+U",
-              "actionId": "mail.toUppercase"
-            },
-            {
-              "key": "Ctrl+Shift+L",
-              "actionId": "mail.toLowercase"
-            },
-            {
-              "key": "Ctrl+Shift+Up",
-              "actionId": "mail.showDashboard"
-            }
-          ]
-        },
-        {
-          "requirements": {
-            "capabilities": [{ "name": "SharedRuntime", "minVersion": "1.1" }],
-            "platforms": ["mac"]
-          },
-          "shortcuts": [
-            {
-              "key": "Command+Shift+U",
-              "actionId": "mail.toUppercase"
-            },
-            {
-              "key": "Command+Shift+L",
-              "actionId": "mail.toLowercase"
-            },
-            {
-              "key": "Command+Shift+Up",
-              "actionId": "mail.showDashboard"
-            }
-          ]
-        }
-      ],
-      "autoRunEvents": [
-        {
-          "requirements": {
-            "capabilities": [{ "name": "MailBox", "minVersion": "1.10" }]
-          },
-          "events": [
-            {
-              "type": "newMessageComposeCreated",
-              "actionId": "mail.onNewMessageComposeCreated"
-            },
-            {
-              "type":"messageSending",
-              "actionId": "mail.onMessageSending",
-              "options": {
-                "sendMode": "promptUser"
-              }
-            }
-          ]
-        }
-      ],
-      "alternates": [
-        {
-          "requirements": {
-            "scopes": ["mail"]
-          },
-          "prefer": {
-            "comAddin": {
-              "progId": "ContosoExtension"
-            }
-          },
-          "hide": {
-            "storeOfficeAddin": {
-              "officeAddinId": "fca2794d-4aa5-4023-a84b-c60a3cbd33d4",
-              "assetId": "WA129485"
-            }
-          }
         }
       ]
     }

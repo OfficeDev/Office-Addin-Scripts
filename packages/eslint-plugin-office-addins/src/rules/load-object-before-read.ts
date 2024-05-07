@@ -1,17 +1,16 @@
-import { TSESTree } from "@typescript-eslint/utils";
-import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/utils/dist/ts-eslint-scope";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
+import { Reference, Scope, Variable } from "@typescript-eslint/scope-manager";
 import { isLoadCall, parsePropertiesArgument } from "../utils/load";
 import { findCallExpression, findPropertiesRead } from "../utils/utils";
 import { isGetFunction, isGetOrNullObjectFunction } from "../utils/getFunction";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
+)({
   name: "load-object-before-read",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"problem",
+    type: "problem",
     messages: {
       loadBeforeRead:
         "An explicit load call on '{{name}}' for property '{{loadValue}}' needs to be made before the property can be read.",
@@ -19,11 +18,6 @@ export = {
     docs: {
       description:
         "Before you can read the properties of a proxy object, you must explicitly load the properties.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Possible Errors",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
     },
     schema: [],
   },
@@ -40,7 +34,7 @@ export = {
     function hasBeenLoaded(
       node: TSESTree.Node,
       loadLocation: Map<string, number>,
-      propertyName: string
+      propertyName: string,
     ): boolean {
       return (
         loadLocation.has(propertyName) && // If reference came after load, return
@@ -144,4 +138,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});

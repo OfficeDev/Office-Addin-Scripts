@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-settings",
-  "version": "2.3.0",
+  "version": "2.3.2",
   "description": "Configure developer settings for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -27,8 +27,8 @@
     "fs-extra": "^11.2.0",
     "inquirer": "^7.3.3",
     "junk": "^3.1.0",
-    "office-addin-manifest": "^1.13.0",
-    "office-addin-usage-data": "^1.6.9",
+    "office-addin-manifest": "^1.13.2",
+    "office-addin-usage-data": "^1.6.11",
     "open": "^6.4.0",
     "string_decoder": "1.3.0",
     "whatwg-url": "^14.0.0",
@@ -54,7 +54,7 @@
     "concurrently": "^8.2.2",
     "cpy-cli": "5.0.0",
     "mocha": "^10.3.0",
-    "office-addin-lint": "^2.3.0",
+    "office-addin-lint": "^2.3.2",
     "rimraf": "^5.0.5",
     "sinon": "^17.0.1",
     "ts-node": "^10.9.2",

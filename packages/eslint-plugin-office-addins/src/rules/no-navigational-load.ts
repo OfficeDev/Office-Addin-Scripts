@@ -1,9 +1,5 @@
-import { TSESTree } from "@typescript-eslint/utils";
-import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/utils/dist/ts-eslint-scope";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
+import { Reference, Scope, Variable } from "@typescript-eslint/scope-manager";
 import { isGetFunction } from "../utils/getFunction";
 import {
   parseLoadArguments,
@@ -12,10 +8,13 @@ import {
 } from "../utils/load";
 import { getPropertyType, PropertyType } from "../utils/propertiesType";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#scalar-and-navigation-properties",
+)({
   name: "no-navigational-load",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"problem",
+    type: "problem",
     messages: {
       navigationalLoad:
         "Calling load on the navigation property '{{loadValue}}' slows down your add-in.",
@@ -23,11 +22,6 @@ export = {
     docs: {
       description:
         "Calling load on a navigation property causes unneeded data to load and slows down your add-in.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Best Practices",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#scalar-and-navigation-properties",
     },
     schema: [],
   },
@@ -123,4 +117,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});
