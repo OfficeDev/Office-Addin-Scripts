@@ -78,7 +78,7 @@ export interface IOptions {
 
 interface IArrayType {
   dimensionality: number;
-  type: ts.SyntaxKind;
+  node: ts.TypeNode; // inner type node
 }
 
 interface IGetParametersArguments {
@@ -137,6 +137,27 @@ const TYPE_CUSTOM_FUNCTION_CANCELABLE = {
   ["customfunctions.cancelableinvocation"]: 2,
 };
 const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
+
+// These does not work if the developer is using namespace/type alias. To support that, we'd need to
+// use typeChecker.getFullyQualifiedName, which in turns requires creating a program out of the source file
+// (which we don't do now) and passing the type checker all the way down to getParamType. This would be a
+// larger refactor (e.g., rewriting parseTree into a class) and is tracked as a work item.
+const CELLVALUETYPE_MAPPINGS = {
+  "Excel.CellValue": "cellvalue",
+  "Excel.BooleanCellValue": "booleancellvalue",
+  "Excel.DoubleCellValue": "doublecellvalue",
+  "Excel.EntityCellValue": "entitycellvalue",
+  "Excel.ErrorCellValue": "errorcellvalue",
+  "Excel.FormattedNumberCellValue": "formattednumbercellvalue",
+  "Excel.LinkedEntityCellValue": "linkedentitycellvalue",
+  "Excel.LocalImageCellValue": "localimagecellvalue",
+  "Excel.StringCellValue": "stringcellvalue",
+  "Excel.WebImageCellValue": "webimagecellvalue",
+  "Excel.ArrayCellValue": "unsupported",
+  "Excel.EmptyCellValue": "unsupported",
+  "Excel.ReferenceCellValue": "unsupported",
+  "Excel.ValueTypeNotAvailableCellValue": "unsupported",
+};
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
 
@@ -470,12 +491,14 @@ function getOptions(
     }
   }
 
-  if (optionsItem.linkedEntityDataProvider &&
+  if (
+    optionsItem.linkedEntityDataProvider &&
     (optionsItem.excludeFromAutoComplete ||
       optionsItem.volatile ||
       optionsItem.stream ||
       optionsItem.requiresAddress ||
-      optionsItem.requiresParameterAddresses)) {
+      optionsItem.requiresParameterAddresses)
+  ) {
     let errorParam: string = "";
     const functionPosition = getPosition(func);
 
@@ -618,6 +641,11 @@ function getResults(
     dimensionality: resultDim,
     type: resultType,
   };
+
+  // We convert cell value types to "any".
+  if (Object.values(CELLVALUETYPE_MAPPINGS).includes(resultType)) {
+    resultType = "any";
+  }
 
   // Only return dimensionality = matrix.  Default assumed scalar
   if (resultDim === "scalar") {
@@ -1029,40 +1057,76 @@ function hasInvocationParameter(
 
 /**
  * Gets the parameter type of the node
- * @param t TypeNode
+ * @param node TypeNode
  */
-function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]): string {
+function getParamType(node: ts.TypeNode, extra: IFunctionExtras, enumList: string[]): string {
   let type = "any";
-  // Only get type for typescript files.  js files will return any for all types
-  if (t) {
-    let kind = t.kind;
-    const typePosition = getPosition(t);
-    if (ts.isTypeReferenceNode(t) || ts.isArrayTypeNode(t)) {
-      let arrayType: IArrayType = {
-        dimensionality: 0,
-        type: ts.SyntaxKind.AnyKeyword,
-      };
-      if (ts.isTypeReferenceNode(t)) {
-        const array = t as ts.TypeReferenceNode;
-        if (enumList.indexOf(array.typeName.getText()) >= 0) {
-          // Type found in the enumList
-          return type;
-        }
-        if (array.typeName.getText() !== "Array") {
-          extra.errors.push(logError("Invalid type: " + array.typeName.getText(), typePosition));
-          return type;
-        }
-      }
-      arrayType = getArrayDimensionalityAndType(t);
-      kind = arrayType.type;
+  // Only get type for typescript files. js files will return "any" for all types
+  if (!node) {
+    return type;
+  }
+  const typePosition = getPosition(node);
+
+  // Get the inner type node if it is an array
+  if (typeNodeIsArray(node)) {
+    let arrayType: IArrayType = {
+      dimensionality: 0,
+      node,
+    };
+    arrayType = getArrayDimensionalityAndType(node);
+    node = arrayType.node;
+  }
+
+  // We currently accept the following types of reference node: enum will be converted to "any",
+  // Excel.CellValue will be converted accordingly. Anything else is invalid. (Array reference node has already been covered above.)
+  if (ts.isTypeReferenceNode(node)) {
+    const typeReferenceNode = node as ts.TypeReferenceNode;
+    let nodeTypeName = typeReferenceNode.typeName.getText();
+    if (enumList.indexOf(nodeTypeName) >= 0) {
+      // Type found in the enumList
+      return type;
     }
     // @ts-ignore
-    type = TYPE_MAPPINGS[kind];
-    if (!type) {
-      extra.errors.push(logError("Type doesn't match mappings", typePosition));
+    if (CELLVALUETYPE_MAPPINGS[nodeTypeName]) {
+      // @ts-ignore
+      let cellValue = CELLVALUETYPE_MAPPINGS[nodeTypeName];
+      if (cellValue === "unsupported") {
+        const errorString = `Custom function does not support cell value type: ${typeReferenceNode.typeName.getText()}`;
+        extra.errors.push(logError(errorString, typePosition));
+        return type;
+      }
+      return cellValue;
     }
+
+    const errorString = `Custom function does not support type "${typeReferenceNode.typeName.getText()}" as input or return parameter.`;
+    extra.errors.push(logError(errorString, typePosition));
+    return type;
   }
+
+  // @ts-ignore
+  type = TYPE_MAPPINGS[node.kind];
+  if (!type) {
+    extra.errors.push(logError("Type doesn't match mappings", typePosition));
+  }
+
   return type;
+}
+
+/**
+ * Helper function that checks whether a TypeNode is an array.
+ * There are two cases: Array<sometype> or sometype[].
+ * @param node TypeNode
+ */
+function typeNodeIsArray(node: ts.TypeNode): boolean {
+  // [] case
+  if (ts.isArrayTypeNode(node)) {
+    return true;
+  }
+  // Array<sometype> case
+  if (ts.isTypeReferenceNode(node)) {
+    return (node as ts.TypeReferenceNode).typeName.getText() === "Array";
+  }
+  return false;
 }
 
 /**
@@ -1072,7 +1136,7 @@ function getParamType(t: ts.TypeNode, extra: IFunctionExtras, enumList: string[]
 function getArrayDimensionalityAndType(node: ts.TypeNode): IArrayType {
   let array: IArrayType = {
     dimensionality: 0,
-    type: ts.SyntaxKind.AnyKeyword,
+    node,
   };
   if (ts.isArrayTypeNode(node)) {
     array = getArrayDimensionalityAndTypeForArrayTypeNode(node);
@@ -1083,49 +1147,49 @@ function getArrayDimensionalityAndType(node: ts.TypeNode): IArrayType {
 }
 
 /**
- * Returns the dimensionality and type of array for TypeNode
+ * Returns the dimensionality and type of array for TypeNode (sometype[] or higher dimension)
  * @param node TypeNode
  */
 function getArrayDimensionalityAndTypeForArrayTypeNode(node: ts.TypeNode): IArrayType {
   const array: IArrayType = {
     dimensionality: 1,
-    type: ts.SyntaxKind.AnyKeyword,
+    node,
   };
 
   let nodeCheck = (node as ts.ArrayTypeNode).elementType;
-  array.type = nodeCheck.kind;
+  array.node = nodeCheck;
   while (ts.isArrayTypeNode(nodeCheck)) {
-    array.dimensionality++;
+    ++array.dimensionality;
     nodeCheck = (nodeCheck as ts.ArrayTypeNode).elementType;
-    array.type = nodeCheck.kind;
+    array.node = nodeCheck;
   }
 
   return array;
 }
 
 /**
- * Returns the dimensionality and type of array for ReferenceNode
+ * Returns the dimensionality and type of array for ReferenceNode (Array<sometype> or higher dimension)
  * @param node TypeReferenceNode
  */
 function getArrayDimensionalityAndTypeForReferenceNode(node: ts.TypeReferenceNode): IArrayType {
   const array: IArrayType = {
     dimensionality: 0,
-    type: ts.SyntaxKind.AnyKeyword,
+    node,
   };
 
-  if (node.typeArguments && node.typeArguments.length === 1) {
-    let nodeCheck = node;
-    let dimensionalityCount = 1;
-    while (nodeCheck.typeArguments) {
-      // @ts-ignore
-      if (TYPE_MAPPINGS_SIMPLE[nodeCheck.typeArguments[0].kind]) {
-        array.dimensionality = dimensionalityCount;
-        array.type = nodeCheck.typeArguments[0].kind;
-      }
-      nodeCheck = nodeCheck.typeArguments[0] as ts.TypeReferenceNode;
-      dimensionalityCount++;
-    }
+  let nodeCheck = node;
+  let dimensionalityCount = 0;
+  while (
+    ts.isTypeReferenceNode(nodeCheck) &&
+    (nodeCheck as ts.TypeReferenceNode).typeName.getText() === "Array" &&
+    nodeCheck.typeArguments &&
+    nodeCheck.typeArguments.length === 1
+  ) {
+    nodeCheck = nodeCheck.typeArguments[0] as ts.TypeReferenceNode;
+    ++dimensionalityCount;
   }
+  array.dimensionality = dimensionalityCount;
+  array.node = nodeCheck;
 
   return array;
 }

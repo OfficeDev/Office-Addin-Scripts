@@ -1,0 +1,205 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test Excel.CellValue parameter",
+            "id": "TESTCELLVALUEPARAM",
+            "name": "TESTCELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "cellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.BooleanCellValue parameter",
+            "id": "TESTBOOLEANCELLVALUEPARAM",
+            "name": "TESTBOOLEANCELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "booleancellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.DoubleCellValue parameter",
+            "id": "TESTDOUBLECELLVALUEPARAM",
+            "name": "TESTDOUBLECELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "doublecellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.EntityCellValue parameter",
+            "id": "TESTENTITYCELLVALUEPARAM",
+            "name": "TESTENTITYCELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "entitycellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.ErrorCellValue parameter",
+            "id": "TESTERRORCELLVALUEPARAM",
+            "name": "TESTERRORCELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "errorcellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.FormattedNumberCellValue parameter",
+            "id": "TESTFORMATTEDNUMBERCELLVALUEPARAM",
+            "name": "TESTFORMATTEDNUMBERCELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "formattednumbercellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.LinkedEntityCellValue parameter",
+            "id": "TESTLINKEDENTITYCELLVALUEPARAM",
+            "name": "TESTLINKEDENTITYCELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "linkedentitycellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.LocalImageCellValue parameter",
+            "id": "TESTLOCALIMAGECELLVALUEPARAM",
+            "name": "TESTLOCALIMAGECELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "localimagecellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.StringCellValue parameter",
+            "id": "TESTSTRINGCELLVALUEPARAM",
+            "name": "TESTSTRINGCELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "stringcellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.WebImageCellValue parameter",
+            "id": "TESTWEBIMAGECELLVALUEPARAM",
+            "name": "TESTWEBIMAGECELLVALUEPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "webimagecellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.BooleanCellValue repeating parameter",
+            "id": "TESTBOOLEANCELLVALUEREPEATINGPARAM",
+            "name": "TESTBOOLEANCELLVALUEREPEATINGPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "repeating": true,
+                    "type": "booleancellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.BooleanCellValue matrix parameter",
+            "id": "TESTBOOLEANCELLVALUEMATRIXPARAM",
+            "name": "TESTBOOLEANCELLVALUEMATRIXPARAM",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "type": "booleancellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.BooleanCellValue repeating matrix parameter",
+            "id": "TESTBOOLEANCELLVALUEREPEATINGMATRIXPARAM",
+            "name": "TESTBOOLEANCELLVALUEREPEATINGMATRIXPARAM",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "repeating": true,
+                    "type": "booleancellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.BooleanCellValue repeating parameter with Array",
+            "id": "TESTBOOLEANCELLVALUETSARRAYPARAM",
+            "name": "TESTBOOLEANCELLVALUETSARRAYPARAM",
+            "parameters": [
+                {
+                    "name": "x",
+                    "repeating": true,
+                    "type": "booleancellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.BooleanCellValue matrix parameter with Array",
+            "id": "TESTBOOLEANCELLVALUENESTEDTSARRAYPARAM",
+            "name": "TESTBOOLEANCELLVALUENESTEDTSARRAYPARAM",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "type": "booleancellvalue"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test Excel.BooleanCellValue repeating matrix parameter with Array",
+            "id": "TESTBOOLEANCELLVALUEREPEATINGNESTEDTSARRAYPARAM",
+            "name": "TESTBOOLEANCELLVALUEREPEATINGNESTEDTSARRAYPARAM",
+            "parameters": [
+                {
+                    "dimensionality": "matrix",
+                    "name": "x",
+                    "repeating": true,
+                    "type": "booleancellvalue"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}
