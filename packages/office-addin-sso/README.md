@@ -13,9 +13,11 @@ Configure an application in Azure Active Active Directory with necessary permiss
 
 Syntax:
 
-`office-addin-sso configure <manifest>`
+`office-addin-sso configure <manifest> [secret-ttl]`
 
 `manifest`: path to manifest file.
+
+`secret-ttl`: time to live for the secret used in the Azure app registration, in days.
 
 #
 
