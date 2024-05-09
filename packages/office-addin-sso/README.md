@@ -17,7 +17,7 @@ Syntax:
 
 `manifest`: path to manifest file.
 
-`secret-ttl`: time to live for the secret used in the Azure app registration, in days.
+`secret-ttl`: time to live for the secret used in the Azure app registration, in days. Default is 60 days.
 
 #
 
