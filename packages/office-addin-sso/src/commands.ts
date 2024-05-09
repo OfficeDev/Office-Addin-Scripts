@@ -13,7 +13,7 @@ import inquirer = require("inquirer");
 
 /* global process, console */
 
-export async function configureSSO(manifestPath: string) {
+export async function configureSSO(manifestPath: string, secretTTL?: string) {
   // Check platform and return if not Windows or Mac
   if (process.platform !== "win32" && process.platform !== "darwin") {
     console.log(chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`));
@@ -27,6 +27,16 @@ export async function configureSSO(manifestPath: string) {
     };
     const answer = await inquirer.prompt([question]);
     if (!answer.didUserConfirm) {
+      return;
+    }
+  }
+
+  // If no expiration date was provided, or if we fail to parse the number, we default to 60 days
+  let ttl: number = 60;
+  if (!!secretTTL) {
+    ttl = parseInt(secretTTL);
+    if (isNaN(ttl)) {
+      console.log("Secret TTL value provided is not a number");
       return;
     }
   }
@@ -98,7 +108,7 @@ export async function configureSSO(manifestPath: string) {
 
       // Create an application secret and add to the credential store
       console.log("Setting application secret");
-      const secret: string = await configure.setApplicationSecret(applicationJson);
+      const secret: string = await configure.setApplicationSecret(applicationJson, ttl);
       console.log(chalk.green(`App secret is ${secret}`));
 
       // Add secret to Credential Store (Windows) or Keychain(Mac)
