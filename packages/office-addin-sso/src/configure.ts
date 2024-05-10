@@ -187,9 +187,12 @@ async function promiseExecuteCommand(
   });
 }
 
-export async function setApplicationSecret(applicationJson: Object): Promise<string> {
+export async function setApplicationSecret(applicationJson: Object, secretTTL?: number): Promise<string> {
   try {
     let azRestCommand: string = await fs.readFileSync(defaults.azRestAddSecretCommandPath, "utf8");
+    let now = new Date();
+    let expirationDate = new Date(now.setDate(now.getDate() + secretTTL)).toISOString();
+    azRestCommand = azRestCommand.replace("<Token_Expire_Date>", expirationDate);
     azRestCommand = azRestCommand.replace("<App_Object_ID>", applicationJson["id"]);
     const secretJson: Object = await promiseExecuteCommand(azRestCommand);
     return secretJson["secretText"];

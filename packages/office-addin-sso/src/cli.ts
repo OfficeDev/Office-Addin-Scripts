@@ -12,7 +12,7 @@ import * as commands from "./commands";
 commander.name("office-addin-sso");
 commander.version(process.env.npm_package_version || "(version not available)");
 
-commander.command("configure <manifest-path>").action(commands.configureSSO);
+commander.command("configure <manifest-path> [secret-ttl]").action(commands.configureSSO);
 
 commander.command("start <manifest-path>").action(commands.startSSOService);
 
