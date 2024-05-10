@@ -31,7 +31,8 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
     }
   }
 
-  // If no expiration date was provided, or if we fail to parse the number, we default to 60 days
+  // We default to 60 days if no ttl was provided.
+  // If we fail to parse the ttl provided, we notify user and abort.
   let ttl: number = 60;
   if (!!secretTTL) {
     ttl = parseInt(secretTTL);
