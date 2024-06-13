@@ -25,21 +25,21 @@ import ts from "typescript";
 // Rule Definition
 //------------------------------------------------------------------------------
 
-type Options = unknown[];
+type Options = readonly unknown[];
 type MessageIds = "officeReadCall";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    REPO_URL,
+)({
   name: "no-office-read-calls",
-
   meta: {
     docs: {
       description: "Prevents office read api calls",
-      category: "Best Practices",
-      recommended: <RuleMetaDataDocs["recommended"]>"warn",
+      recommended: "recommended",
       requiresTypeChecking: true,
-      url: REPO_URL,
     },
-    type: <RuleMetaData<MessageIds>["type"]>"problem",
+    type: "problem",
     messages: <Record<MessageIds, string>>{
       officeReadCall: "No Office API read calls within Custom Functions",
     },
@@ -99,4 +99,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});
