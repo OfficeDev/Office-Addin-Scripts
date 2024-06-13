@@ -35,10 +35,7 @@
     "winreg": "1.2.4"
   },
   "peerDependencies": {
-    "@microsoft/teamsapp-cli": "3.0.0"
-  },
-  "overrides": {
-    "@azure/msal-node": "2.6.4"
+    "@microsoft/teamsapp-cli": "3.0.2"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.5",
