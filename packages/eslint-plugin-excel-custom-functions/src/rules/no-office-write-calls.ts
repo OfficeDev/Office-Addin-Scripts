@@ -10,8 +10,6 @@ import {
 } from "./utils";
 import {
   RuleContext,
-  RuleMetaDataDocs,
-  RuleMetaData,
 } from "@typescript-eslint/utils/dist/ts-eslint";
 import ts from "typescript";
 
@@ -24,21 +22,21 @@ import ts from "typescript";
 // Rule Definition
 //------------------------------------------------------------------------------
 
-type Options = unknown[];
+type Options = readonly unknown[];
 type MessageIds = "officeWriteCall";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    REPO_URL,
+)({
   name: "no-office-write-calls",
-
   meta: {
     docs: {
       description: "Prevents office write api calls",
-      category: "Best Practices",
-      recommended: <RuleMetaDataDocs["recommended"]>"error",
+      recommended: "recommended",
       requiresTypeChecking: true,
-      url: REPO_URL,
     },
-    type: <RuleMetaData<MessageIds>["type"]>"problem",
+    type: "problem",
     messages: <Record<MessageIds, string>>{
       officeWriteCall: "No Office API write calls within Custom Functions",
     },
@@ -93,4 +91,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});
