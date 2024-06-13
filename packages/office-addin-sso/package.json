@@ -35,7 +35,6 @@
     "jwks-rsa": "2.1.4",
     "morgan": "1.9.1",
     "node-fetch": "^2.6.1",
-    "office-addin-lint": "^2.3.2",
     "office-addin-usage-data": "^1.6.11",
     "pug": "^3.0.2"
   },
@@ -50,6 +49,7 @@
     "mocha": "^9.1.1",
     "office-addin-cli": "^1.6.2",
     "office-addin-dev-certs": "^1.13.2",
+    "office-addin-lint": "^2.3.2",
     "office-addin-manifest": "^1.13.2",
     "office-addin-test-helpers": "^1.5.2",
     "rimraf": "^3.0.2",
