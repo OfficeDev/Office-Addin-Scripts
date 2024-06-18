@@ -14,7 +14,7 @@ export enum OfficeCalls {
 }
 
 type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;
-export type Options = unknown[];
+export type Options = readonly unknown[];
 export type MessageIds = string;
 
 export const REPO_URL = "https://aka.ms/o-a-scripts";
@@ -239,7 +239,7 @@ export function isHelperFunc(
   let output = functionDeclarations
     ? functionDeclarations.some((declaration) => {
         let sourceFile = declaration.getSourceFile();
-        return !services.program.isSourceFileFromExternalLibrary(sourceFile);
+        return !services.program?.isSourceFileFromExternalLibrary(sourceFile);
       })
     : false;
 

@@ -1,11 +1,12 @@
-import { TSESLint, ESLintUtils } from '@typescript-eslint/utils';
+import { TSESLint } from '@typescript-eslint/utils';
+import { RuleTester } from '@typescript-eslint/rule-tester';
 import rule from '../../src/rules/no-office-write-calls';
 import * as path from 'path';
 
 type Options = unknown[];
 type MessageIds = 'officeWriteCall';
 
-const ruleTester = new ESLintUtils.RuleTester({
+const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
