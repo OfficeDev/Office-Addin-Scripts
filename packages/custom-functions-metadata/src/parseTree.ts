@@ -34,7 +34,7 @@ export interface IFunctionParameter {
   name: string;
   description?: string;
   type: string;
-  subtype?: string;
+  cellValueType?: string;
   dimensionality?: string;
   optional?: boolean;
   repeating?: boolean;
@@ -698,10 +698,10 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
         type: ptype,
       };
 
-      // for backward compatibility, we put cell value type in subtype instead of type.
+      // for backward compatibility, we put cell value type in cellValueType instead of type.
       if (Object.values(CELLVALUETYPE_MAPPINGS).includes(ptype)) {
         pMetadataItem.type = "any";
-        pMetadataItem.subtype = ptype
+        pMetadataItem.cellValueType = ptype
       }
 
       // Only return dimensionality = matrix.  Default assumed scalar

@@ -9,7 +9,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "cellvalue"
+                    "cellValueType": "cellvalue"
                 }
             ],
             "result": {}
@@ -22,7 +22,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "booleancellvalue"
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -35,7 +35,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "doublecellvalue"
+                    "cellValueType": "doublecellvalue"
                 }
             ],
             "result": {}
@@ -48,7 +48,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "entitycellvalue"
+                    "cellValueType": "entitycellvalue"
                 }
             ],
             "result": {}
@@ -61,7 +61,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "errorcellvalue"
+                    "cellValueType": "errorcellvalue"
                 }
             ],
             "result": {}
@@ -74,7 +74,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "formattednumbercellvalue"
+                    "cellValueType": "formattednumbercellvalue"
                 }
             ],
             "result": {}
@@ -87,7 +87,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "linkedentitycellvalue"
+                    "cellValueType": "linkedentitycellvalue"
                 }
             ],
             "result": {}
@@ -100,7 +100,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "localimagecellvalue"
+                    "cellValueType": "localimagecellvalue"
                 }
             ],
             "result": {}
@@ -113,7 +113,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "stringcellvalue"
+                    "cellValueType": "stringcellvalue"
                 }
             ],
             "result": {}
@@ -126,7 +126,7 @@
                 {
                     "name": "x",
                     "type": "any",
-                    "subtype": "webimagecellvalue"
+                    "cellValueType": "webimagecellvalue"
                 }
             ],
             "result": {}
@@ -140,7 +140,7 @@
                     "name": "x",
                     "repeating": true,
                     "type": "any",
-                    "subtype": "booleancellvalue"
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -154,7 +154,7 @@
                     "dimensionality": "matrix",
                     "name": "x",
                     "type": "any",
-                    "subtype": "booleancellvalue"
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -169,7 +169,7 @@
                     "name": "x",
                     "repeating": true,
                     "type": "any",
-                    "subtype": "booleancellvalue"
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -183,7 +183,7 @@
                     "name": "x",
                     "repeating": true,
                     "type": "any",
-                    "subtype": "booleancellvalue"
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -197,7 +197,7 @@
                     "dimensionality": "matrix",
                     "name": "x",
                     "type": "any",
-                    "subtype": "booleancellvalue"
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -212,7 +212,7 @@
                     "name": "x",
                     "repeating": true,
                     "type": "any",
-                    "subtype": "booleancellvalue"
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
