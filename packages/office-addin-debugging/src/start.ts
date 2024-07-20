@@ -304,19 +304,35 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     }
 
     // enable loopback for Edge
-    if (isWindowsPlatform && parseInt(os.release(), 10) === 10) {
-      const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
-      try {
-        await devSettings.ensureLoopbackIsEnabled(name);
-      } catch (err: any) {
-        // if add loopback exemption failed, report the error then continue
-        console.error(err)
-        console.warn("Failed to add loopback exemption.\nWill try to sideload the Office Add-in without the loopback exemption, but it might not load correctly from localhost.\n")
-        usageDataObject.reportException("startDebugging()", err, {
-          app: app,
-          document: document,
-          appType: appType,
-        });
+    if (isWindowsPlatform) {
+      let enableLoopback = false;
+      const [majorVersion, , releaseVersion] = os
+        .release()
+        .split(".")
+        .map((version) => parseInt(version, 10));
+
+      if (majorVersion === 10) {
+        if (releaseVersion && releaseVersion >= 18362 && releaseVersion < 20000) {
+          enableLoopback = true;
+        }
+      }
+
+      if (enableLoopback) {
+        const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
+        try {
+          await devSettings.ensureLoopbackIsEnabled(name, false);
+        } catch (err: any) {
+          // if add loopback exemption failed, report the error then continue
+          console.error(err);
+          console.warn(
+            "Failed to add loopback exemption.\nWill try to sideload the Office Add-in without the loopback exemption, but it might not load correctly from localhost.\n"
+          );
+          usageDataObject.reportException("startDebugging()", err, {
+            app: app,
+            document: document,
+            appType: appType,
+          });
+        }
       }
     }
 
@@ -445,8 +461,7 @@ async function extractManifest(zipPath: string): Promise<string> {
   const manifestPath = fspath.join(targetPath, "manifest.json");
   if (fs.existsSync(manifestPath)) {
     return manifestPath;
-  }
-  else {
+  } else {
     throw new Error(`The zip file '${zipPath}' does not contain a "manifest.json" file`);
   }
 }
