@@ -23,7 +23,7 @@
     "Office"
   ],
   "dependencies": {
-    "adm-zip": "^0.5.9",
+    "adm-zip": "0.5.12",
     "commander": "^6.2.0",
     "node-fetch": "^2.6.1",
     "office-addin-cli": "^1.6.3",
@@ -34,7 +34,7 @@
     "office-addin-usage-data": "^1.6.12"
   },
   "devDependencies": {
-    "@types/adm-zip": "^0.5.0",
+    "@types/adm-zip": "^0.5.5",
     "@types/express": "^4.17.13",
     "@types/mocha": "^5.2.5",
     "@types/node": "^14.17.2",

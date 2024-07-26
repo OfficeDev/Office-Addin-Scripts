@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "@microsoft/teams-manifest": "^0.1.3",
-    "adm-zip": "^0.5.9",
+    "adm-zip": "0.5.12",
     "chalk": "^2.4.2",
     "commander": "^6.2.0",
     "fs-extra": "^7.0.1",
