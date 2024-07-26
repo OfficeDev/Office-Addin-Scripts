@@ -22,7 +22,7 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "adm-zip": "0.5.10",
+    "adm-zip": "0.5.12",
     "commander": "^6.2.0",
     "fs-extra": "^11.2.0",
     "inquirer": "^7.3.3",
