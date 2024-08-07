@@ -34,7 +34,7 @@ commander
     "Specify the location of the root directory of the project.  Default is the directory of the manifest file."
   )
   .option(
-    "--preview",
+    "--preview-manifest-schema",
     "Use the devPreview version of the json schema in the manifest output"
   )
   .option( "--confirm", "Confirmes the conversion")
