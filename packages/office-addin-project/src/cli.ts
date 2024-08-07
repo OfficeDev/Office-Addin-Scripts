@@ -33,6 +33,10 @@ commander
     "-p, --project <project-path>",
     "Specify the location of the root directory of the project.  Default is the directory of the manifest file."
   )
+  .option(
+    "--preview",
+    "Use the devPreview version of the json schema in the manifest output"
+  )
   .option( "--confirm", "Confirmes the conversion")
   .action(commands.convert);
 

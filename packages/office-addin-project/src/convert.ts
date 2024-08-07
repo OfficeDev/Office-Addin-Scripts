@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as util from "util";
-import { exec, execSync } from "child_process";
+import { exec } from "child_process";
 import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
@@ -18,7 +18,8 @@ const skipBackup: string[] = ["node_modules"];
 export async function convertProject(
   manifestPath: string = "./manifest.xml",
   backupPath: string = "./backup.zip",
-  projectDir: string = ""
+  projectDir: string = "",
+  devPreview: boolean = false
 ) {
   if (manifestPath.endsWith(".json")) {
     throw new ExpectedError(
@@ -41,7 +42,12 @@ export async function convertProject(
     projectDir = projectDir === "" ? outputPath : projectDir; 
     process.chdir(projectDir);
   
-    await convert(manifestPath, outputPath, false /* imageDownload */, true /* imageUrls */);
+    if(!devPreview) {
+      await convert(manifestPath, outputPath, false /* imageDownload */);
+    } else {
+      // override the schema used in the json manifest to use the devPreview schema
+      await convert(manifestPath, outputPath, false /* imageDownload */, "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json", "devPreview");
+    }
     await updatePackages();
     await updateManifestXmlReferences();
     fs.unlinkSync(manifestPath);
