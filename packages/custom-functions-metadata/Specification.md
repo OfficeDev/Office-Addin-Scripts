@@ -9,17 +9,31 @@ Add the `@customfunction` tag in the comments for a JavaScript or TypeScript fun
 The function parameter types may be provided using the [@param](#param) tag in JavaScript, or from the [Function type](http://www.typescriptlang.org/docs/handbook/functions.html) in TypeScript. For more information, see the [@param](#param) tag and [Types](#Types) section.
 
 ## Tags
-* [@cancelable](#cancelable)
-* [@customfunction](#customfunction) id name
-* [@excludeFromAutoComplete](#excludeFromAutoComplete)
-* [@helpurl](#helpurl) url
-* [@linkedEntityDataProvider](#linkedEntityDataProvider)
-* [@param](#param) _{type}_ name description
-* [@requiresAddress](#requiresAddress)
-* [@requiresParameterAddresses](#requiresParameterAddresses)
-* [@returns](#returns) _{type}_
-* [@streaming](#streaming)
-* [@volatile](#volatile)
+- [Custom Functions Metadata Specification](#custom-functions-metadata-specification)
+  - [Overview](#overview)
+  - [Tags](#tags)
+    - [@cancelable](#cancelable)
+    - [@capturesCallingObject](#capturescallingobject)
+    - [@customfunction](#customfunction)
+      - [id](#id)
+      - [name](#name)
+    - [@excludeFromAutoComplete](#excludefromautocomplete)
+    - [@helpurl](#helpurl)
+    - [@linkedEntityDataProvider](#linkedentitydataprovider)
+    - [@param](#param)
+      - [JavaScript](#javascript)
+      - [TypeScript](#typescript)
+    - [@requiresAddress](#requiresaddress)
+    - [@requiresParameterAddresses](#requiresparameteraddresses)
+    - [@returns](#returns)
+    - [@streaming](#streaming)
+    - [@volatile](#volatile)
+  - [Types](#types)
+    - [Value types](#value-types)
+    - [Matrix type](#matrix-type)
+    - [Error type](#error-type)
+    - [Promise](#promise)
+    - [Other types](#other-types)
 
 ---
 ### @cancelable
@@ -32,6 +46,13 @@ If the last function parameter is of type `CustomFunctions.CancelableInvocation`
 
  A function cannot have both `@cancelable` and `@streaming` tags.
 
+---
+### @capturesCallingObject
+
+Indicates that the custom function captures the calling object i.e. the [Excel.CellValue](https://learn.microsoft.com/es-es/javascript/api/excel/excel.cellvalue)
+object that invoked the custom function, in the first parameter.
+
+This tag is required to generate metadata for the custom function.
 
 ---
 ### @customfunction
@@ -87,7 +108,7 @@ The function will be excluded from the autocomplete drop-down list and Formula B
 * Must accept and return a single non-repeating, non-optional, scalar parameter of type `unknown`.
 * Must not be a XLL-compatible custom function.
 * Must allow rich data as input.
-* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, or `@excludeFromAutoComplete` tags.
+* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, `@excludeFromAutoComplete`, or `@capturesCallingObject` tags.
 
 ---
 ### @param 
