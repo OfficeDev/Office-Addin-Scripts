@@ -52,8 +52,6 @@ If the last function parameter is of type `CustomFunctions.CancelableInvocation`
 Indicates that the custom function captures the calling object i.e. the [Excel.CellValue](https://learn.microsoft.com/es-es/javascript/api/excel/excel.cellvalue)
 object that invoked the custom function, in the first parameter.
 
-This tag is required to generate metadata for the custom function.
-
 ---
 ### @customfunction
 
