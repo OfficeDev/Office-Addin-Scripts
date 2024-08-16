@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 /**
- * basic custom function with callingObject parameter
+ * basic custom function with callingObject parameter and capturesCallingObject tag
  * @customfunction
  * @capturesCallingObject
  */
