@@ -1,0 +1,41 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test function for enable address prop in streaming invocation object.",
+            "id": "TESTSTREAMINGINVOCATIONADDRESS",
+            "name": "TESTSTREAMINGINVOCATIONADDRESS",
+            "options": {
+                "requiresAddress": true,
+                "stream": true
+            },
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "description": "Test function for enable parameter address prop in streaming invocation object.",
+            "id": "TESTSTREAMINGINVOCATIONPARAMETERADDRESS",
+            "name": "TESTSTREAMINGINVOCATIONPARAMETERADDRESS",
+            "options": {
+                "stream": true,
+                "requiresParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        }
+    ]
+}
