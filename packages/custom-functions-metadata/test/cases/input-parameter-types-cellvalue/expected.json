@@ -21,7 +21,7 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "any",
+                    "type": "boolean",
                     "cellValueType": "booleancellvalue"
                 }
             ],
@@ -34,7 +34,7 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "any",
+                    "type": "number",
                     "cellValueType": "doublecellvalue"
                 }
             ],
@@ -112,7 +112,7 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "any",
+                    "type": "string",
                     "cellValueType": "stringcellvalue"
                 }
             ],
@@ -139,7 +139,7 @@
                 {
                     "name": "x",
                     "repeating": true,
-                    "type": "any",
+                    "type": "boolean",
                     "cellValueType": "booleancellvalue"
                 }
             ],
@@ -153,7 +153,7 @@
                 {
                     "dimensionality": "matrix",
                     "name": "x",
-                    "type": "any",
+                    "type": "boolean",
                     "cellValueType": "booleancellvalue"
                 }
             ],
@@ -168,7 +168,7 @@
                     "dimensionality": "matrix",
                     "name": "x",
                     "repeating": true,
-                    "type": "any",
+                    "type": "boolean",
                     "cellValueType": "booleancellvalue"
                 }
             ],
@@ -182,7 +182,7 @@
                 {
                     "name": "x",
                     "repeating": true,
-                    "type": "any",
+                    "type": "boolean",
                     "cellValueType": "booleancellvalue"
                 }
             ],
@@ -196,7 +196,7 @@
                 {
                     "dimensionality": "matrix",
                     "name": "x",
-                    "type": "any",
+                    "type": "boolean",
                     "cellValueType": "booleancellvalue"
                 }
             ],
@@ -211,7 +211,7 @@
                     "dimensionality": "matrix",
                     "name": "x",
                     "repeating": true,
-                    "type": "any",
+                    "type": "boolean",
                     "cellValueType": "booleancellvalue"
                 }
             ],
