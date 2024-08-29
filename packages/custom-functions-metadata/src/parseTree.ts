@@ -166,7 +166,7 @@ const CELLVALUETYPE_TO_BASICTYPE_MAPPINGS = {
   "doublecellvalue": "number",
   "entitycellvalue": "any",
   "errorcellvalue": "any",
-  "formattednumbercellvalue": "any",
+  "formattednumbercellvalue": "number",
   "linkedentitycellvalue": "any",
   "localimagecellvalue": "any",
   "stringcellvalue": "string",
