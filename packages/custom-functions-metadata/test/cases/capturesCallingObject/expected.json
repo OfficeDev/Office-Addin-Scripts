@@ -1,0 +1,20 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "basic custom function with callingObject parameter and capturesCallingObject tag",
+            "id": "BASIC",
+            "name": "BASIC",
+            "options": {
+                "capturesCallingObject": true
+            },
+            "parameters": [
+                {
+                    "name": "callingObject",
+                    "type": "any"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

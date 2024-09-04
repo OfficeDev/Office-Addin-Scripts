@@ -10,6 +10,7 @@ The function parameter types may be provided using the [@param](#param) tag in J
 
 ## Tags
 * [@cancelable](#cancelable)
+* [@capturesCallingObject](#capturescallingobject)
 * [@customfunction](#customfunction) id name
 * [@excludeFromAutoComplete](#excludeFromAutoComplete)
 * [@helpurl](#helpurl) url
@@ -32,6 +33,11 @@ If the last function parameter is of type `CustomFunctions.CancelableInvocation`
 
  A function cannot have both `@cancelable` and `@streaming` tags.
 
+---
+### @capturesCallingObject
+
+Indicates that the custom function captures the calling object i.e. the [Excel.CellValue](https://learn.microsoft.com/es-es/javascript/api/excel/excel.cellvalue)
+object that invoked the custom function, in the first parameter.
 
 ---
 ### @customfunction
@@ -87,7 +93,7 @@ The function will be excluded from the autocomplete drop-down list and Formula B
 * Must accept and return a single non-repeating, non-optional, scalar parameter of type `unknown`.
 * Must not be a XLL-compatible custom function.
 * Must allow rich data as input.
-* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, or `@excludeFromAutoComplete` tags.
+* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, `@excludeFromAutoComplete`, or `@capturesCallingObject` tags.
 
 ---
 ### @param 
