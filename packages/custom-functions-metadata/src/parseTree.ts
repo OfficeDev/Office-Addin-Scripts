@@ -28,6 +28,7 @@ export interface IFunctionOptions {
   requiresParameterAddresses?: boolean;
   excludeFromAutoComplete?: boolean;
   linkedEntityDataProvider?: boolean;
+  capturesCallingObject?: boolean;
 }
 
 export interface IFunctionParameter {
@@ -105,6 +106,7 @@ const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
+const CAPTURESCALLINGOBJECT = "capturescallingobject";
 
 const TYPE_MAPPINGS_SIMPLE = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -299,7 +301,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.volatile &&
             !options.requiresParameterAddresses &&
             !options.excludeFromAutoComplete &&
-            !options.linkedEntityDataProvider
+            !options.linkedEntityDataProvider &&
+            !options.capturesCallingObject
           ) {
             delete functionMetadata.options;
           } else {
@@ -329,6 +332,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.linkedEntityDataProvider) {
               delete options.linkedEntityDataProvider;
+            }
+
+            if (!options.capturesCallingObject) {
+              delete options.capturesCallingObject;
             }
           }
 
@@ -473,6 +480,7 @@ function getOptions(
     requiresParameterAddresses: isRequiresParameterAddresses(func),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityDataProvider: isLinkedEntityDataProvider(func),
+    capturesCallingObject: capturesCallingObject(func),
   };
 
   if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
@@ -497,7 +505,8 @@ function getOptions(
       optionsItem.volatile ||
       optionsItem.stream ||
       optionsItem.requiresAddress ||
-      optionsItem.requiresParameterAddresses)
+      optionsItem.requiresParameterAddresses ||
+      optionsItem.capturesCallingObject)
   ) {
     let errorParam: string = "";
     const functionPosition = getPosition(func);
@@ -512,6 +521,8 @@ function getOptions(
       errorParam = "@requiresAddress";
     } else if (optionsItem.requiresParameterAddresses) {
       errorParam = "@requiresParameterAddresses";
+    } else if (optionsItem.capturesCallingObject) {
+      errorParam = "@capturesCallingObject";
     }
 
     const errorString = `${errorParam} cannot be used with @linkedEntityDataProvider.`;
@@ -835,6 +846,14 @@ function isExcludedFromAutoComplete(node: ts.Node): boolean {
  */
 function isLinkedEntityDataProvider(node: ts.Node): boolean {
   return hasTag(node, LINKEDENTITYDATAPROVIDER);
+}
+
+/**
+ * Returns true if capturesCallingObject tag found in comments
+ * @param node jsDocs node
+ */
+function capturesCallingObject(node: ts.Node): boolean {
+  return hasTag(node, CAPTURESCALLINGOBJECT);
 }
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
