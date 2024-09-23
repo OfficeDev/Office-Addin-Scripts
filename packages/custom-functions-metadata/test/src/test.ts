@@ -38,8 +38,8 @@ describe("test json output", function() {
             assert.strictEqual(j.functions[5].result.type, undefined, "void type - result type any not created properly");
             assert.strictEqual(j.functions[6].parameters[0].type, "any", "object type - type any not created properly");
             assert.strictEqual(j.functions[6].result.type, undefined, "object type - result type any not created properly");
-            assert.strictEqual(j.functions[8].parameters[0].type, "any", "enum type - type any not created properly");
-            assert.strictEqual(j.functions[8].result.type, undefined, "enum type - result type any not created properly");
+            assert.strictEqual(j.functions[8].parameters[0].type, "string", "enum type - type any not created properly");
+            assert.strictEqual(j.functions[8].result.type, "string", "enum type - result type any not created properly");
             assert.strictEqual(j.functions[9].parameters[0].type, "any", "tuple type - type any not created properly");
             assert.strictEqual(j.functions[9].result.type, undefined, "tuple type - result type any not created properly");
             assert.strictEqual(j.functions[10].options.stream, true, "CustomFunctions.StreamingHandler - options stream not created properly");

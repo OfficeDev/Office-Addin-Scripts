@@ -79,6 +79,10 @@ function testdatetime(d: number): string {
     return "";
 }
 
+/**
+ * @customenum
+ * @enum {string}
+ */
 enum Color {Red,Green,Blue};
 
 /**

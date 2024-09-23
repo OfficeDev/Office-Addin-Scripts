@@ -5,6 +5,6 @@
  * Cell Value type in return type will convert to "any" (thus omitted).
  * @customfunction
  */
-function cellValueAsReturnType(x): Excel.BooleanCellValue {
+function cellValueAsReturnType(x): Excel.EntityCellValue {
     // empty
 }

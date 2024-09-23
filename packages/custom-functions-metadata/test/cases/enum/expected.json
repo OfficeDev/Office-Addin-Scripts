@@ -1,0 +1,121 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test string enum",
+            "id": "TESTSTRINGENUM",
+            "name": "TESTSTRINGENUM",
+            "parameters": [
+                {
+                    "name": "first",
+                    "type": "number"
+                },
+                {
+                    "description": "param of enum type planets",
+                    "name": "second",
+                    "type": "string",
+                    "customEnumType": "PLANETS"
+                }
+            ],
+            "result": {}
+        },
+        {
+            "description": "Test number enum",
+            "id": "TESTNUMBERENUM",
+            "name": "TESTNUMBERENUM",
+            "parameters": [
+                {
+                    "name": "first",
+                    "type": "number"
+                },
+                {
+                    "description": "param of enum type numbers",
+                    "name": "second",
+                    "repeating": true,
+                    "type": "number",
+                    "customEnumType": "NUMBERS"
+                }
+            ],
+            "result": {}
+        }
+    ],
+    "enums": [
+        {
+            "id": "PLANETS",
+            "type": "string",
+            "values": [
+                {
+                    "value": "mercuryvalue",
+                    "description": "mercury",
+                    "tooltip": "mercury is the first planet from the sun"
+                },
+                {
+                    "value": "venusvalue",
+                    "description": "venus",
+                    "tooltip": "venus is the second planet from the sun"
+                },
+                {
+                    "value": "earthvalue",
+                    "description": "earth",
+                    "tooltip": "earth is the third planet from the sun"
+                },
+                {
+                    "value": "marsvalue",
+                    "description": "mars",
+                    "tooltip": "mars is the fourth planet from the sun"
+                },
+                {
+                    "value": "jupitervalue",
+                    "description": "jupiter",
+                    "tooltip": "jupiter is the fifth planet from the sun"
+                },
+                {
+                    "value": "saturnvalue",
+                    "description": "saturn",
+                    "tooltip": "saturn is the sixth planet from the sun"
+                },
+                {
+                    "value": "uranusvalue",
+                    "description": "uranus",
+                    "tooltip": "uranus is the seventh planet from the sun"
+                },
+                {
+                    "value": "neptunevalue",
+                    "description": "neptune",
+                    "tooltip": "neptune is the eighth planet from the sun"
+                }
+            ]
+        },
+        {
+            "id": "NUMBERS",
+            "type": "number",
+            "values": [
+                {
+                    "value": 1,
+                    "description": "One",
+                    "tooltip": "One"
+                },
+                {
+                    "value": 2,
+                    "description": "Two",
+                    "tooltip": "Two"
+                },
+                {
+                    "value": 3,
+                    "description": "Three",
+                    "tooltip": "Three"
+                },
+                {
+                    "value": 4,
+                    "description": "Four",
+                    "tooltip": "Four"
+                },
+                {
+                    "value": 5,
+                    "description": "Five",
+                    "tooltip": "Five"
+                }
+            ]
+        }
+    ]
+}

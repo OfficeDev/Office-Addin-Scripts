@@ -1,0 +1,2 @@
+Enum type must match the enum type in annotation: PLANETS (1,1)
+Enum value type must be consistent: NUMBERS (11,2)

@@ -1,0 +1,1 @@
+Enum PLANETS is missing @enum type annotation (1,1)
