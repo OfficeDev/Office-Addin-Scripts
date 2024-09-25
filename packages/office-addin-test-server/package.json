@@ -24,14 +24,14 @@
     "dependencies": {
         "commander": "^6.2.0",
         "cors": "^2.8.5",
-        "express": "^4.17.3",
+        "express": "^4.21.0",
         "office-addin-cli": "^1.6.4",
         "office-addin-dev-certs": "^1.13.4"
     },
     "devDependencies": {
         "@types/cors": "^2.8.6",
         "@types/es6-collections": "^0.5.31",
-        "@types/express": "^4.17.13",
+        "@types/express": "^4.17.21",
         "@types/mocha": "^5.2.7",
         "@types/node": "^14.17.2",
         "concurrently": "^6.3.0",
