@@ -30,8 +30,8 @@ extends:
         - template: /.azure-devops/steps/test.yml@self
       - job: Linux
         pool:
-          name: pt-validation-ppe
-          image: pt-validation-ppe-linux
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: ubuntu-latest
           os: linux
         steps:
         - template: /.azure-devops/steps/npm-install.yaml@self
