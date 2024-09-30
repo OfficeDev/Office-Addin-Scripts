@@ -11,6 +11,8 @@ resources:
 extends:
   template: /v1/Office.Unofficial.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
+    pool:
+      name: OE-OfficeClientApps
     sdl:
       eslint:
         configuration: required
@@ -20,8 +22,6 @@ extends:
     - stage: stage
       jobs:
       - job: Windows_10_Latest
-        pool:
-          name: OE-OfficeClientApps
         steps:
         - template: /.azure-devops/steps/npm-install.yaml@self
         - template: /.azure-devops/steps/build.yaml@self
