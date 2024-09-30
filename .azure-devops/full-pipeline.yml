@@ -23,16 +23,16 @@ extends:
         pool:
           name: OE-OfficeClientApps
         steps:
-        - template: ./steps/npm-install.yaml
-        - template: ./steps/build.yaml
-        - template: ./steps/devcerts.yml
-        - template: ./steps/edgewebview.yml
-        - template: ./steps/test.yml
+        - template: /.azure-devops/steps/npm-install.yaml
+        - template: /.azure-devops/steps/build.yaml
+        - template: /.azure-devops/steps/devcerts.yml
+        - template: /.azure-devops/steps/edgewebview.yml
+        - template: /.azure-devops/steps/test.yml
       - job: Linux
         pool:
           name: Azure Pipelines
           vmImage: ubuntu-latest
         steps:
-        - template: ./steps/npm-install.yaml
-        - template: ./steps/build.yaml
-        - template: ./steps/test.yml
+        - template: /.azure-devops/steps/npm-install.yaml
+        - template: /.azure-devops/steps/build.yaml
+        - template: /.azure-devops/steps/test.yml
