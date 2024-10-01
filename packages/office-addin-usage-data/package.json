@@ -1,6 +1,6 @@
 {
   "name": "office-addin-usage-data",
-  "version": "1.6.13",
+  "version": "1.6.14",
   "description": "Provides infrastructure to send usage data events and exceptions.",
   "main": "./lib/main.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "mocha": "^9.1.1",
     "office-addin-prettier-config": "^1.2.1",
     "rimraf": "^3.0.2",
-    "sinon": "^7.5.0",
+    "sinon": "^19.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4",
     "typescript-eslint": "^8.4.0"
