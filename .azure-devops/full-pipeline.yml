@@ -19,6 +19,7 @@ extends:
         parser: '@typescript-eslint/parser'
         parserOptions: sourceType:module
           project:['./packages/*/tsconfig.json']
+          tsconfigRootDir:import.meta.dirname
     stages:
     - stage: stage
       jobs:
