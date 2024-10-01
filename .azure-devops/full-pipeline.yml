@@ -13,11 +13,14 @@ extends:
   parameters:
     pool:
       name: OE-OfficeClientApps
+    featureFlags:
+      scanAllEslintScriptExtensions: true
     sdl:
       eslint:
         configuration: required
         parser: '@typescript-eslint/parser'
         parserOptions: sourceType:module
+        targetsESLint: $(Build.SourcesDirectory)/packages/**/**/*.ts
     stages:
     - stage: stage
       jobs:
