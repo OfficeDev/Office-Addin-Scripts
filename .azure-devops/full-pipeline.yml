@@ -20,7 +20,7 @@ extends:
         configuration: required
         parser: '@typescript-eslint/parser'
         parserOptions: sourceType:module
-        targetsESLint: $(Build.SourcesDirectory)/packages/**/**/*.ts
+        targetsESLint: $(Build.SourcesDirectory)/packages/**/*.ts
     stages:
     - stage: stage
       jobs:
