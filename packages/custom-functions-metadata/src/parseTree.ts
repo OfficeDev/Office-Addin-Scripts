@@ -40,6 +40,12 @@ export interface IFunctionParameter {
   repeating?: boolean;
 }
 
+interface IParameterType {
+  type: string;
+  customEnumType?: string;
+  cellValueType?: string;
+}
+
 export interface IFunctionResult {
   type?: string;
   dimensionality?: string;
@@ -60,6 +66,7 @@ export interface IParseTreeResult {
   associate: IAssociate[];
   extras: IFunctionExtras[];
   functions: IFunction[];
+  enums: IEnum[];
 }
 
 export interface IAssociate {
@@ -83,7 +90,7 @@ interface IArrayType {
 }
 
 interface IGetParametersArguments {
-  enumList: string[];
+  enums: IEnum[];
   extra: IFunctionExtras;
   jsDocParamInfo: { [key: string]: string };
   jsDocParamOptionalInfo: { [key: string]: string };
@@ -97,7 +104,21 @@ interface IJsDocParamType {
   dimensionality: string;
 }
 
+export interface IEnum {
+  id: string;
+  type: string;
+  values: IEnumValue[];
+}
+
+interface IEnumValue {
+  value: string | number;
+  description: string;
+  tooltip: string;
+}
+
 const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
+const CUSTOM_ENUM = "customenum"; // case insensitive @CustomEnum tag to identify custom Enums in JSDoc
+const ENUM = "enum";
 const HELPURL_PARAM = "helpurl";
 const VOLATILE = "volatile";
 const STREAMING = "streaming";
@@ -138,6 +159,20 @@ const TYPE_CUSTOM_FUNCTION_CANCELABLE = {
   ["customfunctions.cancelablehandler"]: 1,
   ["customfunctions.cancelableinvocation"]: 2,
 };
+
+const CELLVALUETYPE_TO_BASICTYPE_MAPPINGS = {
+  cellvalue: "any",
+  booleancellvalue: "boolean",
+  doublecellvalue: "number",
+  entitycellvalue: "any",
+  errorcellvalue: "any",
+  formattednumbercellvalue: "number",
+  linkedentitycellvalue: "any",
+  localimagecellvalue: "any",
+  stringcellvalue: "string",
+  webimagecellvalue: "any",
+};
+
 const TYPE_CUSTOM_FUNCTION_INVOCATION = "customfunctions.invocation";
 
 // These does not work if the developer is using namespace/type alias. To support that, we'd need to
@@ -173,191 +208,549 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
   const associate: IAssociate[] = [];
   const functions: IFunction[] = [];
   const extras: IFunctionExtras[] = [];
-  const enumList: string[] = [];
+  const enums: IEnum[] = [];
   const functionNames: string[] = [];
   const metadataFunctionNames: string[] = [];
-  const ids: string[] = [];
+  const metadataEnumIds: string[] = [];
+  const metadataFunctionIds: string[] = [];
 
   const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
   buildEnums(sourceFile);
-  visit(sourceFile);
+  buildFunctions(sourceFile);
   const parseTreeResult: IParseTreeResult = {
     associate,
     extras,
     functions,
+    enums,
   };
   return parseTreeResult;
 
   function buildEnums(node: ts.Node) {
     if (ts.isEnumDeclaration(node)) {
-      enumList.push(node.name.getText());
+      buildSingleEnum(node);
     }
     ts.forEachChild(node, buildEnums);
   }
 
-  function visit(node: ts.Node) {
-    if (ts.isFunctionDeclaration(node)) {
-      if (node.parent && node.parent.kind === ts.SyntaxKind.SourceFile) {
-        const functionDeclaration = node as ts.FunctionDeclaration;
-        const position = getPosition(functionDeclaration);
-        const functionErrors: string[] = [];
-        const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
+  function buildSingleEnum(node: ts.Node) {
+    if (!ts.isEnumDeclaration(node)) {
+      return;
+    }
 
-        if (checkForDuplicate(functionNames, functionName)) {
-          const errorString = `Duplicate function name: ${functionName}`;
-          functionErrors.push(logError(errorString, position));
-        }
+    if (!node.parent || node.parent.kind !== ts.SyntaxKind.SourceFile) {
+      return;
+    }
 
-        functionNames.push(functionName);
+    const enumDeclaration = node as ts.EnumDeclaration;
 
-        if (isCustomFunction(functionDeclaration)) {
-          const extra: IFunctionExtras = {
-            errors: functionErrors,
-            javascriptFunctionName: functionName,
-          };
-          const idName = getTagComment(functionDeclaration, CUSTOM_FUNCTION);
-          const idNameArray = idName.split(" ");
-          const jsDocParamInfo = getJSDocParams(functionDeclaration);
-          const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
-          const jsDocParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
+    if (!isCustomEnum(enumDeclaration)) {
+      return;
+    }
 
-          const [lastParameter] = functionDeclaration.parameters.slice(-1);
-          const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
-          const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
-          const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
+    if (enumDeclaration.members.length === 0) {
+      return;
+    }
 
-          const parametersToParse =
-            isStreamingFunction || isCancelableFunction || isInvocationFunction
-              ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
-              : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
+    const extra: IFunctionExtras = {
+      errors: [],
+      javascriptFunctionName: "",
+    };
 
-          const parameterItems: IGetParametersArguments = {
-            enumList,
-            extra,
-            jsDocParamInfo,
-            jsDocParamOptionalInfo,
-            jsDocParamTypeInfo,
-            parametersToParse,
-          };
-          const parameters = getParameters(parameterItems);
+    const id = enumDeclaration.name.text;
+    validateId(id, getPosition(enumDeclaration), extra);
+    extras.push(extra);
 
-          const description = getDescription(functionDeclaration);
-          const helpUrl = normalizeLineEndings(getTagComment(functionDeclaration, HELPURL_PARAM));
+    if (checkForDuplicate(metadataEnumIds, id)) {
+      const errorString = `@customenum tag specifies a duplicate name: ${id}`;
+      extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+    }
 
-          const result = getResults(
-            functionDeclaration,
-            isStreamingFunction,
-            lastParameter,
-            jsDocParamTypeInfo,
-            extra,
-            enumList
-          );
+    metadataEnumIds.push(id);
 
-          const options = getOptions(
-            functionDeclaration,
-            isStreamingFunction,
-            isCancelableFunction,
-            isInvocationFunction,
-            extra
-          );
+    let isNumberEnum = false;
 
-          const funcName: string = functionDeclaration.name ? functionDeclaration.name.text : "";
-          const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
-          const name = idNameArray[1] || id;
+    // Extract JSDoc type from the enum declaration
+    const jsDocTags = ts.getJSDocTags(enumDeclaration);
+    const jsDocTypeTag = jsDocTags.find((tag) => tag.tagName.text === ENUM);
 
-          validateId(id, position, extra);
-          validateName(name, position, extra);
-
-          if (checkForDuplicate(metadataFunctionNames, name)) {
-            const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
-            functionErrors.push(logError(errorString, position));
-          }
-
-          metadataFunctionNames.push(name);
-
-          if (checkForDuplicate(ids, id)) {
-            const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
-            functionErrors.push(logError(errorString, position));
-          }
-
-          ids.push(id);
-          associate.push({ sourceFileName, functionName, id });
-
-          const functionMetadata: IFunction = {
-            description,
-            helpUrl,
-            id,
-            name,
-            options,
-            parameters,
-            result,
-          };
-
-          if (
-            !options.cancelable &&
-            !options.requiresAddress &&
-            !options.stream &&
-            !options.volatile &&
-            !options.requiresParameterAddresses &&
-            !options.excludeFromAutoComplete &&
-            !options.linkedEntityDataProvider &&
-            !options.capturesCallingObject
-          ) {
-            delete functionMetadata.options;
-          } else {
-            if (!options.cancelable) {
-              delete options.cancelable;
-            }
-
-            if (!options.requiresAddress) {
-              delete options.requiresAddress;
-            }
-
-            if (!options.stream) {
-              delete options.stream;
-            }
-
-            if (!options.volatile) {
-              delete options.volatile;
-            }
-
-            if (!options.requiresParameterAddresses) {
-              delete options.requiresParameterAddresses;
-            }
-
-            if (!options.excludeFromAutoComplete) {
-              delete options.excludeFromAutoComplete;
-            }
-
-            if (!options.linkedEntityDataProvider) {
-              delete options.linkedEntityDataProvider;
-            }
-
-            if (!options.capturesCallingObject) {
-              delete options.capturesCallingObject;
-            }
-          }
-
-          if (!functionMetadata.helpUrl) {
-            delete functionMetadata.helpUrl;
-          }
-
-          if (!functionMetadata.description) {
-            delete functionMetadata.description;
-          }
-
-          if (!functionMetadata.result) {
-            delete functionMetadata.result;
-          }
-
-          extras.push(extra);
-          functions.push(functionMetadata);
-        }
+    let jsDocType: string | null = null;
+    if (jsDocTypeTag) {
+      const typeExpression = (jsDocTypeTag as ts.JSDocPropertyTag).typeExpression;
+      if (typeExpression && ts.isJSDocTypeExpression(typeExpression)) {
+        jsDocType = typeExpression.getFullText().trim();
       }
     }
 
-    ts.forEachChild(node, visit);
+    if (!jsDocType) {
+      const errorString = `Enum ${id} is missing @enum type annotation`;
+      extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+      return;
+    }
+
+    const firstMember = enumDeclaration.members[0];
+    if (firstMember.initializer) {
+      const initializerText = firstMember.initializer.getText();
+      isNumberEnum = !isNaN(Number(initializerText));
+
+      const errorString = `Enum type must match the enum type in annotation: ${id}`;
+      if ((isNumberEnum && jsDocType !== "{number}") || (!isNumberEnum && jsDocType !== "{string}")) {
+        extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+        return;
+      }
+    }
+
+    const values: IEnumValue[] = [];
+    for (const member of enumDeclaration.members) {
+      const value = member.initializer ? JSON.parse(member.initializer.getText()) : member.name.getText();
+      if ((isNumberEnum && typeof value !== "number") || (!isNumberEnum && typeof value !== "string")) {
+        const errorString = `Enum value type must be consistent: ${id}`;
+        extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+        return;
+      }
+      const description = member.name.getText();
+      const tooltip =
+        ts
+          .getLeadingCommentRanges(sourceFile.getFullText(), member.getFullStart())
+          ?.map((range) => sourceFile.getFullText().substring(range.pos, range.end).trim())
+          .join("\n")
+          .replace(/^\s*[/*]+\s?/gm, "") // Strip leading slashes, asterisks, and whitespace
+          .replace(/\s*[/*]+$/gm, "") || ""; // Strip trailing slashes, asterisks, and whitespace
+      values.push({ value, description, tooltip });
+    }
+
+    const enumItem: IEnum = {
+      id,
+      type: isNumberEnum ? "number" : "string",
+      values,
+    };
+
+    enums.push(enumItem);
+  }
+
+  function buildFunctions(node: ts.Node) {
+    if (ts.isFunctionDeclaration(node)) {
+      buildSingleFunction(node);
+    }
+    ts.forEachChild(node, buildFunctions);
+  }
+
+  function buildSingleFunction(node: ts.Node) {
+    if (!ts.isFunctionDeclaration(node)) {
+      return;
+    }
+
+    if (!node.parent || node.parent.kind !== ts.SyntaxKind.SourceFile) {
+      return;
+    }
+
+    const functionDeclaration = node as ts.FunctionDeclaration;
+
+    if (!isCustomFunction(functionDeclaration)) {
+      return;
+    }
+
+    const position = getPosition(functionDeclaration);
+    const functionErrors: string[] = [];
+    const functionName = functionDeclaration.name ? functionDeclaration.name.text : "";
+
+    if (checkForDuplicate(functionNames, functionName)) {
+      const errorString = `Duplicate function name: ${functionName}`;
+      functionErrors.push(logError(errorString, position));
+    }
+
+    functionNames.push(functionName);
+
+    const extra: IFunctionExtras = {
+      errors: functionErrors,
+      javascriptFunctionName: functionName,
+    };
+    const idName = getTagComment(functionDeclaration, CUSTOM_FUNCTION);
+    const idNameArray = idName.split(" ");
+    const jsDocParamInfo = getJSDocParams(functionDeclaration);
+    const jsDocParamTypeInfo = getJSDocParamsType(functionDeclaration);
+    const jsDocParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
+
+    const [lastParameter] = functionDeclaration.parameters.slice(-1);
+    const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
+    const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
+    const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
+
+    const parametersToParse =
+      isStreamingFunction || isCancelableFunction || isInvocationFunction
+        ? functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length - 1)
+        : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
+
+    const parameterItems: IGetParametersArguments = {
+      enums,
+      extra,
+      jsDocParamInfo,
+      jsDocParamOptionalInfo,
+      jsDocParamTypeInfo,
+      parametersToParse,
+    };
+    const parameters = getParameters(parameterItems);
+
+    const description = getDescription(functionDeclaration);
+    const helpUrl = normalizeLineEndings(getTagComment(functionDeclaration, HELPURL_PARAM));
+
+    const result = getResults(functionDeclaration, isStreamingFunction, lastParameter, jsDocParamTypeInfo, extra);
+
+    const options = getOptions(
+      functionDeclaration,
+      isStreamingFunction,
+      isCancelableFunction,
+      isInvocationFunction,
+      extra
+    );
+
+    const funcName: string = functionDeclaration.name ? functionDeclaration.name.text : "";
+    const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
+    const name = idNameArray[1] || id;
+
+    validateId(id, position, extra);
+    validateName(name, position, extra);
+
+    if (checkForDuplicate(metadataFunctionNames, name)) {
+      const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
+      functionErrors.push(logError(errorString, position));
+    }
+
+    metadataFunctionNames.push(name);
+
+    if (checkForDuplicate(metadataFunctionIds, id)) {
+      const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
+      functionErrors.push(logError(errorString, position));
+    }
+
+    metadataFunctionIds.push(id);
+    associate.push({ sourceFileName, functionName, id });
+
+    const functionMetadata: IFunction = {
+      description,
+      helpUrl,
+      id,
+      name,
+      options,
+      parameters,
+      result,
+    };
+
+    if (
+      !options.cancelable &&
+      !options.requiresAddress &&
+      !options.stream &&
+      !options.volatile &&
+      !options.requiresParameterAddresses &&
+      !options.excludeFromAutoComplete &&
+      !options.linkedEntityDataProvider &&
+      !options.capturesCallingObject
+    ) {
+      delete functionMetadata.options;
+    } else {
+      if (!options.cancelable) {
+        delete options.cancelable;
+      }
+
+      if (!options.requiresAddress) {
+        delete options.requiresAddress;
+      }
+
+      if (!options.stream) {
+        delete options.stream;
+      }
+
+      if (!options.volatile) {
+        delete options.volatile;
+      }
+
+      if (!options.requiresParameterAddresses) {
+        delete options.requiresParameterAddresses;
+      }
+
+      if (!options.excludeFromAutoComplete) {
+        delete options.excludeFromAutoComplete;
+      }
+
+      if (!options.linkedEntityDataProvider) {
+        delete options.linkedEntityDataProvider;
+      }
+
+      if (!options.capturesCallingObject) {
+        delete options.capturesCallingObject;
+      }
+    }
+
+    if (!functionMetadata.helpUrl) {
+      delete functionMetadata.helpUrl;
+    }
+
+    if (!functionMetadata.description) {
+      delete functionMetadata.description;
+    }
+
+    if (!functionMetadata.result) {
+      delete functionMetadata.result;
+    }
+
+    extras.push(extra);
+    functions.push(functionMetadata);
+  }
+
+  /**
+   * Gets the parameter type of the node
+   * @param node TypeNode
+   */
+  function getParamType(node: ts.TypeNode, extra: IFunctionExtras): IParameterType {
+    let type = "any";
+    // Only get type for typescript files. js files will return "any" for all types
+    if (!node) {
+      return { type: type };
+    }
+    const typePosition = getPosition(node);
+
+    // Get the inner type node if it is an array
+    if (typeNodeIsArray(node)) {
+      let arrayType: IArrayType = {
+        dimensionality: 0,
+        node,
+      };
+      arrayType = getArrayDimensionalityAndType(node);
+      node = arrayType.node;
+    }
+
+    // We currently accept the following types of reference node: enum will be converted to "any",
+    // Excel.CellValue will be converted accordingly. Anything else is invalid. (Array reference node has already been covered above.)
+    if (ts.isTypeReferenceNode(node)) {
+      const typeReferenceNode = node as ts.TypeReferenceNode;
+      let nodeTypeName = typeReferenceNode.typeName.getText();
+      // check enum type
+      for (const enumItem of enums) {
+        if (enumItem.id === nodeTypeName) {
+          return { type: enumItem.type, customEnumType: nodeTypeName };
+        }
+      }
+
+      // @ts-ignore
+      if (CELLVALUETYPE_MAPPINGS[nodeTypeName]) {
+        // @ts-ignore
+        let cellValue = CELLVALUETYPE_MAPPINGS[nodeTypeName];
+        if (cellValue === "unsupported") {
+          const errorString = `Custom function does not support cell value type: ${typeReferenceNode.typeName.getText()}`;
+          extra.errors.push(logError(errorString, typePosition));
+          return { type: type };
+        }
+        // @ts-ignore
+        return { type: CELLVALUETYPE_TO_BASICTYPE_MAPPINGS[cellValue], cellValueType: cellValue };
+      }
+
+      const errorString = `Custom function does not support type "${typeReferenceNode.typeName.getText()}" as input or return parameter.`;
+      extra.errors.push(logError(errorString, typePosition));
+      return { type: type };
+    }
+
+    // @ts-ignore
+    type = TYPE_MAPPINGS[node.kind];
+    if (!type) {
+      extra.errors.push(logError("Type doesn't match mappings", typePosition));
+    }
+
+    return { type: type };
+  }
+
+  /**
+   * Determines the results parameter for the json
+   * @param func - Function
+   * @param isStreaming - Is a streaming function
+   * @param lastParameter - Last parameter of the function signature
+   */
+  function getResults(
+    func: ts.FunctionDeclaration,
+    isStreamingFunction: boolean,
+    lastParameter: ts.ParameterDeclaration,
+    jsDocParamTypeInfo: { [key: string]: IJsDocParamType },
+    extra: IFunctionExtras
+  ): IFunctionResult {
+    let resultType = "any";
+    let resultDim = "scalar";
+    const defaultResultItem: IFunctionResult = {
+      dimensionality: resultDim,
+      type: resultType,
+    };
+
+    const lastParameterPosition = getPosition(lastParameter);
+
+    // Try and determine the return type.  If one can't be determined we will set to any type
+    if (isStreamingFunction) {
+      const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
+      if (!lastParameterType) {
+        // Need to get result type from param {type}
+        const name = (lastParameter.name as ts.Identifier).text;
+        const ptype = jsDocParamTypeInfo[name];
+        // @ts-ignore
+        resultType = ptype.returnType;
+        resultDim = ptype.dimensionality;
+        const paramResultItem: IFunctionResult = {
+          dimensionality: resultDim,
+          type: resultType,
+        };
+
+        if (paramResultItem.dimensionality === "scalar") {
+          delete paramResultItem.dimensionality;
+        }
+
+        return paramResultItem;
+      }
+      if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
+        const errorString =
+          "The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >') :";
+        extra.errors.push(logError(errorString, lastParameterPosition));
+        return defaultResultItem;
+      }
+      const returnType = func.type as ts.TypeReferenceNode;
+      if (returnType && returnType.getFullText().trim() !== "void") {
+        const errorString = `A streaming function should return 'void'. Use CustomFunctions.StreamingHandler.setResult() to set results.`;
+        extra.errors.push(logError(errorString, lastParameterPosition));
+        return defaultResultItem;
+      }
+      resultType = getParamType(lastParameterType.typeArguments[0], extra).type;
+      resultDim = getParamDim(lastParameterType.typeArguments[0]);
+    } else if (func.type) {
+      if (
+        func.type.kind === ts.SyntaxKind.TypeReference &&
+        (func.type as ts.TypeReferenceNode).typeName.getText() === "Promise" &&
+        (func.type as ts.TypeReferenceNode).typeArguments &&
+        // @ts-ignore
+        (func.type as ts.TypeReferenceNode).typeArguments.length === 1
+      ) {
+        resultType = getParamType(
+          // @ts-ignore
+          (func.type as ts.TypeReferenceNode).typeArguments[0],
+          extra
+        ).type;
+        resultDim = getParamDim(
+          // @ts-ignore
+          (func.type as ts.TypeReferenceNode).typeArguments[0]
+        );
+      } else {
+        resultType = getParamType(func.type, extra).type;
+        resultDim = getParamDim(func.type);
+      }
+    }
+
+    // Check the code comments for @return parameter
+    const returnTypeFromJSDoc = ts.getJSDocReturnType(func);
+    if (returnTypeFromJSDoc) {
+      if (func.type && func.type.kind !== returnTypeFromJSDoc.kind) {
+        const name = (func.name as ts.Identifier).text;
+        const returnPosition = getPosition(returnTypeFromJSDoc);
+        const errorString = `Type {${ts.SyntaxKind[func.type.kind]}:${
+          ts.SyntaxKind[returnTypeFromJSDoc.kind]
+        }} doesn't match for return type : ${name}`;
+        extra.errors.push(logError(errorString, returnPosition));
+      }
+      if (
+        returnTypeFromJSDoc.kind === ts.SyntaxKind.TypeReference &&
+        (returnTypeFromJSDoc as ts.TypeReferenceNode).typeName.getText() === "Promise" &&
+        (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments &&
+        // @ts-ignore
+        (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments.length === 1
+      ) {
+        resultType = getParamType(
+          // @ts-ignore
+          (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0],
+          extra
+        ).type;
+        resultDim = getParamDim(
+          // @ts-ignore
+          (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0]
+        );
+      } else {
+        resultType = getParamType(returnTypeFromJSDoc, extra).type;
+        resultDim = getParamDim(returnTypeFromJSDoc);
+      }
+    }
+
+    const resultItem: IFunctionResult = {
+      dimensionality: resultDim,
+      type: resultType,
+    };
+
+    // Only return dimensionality = matrix.  Default assumed scalar
+    if (resultDim === "scalar") {
+      delete resultItem.dimensionality;
+    }
+
+    if (resultType === "any") {
+      delete resultItem.type;
+    }
+
+    return resultItem;
+  }
+
+  /**
+   * Determines the parameter details for the json
+   * @param params - Parameters
+   * @param jsDocParamTypeInfo - jsDocs parameter type info
+   * @param jsDocParamInfo = jsDocs parameter info
+   */
+  function getParameters(parameterItem: IGetParametersArguments): IFunctionParameter[] {
+    const parameterMetadata: IFunctionParameter[] = [];
+    parameterItem.parametersToParse
+      .map((p: ts.ParameterDeclaration) => {
+        const parameterPosition = getPosition(p);
+        // Get type node of parameter from typescript
+        let typeNode = p.type as ts.TypeNode;
+        const name = (p.name as ts.Identifier).text;
+        // Get type node of parameter from jsDocs
+        const parameterJSDocTypeNode = ts.getJSDocType(p);
+        if (parameterJSDocTypeNode && typeNode) {
+          if (parameterJSDocTypeNode.kind !== typeNode.kind) {
+            const errorString = `Type {${ts.SyntaxKind[parameterJSDocTypeNode.kind]}:${
+              ts.SyntaxKind[typeNode.kind]
+            }} doesn't match for parameter : ${name}`;
+            parameterItem.extra.errors.push(logError(errorString, parameterPosition));
+          }
+        }
+        if (!typeNode && parameterJSDocTypeNode) {
+          typeNode = parameterJSDocTypeNode;
+        }
+        const ptype = getParamType(typeNode, parameterItem.extra);
+
+        const pMetadataItem: IFunctionParameter = {
+          description: parameterItem.jsDocParamInfo[name],
+          dimensionality: getParamDim(typeNode),
+          name,
+          optional: getParamOptional(p, parameterItem.jsDocParamOptionalInfo),
+          repeating: isRepeatingParameter(typeNode),
+          ...ptype,
+        };
+
+        // Only return dimensionality = matrix.  Default assumed scalar
+        if (pMetadataItem.dimensionality === "scalar") {
+          delete pMetadataItem.dimensionality;
+        }
+
+        // only include optional if true
+        if (!pMetadataItem.optional) {
+          delete pMetadataItem.optional;
+        }
+
+        // only include description if it has a value
+        if (!pMetadataItem.description) {
+          delete pMetadataItem.description;
+        }
+
+        // only return repeating if true and allowed
+        if (!pMetadataItem.repeating) {
+          delete pMetadataItem.repeating;
+        }
+
+        parameterMetadata.push(pMetadataItem);
+      })
+      .filter((meta) => meta);
+
+    return parameterMetadata;
   }
 }
 
@@ -394,7 +787,7 @@ function areStringsEqual(first: string, second: string, ignoreCase = true): bool
  * @param node function, parameter, or node
  */
 function getPosition(
-  node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode,
+  node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.EnumDeclaration | ts.TypeNode,
   position?: number
 ): ts.LineAndCharacter | null {
   let positionLocation = null;
@@ -416,11 +809,11 @@ function validateId(id: string, position: ts.LineAndCharacter | null, extra: IFu
     if (!id) {
       id = "Function name is invalid";
     }
-    const errorString = `The custom function id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`;
+    const errorString = `The custom function or enum id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`;
     extra.errors.push(logError(errorString, position));
   }
   if (id.length > 128) {
-    const errorString = `The custom function id exceeds the maximum of 128 characters allowed.`;
+    const errorString = `The custom function or enum id exceeds the maximum of 128 characters allowed.`;
     extra.errors.push(logError(errorString, position));
   }
 }
@@ -533,209 +926,6 @@ function getOptions(
 }
 
 /**
- * Determines the results parameter for the json
- * @param func - Function
- * @param isStreaming - Is a streaming function
- * @param lastParameter - Last parameter of the function signature
- */
-function getResults(
-  func: ts.FunctionDeclaration,
-  isStreamingFunction: boolean,
-  lastParameter: ts.ParameterDeclaration,
-  jsDocParamTypeInfo: { [key: string]: IJsDocParamType },
-  extra: IFunctionExtras,
-  enumList: string[]
-): IFunctionResult {
-  let resultType = "any";
-  let resultDim = "scalar";
-  const defaultResultItem: IFunctionResult = {
-    dimensionality: resultDim,
-    type: resultType,
-  };
-
-  const lastParameterPosition = getPosition(lastParameter);
-
-  // Try and determine the return type.  If one can't be determined we will set to any type
-  if (isStreamingFunction) {
-    const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
-    if (!lastParameterType) {
-      // Need to get result type from param {type}
-      const name = (lastParameter.name as ts.Identifier).text;
-      const ptype = jsDocParamTypeInfo[name];
-      // @ts-ignore
-      resultType = ptype.returnType;
-      resultDim = ptype.dimensionality;
-      const paramResultItem: IFunctionResult = {
-        dimensionality: resultDim,
-        type: resultType,
-      };
-
-      if (paramResultItem.dimensionality === "scalar") {
-        delete paramResultItem.dimensionality;
-      }
-
-      return paramResultItem;
-    }
-    if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
-      const errorString =
-        "The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >') :";
-      extra.errors.push(logError(errorString, lastParameterPosition));
-      return defaultResultItem;
-    }
-    const returnType = func.type as ts.TypeReferenceNode;
-    if (returnType && returnType.getFullText().trim() !== "void") {
-      const errorString = `A streaming function should return 'void'. Use CustomFunctions.StreamingHandler.setResult() to set results.`;
-      extra.errors.push(logError(errorString, lastParameterPosition));
-      return defaultResultItem;
-    }
-    resultType = getParamType(lastParameterType.typeArguments[0], extra, enumList);
-    resultDim = getParamDim(lastParameterType.typeArguments[0]);
-  } else if (func.type) {
-    if (
-      func.type.kind === ts.SyntaxKind.TypeReference &&
-      (func.type as ts.TypeReferenceNode).typeName.getText() === "Promise" &&
-      (func.type as ts.TypeReferenceNode).typeArguments &&
-      // @ts-ignore
-      (func.type as ts.TypeReferenceNode).typeArguments.length === 1
-    ) {
-      resultType = getParamType(
-        // @ts-ignore
-        (func.type as ts.TypeReferenceNode).typeArguments[0],
-        extra,
-        enumList
-      );
-      resultDim = getParamDim(
-        // @ts-ignore
-        (func.type as ts.TypeReferenceNode).typeArguments[0]
-      );
-    } else {
-      resultType = getParamType(func.type, extra, enumList);
-      resultDim = getParamDim(func.type);
-    }
-  }
-
-  // Check the code comments for @return parameter
-  const returnTypeFromJSDoc = ts.getJSDocReturnType(func);
-  if (returnTypeFromJSDoc) {
-    if (func.type && func.type.kind !== returnTypeFromJSDoc.kind) {
-      const name = (func.name as ts.Identifier).text;
-      const returnPosition = getPosition(returnTypeFromJSDoc);
-      const errorString = `Type {${ts.SyntaxKind[func.type.kind]}:${
-        ts.SyntaxKind[returnTypeFromJSDoc.kind]
-      }} doesn't match for return type : ${name}`;
-      extra.errors.push(logError(errorString, returnPosition));
-    }
-    if (
-      returnTypeFromJSDoc.kind === ts.SyntaxKind.TypeReference &&
-      (returnTypeFromJSDoc as ts.TypeReferenceNode).typeName.getText() === "Promise" &&
-      (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments &&
-      // @ts-ignore
-      (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments.length === 1
-    ) {
-      resultType = getParamType(
-        // @ts-ignore
-        (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0],
-        extra,
-        enumList
-      );
-      resultDim = getParamDim(
-        // @ts-ignore
-        (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0]
-      );
-    } else {
-      resultType = getParamType(returnTypeFromJSDoc, extra, enumList);
-      resultDim = getParamDim(returnTypeFromJSDoc);
-    }
-  }
-
-  const resultItem: IFunctionResult = {
-    dimensionality: resultDim,
-    type: resultType,
-  };
-
-  // We convert cell value types to "any".
-  if (Object.values(CELLVALUETYPE_MAPPINGS).includes(resultType)) {
-    resultType = "any";
-  }
-
-  // Only return dimensionality = matrix.  Default assumed scalar
-  if (resultDim === "scalar") {
-    delete resultItem.dimensionality;
-  }
-
-  if (resultType === "any") {
-    delete resultItem.type;
-  }
-
-  return resultItem;
-}
-
-/**
- * Determines the parameter details for the json
- * @param params - Parameters
- * @param jsDocParamTypeInfo - jsDocs parameter type info
- * @param jsDocParamInfo = jsDocs parameter info
- */
-function getParameters(parameterItem: IGetParametersArguments): IFunctionParameter[] {
-  const parameterMetadata: IFunctionParameter[] = [];
-  parameterItem.parametersToParse
-    .map((p: ts.ParameterDeclaration) => {
-      const parameterPosition = getPosition(p);
-      // Get type node of parameter from typescript
-      let typeNode = p.type as ts.TypeNode;
-      const name = (p.name as ts.Identifier).text;
-      // Get type node of parameter from jsDocs
-      const parameterJSDocTypeNode = ts.getJSDocType(p);
-      if (parameterJSDocTypeNode && typeNode) {
-        if (parameterJSDocTypeNode.kind !== typeNode.kind) {
-          const errorString = `Type {${ts.SyntaxKind[parameterJSDocTypeNode.kind]}:${
-            ts.SyntaxKind[typeNode.kind]
-          }} doesn't match for parameter : ${name}`;
-          parameterItem.extra.errors.push(logError(errorString, parameterPosition));
-        }
-      }
-      if (!typeNode && parameterJSDocTypeNode) {
-        typeNode = parameterJSDocTypeNode;
-      }
-      const ptype = getParamType(typeNode, parameterItem.extra, parameterItem.enumList);
-
-      const pMetadataItem: IFunctionParameter = {
-        description: parameterItem.jsDocParamInfo[name],
-        dimensionality: getParamDim(typeNode),
-        name,
-        optional: getParamOptional(p, parameterItem.jsDocParamOptionalInfo),
-        repeating: isRepeatingParameter(typeNode),
-        type: ptype,
-      };
-
-      // Only return dimensionality = matrix.  Default assumed scalar
-      if (pMetadataItem.dimensionality === "scalar") {
-        delete pMetadataItem.dimensionality;
-      }
-
-      // only include optional if true
-      if (!pMetadataItem.optional) {
-        delete pMetadataItem.optional;
-      }
-
-      // only include description if it has a value
-      if (!pMetadataItem.description) {
-        delete pMetadataItem.description;
-      }
-
-      // only return repeating if true and allowed
-      if (!pMetadataItem.repeating) {
-        delete pMetadataItem.repeating;
-      }
-
-      parameterMetadata.push(pMetadataItem);
-    })
-    .filter((meta) => meta);
-
-  return parameterMetadata;
-}
-
-/**
  * Used to set repeating parameter true for 1d and 3d arrays
  * @param type Node to check
  * @param jsDocParamType Type from jsDoc
@@ -806,6 +996,14 @@ function hasTag(node: ts.Node, tagName: string): boolean {
  */
 function isCustomFunction(node: ts.Node): boolean {
   return hasTag(node, CUSTOM_FUNCTION);
+}
+
+/**
+ * Returns true if node is a custom Enum
+ * @param node - jsDocs node
+ */
+function isCustomEnum(node: ts.Node): boolean {
+  return hasTag(node, CUSTOM_ENUM);
 }
 
 /**
@@ -1072,63 +1270,6 @@ function hasInvocationParameter(
 
   const typeRef = param.type as ts.TypeReferenceNode;
   return typeRef.typeName.getText() === "CustomFunctions.Invocation";
-}
-
-/**
- * Gets the parameter type of the node
- * @param node TypeNode
- */
-function getParamType(node: ts.TypeNode, extra: IFunctionExtras, enumList: string[]): string {
-  let type = "any";
-  // Only get type for typescript files. js files will return "any" for all types
-  if (!node) {
-    return type;
-  }
-  const typePosition = getPosition(node);
-
-  // Get the inner type node if it is an array
-  if (typeNodeIsArray(node)) {
-    let arrayType: IArrayType = {
-      dimensionality: 0,
-      node,
-    };
-    arrayType = getArrayDimensionalityAndType(node);
-    node = arrayType.node;
-  }
-
-  // We currently accept the following types of reference node: enum will be converted to "any",
-  // Excel.CellValue will be converted accordingly. Anything else is invalid. (Array reference node has already been covered above.)
-  if (ts.isTypeReferenceNode(node)) {
-    const typeReferenceNode = node as ts.TypeReferenceNode;
-    let nodeTypeName = typeReferenceNode.typeName.getText();
-    if (enumList.indexOf(nodeTypeName) >= 0) {
-      // Type found in the enumList
-      return type;
-    }
-    // @ts-ignore
-    if (CELLVALUETYPE_MAPPINGS[nodeTypeName]) {
-      // @ts-ignore
-      let cellValue = CELLVALUETYPE_MAPPINGS[nodeTypeName];
-      if (cellValue === "unsupported") {
-        const errorString = `Custom function does not support cell value type: ${typeReferenceNode.typeName.getText()}`;
-        extra.errors.push(logError(errorString, typePosition));
-        return type;
-      }
-      return cellValue;
-    }
-
-    const errorString = `Custom function does not support type "${typeReferenceNode.typeName.getText()}" as input or return parameter.`;
-    extra.errors.push(logError(errorString, typePosition));
-    return type;
-  }
-
-  // @ts-ignore
-  type = TYPE_MAPPINGS[node.kind];
-  if (!type) {
-    extra.errors.push(logError("Type doesn't match mappings", typePosition));
-  }
-
-  return type;
 }
 
 /**
