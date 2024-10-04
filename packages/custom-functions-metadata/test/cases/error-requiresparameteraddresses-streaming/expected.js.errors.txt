@@ -1,1 +1,0 @@
-@requiresParameterAddresses cannot be used with @streaming. (1,1)
