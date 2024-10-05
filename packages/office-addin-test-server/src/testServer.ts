@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as cors from "cors";
-import * as express from "express";
+import cors from "cors";
+import express from "express";
 import * as https from "https";
 import * as devCerts from "office-addin-dev-certs";
 
@@ -16,13 +16,13 @@ export class TestServer {
   private testServerStarted: boolean;
   private app: express.Express;
   private resultsPromise: Promise<JSON>;
-  private server: https.Server;
+  private server!: https.Server;
 
   constructor(port: number) {
     this.app = express();
     this.jsonData = {};
     this.port = port;
-    this.resultsPromise = undefined;
+    this.resultsPromise = Promise.reject(new Error("No results available"));
     this.testServerStarted = false;
   }
 

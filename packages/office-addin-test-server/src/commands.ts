@@ -26,6 +26,8 @@ function parseTestServerPort(optionValue: any): number {
     if (testServerPort < 0 || testServerPort > 65535) {
       throw new Error("port should be between 0 and 65535.");
     }
+  } else {
+    throw new Error("Error parsing port number.");
   }
   return testServerPort;
 }

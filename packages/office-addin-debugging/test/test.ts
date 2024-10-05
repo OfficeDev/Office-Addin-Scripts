@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as assert from "assert";
-import * as express from "express";
+import express from "express";
 import * as fs from "fs";
 import * as http from "http";
 import * as mocha from "mocha";
@@ -10,6 +10,8 @@ import * as debugInfo from "../src/debugInfo";
 import * as port from "../src/port";
 import * as start from "../src/start";
 import * as stop from "../src/stop";
+
+/* global console */
 
 function startServer(serverPort: number): http.Server {
   const server = http.createServer(express());

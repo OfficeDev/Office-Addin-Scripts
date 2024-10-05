@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
-import * as AdmZip from "adm-zip";
+import AdmZip from "adm-zip";
 import * as path from "path";
 import { ManifestUtil, devPreview } from "@microsoft/teams-manifest";
 

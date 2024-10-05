@@ -45,7 +45,7 @@
     "@types/node": "^20.11.27",
     "@types/node-fetch": "^2.6.11",
     "@types/semver": "^7.3.4",
-    "@types/sinon": "^7.5.2",
+    "@types/sinon": "^17.0.3",
     "@types/whatwg-url": "^11.0.4",
     "@types/winreg": "^1.2.30",
     "concurrently": "^8.2.2",

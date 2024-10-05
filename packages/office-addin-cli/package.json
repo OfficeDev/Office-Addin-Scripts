@@ -29,7 +29,6 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.17.2",
     "@types/node-fetch": "^2.5.10",
-    "@types/sinon": "^7.5.2",
     "concurrently": "^6.2.2",
     "eslint": "^8.57.0",
     "eslint-plugin-office-addins": "^3.0.3",

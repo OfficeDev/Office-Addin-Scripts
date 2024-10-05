@@ -1,12 +1,13 @@
 {
   // Used when parsing scenarios for deprecation tests
   "compilerOptions": {
-    "target": "es5",
+    "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "strict": true,
+    "target": "es5",
     "lib": ["es5", "dom"],
     // Reduce parse time by not auto-including all @types
     "types": []
   },
-  "include": ["fixtures", "../node_modules/@types/**/*.d.ts"]
+  "include": ["fixtures", "../node_modules/@types/**/*.d.ts"],
 }

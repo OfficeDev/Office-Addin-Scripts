@@ -34,7 +34,7 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
   // We default to 60 days if no ttl was provided.
   // If we fail to parse the ttl provided, we notify user and abort.
   let ttl: number = 60;
-  if (!!secretTTL) {
+  if (secretTTL) {
     ttl = parseInt(secretTTL);
     if (isNaN(ttl)) {
       console.log("Secret TTL value provided is not a number");
