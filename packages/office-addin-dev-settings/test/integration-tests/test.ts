@@ -6,7 +6,7 @@ import childProcess from "child_process";
 import * as commander from "commander";
 import inquirer from "inquirer";
 import { afterEach, beforeEach, describe, it } from "mocha";
-import * as sinon from "sinon";
+import sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import * as commands from "../../src/commands";
 

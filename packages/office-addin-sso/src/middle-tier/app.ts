@@ -7,10 +7,10 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-import * as createError from "http-errors";
+import createError from "http-errors";
 import express from "express";
-import * as path from "path";
-import * as cookieParser from "cookie-parser";
+import path from "path";
+import cookieParser from "cookie-parser";
 import logger from "morgan";
 import { getGraphData } from "./msgraph-helper";
 import { getAccessToken, validateJwt } from "./ssoauth-helper";

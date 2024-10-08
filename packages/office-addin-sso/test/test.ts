@@ -99,10 +99,10 @@ describe("Unit Tests", function () {
       assert.equal(serverState, true);
 
       // Ping server to validate it's listening as expected
-      const testServerResponse: testHelper.TestServerResponse = await testHelper.pingTestServer(3000);
+      const testServerResponse = await testHelper.pingTestServer(3000);
       assert.equal(testServerResponse != undefined, true);
-      assert.equal(testServerResponse.status, 200);
-      assert.equal(testServerResponse.platform, process.platform);
+      assert.equal(testServerResponse["status"], 200);
+      assert.equal(testServerResponse["platform"], process.platform);
     });
     it("Stop SSO Service and verify it's stopped", async function () {
       // Stop SSO service
