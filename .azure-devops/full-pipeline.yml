@@ -21,6 +21,7 @@ extends:
         parser: '@typescript-eslint/parser'
         parserOptions: sourceType:module
         targetsESLint: $(Build.SourcesDirectory)/packages/**/*.ts
+        plugins: '@typescript-eslint'
     stages:
     - stage: stage
       jobs:
