@@ -35,6 +35,7 @@ export interface IFunctionParameter {
   name: string;
   description?: string;
   type: string;
+  cellValueType?: string;
   dimensionality?: string;
   optional?: boolean;
   repeating?: boolean;
@@ -159,6 +160,19 @@ const CELLVALUETYPE_MAPPINGS = {
   "Excel.EmptyCellValue": "unsupported",
   "Excel.ReferenceCellValue": "unsupported",
   "Excel.ValueTypeNotAvailableCellValue": "unsupported",
+};
+
+const CELLVALUETYPE_TO_BASICTYPE_MAPPINGS = {
+  "cellvalue": "any",
+  "booleancellvalue": "boolean",
+  "doublecellvalue": "number",
+  "entitycellvalue": "any",
+  "errorcellvalue": "any",
+  "formattednumbercellvalue": "number",
+  "linkedentitycellvalue": "any",
+  "localimagecellvalue": "any",
+  "stringcellvalue": "string",
+  "webimagecellvalue": "any",
 };
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
@@ -707,6 +721,13 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
         repeating: isRepeatingParameter(typeNode),
         type: ptype,
       };
+
+      // for backward compatibility, we put cell value type in cellValueType instead of type.
+      if (Object.values(CELLVALUETYPE_MAPPINGS).includes(ptype)) {
+        // @ts-ignore
+        pMetadataItem.type = CELLVALUETYPE_TO_BASICTYPE_MAPPINGS[ptype];
+        pMetadataItem.cellValueType = ptype
+      }
 
       // Only return dimensionality = matrix.  Default assumed scalar
       if (pMetadataItem.dimensionality === "scalar") {
