@@ -505,6 +505,12 @@ function getOptions(
       const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
+
+    if (isStreamingFunction) {
+      const functionPosition = getPosition(func);
+      const errorString = `${errorParam} cannot be used with @streaming.`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
   }
 
   if (
