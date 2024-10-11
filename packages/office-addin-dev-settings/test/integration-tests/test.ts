@@ -3,7 +3,7 @@
 
 import assert from "assert";
 import childProcess from "child_process";
-import * as commander from "commander";
+import commander from "commander";
 import inquirer from "inquirer";
 import { afterEach, beforeEach, describe, it } from "mocha";
 import sinon from "sinon";

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import commander from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo, OfficeApp, parseOfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import {

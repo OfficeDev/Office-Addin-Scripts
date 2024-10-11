@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import commander from "commander";
 import * as fs from "fs";
 import { parseNumber, getPackageJsonScript } from "office-addin-cli";
 import { logErrorMessage } from "office-addin-usage-data";
