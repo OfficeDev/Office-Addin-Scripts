@@ -28,6 +28,7 @@
     "ws": "^7.4.6"
   },
   "devDependencies": {
+    "@microsoft/eslint-plugin-sdl": "^0.2.2",
     "@types/node": "^14.17.2",
     "@types/node-fetch": "^2.5.10",
     "@types/ws": "^5.1.2",

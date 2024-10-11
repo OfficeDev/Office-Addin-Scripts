@@ -32,10 +32,8 @@ async function testSetSourceBundleUrlComponents(
   assert.strictEqual(actual.host, expected.host);
   assert.strictEqual(actual.path, expected.path);
   assert.strictEqual(actual.port, expected.port);
-  assert.strictEqual(
-    actual.url,
-    `http://${expected.host || "localhost"}:${expected.port || "8081"}/${expected.path || "{path}"}${expected.extension || ".bundle"}`
-  );
+  // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+  assert.strictEqual(actual.url, `http://${expected.host || "localhost"}:${expected.port || "8081"}/${expected.path || "{path}"}${expected.extension || ".bundle"}`);
 }
 
 describe("DevSettingsForAddIn", function () {

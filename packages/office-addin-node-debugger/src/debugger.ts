@@ -23,6 +23,7 @@ export function run(
   const websocketRetryTimeout: number = 500;
 
   function connectToDebuggerProxy(): void {
+    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
     var ws = new WebSocket(`ws://${host}:${port}/debugger-proxy?role=${role}&name=${debuggerName}`);
     var worker: child.ChildProcess;
 

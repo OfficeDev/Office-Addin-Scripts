@@ -38,6 +38,7 @@
     "@microsoft/teamsapp-cli": "3.0.2"
   },
   "devDependencies": {
+    "@microsoft/eslint-plugin-sdl": "^0.2.2",
     "@types/adm-zip": "^0.5.5",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^6.5.0",

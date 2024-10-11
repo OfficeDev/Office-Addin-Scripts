@@ -22,6 +22,8 @@ extends:
         parserOptions: sourceType:module
         targetsESLint: $(Build.SourcesDirectory)/packages/**/*.ts
         plugins: '@typescript-eslint'
+        enableExclusions: true
+        exclusionPatterns: 'test/'
     stages:
     - stage: stage
       jobs:
