@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as assert from "assert";
+import assert from "assert";
 import { describe, it } from "mocha";
 import * as testHelper from "../src/testHelpers";
 import { TestServer } from "office-addin-test-server";

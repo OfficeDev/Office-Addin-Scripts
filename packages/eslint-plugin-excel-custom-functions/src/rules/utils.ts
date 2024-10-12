@@ -5,7 +5,7 @@ import {
   TSESLint,
   TSESTree,
 } from "@typescript-eslint/utils";
-import * as ts from "typescript";
+import ts from "typescript";
 
 export enum OfficeCalls {
   WRITE = "WRITE",

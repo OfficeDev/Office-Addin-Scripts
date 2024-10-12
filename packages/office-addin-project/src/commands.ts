@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import commander from "commander";
-import * as inquirer from "inquirer";
+import inquirer from "inquirer";
 import { logErrorMessage } from "office-addin-usage-data";
 import { usageDataObject } from "./defaults";
 import { convertProject } from "./convert";

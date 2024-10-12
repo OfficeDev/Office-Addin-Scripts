@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
+import fs from "fs";
 import { OfficeAddinManifest } from "office-addin-manifest";
-import * as fspath from "path";
+import fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
 import { ExpectedError } from "office-addin-usage-data";

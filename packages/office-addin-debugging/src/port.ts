@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as childProcess from "child_process";
-import * as crypto from "crypto";
-import * as net from "net";
+import childProcess from "child_process";
+import crypto from "crypto";
+import net from "net";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global process */
@@ -57,8 +57,8 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
     const command = isWin32
       ? `netstat -ano | findstr :${port}`
       : isLinux
-      ? `netstat -tlpna | grep :${port}`
-      : `lsof -n -i:${port}`;
+        ? `netstat -tlpna | grep :${port}`
+        : `lsof -n -i:${port}`;
 
     childProcess.exec(command, (error, stdout) => {
       if (error) {
@@ -74,8 +74,11 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
         if (isWin32) {
           lines.forEach((line) => {
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            const [protocol, localAddress, foreignAddress, status, processId] = line.trim().split(" ").filter((text) => text);
-            if (processId !== undefined && processId.trim() !== '0') {
+            const [protocol, localAddress, foreignAddress, status, processId] = line
+              .trim()
+              .split(" ")
+              .filter((text) => text);
+            if (processId !== undefined && processId.trim() !== "0") {
               const localAddressPort = parsePort(localAddress);
               if (localAddressPort === port) {
                 processIds.add(parseInt(processId, 10));

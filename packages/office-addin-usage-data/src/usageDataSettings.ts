@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
+import fs from "fs";
 import * as defaults from "./defaults";
 import { UsageDataLevel } from "./usageData";
 import { v4 as uuidv4 } from "uuid";

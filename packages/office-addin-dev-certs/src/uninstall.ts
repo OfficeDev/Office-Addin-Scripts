@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 
 import { execSync } from "child_process";
-import * as fsExtra from "fs-extra";
-import * as path from "path";
+import fsExtra from "fs-extra";
+import path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 import { usageDataObject } from "./defaults";

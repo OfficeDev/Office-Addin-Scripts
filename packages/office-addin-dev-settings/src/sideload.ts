@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
+import fs from "fs";
 import AdmZip from "adm-zip";
 import {
   AddInType,
@@ -15,8 +15,8 @@ import {
 } from "office-addin-manifest";
 import open = require("open");
 import semver = require("semver");
-import * as os from "os";
-import * as path from "path";
+import os from "os";
+import path from "path";
 import { AppType } from "./appType";
 import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";

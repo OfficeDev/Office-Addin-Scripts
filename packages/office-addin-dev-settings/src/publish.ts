@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as childProcess from "child_process";
-import * as fs from "fs";
-import * as path from "path";
+import childProcess from "child_process";
+import fs from "fs";
+import path from "path";
 
 /* global console, process */
 

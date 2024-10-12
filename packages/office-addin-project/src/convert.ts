@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 
 import AdmZip from "adm-zip";
-import * as fs from "fs";
-import * as fsExtra from "fs-extra";
-import * as path from "path";
-import * as util from "util";
+import fs from "fs";
+import fsExtra from "fs-extra";
+import path from "path";
+import util from "util";
 import { exec } from "child_process";
 import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";

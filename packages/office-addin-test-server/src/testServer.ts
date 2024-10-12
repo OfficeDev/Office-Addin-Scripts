@@ -3,7 +3,7 @@
 
 import cors from "cors";
 import express from "express";
-import * as https from "https";
+import https from "https";
 import * as devCerts from "office-addin-dev-certs";
 
 /* global process */

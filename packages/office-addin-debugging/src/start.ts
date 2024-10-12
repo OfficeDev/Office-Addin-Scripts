@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 
 import AdmZip from "adm-zip";
-import * as fetch from "node-fetch";
-import * as fs from "fs";
-import * as fspath from "path";
+import fetch from "node-fetch";
+import fs from "fs";
+import fspath from "path";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
-import * as os from "os";
+import os from "os";
 import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
 import { OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";

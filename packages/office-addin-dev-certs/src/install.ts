@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { execSync } from "child_process";
-import * as path from "path";
+import path from "path";
 import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";

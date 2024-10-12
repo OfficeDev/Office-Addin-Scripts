@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as assert from "assert";
+import assert from "assert";
 import childProcess from "child_process";
 import fsExtra from "fs-extra";
 import { describe, beforeEach, afterEach, it } from "mocha";
-import * as path from "path";
+import path from "path";
 import * as defaults from "../src/defaults";
 import * as generate from "../src/generate";
 import { getHttpsServerOptions } from "../src/httpsServerOptions";

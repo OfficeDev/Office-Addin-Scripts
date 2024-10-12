@@ -5,7 +5,7 @@ import {
   generateCustomFunctionsMetadata,
   IGenerateResult,
 } from "custom-functions-metadata";
-import * as path from "path";
+import path from "path";
 import {
   Compiler,
   Compilation,

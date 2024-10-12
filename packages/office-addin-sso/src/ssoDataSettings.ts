@@ -4,8 +4,8 @@
 */
 import * as defaults from "./defaults";
 import { execSync } from "child_process";
-import * as fs from "fs";
-import * as os from "os";
+import fs from "fs";
+import os from "os";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { ExpectedError } from "office-addin-usage-data";
 

@@ -5,8 +5,8 @@
  */
 
 import fetch from "node-fetch";
-import * as form from "form-urlencoded";
-import * as jwt from "jsonwebtoken";
+import form from "form-urlencoded";
+import jwt from "jsonwebtoken";
 import { JwksClient } from "jwks-rsa";
 
 /* global process, console */

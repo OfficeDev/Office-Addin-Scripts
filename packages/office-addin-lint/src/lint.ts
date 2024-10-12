@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as path from "path";
+import fs from "fs";
+import path from "path";
 import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
 /* global require, __dirname, process */

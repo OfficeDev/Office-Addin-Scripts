@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as chalk from "chalk";
+import chalk from "chalk";
 import { parseNumber } from "office-addin-cli";
 import { ManifestInfo, OfficeAddinManifest } from "office-addin-manifest";
 import { usageDataObject } from "./defaults";

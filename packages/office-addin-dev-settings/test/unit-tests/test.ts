@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 
 import { afterEach, before, beforeEach, describe, it } from "mocha";
-import * as assert from "assert";
-import * as fsextra from "fs-extra";
+import assert from "assert";
+import fsExtra from "fs-extra";
 import { OfficeApp, ManifestInfo, OfficeAddinManifest, AddInType } from "office-addin-manifest";
-import * as os from "os";
-import * as fspath from "path";
+import os from "os";
+import fspath from "path";
 import sinon from "sinon";
 import * as appcontainer from "../../src/appcontainer";
 import { AppType } from "../../src/appType";

@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import commander from "commander";
-import * as fs from "fs";
+import fs from "fs";
 import { parseNumber, getPackageJsonScript } from "office-addin-cli";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as devSettings from "office-addin-dev-settings";

@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 
 import * as appInsights from "applicationinsights";
-import * as assert from "assert";
-import * as fs from "fs";
+import assert from "assert";
+import fs from "fs";
 import { beforeEach, describe, it } from "mocha";
 import sinon from "sinon";
-import * as os from "os";
+import os from "os";
 import * as defaults from "../src/defaults";
 import * as officeAddinUsageData from "../src/usageData";
 import * as jsonData from "../src/usageDataSettings";
