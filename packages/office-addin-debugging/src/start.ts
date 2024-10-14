@@ -331,6 +331,20 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
       }
     }
 
+    // enable runtimelogging
+    if (isDesktopAppType && isWindowsPlatform) {
+      const path = await devSettings.getRuntimeLoggingPath();
+      if(path) {
+        console.log(`Runtime logging is enabled. File: ${path}`);
+      } else {
+        console.log("Enabling runtime logging..");
+        await devSettings.enableRuntimeLogging(path);
+
+        const logPath = await devSettings.getRuntimeLoggingPath();
+        console.log(`Runtime logging has been enabled. File: ${logPath}`);
+      }
+    }
+
     // enable live reload
     if (isDesktopAppType && isWindowsPlatform) {
       await devSettings.enableLiveReload(manifestInfo.id, useLiveReload);

@@ -8,7 +8,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "cellvalue"
+                    "type": "any",
+                    "cellValueType": "cellvalue"
                 }
             ],
             "result": {}
@@ -20,7 +21,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "booleancellvalue"
+                    "type": "boolean",
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -32,7 +34,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "doublecellvalue"
+                    "type": "number",
+                    "cellValueType": "doublecellvalue"
                 }
             ],
             "result": {}
@@ -44,7 +47,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "entitycellvalue"
+                    "type": "any",
+                    "cellValueType": "entitycellvalue"
                 }
             ],
             "result": {}
@@ -56,7 +60,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "errorcellvalue"
+                    "type": "any",
+                    "cellValueType": "errorcellvalue"
                 }
             ],
             "result": {}
@@ -68,7 +73,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "formattednumbercellvalue"
+                    "type": "number",
+                    "cellValueType": "formattednumbercellvalue"
                 }
             ],
             "result": {}
@@ -80,7 +86,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "linkedentitycellvalue"
+                    "type": "any",
+                    "cellValueType": "linkedentitycellvalue"
                 }
             ],
             "result": {}
@@ -92,7 +99,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "localimagecellvalue"
+                    "type": "any",
+                    "cellValueType": "localimagecellvalue"
                 }
             ],
             "result": {}
@@ -104,7 +112,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "stringcellvalue"
+                    "type": "string",
+                    "cellValueType": "stringcellvalue"
                 }
             ],
             "result": {}
@@ -116,7 +125,8 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "webimagecellvalue"
+                    "type": "any",
+                    "cellValueType": "webimagecellvalue"
                 }
             ],
             "result": {}
@@ -129,7 +139,8 @@
                 {
                     "name": "x",
                     "repeating": true,
-                    "type": "booleancellvalue"
+                    "type": "boolean",
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -142,7 +153,8 @@
                 {
                     "dimensionality": "matrix",
                     "name": "x",
-                    "type": "booleancellvalue"
+                    "type": "boolean",
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -156,7 +168,8 @@
                     "dimensionality": "matrix",
                     "name": "x",
                     "repeating": true,
-                    "type": "booleancellvalue"
+                    "type": "boolean",
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -169,7 +182,8 @@
                 {
                     "name": "x",
                     "repeating": true,
-                    "type": "booleancellvalue"
+                    "type": "boolean",
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -182,7 +196,8 @@
                 {
                     "dimensionality": "matrix",
                     "name": "x",
-                    "type": "booleancellvalue"
+                    "type": "boolean",
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}
@@ -196,7 +211,8 @@
                     "dimensionality": "matrix",
                     "name": "x",
                     "repeating": true,
-                    "type": "booleancellvalue"
+                    "type": "boolean",
+                    "cellValueType": "booleancellvalue"
                 }
             ],
             "result": {}

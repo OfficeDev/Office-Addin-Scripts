@@ -13,8 +13,12 @@ interface IHttpsServerOptions {
   key: Buffer;
 }
 
-export async function getHttpsServerOptions(): Promise<IHttpsServerOptions> {
-  await ensureCertificatesAreInstalled();
+export async function getHttpsServerOptions(
+  daysUntilCertificateExpires?: number,
+  domains?: string[],
+  machine?: boolean
+): Promise<IHttpsServerOptions> {
+  await ensureCertificatesAreInstalled(daysUntilCertificateExpires, domains, machine);
 
   const httpsServerOptions = {} as IHttpsServerOptions;
   try {
