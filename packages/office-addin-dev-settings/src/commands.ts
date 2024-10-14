@@ -335,7 +335,7 @@ export async function registered(
           try {
             const manifest = await OfficeAddinManifest.readManifestFile(addin.manifestPath);
             id = manifest.id || "";
-          } catch (err) {
+          } catch {
             // ignore errors
           }
         }

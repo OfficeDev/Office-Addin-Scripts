@@ -45,7 +45,7 @@ function parseDomains(optionValue: any): string[] | undefined {
     case "string": {
       try {
         return optionValue.split(",");
-      } catch (err) {
+      } catch {
         throw new Error("string value not in the correct format");
       }
     }

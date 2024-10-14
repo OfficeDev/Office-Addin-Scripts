@@ -14,7 +14,7 @@ export function parseNumber(
 
       try {
         result = parseFloat(optionValue);
-      } catch (err) {
+      } catch {
         throw new Error(errorMessage);
       }
 

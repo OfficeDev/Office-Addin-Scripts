@@ -13,7 +13,7 @@ export async function convert(command: commander.Command) {
     const backupPath: string = command.backup ?? "./backup.zip";
     const projectPath: string = command.project ?? "";
     const devPreview: boolean = command.preview ?? false;
-    const shouldContinue = command.confirm ?? await asksForUserConfirmation();
+    const shouldContinue = command.confirm ?? (await asksForUserConfirmation());
 
     if (shouldContinue) {
       await convertProject(manifestPath, backupPath, projectPath, devPreview);

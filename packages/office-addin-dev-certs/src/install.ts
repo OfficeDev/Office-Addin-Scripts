@@ -20,13 +20,16 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
         machine ? "LocalMachine" : "CurrentUser"
       } "${caCertificatePath}"`;
     }
-    case "darwin": // macOS
-      const prefix = machine ? "sudo " : ""
-      const keychainFile = machine ? "/Library/Keychains/System.keychain" : "~/Library/Keychains/login.keychain-db"
+    case "darwin": {
+      // macOS
+      const prefix = machine ? "sudo " : "";
+      const keychainFile = machine ? "/Library/Keychains/System.keychain" : "~/Library/Keychains/login.keychain-db";
       return `${prefix}security add-trusted-cert -d -r trustRoot -k ${keychainFile} '${caCertificatePath}'`;
-    case "linux":
+    }
+    case "linux": {
       const script = path.resolve(__dirname, "../scripts/install_linux.sh");
       return `sudo sh '${script}' '${caCertificatePath}'`;
+    }
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}`);
   }

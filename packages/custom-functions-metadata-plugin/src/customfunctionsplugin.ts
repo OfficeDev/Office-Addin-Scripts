@@ -1,18 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import {
-  generateCustomFunctionsMetadata,
-  IGenerateResult,
-} from "custom-functions-metadata";
+import { generateCustomFunctionsMetadata, IGenerateResult } from "custom-functions-metadata";
 import path from "path";
-import {
-  Compiler,
-  Compilation,
-  sources,
-  WebpackError,
-  NormalModule,
-} from "webpack";
+import { Compiler, Compilation, sources, WebpackError, NormalModule } from "webpack";
 
 /* global require */
 
@@ -30,9 +21,7 @@ class CustomFunctionsMetadataPlugin {
   public static generateResults: Record<string, IGenerateResult> = {};
 
   public apply(compiler: Compiler) {
-    let input: string[] = Array.isArray(this.options.input)
-      ? this.options.input
-      : [this.options.input];
+    let input: string[] = Array.isArray(this.options.input) ? this.options.input : [this.options.input];
     let generateResult: IGenerateResult;
     input = input.map((file) => path.resolve(file));
 
@@ -42,35 +31,27 @@ class CustomFunctionsMetadataPlugin {
 
     compiler.hooks.compilation.tap(pluginName, (compilation: Compilation) => {
       if (generateResult.errors.length > 0) {
-        generateResult.errors.forEach((err: string) =>
-          compilation.errors.push(new WebpackError(input + " " + err))
-        );
+        generateResult.errors.forEach((err: string) => compilation.errors.push(new WebpackError(input + " " + err)));
       } else {
-        compilation.assets[this.options.output] = new sources.RawSource(
-          generateResult.metadataJson
-        );
-        CustomFunctionsMetadataPlugin.generateResults[this.options.input] =
-          generateResult;
+        compilation.assets[this.options.output] = new sources.RawSource(generateResult.metadataJson);
+        CustomFunctionsMetadataPlugin.generateResults[this.options.input] = generateResult;
       }
 
       // trigger the loader to add code to the functions files
-      NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(
-        pluginName,
-        (_, module) => {
-          const found = input.find((item) => module.userRequest.endsWith(item));
-          if (found) {
-            module.loaders.push({
-              loader: require.resolve("./loader.js"),
-              options: {
-                input: this.options.input,
-                file: found,
-              },
-              ident: null,
-              type: null,
-            });
-          }
+      NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(pluginName, (_, module) => {
+        const found = input.find((item) => module.userRequest.endsWith(item));
+        if (found) {
+          module.loaders.push({
+            loader: require.resolve("./loader.js"),
+            options: {
+              input: this.options.input,
+              file: found,
+            },
+            ident: null,
+            type: null,
+          });
         }
-      );
+      });
     });
   }
 }

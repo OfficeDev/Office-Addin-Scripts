@@ -38,5 +38,6 @@
   "peerDependencies": {
     "webpack": "^5.94.0"
   },
+  "prettier": "office-addin-prettier-config",
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }

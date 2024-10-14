@@ -3,7 +3,7 @@
 
 import { afterEach, before, beforeEach, describe, it } from "mocha";
 import assert from "assert";
-import fsExtra from "fs-extra";
+import fsextra from "fs-extra";
 import { OfficeApp, ManifestInfo, OfficeAddinManifest, AddInType } from "office-addin-manifest";
 import os from "os";
 import fspath from "path";
@@ -33,7 +33,10 @@ async function testSetSourceBundleUrlComponents(
   assert.strictEqual(actual.path, expected.path);
   assert.strictEqual(actual.port, expected.port);
   // eslint-disable-next-line @microsoft/sdl/no-insecure-url
-  assert.strictEqual(actual.url, `http://${expected.host || "localhost"}:${expected.port || "8081"}/${expected.path || "{path}"}${expected.extension || ".bundle"}`);
+  assert.strictEqual(
+    actual.url,
+    `http://${expected.host || "localhost"}:${expected.port || "8081"}/${expected.path || "{path}"}${expected.extension || ".bundle"}`
+  );
 }
 
 describe("DevSettingsForAddIn", function () {

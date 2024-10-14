@@ -3,7 +3,7 @@ import * as getJson from "./data/getFunctions.json";
 
 const getFunctions: Set<string> = new Set<string>(getJson.getFunctions);
 const getOrNullObjectFunctions: Set<string> = new Set<string>(
-  getJson.getOrNullObjectFunctions
+  getJson.getOrNullObjectFunctions,
 );
 
 export function isGetFunction(node: TSESTree.Node): boolean {
