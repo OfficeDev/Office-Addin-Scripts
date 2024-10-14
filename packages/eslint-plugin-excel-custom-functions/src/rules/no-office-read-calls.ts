@@ -5,7 +5,7 @@ import {
   assignmentExpressionAnalysis,
   variableDeclaratorAnalysis,
 } from "./utils";
-import { RuleContext } from "@typescript-eslint/utils/dist/ts-eslint";
+import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 import ts from "typescript";
 
 /**

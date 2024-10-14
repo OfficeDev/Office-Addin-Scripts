@@ -196,10 +196,7 @@ export class OfficeAddinUsageData {
    * @param testData Specifies whether test code is calling this method
    * @param testReponse Specifies test response
    */
-  public usageDataOptIn(
-    testData: boolean = this.options.isForTesting,
-    testResponse: string = ""
-  ): void {
+  public usageDataOptIn(testData: boolean = this.options.isForTesting, testResponse: string = ""): void {
     try {
       let response: string = "";
       if (testData) {
@@ -253,9 +250,7 @@ export class OfficeAddinUsageData {
    * Transform the project name by adddin '-test' suffix to it if necessary
    */
   private getEventName() {
-    return this.options.isForTesting
-      ? `${this.options.projectName}-test`
-      : this.options.projectName;
+    return this.options.isForTesting ? `${this.options.projectName}-test` : this.options.projectName;
   }
 
   /**
@@ -323,10 +318,7 @@ export class OfficeAddinUsageData {
           this.reportExpectedException(method, err, data);
           return;
         }
-        let error =
-          err instanceof Error
-            ? Object.create(err)
-            : new Error(`${this.options.projectName} error: ${err}`);
+        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),
@@ -358,10 +350,7 @@ export class OfficeAddinUsageData {
    * @param data Data object(s) sent to Application Insights
    */
   public reportExpectedException(method: string, err: Error | string, data: object = {}) {
-    let error =
-      err instanceof Error
-        ? Object.create(err)
-        : new Error(`${this.options.projectName} error: ${err}`);
+    let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
     error.name = this.getEventName();
     this.maskFilePaths(error);
     const errorMessage = error instanceof Error ? error.message : error;
@@ -399,10 +388,7 @@ export class OfficeAddinUsageData {
   public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        let error =
-          err instanceof Error
-            ? Object.create(err)
-            : new Error(`${this.options.projectName} error: ${err}`);
+        let error = err instanceof Error ? Object.create(err) : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
         let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
           exception: this.maskFilePaths(error),

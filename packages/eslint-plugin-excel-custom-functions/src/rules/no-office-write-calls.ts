@@ -1,6 +1,6 @@
 import { TSESTree, ESLintUtils, ParserServices } from "@typescript-eslint/utils";
 import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis } from "./utils";
-import { RuleContext } from "@typescript-eslint/utils/dist/ts-eslint";
+import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 import ts from "typescript";
 
 /**
