@@ -2,7 +2,8 @@
   // Used when parsing scenarios for deprecation tests
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
+    "module": "Node16",
+    "moduleResolution": "Node16",
     "strict": true,
     "target": "es5",
     "lib": ["es5", "dom"],
