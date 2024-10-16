@@ -14,7 +14,7 @@ export type Xml = any;
 export function getXmlAttributeValue(xml: Xml, name: string): string | undefined {
   try {
     return xml.$[name];
-  } catch (err) {
+  } catch {
     // reading xml values is resilient to errors but you can uncomment the next line for debugging if attributes are missing
     // console.error(`Unable to get xml attribute value "${name}". ${err}`);
   }
@@ -38,7 +38,7 @@ export function getXmlElement(xml: Xml, name: string): Xml | undefined {
     if (element instanceof Array) {
       return element[0];
     }
-  } catch (err) {
+  } catch {
     // reading xml values is resilient to errors but you can uncomment the next line for debugging if elements are missing
     // console.error(`Unable to get xml element "${name}". ${err}`);
   }
@@ -80,7 +80,7 @@ export function getXmlElements(xml: Xml, name: string): Xml[] {
   try {
     const elements = xml[name];
     return elements instanceof Array ? elements : [];
-  } catch (err) {
+  } catch {
     return [];
   }
 }
@@ -113,7 +113,7 @@ export function getXmlElementsAttributeValue(
         values.push(elementValue);
       }
     });
-  } catch (err) {
+  } catch {
     // do nothing
   }
 
@@ -160,7 +160,7 @@ export function getXmlElementValue(xml: Xml, name: string): string | undefined {
     if (element instanceof Array) {
       return element[0];
     }
-  } catch (err) {
+  } catch {
     // reading xml values is resilient to errors but you can uncomment the next line for debugging if elements are missing
     // console.error(`Unable to get xml element value "${name}". ${err}`);
   }

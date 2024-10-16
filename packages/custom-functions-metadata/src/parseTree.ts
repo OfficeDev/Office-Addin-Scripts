@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as ts from "typescript";
+import ts from "typescript";
 import XRegExp = require("xregexp");
-
-/* global console */
 
 export interface ICustomFunctionsMetadata {
   functions: IFunction[];
@@ -108,14 +106,6 @@ const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
 const CAPTURESCALLINGOBJECT = "capturescallingobject";
-
-const TYPE_MAPPINGS_SIMPLE = {
-  [ts.SyntaxKind.NumberKeyword]: "number",
-  [ts.SyntaxKind.StringKeyword]: "string",
-  [ts.SyntaxKind.BooleanKeyword]: "boolean",
-  [ts.SyntaxKind.AnyKeyword]: "any",
-  [ts.SyntaxKind.UnknownKeyword]: "any",
-};
 
 const TYPE_MAPPINGS = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -237,8 +227,14 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           const jsDocParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
           const [lastParameter] = functionDeclaration.parameters.slice(-1);
-          const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
-          const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
+          const isStreamingFunction = hasStreamingInvocationParameter(
+            lastParameter,
+            jsDocParamTypeInfo
+          );
+          const isCancelableFunction = hasCancelableInvocationParameter(
+            lastParameter,
+            jsDocParamTypeInfo
+          );
           const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
 
           const parametersToParse =
@@ -399,7 +395,8 @@ function checkForDuplicate(list: string[], item: string): boolean {
  */
 function areStringsEqual(first: string, second: string, ignoreCase = true): boolean {
   return typeof first === "string" && typeof second === "string"
-    ? first.localeCompare(second, undefined, ignoreCase ? { sensitivity: "accent" } : undefined) === 0
+    ? first.localeCompare(second, undefined, ignoreCase ? { sensitivity: "accent" } : undefined) ===
+        0
     : first === second;
 }
 
@@ -423,7 +420,11 @@ function getPosition(
  * Verifies if the id is valid and logs error if not.
  * @param id Id of the function
  */
-function validateId(id: string, position: ts.LineAndCharacter | null, extra: IFunctionExtras): void {
+function validateId(
+  id: string,
+  position: ts.LineAndCharacter | null,
+  extra: IFunctionExtras
+): void {
   const idRegExString: string = "^[a-zA-Z0-9._]*$";
   const idRegEx = new RegExp(idRegExString);
   if (!idRegEx.test(id)) {
@@ -443,7 +444,11 @@ function validateId(id: string, position: ts.LineAndCharacter | null, extra: IFu
  * Verifies if the name is valid and logs error if not.
  * @param name Name of the function
  */
-function validateName(name: string, position: ts.LineAndCharacter | null, extra: IFunctionExtras): void {
+function validateName(
+  name: string,
+  position: ts.LineAndCharacter | null,
+  extra: IFunctionExtras
+): void {
   const startsWithLetterRegEx = XRegExp("^[\\pL]");
   const validNameRegEx = XRegExp("^[\\pL][\\pL0-9._]*$");
   let errorString: string;
@@ -498,7 +503,9 @@ function getOptions(
   };
 
   if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
-    let errorParam: string = optionsItem.requiresAddress ? "@requiresAddress" : "@requiresParameterAddresses";
+    let errorParam: string = optionsItem.requiresAddress
+      ? "@requiresAddress"
+      : "@requiresParameterAddresses";
 
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
@@ -981,7 +988,8 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
     // @ts-ignore
     (tag: ts.JSDocParameterTag) => {
       // @ts-ignore
-      jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = tag.isBracketed;
+      jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] =
+        tag.isBracketed;
     }
   );
 
@@ -1060,7 +1068,10 @@ function hasCancelableInvocationParameter(
 
   const typeRef = param.type as ts.TypeReferenceNode;
   const typeName = typeRef.typeName.getText();
-  return typeName === "CustomFunctions.CancelableHandler" || typeName === "CustomFunctions.CancelableInvocation";
+  return (
+    typeName === "CustomFunctions.CancelableHandler" ||
+    typeName === "CustomFunctions.CancelableInvocation"
+  );
 }
 
 /**
@@ -1252,7 +1263,10 @@ function getParamDim(t: ts.TypeNode): string {
   return dimensionality;
 }
 
-function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { [key: string]: string }): boolean {
+function getParamOptional(
+  p: ts.ParameterDeclaration,
+  jsDocParamOptionalInfo: { [key: string]: string }
+): boolean {
   let optional = false;
   const name = (p.name as ts.Identifier).text;
   const isOptional = p.questionToken != null || p.initializer != null || p.dotDotDotToken != null;

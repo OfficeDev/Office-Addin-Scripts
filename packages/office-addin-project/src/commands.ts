@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
-import * as inquirer from "inquirer";
+import commander from "commander";
+import inquirer from "inquirer";
 import { logErrorMessage } from "office-addin-usage-data";
 import { usageDataObject } from "./defaults";
 import { convertProject } from "./convert";
@@ -13,7 +13,7 @@ export async function convert(command: commander.Command) {
     const backupPath: string = command.backup ?? "./backup.zip";
     const projectPath: string = command.project ?? "";
     const devPreview: boolean = command.preview ?? false;
-    const shouldContinue = command.confirm ?? await asksForUserConfirmation();
+    const shouldContinue = command.confirm ?? (await asksForUserConfirmation());
 
     if (shouldContinue) {
       await convertProject(manifestPath, backupPath, projectPath, devPreview);

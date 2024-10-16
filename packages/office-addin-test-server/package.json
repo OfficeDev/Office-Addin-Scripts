@@ -37,6 +37,7 @@
         "concurrently": "^6.3.0",
         "mocha": "^9.1.1",
         "office-addin-lint": "^2.3.5",
+        "office-addin-test-helpers": "1.5.5",
         "office-addin-usage-data": "^1.6.14",
         "rimraf": "^3.0.2",
         "ts-node": "^10.9.1",

@@ -3,6 +3,11 @@
     "office-addins"
   ],
   "extends": [
-    "plugin:office-addins/recommended"
-  ]
+    "plugin:office-addins/recommended",
+    "plugin:@microsoft/sdl/recommended"
+  ],
+  "parserOptions": {
+    "projectService": true,
+    "tsconfigRootDir": "__dirname"
+  }
 }

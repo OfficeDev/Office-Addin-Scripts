@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import chalk from "chalk";
-import * as commander from "commander";
+import commander from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo } from "./manifestInfo";
 import { OfficeAddinManifest } from "./manifestOperations";

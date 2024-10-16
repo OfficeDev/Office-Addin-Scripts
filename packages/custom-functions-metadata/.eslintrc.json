@@ -4,5 +4,9 @@
   ],
   "extends": [
     "plugin:office-addins/recommended"
-  ]
+  ],
+  "rules": {
+    "office-addins/call-sync-before-read": "off",
+    "office-addins/load-object-before-read": "off"
+  }
 }

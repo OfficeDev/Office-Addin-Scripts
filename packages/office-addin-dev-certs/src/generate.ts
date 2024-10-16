@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as fsExtra from "fs-extra";
+import fs from "fs";
+import fsExtra from "fs-extra";
 import * as mkcert from "mkcert";
-import * as path from "path";
+import path from "path";
 import * as defaults from "./defaults";
 
 /* global console */

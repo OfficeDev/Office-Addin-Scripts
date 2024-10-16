@@ -1,13 +1,11 @@
 import { AST_NODE_TYPES, TSESTree } from "@typescript-eslint/utils";
-import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/scope-manager";
+import { Reference, Scope, Variable } from "@typescript-eslint/scope-manager";
 import { isGetFunction } from "./getFunction";
 import { isContextLoadArgumentReference, isLoadReference } from "./load";
 
-function isContextSyncIdentifier(node: TSESTree.Identifier | TSESTree.JSXIdentifier): boolean {
+function isContextSyncIdentifier(
+  node: TSESTree.Identifier | TSESTree.JSXIdentifier,
+): boolean {
   return (
     node.name === "context" &&
     node.parent?.type === AST_NODE_TYPES.MemberExpression &&
@@ -18,7 +16,7 @@ function isContextSyncIdentifier(node: TSESTree.Identifier | TSESTree.JSXIdentif
 }
 
 export function findTopMemberExpression(
-  node: TSESTree.MemberExpression
+  node: TSESTree.MemberExpression,
 ): TSESTree.MemberExpression {
   while (node.parent && node.parent.type === AST_NODE_TYPES.MemberExpression) {
     node = node.parent;
@@ -28,7 +26,7 @@ export function findTopMemberExpression(
 }
 
 export function findCallExpression(
-  node: TSESTree.MemberExpression
+  node: TSESTree.MemberExpression,
 ): TSESTree.CallExpression | undefined {
   while (node.parent && node.parent.type === AST_NODE_TYPES.MemberExpression) {
     node = node.parent;

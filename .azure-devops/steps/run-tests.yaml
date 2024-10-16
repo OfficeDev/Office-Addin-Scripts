@@ -1,6 +1,6 @@
 steps:
-  - task: Npm@1
-    displayName: "Run tests"
-    inputs:
-      command: custom
-      customCommand: "run test"
+- task: Npm@1
+  displayName: "Run tests"
+  inputs:
+    command: custom
+    customCommand: "run test"

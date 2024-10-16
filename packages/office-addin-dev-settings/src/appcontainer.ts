@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as childProcess from "child_process";
-import * as inquirer from "inquirer";
+import childProcess from "child_process";
+import inquirer from "inquirer";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 import { ExpectedError } from "office-addin-usage-data";

@@ -11,7 +11,7 @@
 /* global __fbBatchedBridge, self, importScripts, postMessage, onmessage: true */
 /* eslint @typescript-eslint/no-unused-vars: 0 */
 
-import * as fetch from "node-fetch";
+import fetch from "node-fetch";
 
 /* global global, process, console */
 

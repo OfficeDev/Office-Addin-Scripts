@@ -43,6 +43,7 @@
     "@types/mkcert": "^1.2.2",
     "@types/mocha": "^10.0.6",
     "@types/node": "^14.17.2",
+    "@types/sinon": "^17.0.3",
     "concurrently": "^6.2.2",
     "mocha": "^10.4.0",
     "office-addin-lint": "^2.3.5",

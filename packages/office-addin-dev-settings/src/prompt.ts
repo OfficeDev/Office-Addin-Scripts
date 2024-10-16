@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as inquirer from "inquirer";
+import inquirer from "inquirer";
 import { getOfficeAppName, OfficeApp } from "office-addin-manifest";
 
 export async function chooseOfficeApp(apps: OfficeApp[]): Promise<OfficeApp> {

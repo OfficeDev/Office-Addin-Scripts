@@ -52,6 +52,7 @@
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
+  "prettier": "office-addin-prettier-config",
   "author": "Office Dev",
   "license": "MIT"
 }

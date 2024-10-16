@@ -8,9 +8,9 @@ function addFunctionAssociations(this: any, source: string): string {
   if (!CustomFunctionsMetadataPlugin.generateResults[input]) {
     return source;
   }
-  const associations = CustomFunctionsMetadataPlugin.generateResults[
-    input
-  ].associate.filter((item: IAssociate) => item.sourceFileName === file);
+  const associations = CustomFunctionsMetadataPlugin.generateResults[input].associate.filter(
+    (item: IAssociate) => item.sourceFileName === file
+  );
   associations.forEach((item: IAssociate) => {
     source += `\nCustomFunctions.associate("${item.id}", ${item.functionName});`;
   });

@@ -2,31 +2,44 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-jobs:
-  - job: Windows_10_Latest
+resources:
+  repositories:
+  - repository: CustomPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/OfficePipelineTemplates
+    ref: refs/tags/release
+extends:
+  template: /v1/Office.Unofficial.PipelineTemplate.yml@CustomPipelineTemplates
+  parameters:
     pool:
       name: OE-OfficeClientApps
-    steps:
-      - template: ./steps/npm-install.yaml
-      - template: ./steps/build.yaml
-      - template: ./steps/devcerts.yml
-      - template: ./steps/edgewebview.yml
-      - template: ./steps/test.yml
-
-  - job: Mac
-    pool:
-      name: OPX Mac Dogfood Pool
-    steps:
-    - template: ./steps/npm-install.yaml
-    - template: ./steps/build.yaml
-    - template: ./steps/test.yml
-    - template: ./steps/cleanup.yaml
-
-  - job: Linux
-    pool:
-      name: Azure Pipelines
-      vmImage: ubuntu-latest
-    steps:
-    - template: ./steps/npm-install.yaml
-    - template: ./steps/build.yaml
-    - template: ./steps/test.yml
+    featureFlags:
+      scanAllEslintScriptExtensions: true
+    sdl:
+      eslint:
+        configuration: required
+        parser: '@typescript-eslint/parser'
+        parserOptions: sourceType:module
+        targetsESLint: $(Build.SourcesDirectory)/packages/**/*.ts
+        plugins: '@typescript-eslint'
+        enableExclusions: true
+        exclusionPatterns: 'test/'
+    stages:
+    - stage: stage
+      jobs:
+      - job: Windows_10_Latest
+        steps:
+        - template: /.azure-devops/steps/npm-install.yaml@self
+        - template: /.azure-devops/steps/build.yaml@self
+        - template: /.azure-devops/steps/devcerts.yml@self
+        - template: /.azure-devops/steps/edgewebview.yml@self
+        - template: /.azure-devops/steps/test.yml@self
+      - job: Linux
+        pool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: ubuntu-latest
+          os: linux
+        steps:
+        - template: /.azure-devops/steps/npm-install.yaml@self
+        - template: /.azure-devops/steps/build.yaml@self
+        - template: /.azure-devops/steps/test.yml@self

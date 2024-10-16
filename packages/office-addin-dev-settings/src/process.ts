@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as childProcess from "child_process";
+import childProcess from "child_process";
 import { ChildProcess, ExecException } from "child_process";
 
 /* global process, console */

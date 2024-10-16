@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as AdmZip from "adm-zip";
-import * as fetch from "node-fetch";
-import * as fs from "fs";
-import * as fspath from "path";
+import AdmZip from "adm-zip";
+import fetch from "node-fetch";
+import fs from "fs";
+import fspath from "path";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
-import * as os from "os";
+import os from "os";
 import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
 import { OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
@@ -61,7 +61,7 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const text = await response.text();
     console.log(`packager: ${text}`);
     return statusRunningResponse === text;
-  } catch (err) {
+  } catch {
     return false;
   }
 }
@@ -146,6 +146,7 @@ export async function runPackager(
   port: string = "8081"
 ): Promise<void> {
   if (commandLine) {
+    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
     const packagerUrl: string = `http://${host}:${port}`;
     const statusUrl: string = `${packagerUrl}/status`;
 
@@ -310,8 +311,10 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
         await devSettings.ensureLoopbackIsEnabled(name);
       } catch (err: any) {
         // if add loopback exemption failed, report the error then continue
-        console.error(err)
-        console.warn("Failed to add loopback exemption.\nWill try to sideload the Office Add-in without the loopback exemption, but it might not load correctly from localhost.\n")
+        console.error(err);
+        console.warn(
+          "Failed to add loopback exemption.\nWill try to sideload the Office Add-in without the loopback exemption, but it might not load correctly from localhost.\n"
+        );
         usageDataObject.reportException("startDebugging()", err, {
           app: app,
           document: document,
@@ -459,8 +462,7 @@ async function extractManifest(zipPath: string): Promise<string> {
   const manifestPath = fspath.join(targetPath, "manifest.json");
   if (fs.existsSync(manifestPath)) {
     return manifestPath;
-  }
-  else {
+  } else {
     throw new Error(`The zip file '${zipPath}' does not contain a "manifest.json" file`);
   }
 }

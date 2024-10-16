@@ -4,7 +4,7 @@
 */
 
 import { showMessage } from "./message-helper";
-import * as $ from "jquery";
+import $ from "jquery";
 
 export async function makeGraphApiCall(bootstrapToken: string): Promise<any> {
   try {

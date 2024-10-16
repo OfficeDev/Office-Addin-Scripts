@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import commander from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo, OfficeApp, parseOfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import {
@@ -335,7 +335,7 @@ export async function registered(
           try {
             const manifest = await OfficeAddinManifest.readManifestFile(addin.manifestPath);
             id = manifest.id || "";
-          } catch (err) {
+          } catch {
             // ignore errors
           }
         }
