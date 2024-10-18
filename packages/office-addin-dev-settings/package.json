@@ -30,7 +30,6 @@
     "office-addin-manifest": "^1.13.6",
     "office-addin-usage-data": "^1.6.14",
     "open": "^6.4.0",
-    "string_decoder": "1.3.0",
     "whatwg-url": "^14.0.0",
     "winreg": "1.2.4"
   },
