@@ -35,7 +35,7 @@
     "winreg": "1.2.4"
   },
   "peerDependencies": {
-    "@microsoft/teamsapp-cli": "3.0.2"
+    "@microsoft/teamsapp-cli": "3.0.4"
   },
   "devDependencies": {
     "@microsoft/eslint-plugin-sdl": "^0.2.2",
