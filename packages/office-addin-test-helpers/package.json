@@ -22,7 +22,6 @@
     },
     "devDependencies": {
         "@types/es6-collections": "^0.5.31",
-        "@types/express": "^4.17.13",
         "@types/isomorphic-fetch": "^0.0.35",
         "@types/mocha": "^5.2.7",
         "@types/node": "^14.17.2",
