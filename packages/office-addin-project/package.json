@@ -24,8 +24,7 @@
     "inquirer": "^7.3.3",
     "office-addin-manifest": "^1.13.6",
     "office-addin-manifest-converter": "^0.4.1",
-    "office-addin-usage-data": "^1.6.14",
-    "path": "^0.12.7"
+    "office-addin-usage-data": "^1.6.14"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.0",
