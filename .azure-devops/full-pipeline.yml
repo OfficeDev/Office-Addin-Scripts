@@ -11,6 +11,7 @@ resources:
 extends:
   template: /v1/Office.Unofficial.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
+    skipBuildTagsForGitHubPullRequest: true
     pool:
       name: OE-OfficeClientApps
     featureFlags:
