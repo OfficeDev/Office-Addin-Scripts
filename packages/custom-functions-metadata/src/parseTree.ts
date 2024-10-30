@@ -30,6 +30,7 @@ export interface IFunctionOptions {
   requiresStreamParameterAddresses?: boolean;
   excludeFromAutoComplete?: boolean;
   linkedEntityDataProvider?: boolean;
+  capturesCallingObject?: boolean;
 }
 
 export interface IFunctionParameter {
@@ -109,6 +110,7 @@ const REQUIRESSTREAMADDRESS = "requiresstreamaddress";
 const REQUIRESSTREAMPARAMETERADDRESSES = "requiresstreamparameteraddresses";
 const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
+const CAPTURESCALLINGOBJECT = "capturescallingobject";
 
 const TYPE_MAPPINGS_SIMPLE = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -305,7 +307,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.requiresParameterAddresses &&
             !options.requiresStreamParameterAddresses &&
             !options.excludeFromAutoComplete &&
-            !options.linkedEntityDataProvider
+            !options.linkedEntityDataProvider &&
+            !options.capturesCallingObject
           ) {
             delete functionMetadata.options;
           } else {
@@ -343,6 +346,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.linkedEntityDataProvider) {
               delete options.linkedEntityDataProvider;
+            }
+
+            if (!options.capturesCallingObject) {
+              delete options.capturesCallingObject;
             }
           }
 
@@ -489,6 +496,7 @@ function getOptions(
     requiresStreamParameterAddresses: isRequiresStreamParameterAddresses(func),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityDataProvider: isLinkedEntityDataProvider(func),
+    capturesCallingObject: capturesCallingObject(func),
   };
 
   if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
@@ -497,12 +505,6 @@ function getOptions(
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
-      extra.errors.push(logError(errorString, functionPosition));
-    }
-
-    if (isStreamingFunction) {
-      const functionPosition = getPosition(func);
-      const errorString = `${errorParam} cannot be used with @streaming.`;
       extra.errors.push(logError(errorString, functionPosition));
     }
   }
@@ -529,7 +531,8 @@ function getOptions(
       optionsItem.volatile ||
       optionsItem.stream ||
       optionsItem.requiresAddress ||
-      optionsItem.requiresParameterAddresses)
+      optionsItem.requiresParameterAddresses ||
+      optionsItem.capturesCallingObject)
   ) {
     let errorParam: string = "";
     const functionPosition = getPosition(func);
@@ -544,6 +547,8 @@ function getOptions(
       errorParam = "@requiresAddress";
     } else if (optionsItem.requiresParameterAddresses) {
       errorParam = "@requiresParameterAddresses";
+    } else if (optionsItem.capturesCallingObject) {
+      errorParam = "@capturesCallingObject";
     }
 
     const errorString = `${errorParam} cannot be used with @linkedEntityDataProvider.`;
@@ -883,6 +888,14 @@ function isExcludedFromAutoComplete(node: ts.Node): boolean {
  */
 function isLinkedEntityDataProvider(node: ts.Node): boolean {
   return hasTag(node, LINKEDENTITYDATAPROVIDER);
+}
+
+/**
+ * Returns true if capturesCallingObject tag found in comments
+ * @param node jsDocs node
+ */
+function capturesCallingObject(node: ts.Node): boolean {
+  return hasTag(node, CAPTURESCALLINGOBJECT);
 }
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
