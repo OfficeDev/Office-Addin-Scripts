@@ -1,0 +1,68 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test the requiresStreamParameterAddresses tag",
+            "id": "REQUIRESSTREAMPARAMETERADDRESSESTEST",
+            "name": "REQUIRESSTREAMPARAMETERADDRESSESTEST",
+            "options": {
+                "stream": true,
+                "requiresStreamParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "description": "Test the requiresStreamParameterAddresses tag with multiple parameters",
+            "id": "REQUIRESSTREAMPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
+            "name": "REQUIRESSTREAMPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
+            "options": {
+                "stream": true,
+                "requiresStreamParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                },
+                {
+                    "description": "string",
+                    "name": "y",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "description": "Test having both requiresStreamAddress and requiresStreamParameterAddresses tag",
+            "id": "REQUIRESSTREAMBOTHADDRESSESANDPARAMETERADDRESSESTEST",
+            "name": "REQUIRESSTREAMBOTHADDRESSESANDPARAMETERADDRESSESTEST",
+            "options": {
+                "requiresStreamAddress": true,
+                "stream": true,
+                "requiresStreamParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        }
+    ]
+}

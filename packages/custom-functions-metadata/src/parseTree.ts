@@ -23,9 +23,11 @@ export interface IFunction {
 export interface IFunctionOptions {
   cancelable?: boolean;
   requiresAddress?: boolean;
+  requiresStreamAddress?: boolean;
   stream?: boolean;
   volatile?: boolean;
   requiresParameterAddresses?: boolean;
+  requiresStreamParameterAddresses?: boolean;
   excludeFromAutoComplete?: boolean;
   linkedEntityDataProvider?: boolean;
 }
@@ -103,6 +105,8 @@ const STREAMING = "streaming";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
+const REQUIRESSTREAMADDRESS = "requiresstreamaddress";
+const REQUIRESSTREAMPARAMETERADDRESSES = "requiresstreamparameteraddresses";
 const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
 
@@ -295,9 +299,11 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           if (
             !options.cancelable &&
             !options.requiresAddress &&
+            !options.requiresStreamAddress &&
             !options.stream &&
             !options.volatile &&
             !options.requiresParameterAddresses &&
+            !options.requiresStreamParameterAddresses &&
             !options.excludeFromAutoComplete &&
             !options.linkedEntityDataProvider
           ) {
@@ -311,6 +317,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
               delete options.requiresAddress;
             }
 
+            if (!options.requiresStreamAddress) {
+              delete options.requiresStreamAddress;
+            }
+
             if (!options.stream) {
               delete options.stream;
             }
@@ -321,6 +331,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.requiresParameterAddresses) {
               delete options.requiresParameterAddresses;
+            }
+
+            if (!options.requiresStreamParameterAddresses) {
+              delete options.requiresStreamParameterAddresses;
             }
 
             if (!options.excludeFromAutoComplete) {
@@ -468,9 +482,11 @@ function getOptions(
   const optionsItem: IFunctionOptions = {
     cancelable: isCancelableTag(func, isCancelableFunction),
     requiresAddress: isAddressRequired(func),
+    requiresStreamAddress: isStreamAddressRequired(func),
     stream: isStreaming(func, isStreamingFunction),
     volatile: isVolatile(func),
     requiresParameterAddresses: isRequiresParameterAddresses(func),
+    requiresStreamParameterAddresses: isRequiresStreamParameterAddresses(func),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityDataProvider: isLinkedEntityDataProvider(func),
   };
@@ -487,6 +503,22 @@ function getOptions(
     if (isStreamingFunction) {
       const functionPosition = getPosition(func);
       const errorString = `${errorParam} cannot be used with @streaming.`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
+  }
+
+  if (optionsItem.requiresStreamAddress || optionsItem.requiresStreamParameterAddresses) {
+    let errorParam = optionsItem.requiresStreamAddress ? "@requiresStreamAddress" : "@requiresStreamParameterAddresses";
+
+    if (!optionsItem.stream) {
+      const functionPosition = getPosition(func);
+      const errorString = `Since ${errorParam} is present, the @streaming tag is required or the last function parameter should be of type CustomFunctions.StreamingInvocation.`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
+
+    if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
+      const functionPosition = getPosition(func, func.parameters.end);
+      const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
   }
@@ -819,6 +851,22 @@ function isAddressRequired(node: ts.Node): boolean {
  */
 function isRequiresParameterAddresses(node: ts.Node): boolean {
   return hasTag(node, REQUIRESPARAMETERADDRESSES);
+}
+
+/**
+ * Returns true if requiresStreamAddress tag found in comments
+ * @param node jsDocs node
+ */
+function isStreamAddressRequired(node: ts.Node) {
+  return hasTag(node, REQUIRESSTREAMADDRESS);
+}
+
+/**
+ * Returns true if RequiresStreamParameterAddresses tag found in comments
+ * @param node jsDocs node
+ */
+function isRequiresStreamParameterAddresses(node: ts.Node) {
+  return hasTag(node, REQUIRESSTREAMPARAMETERADDRESSES);
 }
 
 /**
