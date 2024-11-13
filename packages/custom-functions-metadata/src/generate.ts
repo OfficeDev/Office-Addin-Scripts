@@ -1,4 +1,4 @@
-import { IFunction, IGenerateResult, IParseTreeResult, parseTree } from "./parseTree";
+import { IFunction, IEnum, IGenerateResult, IParseTreeResult, parseTree } from "./parseTree";
 import { existsSync, readFileSync } from "fs";
 
 /* global console */
@@ -14,6 +14,7 @@ export async function generateCustomFunctionsMetadata(
 ): Promise<IGenerateResult> {
   const inputFiles: string[] = Array.isArray(input) ? input : [input];
   const functions: IFunction[] = [];
+  const enums: IEnum[] = [];
   const generateResults: IGenerateResult = {
     metadataJson: "",
     associate: [],
@@ -42,15 +43,20 @@ export async function generateCustomFunctionsMetadata(
         } else {
           functions.push(...parseTreeResult.functions);
           generateResults.associate.push(...parseTreeResult.associate);
+          enums.push(...parseTreeResult.enums);
         }
       }
     });
 
     if (functions.length > 0) {
-      const metadata = {
+      const metadata: { allowCustomDataForDataTypeAny: boolean; functions: IFunction[]; enums?: IEnum[] } = {
         allowCustomDataForDataTypeAny: true,
         functions: functions,
+        enums: enums,
       };
+      if (enums.length == 0) {
+        delete metadata.enums;
+      }
       generateResults.metadataJson = JSON.stringify(metadata, null, 4);
     }
   }
