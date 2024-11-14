@@ -57,8 +57,8 @@ export interface IEnum {
 }
 
 interface IEnumValue {
+  name: string;
   value: string | number;
-  description: string;
   tooltip: string;
 }
 
@@ -254,7 +254,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     extras.push(extra);
 
     if (checkForDuplicate(metadataEnumIds, id)) {
-      const errorString = `@customenum tag specifies a duplicate name: ${id}`;
+      const errorString = `@${CUSTOM_ENUM} tag specifies a duplicate name: ${id}`;
       extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
     }
 
@@ -268,6 +268,13 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     let jsDocType: string | null = null;
     if (jsDocTypeTag && jsDocTypeTag.comment) {
       let commentText = ts.getTextOfJSDocComment(jsDocTypeTag.comment);
+      const typeMatch = commentText?.match(/\{\s*string|number\s*\}/);
+      if (!typeMatch) {
+        const errorString = `Unknown enum type defined after @${CUSTOM_ENUM} tag. Please use "{string}" or "{number}": ${id}`;
+        extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+        return;
+      }
+
       jsDocType = commentText? commentText.trim() : null;
     }
 
@@ -296,7 +303,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
         return;
       }
 
-      const description = member.name.getText();
+      const name = member.name.getText();
       const tooltip =
         ts
           .getLeadingCommentRanges(sourceFile.getFullText(), member.getFullStart())
@@ -304,7 +311,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           .join("\n")
           .replace(/^\s*[/*]+\s?/gm, "") // Strip leading slashes, asterisks, and whitespace
           .replace(/\s*[/*]+$/gm, "") || ""; // Strip trailing slashes, asterisks, and whitespace
-      values.push({ value, description, tooltip });
+      values.push({ name: name, value: value, tooltip: tooltip });
     }
 
     const enumItem: IEnum = {

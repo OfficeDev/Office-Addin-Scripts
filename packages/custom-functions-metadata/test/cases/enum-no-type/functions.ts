@@ -60,3 +60,15 @@ export function testNumberEnum(first: number, second: NUMBERS[]): any {
   const sum = second.reduce((acc, num) => acc + num, 0);
   return first + sum;
 }
+
+/**
+ * Enum without value
+ * @customenum
+ */
+enum NUMBERSWITHOUTVALUE {
+  One,
+  Two,
+  Three,
+  Four,
+  Five,
+}

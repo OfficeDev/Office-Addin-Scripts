@@ -19,3 +19,14 @@ enum NUMBERS {
   /** Two */
   Two = "two",
 }
+
+/**
+ * Enum with a wrong type.
+ * @customenum {wrongtype}
+ */
+enum WRONGTYPE {
+  /** One */
+  One = 1,
+  /** Two */
+  Two = 2,
+}
