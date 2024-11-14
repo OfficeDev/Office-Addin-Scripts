@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { get } from "http";
 import ts from "typescript";
 import XRegExp = require("xregexp");
 
@@ -267,14 +266,13 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     let jsDocType: string | null = null;
     const comment = getTagComment(enumDeclaration, CUSTOM_ENUM);
     if (comment) {
-      const typeMatch = comment?.match(/\{\s*string|number\s*\}/);
+      const typeMatch = comment?.match(/\{\s*(string|number)\s*\}/);
       if (!typeMatch) {
         const errorString = `Unknown enum type defined after @${CUSTOM_ENUM} tag. Please use "{string}" or "{number}": ${id}`;
         extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
-        return;
       }
 
-      jsDocType = comment? comment.trim() : null;
+      jsDocType = typeMatch? typeMatch[1].trim() : null;
     }
 
     // Get the first member of the enum to determine if it is a number or string enum
@@ -285,7 +283,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
       if (jsDocType) {
         // Check if the enum type matches the type in the JSDoc annotation
         const errorString = `Enum type must match the enum type in annotation: ${id}`;
-        if ((isNumberEnum && jsDocType !== "{number}") || (!isNumberEnum && jsDocType !== "{string}")) {
+        if ((isNumberEnum && jsDocType !== "number") || (!isNumberEnum && jsDocType !== "string")) {
           extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
           return;
         }
