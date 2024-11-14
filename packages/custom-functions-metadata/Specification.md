@@ -11,6 +11,7 @@ The function parameter types may be provided using the [@param](#param) tag in J
 ## Tags
 * [@cancelable](#cancelable)
 * [@capturesCallingObject](#capturescallingobject)
+* [@customEnum](#customenum) _{type}_
 * [@customfunction](#customfunction) id name
 * [@excludeFromAutoComplete](#excludeFromAutoComplete)
 * [@helpurl](#helpurl) url
@@ -38,6 +39,22 @@ If the last function parameter is of type `CustomFunctions.CancelableInvocation`
 
 Indicates that the custom function captures the calling object i.e. the [Excel.CellValue](https://learn.microsoft.com/es-es/javascript/api/excel/excel.cellvalue)
 object that invoked the custom function, in the first parameter.
+
+---
+### @customEnum
+
+Syntaxt: @customEnum _{type}_
+
+Specify this tag to treat the TypeScript enum as an Excel custom enum. 
+
+This tag is required to generate metadata for the custom enum.
+
+* `{type}` should specify the type information within curly braces. Accepted types are `string` and `number`. Optional: if not specified, the type of the first enum value will be used.
+* Only TypeScript is supported, as JavaScript does not support enums.
+* If values of enum members are omitted, the first member will be assigned a numeric value of `0`, with subsequent values auto-incremented.
+* The types of enum members must be consistent. Mixed types within an enum will be treated as an error.
+* The enum name must be a unique identifier. Allowed characters are: A-Z, a-z, 0-9, underscore (_), and period (.).
+* The maximum length of the enum name is 128 characters.
 
 ---
 ### @customfunction

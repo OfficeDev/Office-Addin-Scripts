@@ -1,3 +1,3 @@
 Enum type must match the enum type in annotation: PLANETS (1,1)
-Enum value type must be consistent: NUMBERS (10,2)
-Unknown enum type defined after @customenum tag. Please use "{string}" or "{number}": WRONGTYPE (21,2)
+Enum value type must be consistent: NUMBERS (13,2)
+Unknown enum type defined after @customenum tag. Please use "{string}" or "{number}": WRONGTYPE (24,2)

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 /**
  * Enum for planets with descriptions and tooltips.
  * @customenum {string}
@@ -10,7 +13,7 @@ enum PLANETS {
 }
 
 /**
- * Enum for numbers with descriptions and tooltips.
+ * Enum members have different types.
  * @customenum {number}
  */
 enum NUMBERS {
