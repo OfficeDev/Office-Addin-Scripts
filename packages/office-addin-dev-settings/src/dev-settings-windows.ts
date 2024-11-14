@@ -15,7 +15,7 @@ import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewTyp
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
 import { registerWithTeams, uninstallWithTeams } from "./publish";
-import * as fspath from "path";
+import fspath from "path";
 
 /* global process */
 

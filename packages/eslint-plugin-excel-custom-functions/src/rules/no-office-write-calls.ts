@@ -1,16 +1,6 @@
-import {
-  TSESTree,
-  ESLintUtils,
-  ParserServices,
-} from "@typescript-eslint/utils";
-import {
-  REPO_URL,
-  callExpressionAnalysis,
-  assignmentExpressionAnalysis,
-} from "./utils";
-import {
-  RuleContext,
-} from "@typescript-eslint/utils/dist/ts-eslint";
+import { TSESTree, ESLintUtils, ParserServices } from "@typescript-eslint/utils";
+import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis } from "./utils";
+import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 import ts from "typescript";
 
 /**
@@ -25,10 +15,7 @@ import ts from "typescript";
 type Options = readonly unknown[];
 type MessageIds = "officeWriteCall";
 
-export default ESLintUtils.RuleCreator(
-  () =>
-    REPO_URL,
-)({
+export default ESLintUtils.RuleCreator(() => REPO_URL)({
   name: "no-office-write-calls",
   meta: {
     docs: {
@@ -44,8 +31,8 @@ export default ESLintUtils.RuleCreator(
   },
 
   create: function (ruleContext: RuleContext<MessageIds, Options>): {
-    CallExpression: (node: TSESTree.CallExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
-    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
+    CallExpression: (node: TSESTree.CallExpression) => void;
+    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void;
   } {
     const services: ParserServices = ESLintUtils.getParserServices(ruleContext);
     const typeChecker: ts.TypeChecker = services.program.getTypeChecker();
@@ -81,13 +68,7 @@ export default ESLintUtils.RuleCreator(
       },
 
       AssignmentExpression: function (node: TSESTree.AssignmentExpression) {
-        assignmentExpressionAnalysis(
-          node,
-          ruleContext,
-          services,
-          typeChecker,
-          true
-        );
+        assignmentExpressionAnalysis(node, ruleContext, services, typeChecker, true);
       },
     };
   },

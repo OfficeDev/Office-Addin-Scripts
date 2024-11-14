@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as assert from "assert";
-import * as mocha from "mocha";
+import assert from "assert";
+import { describe, it } from "mocha";
 import { OfficeMockObject } from "../src/main";
 
 const testObject = {

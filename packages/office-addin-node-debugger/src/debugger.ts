@@ -6,7 +6,7 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-import * as child from "child_process";
+import child from "child_process";
 import { fork } from "child_process";
 import WebSocket = require("ws");
 
@@ -23,6 +23,7 @@ export function run(
   const websocketRetryTimeout: number = 500;
 
   function connectToDebuggerProxy(): void {
+    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
     var ws = new WebSocket(`ws://${host}:${port}/debugger-proxy?role=${role}&name=${debuggerName}`);
     var worker: child.ChildProcess;
 

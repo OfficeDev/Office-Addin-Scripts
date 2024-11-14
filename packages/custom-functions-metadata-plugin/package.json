@@ -1,6 +1,6 @@
 {
   "name": "custom-functions-metadata-plugin",
-  "version": "1.7.2",
+  "version": "2.0.0",
   "author": "Office Dev",
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
@@ -26,17 +26,18 @@
     "watch": "tsc -p tsconfig.json -w"
   },
   "dependencies": {
-    "custom-functions-metadata": "^1.7.2"
+    "custom-functions-metadata": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^14.17.2",
     "concurrently": "^6.2.2",
-    "office-addin-lint": "^2.3.5",
+    "office-addin-lint": "^3.0.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.7.4"
   },
   "peerDependencies": {
     "webpack": "^5.94.0"
   },
+  "prettier": "office-addin-prettier-config",
   "gitHead": "dffbcd4d1397534105b98fb13ba0fb1c3aba2dea"
 }

@@ -20,7 +20,7 @@ export async function generate(input: string | string[], outputPath: string) {
       if (outputPath) {
         try {
           writeFileSync(outputPath, results.metadataJson);
-        } catch (err) {
+        } catch {
           throw new Error(`Cannot write to file: ${outputPath}.`);
         }
       } else {

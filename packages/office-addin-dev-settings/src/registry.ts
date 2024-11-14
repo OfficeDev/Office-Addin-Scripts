@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as winreg from "winreg";
+import winreg from "winreg";
 import { ExpectedError } from "office-addin-usage-data";
 
 export class RegistryKey {

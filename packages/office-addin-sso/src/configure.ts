@@ -3,9 +3,9 @@
  *
  * This file defines Azure application registration.
  */
-import * as childProcess from "child_process";
+import childProcess from "child_process";
 import * as defaults from "./defaults";
-import * as fs from "fs";
+import fs from "fs";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
@@ -55,7 +55,7 @@ export async function isAzureCliInstalled(): Promise<boolean> {
         const appsInstalledWindowsCommand: string = `powershell -ExecutionPolicy Bypass -File "${defaults.getInstalledAppsPath}"`;
         const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
         cliInstalled = appsWindows.filter((app) => {
-          if (app!==null && app.DisplayName && typeof app.DisplayName === "string"){
+          if (app !== null && app.DisplayName && typeof app.DisplayName === "string") {
             if (app.DisplayName.includes("Microsoft Azure CLI")) return true;
           }
           return false;

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as path from "path";
+import fs from "fs";
+import path from "path";
 import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
 /* global require, __dirname, process */
@@ -44,7 +44,9 @@ export function performLintCheck(files: string, useTestConfig: boolean = false) 
     usageDataObject.reportSuccess("performLintCheck()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err: any) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.reportExpectedException("performLintCheck()", err, { exitCode: ESLintExitCode.HasLintError });
+      usageDataObject.reportExpectedException("performLintCheck()", err, {
+        exitCode: ESLintExitCode.HasLintError,
+      });
     } else {
       usageDataObject.reportException("performLintCheck()", err);
     }
@@ -64,7 +66,9 @@ export function performLintFix(files: string, useTestConfig: boolean = false) {
     usageDataObject.reportSuccess("performLintFix()", { exitCode: ESLintExitCode.NoLintErrors });
   } catch (err: any) {
     if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.reportExpectedException("performLintFix()", err, { exitCode: ESLintExitCode.HasLintError });
+      usageDataObject.reportExpectedException("performLintFix()", err, {
+        exitCode: ESLintExitCode.HasLintError,
+      });
     } else {
       usageDataObject.reportException("performLintFix()", err);
     }
@@ -81,7 +85,9 @@ export function makeFilesPrettier(files: string) {
   try {
     const command = getPrettierCommand(files);
     execCommand(command);
-    usageDataObject.reportSuccess("makeFilesPrettier()", { exitCode: PrettierExitCode.NoFormattingProblems });
+    usageDataObject.reportSuccess("makeFilesPrettier()", {
+      exitCode: PrettierExitCode.NoFormattingProblems,
+    });
   } catch (err: any) {
     if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
       usageDataObject.reportExpectedException("makeFilesPrettier()", err, {

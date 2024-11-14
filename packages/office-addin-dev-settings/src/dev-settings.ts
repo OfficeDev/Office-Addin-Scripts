@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
+import fs from "fs";
 import { OfficeAddinManifest } from "office-addin-manifest";
-import * as fspath from "path";
+import fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
 import { ExpectedError } from "office-addin-usage-data";
@@ -50,6 +50,7 @@ export class SourceBundleUrlComponents {
     const path = this.path !== undefined ? this.path : "{path}";
     const extension = this.extension !== undefined ? this.extension : ".bundle";
 
+    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
     return `http://${host}${host && port ? ":" : ""}${port}/${path}${extension}`;
   }
 
@@ -131,7 +132,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       try {
         const file = fs.openSync(path, "a+");
         fs.closeSync(file);
-      } catch (err) {
+      } catch {
         throw new ExpectedError(
           pathExists
             ? `You need to specify the path to a writable file. Unable to write to: "${path}".`
