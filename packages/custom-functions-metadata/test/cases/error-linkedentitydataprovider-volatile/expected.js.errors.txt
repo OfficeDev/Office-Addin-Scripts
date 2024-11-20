@@ -1,1 +1,1 @@
-@volatile cannot be used with @linkedEntityDataProvider. (1,1)
+@volatile cannot be used with @linkedEntityLoadService. (1,1)
