@@ -3,12 +3,12 @@
 
 /**
  * Test the linkedEntityLoadService tag in combination with the excludeFromAutoComplete tag
- * @param linkedEntityId Unique `LinkedEntityId` of the `LinkedEntityCellValue`s which is being requested for resolution/refresh.
+ * @param request Represents a request to the `@linkedEntityLoadService` custom function to load `LinkedEntityCellValue` objects.
  * @customfunction
  * @linkedEntityLoadService
  * @excludeFromAutoComplete
- * @returns {Promise<any>} Resolved/Updated `LinkedEntityCellValue` that was requested by the passed-in id.
+ * @returns {Promise<any>} Resolved/Updated `LinkedEntityCellValue` objects that were requested by the passed-in request.
  */
-function linkedEntityLoadServiceTest(linkedEntityId) {
+function linkedEntityLoadServiceTest(request) {
     // Empty
 }
