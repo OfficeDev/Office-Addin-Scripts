@@ -116,17 +116,18 @@ interface IJsDocParamType {
   dimensionality: string;
 }
 
-const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
-const CUSTOM_ENUM = "customenum"; // case insensitive @CustomEnum tag to identify custom enums in JSDoc
-const HELPURL_PARAM = "helpurl";
-const VOLATILE = "volatile";
-const STREAMING = "streaming";
+// JSDoc tags
 const CANCELABLE = "cancelable";
+const CAPTURESCALLINGOBJECT = "capturescallingobject";
+const CUSTOM_ENUM = "customenum"; // case insensitive @CustomEnum tag to identify custom enums in JSDoc
+const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
+const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
+const HELPURL_PARAM = "helpurl";
+const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
-const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
-const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
-const CAPTURESCALLINGOBJECT = "capturescallingobject";
+const STREAMING = "streaming";
+const VOLATILE = "volatile";
 
 const TYPE_MAPPINGS = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -250,7 +251,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     };
 
     const id = enumDeclaration.name.text;
-    validateId(id, getPosition(enumDeclaration), extra);
+    validateName(id, getPosition(enumDeclaration), extra, "enum"); // Call `validateName` instead of `validateId` because the enum name acts as the id
     extras.push(extra);
 
     if (checkForDuplicate(metadataEnumIds, id)) {
@@ -399,7 +400,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           const name = idNameArray[1] || id;
 
           validateId(id, position, extra);
-          validateName(name, position, extra);
+          validateName(name, position, extra, "function");
 
           if (checkForDuplicate(metadataFunctionNames, name)) {
             const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
@@ -553,42 +554,48 @@ function validateId(
     if (!id) {
       id = "Function name is invalid";
     }
-    const errorString = `The custom function or enum id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`;
+    const errorString = `The custom function id contains invalid characters. Allowed characters are ('A-Z','a-z','0-9','.','_'):${id}`;
     extra.errors.push(logError(errorString, position));
   }
   if (id.length > 128) {
-    const errorString = `The custom function or enum id exceeds the maximum of 128 characters allowed.`;
+    const errorString = `The custom function id exceeds the maximum of 128 characters allowed.`;
     extra.errors.push(logError(errorString, position));
   }
 }
 
 /**
  * Verifies if the name is valid and logs error if not.
- * @param name Name of the function
+ * @param name Name of the function or enum
+ * @param position Position of the function or enum
+ * @param extra Extra information, especially errors
+ * @param type Type of the object, either "function" or "enum"
  */
 function validateName(
   name: string,
   position: ts.LineAndCharacter | null,
-  extra: IFunctionExtras
+  extra: IFunctionExtras,
+  type: "function" | "enum" = "function"
 ): void {
   const startsWithLetterRegEx = XRegExp("^[\\pL]");
   const validNameRegEx = XRegExp("^[\\pL][\\pL0-9._]*$");
   let errorString: string;
 
   if (!name) {
-    errorString = `You need to provide a custom function name.`;
+    errorString = `You need to provide a custom ${type} name.`;
     extra.errors.push(logError(errorString, position));
   }
+
   if (!startsWithLetterRegEx.test(name)) {
-    errorString = `The custom function name "${name}" should start with an alphabetic character.`;
+    errorString = `The custom ${type} name "${name}" should start with an alphabetic character.`;
     extra.errors.push(logError(errorString, position));
   }
-  if (!validNameRegEx.test(name)) {
-    errorString = `The custom function name "${name}" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_).`;
+  else if (!validNameRegEx.test(name)) {
+    errorString = `The custom ${type} name "${name}" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_).`;
     extra.errors.push(logError(errorString, position));
   }
+
   if (name.length > 128) {
-    errorString = `The custom function name is too long. It must be 128 characters or less.`;
+    errorString = `The custom ${type} name "${name}" is too long. It must be 128 characters or less.`;
     extra.errors.push(logError(errorString, position));
   }
 }

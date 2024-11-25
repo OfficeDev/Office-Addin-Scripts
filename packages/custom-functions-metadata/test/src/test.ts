@@ -181,10 +181,6 @@ describe("test errors", function () {
         errtest[4],
         `The custom function name "1invalidname" should start with an alphabetic character. (25,19)`
       );
-      assert.strictEqual(
-        errtest[5],
-        `The custom function name "1invalidname" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_). (25,19)`
-      );
       assert.strictEqual(generateResult.metadataJson, "", "should not be any metadata");
     });
   });

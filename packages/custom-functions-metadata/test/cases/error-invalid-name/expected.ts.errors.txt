@@ -1,2 +1,1 @@
 The custom function name "1badname" should start with an alphabetic character. (1,1)
-The custom function name "1badname" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_). (1,1)
