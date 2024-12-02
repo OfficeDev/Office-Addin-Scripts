@@ -14,7 +14,7 @@ The function parameter types may be provided using the [@param](#param) tag in J
 * [@customfunction](#customfunction) id name
 * [@excludeFromAutoComplete](#excludeFromAutoComplete)
 * [@helpurl](#helpurl) url
-* [@linkedEntityDataProvider](#linkedEntityDataProvider)
+* [@linkedEntityLoadService](#linkedEntityLoadService)
 * [@param](#param) _{type}_ name description
 * [@requiresAddress](#requiresAddress)
 * [@requiresParameterAddresses](#requiresParameterAddresses)
@@ -74,7 +74,7 @@ Indicates that the function will be excluded from the autocomplete drop-down lis
 
 If the function is manually spelled correctly in the grid, the function will still execute.
 
-A function cannot have both `@excludeFromAutoComplete` and `@linkedEntityDataProvider` tags.
+A function cannot have both `@excludeFromAutoComplete` and `@linkedEntityLoadService` tags.
 
 ---
 ### @helpurl
@@ -84,7 +84,7 @@ Syntax: @helpurl _url_
 The provided _url_ is displayed in Excel.
 
 ---
-### @linkedEntityDataProvider
+### @linkedEntityLoadService
 
 Indicates that the function is a "special" custom function that is meant to act as the "loadFunction" for user defined `LinkedEntityDataDomain`s. 
 
@@ -93,7 +93,7 @@ The function will be excluded from the autocomplete drop-down list and Formula B
 * Must accept and return a single non-repeating, non-optional, scalar parameter of type `unknown`.
 * Must not be a XLL-compatible custom function.
 * Must allow rich data as input.
-* A `@linkedEntityDataProvider` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, `@excludeFromAutoComplete`, or `@capturesCallingObject` tags.
+* A `@linkedEntityLoadService` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, `@excludeFromAutoComplete`, or `@capturesCallingObject` tags.
 
 ---
 ### @param 

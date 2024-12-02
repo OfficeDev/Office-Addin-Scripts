@@ -2,16 +2,16 @@
     "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
-            "description": "Test the linkedEntityDataProvider tag",
-            "id": "LINKEDENTITYDATAPROVIDERTEST",
-            "name": "LINKEDENTITYDATAPROVIDERTEST",
+            "description": "Test the linkedEntityLoadService tag",
+            "id": "LINKEDENTITYLOADSERVICETEST",
+            "name": "LINKEDENTITYLOADSERVICETEST",
             "options": {
-                "linkedEntityDataProvider": true
+                "linkedEntityLoadService": true
             },
             "parameters": [
                 {
-                    "description": "Unique `LinkedEntityId` of the `LinkedEntityCellValue`s which is being requested for resolution/refresh.",
-                    "name": "linkedEntityId",
+                    "description": "Represents a request to the `@linkedEntityLoadService` custom function to load `LinkedEntityCellValue` objects.",
+                    "name": "request",
                     "type": "any"
                 }
             ],
