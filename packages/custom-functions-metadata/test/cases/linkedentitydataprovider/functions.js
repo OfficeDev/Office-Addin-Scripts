@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 
 /**
- * Test the linkedEntityDataProvider tag
- * @param linkedEntityId Unique `LinkedEntityId` of the `LinkedEntityCellValue`s which is being requested for resolution/refresh.
+ * Test the linkedEntityLoadService tag
+ * @param request Represents a request to the `@linkedEntityLoadService` custom function to load `LinkedEntityCellValue` objects.
  * @customfunction
- * @linkedEntityDataProvider
- * @returns {Promise<any>} Resolved/Updated `LinkedEntityCellValue` that was requested by the passed-in id.
+ * @linkedEntityLoadService
+ * @returns {Promise<any>} Resolved/Updated `LinkedEntityCellValue` objects that were requested by the passed-in request.
  */
-function linkedEntityDataProviderTest(linkedEntityId) {
+function linkedEntityLoadServiceTest(request) {
     // Empty
 }

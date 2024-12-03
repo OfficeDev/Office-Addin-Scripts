@@ -25,7 +25,7 @@ export interface IFunctionOptions {
   volatile?: boolean;
   requiresParameterAddresses?: boolean;
   excludeFromAutoComplete?: boolean;
-  linkedEntityDataProvider?: boolean;
+  linkedEntityLoadService?: boolean;
   capturesCallingObject?: boolean;
 }
 
@@ -123,7 +123,7 @@ const CUSTOM_ENUM = "customenum"; // case insensitive @CustomEnum tag to identif
 const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
 const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const HELPURL_PARAM = "helpurl";
-const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
+const LINKEDENTITYLOADSERVICE = "linkedentityloadservice";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 const STREAMING = "streaming";
@@ -434,7 +434,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.volatile &&
             !options.requiresParameterAddresses &&
             !options.excludeFromAutoComplete &&
-            !options.linkedEntityDataProvider &&
+            !options.linkedEntityLoadService &&
             !options.capturesCallingObject
           ) {
             delete functionMetadata.options;
@@ -463,8 +463,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
               delete options.excludeFromAutoComplete;
             }
 
-            if (!options.linkedEntityDataProvider) {
-              delete options.linkedEntityDataProvider;
+            if (!options.linkedEntityLoadService) {
+              delete options.linkedEntityLoadService;
             }
 
             if (!options.capturesCallingObject) {
@@ -627,7 +627,7 @@ function getOptions(
     volatile: isVolatile(func),
     requiresParameterAddresses: isRequiresParameterAddresses(func),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
-    linkedEntityDataProvider: isLinkedEntityDataProvider(func),
+    linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
   };
 
@@ -650,7 +650,7 @@ function getOptions(
   }
 
   if (
-    optionsItem.linkedEntityDataProvider &&
+    optionsItem.linkedEntityLoadService &&
     (optionsItem.excludeFromAutoComplete ||
       optionsItem.volatile ||
       optionsItem.stream ||
@@ -675,7 +675,7 @@ function getOptions(
       errorParam = "@capturesCallingObject";
     }
 
-    const errorString = `${errorParam} cannot be used with @linkedEntityDataProvider.`;
+    const errorString = `${errorParam} cannot be used with @linkedEntityLoadService.`;
     extra.errors.push(logError(errorString, functionPosition));
   }
 
@@ -1005,11 +1005,11 @@ function isExcludedFromAutoComplete(node: ts.Node): boolean {
 }
 
 /**
- * Returns true if linkedEntityDataProvider tag found in comments
+ * Returns true if linkedEntityLoadService tag found in comments
  * @param node jsDocs node
  */
-function isLinkedEntityDataProvider(node: ts.Node): boolean {
-  return hasTag(node, LINKEDENTITYDATAPROVIDER);
+function isLinkedEntityLoadService(node: ts.Node): boolean {
+  return hasTag(node, LINKEDENTITYLOADSERVICE);
 }
 
 /**
