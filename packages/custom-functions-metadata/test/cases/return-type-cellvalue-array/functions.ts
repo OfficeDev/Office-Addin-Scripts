@@ -5,6 +5,6 @@
  * Cell Value type in return type will convert to "any" (thus omitted).
  * @customfunction
  */
-function cellValueMatrixAsReturnType(x): Excel.BooleanCellValue[][] {
+function cellValueMatrixAsReturnType(x): Excel.EntityCellValue[][] {
     // empty
 }

@@ -1,0 +1,1 @@
+@customenum tag specifies a duplicate name: DUPLICATEID (10,2)

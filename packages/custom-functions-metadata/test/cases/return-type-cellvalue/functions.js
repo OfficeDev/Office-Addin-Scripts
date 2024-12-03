@@ -4,7 +4,7 @@
 /**
  * Cell Value type in return type will convert to "any" (thus omitted).
  * @customfunction
- * @returns {Excel.BooleanCellValue}
+ * @returns {Excel.EntityCellValue}
  */
 function cellValueAsReturnType(x){
     // empty

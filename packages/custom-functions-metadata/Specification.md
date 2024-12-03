@@ -195,3 +195,23 @@ A function can return a Promise, which will provide the value when the promise i
 ### Other types
 
 Any other type will be treated as an error.
+
+---
+## Custom enums
+
+The `@customEnum` JSDoc tag can be used in TypeScript to mark an enum as a custom enum. When a custom function uses this custom enum as the type for its arguments, the enum values will be displayed in a dropdown list for the end user when they enter the function.
+
+### Tag @customEnum
+
+Syntaxt: @customEnum _{type}_
+
+Specify this tag to mark the TypeScript enum as an Excel custom enum. 
+
+This tag is required to generate metadata for the custom enum.
+
+* `{type}` should specify the type information within curly braces. Accepted types are `string` and `number`. Optional: if not specified, the type of the first enum value will be used.
+* Only TypeScript is supported, as JavaScript does not support enums.
+* The enum name must start with an alphabetic character and be unique. Allowed characters are: A-Z, a-z, 0-9, underscore (_), and period (.).
+* The maximum length of an enum name is 128 characters.
+* If values of enum members are omitted, the first member will be assigned a numeric value of `0`, with subsequent values auto-incremented.
+* The types of enum members must be consistent. Mixed types within an enum will be treated as an error.
