@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as util from "util";
+import fs from "fs";
+import util from "util";
 import { v4 as uuidv4 } from "uuid";
-import * as xml2js from "xml2js";
+import xml2js from "xml2js";
 import * as xmlMethods from "../xml";
 import { DefaultSettings, ManifestInfo, ManifestType } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";

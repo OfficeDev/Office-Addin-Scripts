@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as AdmZip from "adm-zip";
-import * as fs from "fs";
-import * as fsExtra from "fs-extra";
-import * as path from "path";
-import * as util from "util";
+import AdmZip from "adm-zip";
+import fs from "fs";
+import fsExtra from "fs-extra";
+import path from "path";
+import util from "util";
 import { exec } from "child_process";
 import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global console */
+/* global console process */
 
 const execAsync = util.promisify(exec);
 const skipBackup: string[] = ["node_modules"];
@@ -22,15 +22,11 @@ export async function convertProject(
   devPreview: boolean = false
 ) {
   if (manifestPath.endsWith(".json")) {
-    throw new ExpectedError(
-      `The convert command only works on xml manifest based projects`
-    );
+    throw new ExpectedError(`The convert command only works on xml manifest based projects`);
   }
 
   if (!fs.existsSync(manifestPath)) {
-    throw new ExpectedError(
-      `The manifest file '${manifestPath}' does not exist`
-    );
+    throw new ExpectedError(`The manifest file '${manifestPath}' does not exist`);
   }
 
   const outputPath: string = path.dirname(manifestPath);
@@ -39,14 +35,20 @@ export async function convertProject(
   await backupProject(backupPath);
   try {
     // assume project dir is the same as manifest dir if not specified
-    projectDir = projectDir === "" ? outputPath : projectDir; 
+    projectDir = projectDir === "" ? outputPath : projectDir;
     process.chdir(projectDir);
-  
-    if(!devPreview) {
+
+    if (!devPreview) {
       await convert(manifestPath, outputPath, false /* imageDownload */);
     } else {
       // override the schema used in the json manifest to use the devPreview schema
-      await convert(manifestPath, outputPath, false /* imageDownload */, "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json", "devPreview");
+      await convert(
+        manifestPath,
+        outputPath,
+        false /* imageDownload */,
+        "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json",
+        "devPreview"
+      );
     }
     await updatePackages();
     await updateManifestXmlReferences();
@@ -94,10 +96,7 @@ async function restoreBackup(backupPath: string) {
 
 async function updatePackages(): Promise<void> {
   // Contains name of the package and minimum version
-  const depedentPackages: string[] = [
-    "office-addin-debugging",
-    "office-addin-manifest",
-  ];
+  const depedentPackages: string[] = ["office-addin-debugging", "office-addin-manifest"];
   let command: string = "npm install";
   let messageToBePrinted: string = "Installing latest versions of";
 
@@ -131,10 +130,7 @@ async function updatePackageJson(): Promise<void> {
 
   // Change .xml references to .json
   Object.keys(content.scripts).forEach(function (key) {
-    content.scripts[key] = content.scripts[key].replace(
-      /manifest.xml/gi,
-      `manifest.json`
-    );
+    content.scripts[key] = content.scripts[key].replace(/manifest.xml/gi, `manifest.json`);
   });
 
   // write updated json to file

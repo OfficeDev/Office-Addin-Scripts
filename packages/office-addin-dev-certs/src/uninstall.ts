@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 
 import { execSync } from "child_process";
-import * as fsExtra from "fs-extra";
-import * as path from "path";
+import fsExtra from "fs-extra";
+import path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 import { usageDataObject } from "./defaults";
@@ -24,9 +24,10 @@ function getUninstallCommand(machine: boolean = false): string {
       const script = path.resolve(__dirname, "../scripts/uninstall.sh");
       return `sudo sh '${script}' '${defaults.certificateName}'`;
     }
-    case "linux":
+    case "linux": {
       const script = path.resolve(__dirname, "../scripts/uninstall_linux.sh");
       return `sudo sh '${script}' '${defaults.caCertificateFileName}'`;
+    }
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}`);
   }

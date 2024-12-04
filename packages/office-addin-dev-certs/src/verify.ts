@@ -2,15 +2,18 @@
 // Licensed under the MIT license.
 
 import { execSync } from "child_process";
-import * as crypto from "crypto";
-import * as fs from "fs";
-import * as path from "path";
+import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 import * as defaults from "./defaults";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
 // On win32 this is a unique hash used with PowerShell command to reliably delineate command output
-export const outputMarker = process.platform === "win32" ? `[${crypto.createHash("md5").update(`${defaults.certificateName}${defaults.caCertificatePath}`).digest("hex")}]` : "";
+export const outputMarker =
+  process.platform === "win32"
+    ? `[${crypto.createHash("md5").update(`${defaults.certificateName}${defaults.caCertificatePath}`).digest("hex")}]`
+    : "";
 
 /* global process, Buffer, __dirname */
 
@@ -29,9 +32,10 @@ function getVerifyCommand(returnInvalidCertificate: boolean): string {
       const script = path.resolve(__dirname, "../scripts/verify.sh");
       return `sh '${script}' '${defaults.certificateName}'`;
     }
-    case "linux":
+    case "linux": {
       const script = path.resolve(__dirname, "../scripts/verify_linux.sh");
       return `sh '${script}' '${defaults.caCertificateFileName}'`;
+    }
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}`);
   }
@@ -50,7 +54,7 @@ export function isCaCertificateInstalled(returnInvalidCertificate: boolean = fal
     if (output.length !== 0) {
       return true;
     }
-  } catch (error) {
+  } catch {
     // Some commands throw errors if the certifcate is not found or expired
   }
 
@@ -96,7 +100,7 @@ export function verifyCertificates(
     let isCertificateValid: boolean = true;
     try {
       validateCertificateAndKey(certificatePath, keyPath);
-    } catch (err) {
+    } catch {
       isCertificateValid = false;
     }
     let output = isCertificateValid && isCaCertificateInstalled();

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as chalk from "chalk";
+import chalk from "chalk";
 import { parseNumber } from "office-addin-cli";
 import { ManifestInfo, OfficeAddinManifest } from "office-addin-manifest";
 import { usageDataObject } from "./defaults";
@@ -34,7 +34,7 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
   // We default to 60 days if no ttl was provided.
   // If we fail to parse the ttl provided, we notify user and abort.
   let ttl: number = 60;
-  if (!!secretTTL) {
+  if (secretTTL) {
     ttl = parseInt(secretTTL);
     if (isNaN(ttl)) {
       console.log("Secret TTL value provided is not a number");

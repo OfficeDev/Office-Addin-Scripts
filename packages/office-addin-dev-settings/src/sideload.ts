@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as AdmZip from "adm-zip";
+import fs from "fs";
+import AdmZip from "adm-zip";
 import {
   AddInType,
   getAddInTypeForManifestOfficeAppType,
@@ -15,8 +15,8 @@ import {
 } from "office-addin-manifest";
 import open = require("open");
 import semver = require("semver");
-import * as os from "os";
-import * as path from "path";
+import os from "os";
+import path from "path";
 import { AppType } from "./appType";
 import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";
@@ -86,7 +86,7 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
       .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
       .replace(/1.0.0.0/g, manifest.version);
 
-    const webExtensionFolderPath = webExtensionPath.substring(0, webExtensionPath.lastIndexOf("/"))
+    const webExtensionFolderPath = webExtensionPath.substring(0, webExtensionPath.lastIndexOf("/"));
     templateZip.getEntries().forEach(function (entry) {
       var data: Buffer = entry.getData();
       if (entry == extEntry && manifest.manifestType == ManifestType.XML) {
@@ -236,7 +236,7 @@ async function getOutlookVersion(): Promise<string | undefined> {
     const outlookSmallerVersion = outlookInstallVersion?.split(`.`, 3).join(`.`);
 
     return outlookSmallerVersion;
-  } catch (err) {
+  } catch {
     return undefined;
   }
 }
@@ -275,7 +275,7 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
       try {
         fs.unlinkSync(currentPath);
         deleted = true;
-      } catch (err) {
+      } catch {
         // no error (file is in use)
       }
     }

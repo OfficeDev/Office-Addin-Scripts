@@ -1,22 +1,10 @@
 {
-    "compilerOptions": {
-        "alwaysStrict": false,
-        "declaration": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "newLine": "lf",
-        "noImplicitUseStrict": true,
-        "outDir": "lib",
-        "skipLibCheck": true,
-        "sourceMap": true,
-        "strict": false,
-        "target": "es6",
-    },
-    "include": [
-        "src/**/*",
-    ],
-    "exclude": [
-        "node_modules",
-        "lib",
-    ]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "skipLibCheck": true,
+    "strict": false,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["lib", "node_modules"],
 }

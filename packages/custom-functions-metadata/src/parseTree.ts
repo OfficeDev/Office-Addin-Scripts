@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as ts from "typescript";
+import ts from "typescript";
 import XRegExp = require("xregexp");
-
-/* global console */
 
 export interface ICustomFunctionsMetadata {
   functions: IFunction[];
@@ -29,7 +27,7 @@ export interface IFunctionOptions {
   requiresParameterAddresses?: boolean;
   requiresStreamParameterAddresses?: boolean;
   excludeFromAutoComplete?: boolean;
-  linkedEntityDataProvider?: boolean;
+  linkedEntityLoadService?: boolean;
   capturesCallingObject?: boolean;
 }
 
@@ -37,6 +35,7 @@ export interface IFunctionParameter {
   name: string;
   description?: string;
   type: string;
+  cellValueType?: string;
   dimensionality?: string;
   optional?: boolean;
   repeating?: boolean;
@@ -107,16 +106,8 @@ const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
-const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
+const LINKEDENTITYLOADSERVICE = "linkedentityloadservice";
 const CAPTURESCALLINGOBJECT = "capturescallingobject";
-
-const TYPE_MAPPINGS_SIMPLE = {
-  [ts.SyntaxKind.NumberKeyword]: "number",
-  [ts.SyntaxKind.StringKeyword]: "string",
-  [ts.SyntaxKind.BooleanKeyword]: "boolean",
-  [ts.SyntaxKind.AnyKeyword]: "any",
-  [ts.SyntaxKind.UnknownKeyword]: "any",
-};
 
 const TYPE_MAPPINGS = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -161,6 +152,19 @@ const CELLVALUETYPE_MAPPINGS = {
   "Excel.EmptyCellValue": "unsupported",
   "Excel.ReferenceCellValue": "unsupported",
   "Excel.ValueTypeNotAvailableCellValue": "unsupported",
+};
+
+const CELLVALUETYPE_TO_BASICTYPE_MAPPINGS = {
+  "cellvalue": "any",
+  "booleancellvalue": "boolean",
+  "doublecellvalue": "number",
+  "entitycellvalue": "any",
+  "errorcellvalue": "any",
+  "formattednumbercellvalue": "number",
+  "linkedentitycellvalue": "any",
+  "localimagecellvalue": "any",
+  "stringcellvalue": "string",
+  "webimagecellvalue": "any",
 };
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
@@ -225,8 +229,14 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           const jsDocParamOptionalInfo = getJSDocParamsOptionalType(functionDeclaration);
 
           const [lastParameter] = functionDeclaration.parameters.slice(-1);
-          const isStreamingFunction = hasStreamingInvocationParameter(lastParameter, jsDocParamTypeInfo);
-          const isCancelableFunction = hasCancelableInvocationParameter(lastParameter, jsDocParamTypeInfo);
+          const isStreamingFunction = hasStreamingInvocationParameter(
+            lastParameter,
+            jsDocParamTypeInfo
+          );
+          const isCancelableFunction = hasCancelableInvocationParameter(
+            lastParameter,
+            jsDocParamTypeInfo
+          );
           const isInvocationFunction = hasInvocationParameter(lastParameter, jsDocParamTypeInfo);
 
           const parametersToParse =
@@ -305,7 +315,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.requiresParameterAddresses &&
             !options.requiresStreamParameterAddresses &&
             !options.excludeFromAutoComplete &&
-            !options.linkedEntityDataProvider &&
+            !options.linkedEntityLoadService &&
             !options.capturesCallingObject
           ) {
             delete functionMetadata.options;
@@ -342,8 +352,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
               delete options.excludeFromAutoComplete;
             }
 
-            if (!options.linkedEntityDataProvider) {
-              delete options.linkedEntityDataProvider;
+            if (!options.linkedEntityLoadService) {
+              delete options.linkedEntityLoadService;
             }
 
             if (!options.capturesCallingObject) {
@@ -397,7 +407,8 @@ function checkForDuplicate(list: string[], item: string): boolean {
  */
 function areStringsEqual(first: string, second: string, ignoreCase = true): boolean {
   return typeof first === "string" && typeof second === "string"
-    ? first.localeCompare(second, undefined, ignoreCase ? { sensitivity: "accent" } : undefined) === 0
+    ? first.localeCompare(second, undefined, ignoreCase ? { sensitivity: "accent" } : undefined) ===
+        0
     : first === second;
 }
 
@@ -421,7 +432,11 @@ function getPosition(
  * Verifies if the id is valid and logs error if not.
  * @param id Id of the function
  */
-function validateId(id: string, position: ts.LineAndCharacter | null, extra: IFunctionExtras): void {
+function validateId(
+  id: string,
+  position: ts.LineAndCharacter | null,
+  extra: IFunctionExtras
+): void {
   const idRegExString: string = "^[a-zA-Z0-9._]*$";
   const idRegEx = new RegExp(idRegExString);
   if (!idRegEx.test(id)) {
@@ -441,7 +456,11 @@ function validateId(id: string, position: ts.LineAndCharacter | null, extra: IFu
  * Verifies if the name is valid and logs error if not.
  * @param name Name of the function
  */
-function validateName(name: string, position: ts.LineAndCharacter | null, extra: IFunctionExtras): void {
+function validateName(
+  name: string,
+  position: ts.LineAndCharacter | null,
+  extra: IFunctionExtras
+): void {
   const startsWithLetterRegEx = XRegExp("^[\\pL]");
   const validNameRegEx = XRegExp("^[\\pL][\\pL0-9._]*$");
   let errorString: string;
@@ -493,22 +512,30 @@ function getOptions(
     requiresParameterAddresses: isRequiresParameterAddresses(func) && !isStreaming(func, isStreamingFunction),
     requiresStreamParameterAddresses: isRequiresParameterAddresses(func) && isStreaming(func, isStreamingFunction),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
-    linkedEntityDataProvider: isLinkedEntityDataProvider(func),
+    linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
   };
 
   if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
-    let errorParam: string = optionsItem.requiresAddress ? "@requiresAddress" : "@requiresParameterAddresses";
+    let errorParam: string = optionsItem.requiresAddress
+      ? "@requiresAddress"
+      : "@requiresParameterAddresses";
 
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
+
+    if (isStreamingFunction) {
+      const functionPosition = getPosition(func);
+      const errorString = `${errorParam} cannot be used with @streaming.`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
   }
 
   if (
-    optionsItem.linkedEntityDataProvider &&
+    optionsItem.linkedEntityLoadService &&
     (optionsItem.excludeFromAutoComplete ||
       optionsItem.volatile ||
       optionsItem.stream ||
@@ -533,7 +560,7 @@ function getOptions(
       errorParam = "@capturesCallingObject";
     }
 
-    const errorString = `${errorParam} cannot be used with @linkedEntityDataProvider.`;
+    const errorString = `${errorParam} cannot be used with @linkedEntityLoadService.`;
     extra.errors.push(logError(errorString, functionPosition));
   }
 
@@ -716,6 +743,13 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
         type: ptype,
       };
 
+      // for backward compatibility, we put cell value type in cellValueType instead of type.
+      if (Object.values(CELLVALUETYPE_MAPPINGS).includes(ptype)) {
+        // @ts-ignore
+        pMetadataItem.type = CELLVALUETYPE_TO_BASICTYPE_MAPPINGS[ptype];
+        pMetadataItem.cellValueType = ptype
+      }
+
       // Only return dimensionality = matrix.  Default assumed scalar
       if (pMetadataItem.dimensionality === "scalar") {
         delete pMetadataItem.dimensionality;
@@ -849,11 +883,11 @@ function isExcludedFromAutoComplete(node: ts.Node): boolean {
 }
 
 /**
- * Returns true if linkedEntityDataProvider tag found in comments
+ * Returns true if linkedEntityLoadService tag found in comments
  * @param node jsDocs node
  */
-function isLinkedEntityDataProvider(node: ts.Node): boolean {
-  return hasTag(node, LINKEDENTITYDATAPROVIDER);
+function isLinkedEntityLoadService(node: ts.Node): boolean {
+  return hasTag(node, LINKEDENTITYLOADSERVICE);
 }
 
 /**
@@ -968,7 +1002,8 @@ function getJSDocParamsOptionalType(node: ts.Node): { [key: string]: string } {
     // @ts-ignore
     (tag: ts.JSDocParameterTag) => {
       // @ts-ignore
-      jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = tag.isBracketed;
+      jsDocParamOptionalTypeInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] =
+        tag.isBracketed;
     }
   );
 
@@ -1047,7 +1082,10 @@ function hasCancelableInvocationParameter(
 
   const typeRef = param.type as ts.TypeReferenceNode;
   const typeName = typeRef.typeName.getText();
-  return typeName === "CustomFunctions.CancelableHandler" || typeName === "CustomFunctions.CancelableInvocation";
+  return (
+    typeName === "CustomFunctions.CancelableHandler" ||
+    typeName === "CustomFunctions.CancelableInvocation"
+  );
 }
 
 /**
@@ -1239,7 +1277,10 @@ function getParamDim(t: ts.TypeNode): string {
   return dimensionality;
 }
 
-function getParamOptional(p: ts.ParameterDeclaration, jsDocParamOptionalInfo: { [key: string]: string }): boolean {
+function getParamOptional(
+  p: ts.ParameterDeclaration,
+  jsDocParamOptionalInfo: { [key: string]: string }
+): boolean {
   let optional = false;
   const name = (p.name as ts.Identifier).text;
   const isOptional = p.questionToken != null || p.initializer != null || p.dotDotDotToken != null;

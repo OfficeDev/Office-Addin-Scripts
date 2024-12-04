@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import commander from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as defaults from "./defaults";
 import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
@@ -17,7 +17,9 @@ import { usageDataObject } from "./defaults";
  * @param command command options which can contain files
  */
 function getPathToFiles(command: commander.Command): string {
-  const pathToFiles: any = command.files ? command.files : process.env.npm_package_config_lint_files;
+  const pathToFiles: any = command.files
+    ? command.files
+    : process.env.npm_package_config_lint_files;
   return pathToFiles ? pathToFiles : defaults.lintFiles;
 }
 

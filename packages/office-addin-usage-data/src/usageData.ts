@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import * as appInsights from "applicationinsights";
-import * as readLine from "readline-sync";
+import readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
 import * as defaults from "./defaults";
 

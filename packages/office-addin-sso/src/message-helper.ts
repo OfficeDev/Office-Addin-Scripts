@@ -3,7 +3,7 @@
  * See LICENSE in the project root for license information.
  */
 
-import * as $ from "jquery";
+import $ from "jquery";
 
 export function showMessage(text: string): void {
   $(".welcome-body").hide();

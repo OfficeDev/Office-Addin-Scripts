@@ -2,14 +2,14 @@
 // Licensed under the MIT license.
 
 /**
- * Test the linkedEntityDataProvider tag in combination with the requiresParameterAddresses tag
- * @param linkedEntityId Unique `LinkedEntityId` of the `LinkedEntityCellValue`s which is being requested for resolution/refresh.
+ * Test the linkedEntityLoadService tag in combination with the requiresParameterAddresses tag
+ * @param request Represents a request to the `@linkedEntityLoadService` custom function to load `LinkedEntityCellValue` objects.
  * @param handler {CustomFunctions.Invocation} my handler
  * @customfunction
- * @linkedEntityDataProvider
+ * @linkedEntityLoadService
  * @requiresParameterAddresses
- * @returns {Promise<any>} Resolved/Updated `LinkedEntityCellValue` that was requested by the passed-in id.
+ * @returns {Promise<any>} Resolved/Updated `LinkedEntityCellValue` objects that were requested by the passed-in request.
  */
-function linkedEntityDataProviderTest(linkedEntityId, handler) {
+function linkedEntityLoadServiceTest(request, handler) {
     // Empty
 }

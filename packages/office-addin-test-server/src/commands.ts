@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commnder from "commander";
+import commnder from "commander";
 import { parseNumber } from "office-addin-cli";
 import { defaultPort, TestServer } from "./testServer";
 
@@ -26,6 +26,8 @@ function parseTestServerPort(optionValue: any): number {
     if (testServerPort < 0 || testServerPort > 65535) {
       throw new Error("port should be between 0 and 65535.");
     }
+  } else {
+    throw new Error("Error parsing port number.");
   }
   return testServerPort;
 }

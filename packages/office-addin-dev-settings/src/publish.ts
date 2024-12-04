@@ -1,11 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as childProcess from "child_process";
-import * as fs from "fs";
-import * as path from "path";
+import childProcess from "child_process";
+import fs from "fs";
 
-/* global console, process */
+/* global console */
 
 export type AccountOperation = "login" | "logout";
 
@@ -52,7 +51,7 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
 
 export async function uninstallWithTeams(id: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    if(id.startsWith("U_")) {
+    if (id.startsWith("U_")) {
       const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall "--title-id" ${id}`;
 
       console.log(`running: ${uninstallCommand}`);
@@ -66,7 +65,7 @@ export async function uninstallWithTeams(id: string): Promise<void> {
         }
       });
     } else {
-      console.error(`Error: Invalid title id \"${id}\".  Add-in is still installed.`);
+      console.error(`Error: Invalid title id "${id}".  Add-in is still installed.`);
       resolve();
     }
   });

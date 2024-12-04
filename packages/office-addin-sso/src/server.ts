@@ -2,7 +2,7 @@
 /*
     This file provides server configuration, startup and stop
 */
-import * as https from "https";
+import https from "https";
 import * as devCerts from "office-addin-dev-certs";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { App } from "./middle-tier/app";
@@ -33,10 +33,9 @@ export class SSOService {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
       }
       await this.getSecret(isTest);
-      await this.startServer(this.app.appInstance, this.port);
-      this.ssoServiceStarted = true;
+      this.ssoServiceStarted = await this.startServer(this.app.appInstance, this.port);
       usageDataObject.reportSuccess("startSsoService()");
-      return Promise.resolve(true);
+      return Promise.resolve(this.ssoServiceStarted);
     } catch (err) {
       console.error(`Failed to start SSO server. ${err}`);
       usageDataObject.reportException("startSsoService()", err);

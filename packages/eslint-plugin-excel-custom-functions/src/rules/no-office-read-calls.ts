@@ -1,19 +1,11 @@
-import {
-  TSESTree,
-  ESLintUtils,
-  ParserServices,
-} from "@typescript-eslint/utils";
+import { TSESTree, ESLintUtils, ParserServices } from "@typescript-eslint/utils";
 import {
   REPO_URL,
   callExpressionAnalysis,
   assignmentExpressionAnalysis,
   variableDeclaratorAnalysis,
 } from "./utils";
-import {
-  RuleContext,
-  RuleMetaDataDocs,
-  RuleMetaData,
-} from "@typescript-eslint/utils/dist/ts-eslint";
+import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 import ts from "typescript";
 
 /**
@@ -28,10 +20,7 @@ import ts from "typescript";
 type Options = readonly unknown[];
 type MessageIds = "officeReadCall";
 
-export default ESLintUtils.RuleCreator(
-  () =>
-    REPO_URL,
-)({
+export default ESLintUtils.RuleCreator(() => REPO_URL)({
   name: "no-office-read-calls",
   meta: {
     docs: {
@@ -47,9 +36,9 @@ export default ESLintUtils.RuleCreator(
   },
 
   create: function (ruleContext: RuleContext<MessageIds, Options>): {
-    CallExpression: (node: TSESTree.CallExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
-    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
-    VariableDeclarator: (node: TSESTree.VariableDeclarator) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
+    CallExpression: (node: TSESTree.CallExpression) => void;
+    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void;
+    VariableDeclarator: (node: TSESTree.VariableDeclarator) => void;
   } {
     const services: ParserServices = ESLintUtils.getParserServices(ruleContext);
     const typeChecker: ts.TypeChecker = services.program.getTypeChecker();
@@ -85,13 +74,7 @@ export default ESLintUtils.RuleCreator(
       },
 
       AssignmentExpression: function (node: TSESTree.AssignmentExpression) {
-        assignmentExpressionAnalysis(
-          node,
-          ruleContext,
-          services,
-          typeChecker,
-          false
-        );
+        assignmentExpressionAnalysis(node, ruleContext, services, typeChecker, false);
       },
 
       VariableDeclarator: function (node: TSESTree.VariableDeclarator) {

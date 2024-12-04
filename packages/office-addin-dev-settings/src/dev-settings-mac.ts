@@ -1,8 +1,8 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
-import * as fs from "fs-extra";
-import * as junk from "junk";
+import fs from "fs-extra";
+import junk from "junk";
 import {
   exportMetadataPackage,
   getOfficeApps,
@@ -11,14 +11,12 @@ import {
   OfficeAddinManifest,
   ManifestInfo,
 } from "office-addin-manifest";
-import * as os from "os";
-import * as path from "path";
+import os from "os";
+import path from "path";
 import { RegisteredAddin } from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import { registerWithTeams, uninstallWithTeams } from "./publish";
-import * as fspath from "path";
-
-/* global process */
+import fspath from "path";
 
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const registeredAddins: RegisteredAddin[] = [];
@@ -74,7 +72,6 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
 
       // TODO: Save registration in "OutlookSideloadManifestPath" as "TitleId"
       // and add support for refreshing add-ins in Outlook via registry key
-
     } else if (manifestPath.endsWith(".xml")) {
       // TODO: Look for "Outlook" in manifests.hosts and enable outlook sideloading if there.
       // and add support for refreshing add-ins in Outlook via registry key
@@ -125,8 +122,8 @@ export async function unregisterAllAddIns(): Promise<void> {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
     if (!registeredFileName.endsWith(".xml")) {
       uninstallWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
-        // TODO: Add support for refreshing add-ins in Outlook via registry key
-      }
+      // TODO: Add support for refreshing add-ins in Outlook via registry key
+    }
     fs.unlinkSync(registeredAddIn.manifestPath);
   }
 }

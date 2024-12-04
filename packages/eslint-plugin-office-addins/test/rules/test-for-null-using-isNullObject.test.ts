@@ -38,17 +38,6 @@ ruleTester.run("test-for-null-using-isNullObject", rule, {
       code: `
       var dataSheet;
       dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
-      return context.sync().then(function () {
-        if (dataSheet.isNullObject) {
-          dataSheet = context.workbook.worksheets.add("Data");
-        }
-        dataSheet.position = 1;
-      });`,
-    },
-    {
-      code: `
-      var dataSheet;
-      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
       if (dataSheet.isNullObject) {
         dataSheet = context.workbook.worksheets.add("Data");
       }`,
@@ -69,10 +58,10 @@ ruleTester.run("test-for-null-using-isNullObject", rule, {
       errors,
       output: `
       await Excel.run(async (context) =>  {
-        var dataSheet = context.workbook.worksheets.getItemOrNullObject(\"Data\");
+        var dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
         return context.sync().then(function () {
           if (dataSheet.isNullObject) {
-            dataSheet = context.workbook.worksheets.add(\"Data\");
+            dataSheet = context.workbook.worksheets.add("Data");
           }
           dataSheet.position = 1;
         });
