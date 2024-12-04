@@ -2,7 +2,7 @@
     "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
-            "description": "Test the requiresStreamParameterAddresses tag",
+            "description": "Test the requiresParameterAddresses and streaming tag",
             "id": "REQUIRESSTREAMPARAMETERADDRESSESTEST",
             "name": "REQUIRESSTREAMPARAMETERADDRESSESTEST",
             "options": {
@@ -21,7 +21,7 @@
             }
         },
         {
-            "description": "Test the requiresStreamParameterAddresses tag with multiple parameters",
+            "description": "Test the requiresParameterAddresses and streaming tag with multiple parameters",
             "id": "REQUIRESSTREAMPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
             "name": "REQUIRESSTREAMPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
             "options": {
@@ -45,7 +45,7 @@
             }
         },
         {
-            "description": "Test having both requiresStreamAddress and requiresStreamParameterAddresses tag",
+            "description": "Test having requiresAddress, requiresParameterAddresses and streaming tag",
             "id": "REQUIRESSTREAMBOTHADDRESSESANDPARAMETERADDRESSESTEST",
             "name": "REQUIRESSTREAMBOTHADDRESSESANDPARAMETERADDRESSESTEST",
             "options": {

@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 
 /**
- * Test the requiresStreamAddress tag
+ * Test the requiresAddress and streaming tag
  * @param x {string} string
- * @param handler {CustomFunctions.StreamingInvocation<string>} my handler
+ * @param invocation {CustomFunctions.StreamingInvocation<string>} my invocation
  * @customfunction
- * @requiresStreamAddress
+ * @requiresAddress
  * @streaming
  */
-function requiresStreamAddressTest(x, handler) {
+function requiresStreamAddressTest(x, invocation) {
     // Empty
 }

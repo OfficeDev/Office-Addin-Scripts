@@ -2,39 +2,39 @@
 // Licensed under the MIT license.
 
 /**
- * Test the requiresStreamParameterAddresses tag
+ * Test the requiresParameterAddresses and streaming tag
  * @param x string
- * @param handler my handler
+ * @param invocation my invocation
  * @customfunction
- * @requiresStreamParameterAddresses
+ * @requiresParameterAddresses
  * @streaming
  */
-function requiresStreamParameterAddressesTest(x: string, handler: CustomFunctions.StreamingInvocation<string>) {
+function requiresStreamParameterAddressesTest(x: string, invocation: CustomFunctions.StreamingInvocation<string>) {
     // Empty
 }
 
 /**
- * Test the requiresStreamParameterAddresses tag with multiple parameters
+ * Test the requiresParameterAddresses and streaming tag with multiple parameters
  * @param x string
  * @param y string
- * @param handler my handler
+ * @param invocation my invocation
  * @customfunction
- * @requiresStreamParameterAddresses
+ * @requiresParameterAddresses
  * @streaming
  */
-function requiresStreamParameterAddressesWithMultipleParameterTest(x: string, y: string, handler: CustomFunctions.StreamingInvocation<string>) {
+function requiresStreamParameterAddressesWithMultipleParameterTest(x: string, y: string, invocation: CustomFunctions.StreamingInvocation<string>) {
     // Empty
 }
 
 /**
- * Test having both requiresStreamAddress and requiresStreamParameterAddresses tag
+ * Test having requiresAddress, requiresParameterAddresses and streaming tag
  * @param x string
- * @param handler my handler
+ * @param invocation my invocation
  * @customfunction
- * @requiresStreamAddress
- * @requiresStreamParameterAddresses
+ * @requiresAddress
+ * @requiresParameterAddresses
  * @streaming
  */
-function requiresStreamBothAddressesAndParameterAddressesTest(x: string, handler: CustomFunctions.StreamingInvocation<string>) {
+function requiresStreamBothAddressesAndParameterAddressesTest(x: string, invocation: CustomFunctions.StreamingInvocation<string>) {
     // Empty
 }

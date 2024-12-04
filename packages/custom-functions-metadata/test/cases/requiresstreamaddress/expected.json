@@ -2,7 +2,7 @@
     "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
-            "description": "Test the requiresStreamAddress tag",
+            "description": "Test the requiresAddress and streaming tag",
             "id": "REQUIRESSTREAMADDRESSTEST",
             "name": "REQUIRESSTREAMADDRESSTEST",
             "options": {

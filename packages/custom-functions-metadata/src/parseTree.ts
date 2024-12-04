@@ -106,8 +106,6 @@ const STREAMING = "streaming";
 const CANCELABLE = "cancelable";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
-const REQUIRESSTREAMADDRESS = "requiresstreamaddress";
-const REQUIRESSTREAMPARAMETERADDRESSES = "requiresstreamparameteraddresses";
 const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const LINKEDENTITYDATAPROVIDER = "linkedentitydataprovider";
 const CAPTURESCALLINGOBJECT = "capturescallingobject";
@@ -488,12 +486,12 @@ function getOptions(
 ): IFunctionOptions {
   const optionsItem: IFunctionOptions = {
     cancelable: isCancelableTag(func, isCancelableFunction),
-    requiresAddress: isAddressRequired(func),
-    requiresStreamAddress: isStreamAddressRequired(func),
+    requiresAddress: isAddressRequired(func) && !isStreaming(func, isStreamingFunction),
+    requiresStreamAddress: isAddressRequired(func) && isStreaming(func, isStreamingFunction),
     stream: isStreaming(func, isStreamingFunction),
     volatile: isVolatile(func),
-    requiresParameterAddresses: isRequiresParameterAddresses(func),
-    requiresStreamParameterAddresses: isRequiresStreamParameterAddresses(func),
+    requiresParameterAddresses: isRequiresParameterAddresses(func) && !isStreaming(func, isStreamingFunction),
+    requiresStreamParameterAddresses: isRequiresParameterAddresses(func) && isStreaming(func, isStreamingFunction),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityDataProvider: isLinkedEntityDataProvider(func),
     capturesCallingObject: capturesCallingObject(func),
@@ -501,22 +499,6 @@ function getOptions(
 
   if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
     let errorParam: string = optionsItem.requiresAddress ? "@requiresAddress" : "@requiresParameterAddresses";
-
-    if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
-      const functionPosition = getPosition(func, func.parameters.end);
-      const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
-      extra.errors.push(logError(errorString, functionPosition));
-    }
-  }
-
-  if (optionsItem.requiresStreamAddress || optionsItem.requiresStreamParameterAddresses) {
-    let errorParam = optionsItem.requiresStreamAddress ? "@requiresStreamAddress" : "@requiresStreamParameterAddresses";
-
-    if (!optionsItem.stream) {
-      const functionPosition = getPosition(func);
-      const errorString = `Since ${errorParam} is present, the @streaming tag is required or the last function parameter should be of type CustomFunctions.StreamingInvocation.`;
-      extra.errors.push(logError(errorString, functionPosition));
-    }
 
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
@@ -856,22 +838,6 @@ function isAddressRequired(node: ts.Node): boolean {
  */
 function isRequiresParameterAddresses(node: ts.Node): boolean {
   return hasTag(node, REQUIRESPARAMETERADDRESSES);
-}
-
-/**
- * Returns true if requiresStreamAddress tag found in comments
- * @param node jsDocs node
- */
-function isStreamAddressRequired(node: ts.Node) {
-  return hasTag(node, REQUIRESSTREAMADDRESS);
-}
-
-/**
- * Returns true if RequiresStreamParameterAddresses tag found in comments
- * @param node jsDocs node
- */
-function isRequiresStreamParameterAddresses(node: ts.Node) {
-  return hasTag(node, REQUIRESSTREAMPARAMETERADDRESSES);
 }
 
 /**
