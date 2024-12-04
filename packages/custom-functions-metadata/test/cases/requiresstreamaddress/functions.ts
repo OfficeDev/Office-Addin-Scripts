@@ -4,7 +4,7 @@
 /**
  * Test the requiresAddress and streaming tag
  * @param x string
- * @param handler my invocation
+ * @param invocation my invocation
  * @customfunction
  * @requiresAddress
  * @streaming
