@@ -10,3 +10,7 @@ pipelines:
           lastModifiedDate: 2024-10-16
         armory:
           lastModifiedDate: 2024-10-16
+        bandit:
+          lastModifiedDate: 2024-12-05
+        psscriptanalyzer:
+          lastModifiedDate: 2024-12-05
