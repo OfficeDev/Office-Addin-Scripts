@@ -1,0 +1,68 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test the requiresParameterAddresses and streaming tag",
+            "id": "REQUIRESSTREAMPARAMETERADDRESSESTEST",
+            "name": "REQUIRESSTREAMPARAMETERADDRESSESTEST",
+            "options": {
+                "stream": true,
+                "requiresStreamParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "description": "Test the requiresParameterAddresses and streaming tag with multiple parameters",
+            "id": "REQUIRESSTREAMPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
+            "name": "REQUIRESSTREAMPARAMETERADDRESSESWITHMULTIPLEPARAMETERTEST",
+            "options": {
+                "stream": true,
+                "requiresStreamParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                },
+                {
+                    "description": "string",
+                    "name": "y",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "description": "Test having requiresAddress, requiresParameterAddresses and streaming tag",
+            "id": "REQUIRESSTREAMBOTHADDRESSESANDPARAMETERADDRESSESTEST",
+            "name": "REQUIRESSTREAMBOTHADDRESSESANDPARAMETERADDRESSESTEST",
+            "options": {
+                "requiresStreamAddress": true,
+                "stream": true,
+                "requiresStreamParameterAddresses": true
+            },
+            "parameters": [
+                {
+                    "description": "string",
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        }
+    ]
+}

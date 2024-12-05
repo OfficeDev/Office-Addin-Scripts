@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 
 /**
- * Test the new streaming invocation type
+ * Test missing invocation parameter type
  * @param x {string} string
- * @param stream {CustomFunctions.StreamingInvocation<string>} StreamingInvocation type
  * @customfunction
  * @requiresparameteraddresses
+ * @streaming
  */
-function customFunctionStreamingInvocationTest(x, stream){
+function customFunctionInvocationTest(x) {
     // Empty
 }
