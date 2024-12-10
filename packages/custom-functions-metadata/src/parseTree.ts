@@ -21,9 +21,11 @@ export interface IFunction {
 export interface IFunctionOptions {
   cancelable?: boolean;
   requiresAddress?: boolean;
+  requiresStreamAddress?: boolean;
   stream?: boolean;
   volatile?: boolean;
   requiresParameterAddresses?: boolean;
+  requiresStreamParameterAddresses?: boolean;
   excludeFromAutoComplete?: boolean;
   linkedEntityLoadService?: boolean;
   capturesCallingObject?: boolean;
@@ -430,9 +432,11 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           if (
             !options.cancelable &&
             !options.requiresAddress &&
+            !options.requiresStreamAddress &&
             !options.stream &&
             !options.volatile &&
             !options.requiresParameterAddresses &&
+            !options.requiresStreamParameterAddresses &&
             !options.excludeFromAutoComplete &&
             !options.linkedEntityLoadService &&
             !options.capturesCallingObject
@@ -447,6 +451,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
               delete options.requiresAddress;
             }
 
+            if (!options.requiresStreamAddress) {
+              delete options.requiresStreamAddress;
+            }
+
             if (!options.stream) {
               delete options.stream;
             }
@@ -457,6 +465,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.requiresParameterAddresses) {
               delete options.requiresParameterAddresses;
+            }
+
+            if (!options.requiresStreamParameterAddresses) {
+              delete options.requiresStreamParameterAddresses;
             }
 
             if (!options.excludeFromAutoComplete) {
@@ -622,29 +634,25 @@ function getOptions(
 ): IFunctionOptions {
   const optionsItem: IFunctionOptions = {
     cancelable: isCancelableTag(func, isCancelableFunction),
-    requiresAddress: isAddressRequired(func),
+    requiresAddress: isAddressRequired(func) && !isStreaming(func, isStreamingFunction),
+    requiresStreamAddress: isAddressRequired(func) && isStreaming(func, isStreamingFunction),
     stream: isStreaming(func, isStreamingFunction),
     volatile: isVolatile(func),
-    requiresParameterAddresses: isRequiresParameterAddresses(func),
+    requiresParameterAddresses: isRequiresParameterAddresses(func) && !isStreaming(func, isStreamingFunction),
+    requiresStreamParameterAddresses: isRequiresParameterAddresses(func) && isStreaming(func, isStreamingFunction),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
   };
 
-  if (optionsItem.requiresAddress || optionsItem.requiresParameterAddresses) {
-    let errorParam: string = optionsItem.requiresAddress
+  if (isAddressRequired(func) || isRequiresParameterAddresses(func)) {
+    let errorParam: string = isAddressRequired(func)
       ? "@requiresAddress"
       : "@requiresParameterAddresses";
 
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
-      extra.errors.push(logError(errorString, functionPosition));
-    }
-
-    if (isStreamingFunction) {
-      const functionPosition = getPosition(func);
-      const errorString = `${errorParam} cannot be used with @streaming.`;
       extra.errors.push(logError(errorString, functionPosition));
     }
   }
