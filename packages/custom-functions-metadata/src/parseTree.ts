@@ -41,9 +41,27 @@ export interface IFunctionParameter {
   repeating?: boolean;
 }
 
+interface IParameterType {
+  type: string;
+  customEnumType?: string;
+  cellValueType?: string;
+}
+
 export interface IFunctionResult {
   type?: string;
   dimensionality?: string;
+}
+
+export interface IEnum {
+  id: string;
+  type: string;
+  values: IEnumValue[];
+}
+
+interface IEnumValue {
+  name: string;
+  value: string | number;
+  tooltip: string;
 }
 
 export interface IGenerateResult {
@@ -61,6 +79,7 @@ export interface IParseTreeResult {
   associate: IAssociate[];
   extras: IFunctionExtras[];
   functions: IFunction[];
+  enums: IEnum[];
 }
 
 export interface IAssociate {
@@ -84,7 +103,8 @@ interface IArrayType {
 }
 
 interface IGetParametersArguments {
-  enumList: string[];
+  basicEnums: string[];
+  customEnums: IEnum[];
   extra: IFunctionExtras;
   jsDocParamInfo: { [key: string]: string };
   jsDocParamOptionalInfo: { [key: string]: string };
@@ -98,16 +118,18 @@ interface IJsDocParamType {
   dimensionality: string;
 }
 
-const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
-const HELPURL_PARAM = "helpurl";
-const VOLATILE = "volatile";
-const STREAMING = "streaming";
+// JSDoc tags
 const CANCELABLE = "cancelable";
+const CAPTURESCALLINGOBJECT = "capturescallingobject";
+const CUSTOM_ENUM = "customenum"; // case insensitive @CustomEnum tag to identify custom enums in JSDoc
+const CUSTOM_FUNCTION = "customfunction"; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
+const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
+const HELPURL_PARAM = "helpurl";
+const LINKEDENTITYLOADSERVICE = "linkedentityloadservice";
 const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
-const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
-const LINKEDENTITYLOADSERVICE = "linkedentityloadservice";
-const CAPTURESCALLINGOBJECT = "capturescallingobject";
+const STREAMING = "streaming";
+const VOLATILE = "volatile";
 
 const TYPE_MAPPINGS = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -179,30 +201,129 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
   const associate: IAssociate[] = [];
   const functions: IFunction[] = [];
   const extras: IFunctionExtras[] = [];
-  const enumList: string[] = [];
+  const basicEnums: string[] = [];
+  const customEnums: IEnum[] = [];
   const functionNames: string[] = [];
   const metadataFunctionNames: string[] = [];
-  const ids: string[] = [];
+  const metadataFunctionIds: string[] = [];
+  const metadataEnumIds: string[] = [];
 
   const sourceFile = ts.createSourceFile(sourceFileName, sourceCode, ts.ScriptTarget.Latest, true);
 
   buildEnums(sourceFile);
-  visit(sourceFile);
+  buildCustomEnums(sourceFile);
+  buildFunctions(sourceFile);
   const parseTreeResult: IParseTreeResult = {
     associate,
     extras,
     functions,
+    enums: customEnums,
   };
   return parseTreeResult;
 
+  // Build list for basic enums without tag "@customenum"
   function buildEnums(node: ts.Node) {
-    if (ts.isEnumDeclaration(node)) {
-      enumList.push(node.name.getText());
+    if (ts.isEnumDeclaration(node) && !isCustomEnum(node)) {
+      basicEnums.push(node.name.getText());
     }
     ts.forEachChild(node, buildEnums);
   }
+  
+  // Build list for custom enums tagged with "@customenum"
+  function buildCustomEnums(node: ts.Node) {
+    if (ts.isEnumDeclaration(node)) {
+      buildSingleCustomEnum(node);
+    }
+    ts.forEachChild(node, buildCustomEnums);
+  }
 
-  function visit(node: ts.Node) {
+  function buildSingleCustomEnum(node: ts.Node) {
+    if (!ts.isEnumDeclaration(node) || !node.parent || node.parent.kind !== ts.SyntaxKind.SourceFile) {
+      return;
+    }
+
+    const enumDeclaration = node as ts.EnumDeclaration;
+    if (!isCustomEnum(enumDeclaration) || enumDeclaration.members.length === 0) {
+      return;
+    }
+
+    const extra: IFunctionExtras = {
+      errors: [],
+      javascriptFunctionName: "",
+    };
+
+    const id = enumDeclaration.name.text;
+    validateName(id, getPosition(enumDeclaration), extra, "enum"); // Call `validateName` instead of `validateId` because the enum name acts as the id
+    extras.push(extra);
+
+    if (checkForDuplicate(metadataEnumIds, id)) {
+      const errorString = `@${CUSTOM_ENUM} tag specifies a duplicate name: ${id}`;
+      extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+    }
+
+    metadataEnumIds.push(id);
+
+    let isNumberEnum = true; // Default true for enums without initializer
+
+    // Extract JSDoc type from the enum declaration
+    let jsDocType: string | null = null;
+    const comment = getTagComment(enumDeclaration, CUSTOM_ENUM);
+    if (comment) {
+      const typeMatch = comment?.match(/\{\s*(string|number)\s*\}/);
+      if (!typeMatch) {
+        const errorString = `Unknown enum type defined after @${CUSTOM_ENUM} tag. Please use "{string}" or "{number}": ${id}`;
+        extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+      }
+
+      jsDocType = typeMatch? typeMatch[1].trim() : null;
+    }
+
+    // Get the first member of the enum to determine if it is a number or string enum
+    const firstMember = enumDeclaration.members[0];
+    if (firstMember.initializer) {
+      const initializerText = firstMember.initializer.getText();
+      isNumberEnum = !isNaN(Number(initializerText));
+      if (jsDocType) {
+        // Check if the enum type matches the type in the JSDoc annotation
+        const errorString = `Enum type must match the enum type in annotation: ${id}`;
+        if ((isNumberEnum && jsDocType !== "number") || (!isNumberEnum && jsDocType !== "string")) {
+          extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+          return;
+        }
+      }
+    }
+
+    const values: IEnumValue[] = [];
+    let defaultValueForNumberEnum = 0;
+    for (const member of enumDeclaration.members) {
+      const value = member.initializer ? JSON.parse(member.initializer.getText()) : defaultValueForNumberEnum++;
+      if ((isNumberEnum && typeof value !== "number") || (!isNumberEnum && typeof value !== "string")) {
+        const errorString = `Enum value type must be consistent: ${id}`;
+        extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+        return;
+      }
+
+      const name = member.name.getText();
+      const tooltip =
+        ts
+          .getLeadingCommentRanges(sourceFile.getFullText(), member.getFullStart())
+          ?.map((range) => sourceFile.getFullText().substring(range.pos, range.end).trim())
+          .join("\n")
+          .replace(/^\s*[/*]+\s?/gm, "") // Strip leading slashes, asterisks, and whitespace
+          .replace(/\s*[/*]+$/gm, "") || ""; // Strip trailing slashes, asterisks, and whitespace
+      values.push({ name: name, value: value, tooltip: tooltip });
+    }
+
+    const enumItem: IEnum = {
+      id,
+      type: isNumberEnum ? "number" : "string",
+      values,
+    };
+
+    customEnums.push(enumItem);
+  }
+
+  function buildFunctions(node: ts.Node) {
     if (ts.isFunctionDeclaration(node)) {
       if (node.parent && node.parent.kind === ts.SyntaxKind.SourceFile) {
         const functionDeclaration = node as ts.FunctionDeclaration;
@@ -245,7 +366,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
               : functionDeclaration.parameters.slice(0, functionDeclaration.parameters.length);
 
           const parameterItems: IGetParametersArguments = {
-            enumList,
+            basicEnums: basicEnums,
+            customEnums: customEnums,
             extra,
             jsDocParamInfo,
             jsDocParamOptionalInfo,
@@ -263,7 +385,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             lastParameter,
             jsDocParamTypeInfo,
             extra,
-            enumList
+            basicEnums,
+            customEnums
           );
 
           const options = getOptions(
@@ -279,7 +402,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           const name = idNameArray[1] || id;
 
           validateId(id, position, extra);
-          validateName(name, position, extra);
+          validateName(name, position, extra, "function");
 
           if (checkForDuplicate(metadataFunctionNames, name)) {
             const errorString = `@customfunction tag specifies a duplicate name: ${name}`;
@@ -288,12 +411,12 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
           metadataFunctionNames.push(name);
 
-          if (checkForDuplicate(ids, id)) {
+          if (checkForDuplicate(metadataFunctionIds, id)) {
             const errorString = `@customfunction tag specifies a duplicate id: ${id}`;
             functionErrors.push(logError(errorString, position));
           }
 
-          ids.push(id);
+          metadataFunctionIds.push(id);
           associate.push({ sourceFileName, functionName, id });
 
           const functionMetadata: IFunction = {
@@ -379,7 +502,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
       }
     }
 
-    ts.forEachChild(node, visit);
+    ts.forEachChild(node, buildFunctions);
   }
 }
 
@@ -417,7 +540,7 @@ function areStringsEqual(first: string, second: string, ignoreCase = true): bool
  * @param node function, parameter, or node
  */
 function getPosition(
-  node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.TypeNode,
+  node: ts.FunctionDeclaration | ts.ParameterDeclaration | ts.EnumDeclaration | ts.TypeNode,
   position?: number
 ): ts.LineAndCharacter | null {
   let positionLocation = null;
@@ -454,31 +577,37 @@ function validateId(
 
 /**
  * Verifies if the name is valid and logs error if not.
- * @param name Name of the function
+ * @param name Name of the function or enum
+ * @param position Position of the function or enum
+ * @param extra Extra information, especially errors
+ * @param type Type of the object, either "function" or "enum"
  */
 function validateName(
   name: string,
   position: ts.LineAndCharacter | null,
-  extra: IFunctionExtras
+  extra: IFunctionExtras,
+  type: "function" | "enum" = "function"
 ): void {
   const startsWithLetterRegEx = XRegExp("^[\\pL]");
   const validNameRegEx = XRegExp("^[\\pL][\\pL0-9._]*$");
   let errorString: string;
 
   if (!name) {
-    errorString = `You need to provide a custom function name.`;
+    errorString = `You need to provide a custom ${type} name.`;
     extra.errors.push(logError(errorString, position));
   }
+
   if (!startsWithLetterRegEx.test(name)) {
-    errorString = `The custom function name "${name}" should start with an alphabetic character.`;
+    errorString = `The custom ${type} name "${name}" should start with an alphabetic character.`;
     extra.errors.push(logError(errorString, position));
   }
-  if (!validNameRegEx.test(name)) {
-    errorString = `The custom function name "${name}" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_).`;
+  else if (!validNameRegEx.test(name)) {
+    errorString = `The custom ${type} name "${name}" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_).`;
     extra.errors.push(logError(errorString, position));
   }
+
   if (name.length > 128) {
-    errorString = `The custom function name is too long. It must be 128 characters or less.`;
+    errorString = `The custom ${type} name "${name}" is too long. It must be 128 characters or less.`;
     extra.errors.push(logError(errorString, position));
   }
 }
@@ -573,7 +702,8 @@ function getResults(
   lastParameter: ts.ParameterDeclaration,
   jsDocParamTypeInfo: { [key: string]: IJsDocParamType },
   extra: IFunctionExtras,
-  enumList: string[]
+  basicEnums: string[],
+  customEnums: IEnum[]
 ): IFunctionResult {
   let resultType = "any";
   let resultDim = "scalar";
@@ -605,19 +735,22 @@ function getResults(
 
       return paramResultItem;
     }
+
     if (!lastParameterType.typeArguments || lastParameterType.typeArguments.length !== 1) {
       const errorString =
         "The 'CustomFunctions.StreamingHandler' needs to be passed in a single result type (e.g., 'CustomFunctions.StreamingHandler < number >') :";
       extra.errors.push(logError(errorString, lastParameterPosition));
       return defaultResultItem;
     }
+
     const returnType = func.type as ts.TypeReferenceNode;
     if (returnType && returnType.getFullText().trim() !== "void") {
       const errorString = `A streaming function should return 'void'. Use CustomFunctions.StreamingHandler.setResult() to set results.`;
       extra.errors.push(logError(errorString, lastParameterPosition));
       return defaultResultItem;
     }
-    resultType = getParamType(lastParameterType.typeArguments[0], extra, enumList);
+
+    resultType = getParamType(lastParameterType.typeArguments[0], extra, basicEnums, customEnums).type;
     resultDim = getParamDim(lastParameterType.typeArguments[0]);
   } else if (func.type) {
     if (
@@ -631,14 +764,15 @@ function getResults(
         // @ts-ignore
         (func.type as ts.TypeReferenceNode).typeArguments[0],
         extra,
-        enumList
-      );
+        basicEnums,
+        customEnums
+      ).type;
       resultDim = getParamDim(
         // @ts-ignore
         (func.type as ts.TypeReferenceNode).typeArguments[0]
       );
     } else {
-      resultType = getParamType(func.type, extra, enumList);
+      resultType = getParamType(func.type, extra, basicEnums, customEnums).type;
       resultDim = getParamDim(func.type);
     }
   }
@@ -665,14 +799,15 @@ function getResults(
         // @ts-ignore
         (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0],
         extra,
-        enumList
-      );
+        basicEnums,
+        customEnums
+      ).type;
       resultDim = getParamDim(
         // @ts-ignore
         (returnTypeFromJSDoc as ts.TypeReferenceNode).typeArguments[0]
       );
     } else {
-      resultType = getParamType(returnTypeFromJSDoc, extra, enumList);
+      resultType = getParamType(returnTypeFromJSDoc, extra, basicEnums, customEnums).type;
       resultDim = getParamDim(returnTypeFromJSDoc);
     }
   }
@@ -726,7 +861,7 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
       if (!typeNode && parameterJSDocTypeNode) {
         typeNode = parameterJSDocTypeNode;
       }
-      const ptype = getParamType(typeNode, parameterItem.extra, parameterItem.enumList);
+      const ptype = getParamType(typeNode, parameterItem.extra, parameterItem.basicEnums, parameterItem.customEnums);
 
       const pMetadataItem: IFunctionParameter = {
         description: parameterItem.jsDocParamInfo[name],
@@ -734,15 +869,8 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
         name,
         optional: getParamOptional(p, parameterItem.jsDocParamOptionalInfo),
         repeating: isRepeatingParameter(typeNode),
-        type: ptype,
+        ...ptype,
       };
-
-      // for backward compatibility, we put cell value type in cellValueType instead of type.
-      if (Object.values(CELLVALUETYPE_MAPPINGS).includes(ptype)) {
-        // @ts-ignore
-        pMetadataItem.type = CELLVALUETYPE_TO_BASICTYPE_MAPPINGS[ptype];
-        pMetadataItem.cellValueType = ptype
-      }
 
       // Only return dimensionality = matrix.  Default assumed scalar
       if (pMetadataItem.dimensionality === "scalar") {
@@ -842,6 +970,14 @@ function hasTag(node: ts.Node, tagName: string): boolean {
  */
 function isCustomFunction(node: ts.Node): boolean {
   return hasTag(node, CUSTOM_FUNCTION);
+}
+
+/**
+ * Returns true if node is a custom enum
+ * @param node - jsDocs node
+ */
+function isCustomEnum(node: ts.Node): boolean {
+  return hasTag(node, CUSTOM_ENUM);
 }
 
 /**
@@ -1118,11 +1254,11 @@ function hasInvocationParameter(
  * Gets the parameter type of the node
  * @param node TypeNode
  */
-function getParamType(node: ts.TypeNode, extra: IFunctionExtras, enumList: string[]): string {
+function getParamType(node: ts.TypeNode, extra: IFunctionExtras, basicEnums: string[], customEnums: IEnum[]): IParameterType {
   let type = "any";
   // Only get type for typescript files. js files will return "any" for all types
   if (!node) {
-    return type;
+    return { type: type };
   }
   const typePosition = getPosition(node);
 
@@ -1141,10 +1277,18 @@ function getParamType(node: ts.TypeNode, extra: IFunctionExtras, enumList: strin
   if (ts.isTypeReferenceNode(node)) {
     const typeReferenceNode = node as ts.TypeReferenceNode;
     let nodeTypeName = typeReferenceNode.typeName.getText();
-    if (enumList.indexOf(nodeTypeName) >= 0) {
-      // Type found in the enumList
-      return type;
+    if (basicEnums.indexOf(nodeTypeName) >= 0) {
+      // Type found in the basicEnumList
+      return  { type: type };
     }
+
+    for (const enumItem of customEnums) {
+      if (enumItem.id === nodeTypeName) {
+        // Type found in the customEnumList
+        return  { type: enumItem.type, customEnumType: nodeTypeName };
+      }
+    }
+
     // @ts-ignore
     if (CELLVALUETYPE_MAPPINGS[nodeTypeName]) {
       // @ts-ignore
@@ -1152,14 +1296,15 @@ function getParamType(node: ts.TypeNode, extra: IFunctionExtras, enumList: strin
       if (cellValue === "unsupported") {
         const errorString = `Custom function does not support cell value type: ${typeReferenceNode.typeName.getText()}`;
         extra.errors.push(logError(errorString, typePosition));
-        return type;
+        return { type: type };
       }
-      return cellValue;
+      // @ts-ignore
+      return { type: CELLVALUETYPE_TO_BASICTYPE_MAPPINGS[cellValue], cellValueType: cellValue };
     }
 
     const errorString = `Custom function does not support type "${typeReferenceNode.typeName.getText()}" as input or return parameter.`;
     extra.errors.push(logError(errorString, typePosition));
-    return type;
+    return { type: type };
   }
 
   // @ts-ignore
@@ -1168,7 +1313,7 @@ function getParamType(node: ts.TypeNode, extra: IFunctionExtras, enumList: strin
     extra.errors.push(logError("Type doesn't match mappings", typePosition));
   }
 
-  return type;
+  return { type: type };
 }
 
 /**
