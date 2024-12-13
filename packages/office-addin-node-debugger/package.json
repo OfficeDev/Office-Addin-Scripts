@@ -1,6 +1,6 @@
 {
   "name": "office-addin-node-debugger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Files for enabling office add-in web debugging using Node and VS Code.",
   "main": "./lib/debugger.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "dependencies": {
     "commander": "^6.2.0",
     "node-fetch": "^2.6.1",
-    "office-addin-usage-data": "^2.0.0",
+    "office-addin-usage-data": "^2.0.1",
     "ws": "^7.4.6"
   },
   "devDependencies": {
@@ -33,7 +33,7 @@
     "@types/node-fetch": "^2.5.10",
     "@types/ws": "^5.1.2",
     "concurrently": "^6.2.2",
-    "office-addin-lint": "^3.0.0",
+    "office-addin-lint": "^3.0.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.7.4"
   },
