@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import chalk from "chalk";
-import commander from "commander";
+import { OptionValues } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo } from "./manifestInfo";
 import { OfficeAddinManifest } from "./manifestOperations";
@@ -126,11 +126,11 @@ function logManifestValidationSupportedProducts(products: ManifestValidationProd
   }
 }
 
-export async function modify(manifestPath: string, command: commander.Command) {
+export async function modify(manifestPath: string, options: OptionValues) {
   try {
     // if the --guid command option is provided without a value, use "" to specify to change to a random guid value.
-    const guid: string | undefined = getCommandOptionString(command.guid, "");
-    const displayName: string | undefined = getCommandOptionString(command.displayName);
+    const guid: string | undefined = getCommandOptionString(options.guid, "");
+    const displayName: string | undefined = getCommandOptionString(options.displayName);
 
     const manifest = await OfficeAddinManifest.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
@@ -143,10 +143,10 @@ export async function modify(manifestPath: string, command: commander.Command) {
 
 export async function validate(
   manifestPath: string,
-  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
-    const verifyProduction: boolean = command.production;
+    const verifyProduction: boolean = options.production;
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
     if (validation.status && validation.status != 200) {
       console.log(`Unable to validate the manifest.\n${validation.status}\n${validation.statusText}`);
@@ -174,10 +174,10 @@ export async function validate(
   }
 }
 
-export async function exportManifest(command: commander.Command) {
+export async function exportManifest(options: OptionValues) {
   try {
-    const outputPath: string = command.output ?? "";
-    const manifestPath: string = command.manifest ?? "./manifest.json";
+    const outputPath: string = options.output ?? "";
+    const manifestPath: string = options.manifest ?? "./manifest.json";
 
     await exportMetadataPackage(outputPath, manifestPath);
     usageDataObject.reportSuccess("export");

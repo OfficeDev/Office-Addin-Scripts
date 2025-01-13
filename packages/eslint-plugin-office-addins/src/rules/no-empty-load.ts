@@ -20,6 +20,7 @@ export default ESLintUtils.RuleCreator(
     schema: [],
   },
   create: function (context: any) {
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isEmptyLoad(node: TSESTree.MemberExpression): boolean {
       if (isLoadFunction(node)) {
         const propertyNames: string[] = parseLoadArguments(node);
@@ -72,8 +73,11 @@ export default ESLintUtils.RuleCreator(
     }
 
     return {
-      Program() {
-        findEmptyLoad(context.getScope());
+      Program(node) {
+        const scope = sourceCode.getScope
+                    ? sourceCode.getScope(node)
+                    : context.getScope();
+        findEmptyLoad(scope);
       },
     };
   },

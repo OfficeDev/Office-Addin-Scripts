@@ -23,8 +23,8 @@
     "update-packages": "npm run exec -- npm update --dev"
   },
   "devDependencies": {
-    "@microsoft/eslint-plugin-sdl": "^0.2.2",
-    "eslint": "^8.57.0",
+    "@microsoft/eslint-plugin-sdl": "^1.0.1",
+    "eslint": "^9.0.0",
     "lerna": "^5.1.6",
     "typescript-eslint": "^8.8.1"
   },

@@ -25,6 +25,7 @@ export default ESLintUtils.RuleCreator(
     fixable: <"code" | "whitespace">"code",
   },
   create: function (context: any) {
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isConditionalTestExpression(
       node: TSESTree.Identifier | TSESTree.JSXIdentifier,
     ): boolean {
@@ -142,8 +143,11 @@ export default ESLintUtils.RuleCreator(
     }
 
     return {
-      "Program:exit"() {
-        findNullObjectNullTests(context.getScope());
+      "Program:exit"(node) {
+        const scope = sourceCode.getScope
+                    ? sourceCode.getScope(node)
+                    : context.getScope();
+        findNullObjectNullTests(scope);
       },
     };
   },

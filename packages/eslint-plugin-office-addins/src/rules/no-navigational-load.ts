@@ -26,6 +26,7 @@ export default ESLintUtils.RuleCreator(
     schema: [],
   },
   create: function (context: any) {
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isLoadingValidPropeties(propertyName: string): boolean {
       const properties = propertyName.split("/");
       const lastProperty = properties.pop();
@@ -112,8 +113,11 @@ export default ESLintUtils.RuleCreator(
     }
 
     return {
-      Program() {
-        findNavigationalLoad(context.getScope());
+      Program(node) {
+        const scope = sourceCode.getScope
+                    ? sourceCode.getScope(node)
+                    : context.getScope();
+        findNavigationalLoad(scope);
       },
     };
   },

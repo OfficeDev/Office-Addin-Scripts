@@ -1,9 +1,7 @@
 import { RuleTester } from "@typescript-eslint/rule-tester";
 import rule from "../../src/rules/no-navigational-load";
 
-const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-});
+const ruleTester = new RuleTester();
 
 ruleTester.run("no-navigational-load", rule, {
   valid: [

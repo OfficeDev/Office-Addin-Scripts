@@ -20,6 +20,7 @@ export default ESLintUtils.RuleCreator(
     schema: [],
   },
   create: function (context: any) {
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
     let apiReferences: OfficeApiReference[] = [];
 
     function checkPropertyIsRead(node: TSESTree.MemberExpression): boolean {
@@ -66,8 +67,11 @@ export default ESLintUtils.RuleCreator(
     }
 
     return {
-      Program() {
-        apiReferences = findOfficeApiReferences(context.getScope());
+      Program(node) {
+        const scope = sourceCode.getScope
+                    ? sourceCode.getScope(node)
+                    : context.getScope();
+        apiReferences = findOfficeApiReferences(scope);
         apiReferences.sort((left, right) => {
           return (
             left.reference.identifier.range[1] -
