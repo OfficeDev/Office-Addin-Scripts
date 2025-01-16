@@ -3,11 +3,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import commander from "commander";
+import { Command } from "commander";
 import { logErrorMessage } from "./log";
 import * as commands from "./command";
 
 /* global process */
+
+const commander = new Command();
 
 commander.name("office-addin-usage-data");
 commander.version(process.env.npm_package_version || "(version not available)");

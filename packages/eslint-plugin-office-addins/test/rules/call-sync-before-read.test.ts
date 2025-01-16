@@ -1,9 +1,7 @@
 import { RuleTester } from "@typescript-eslint/rule-tester";
 import rule from "../../src/rules/call-sync-before-read";
 
-const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-});
+const ruleTester = new RuleTester();
 
 ruleTester.run("call-sync-before-read", rule, {
   valid: [

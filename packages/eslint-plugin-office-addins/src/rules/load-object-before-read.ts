@@ -22,6 +22,7 @@ export default ESLintUtils.RuleCreator(
     schema: [],
   },
   create: function (context: any) {
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isInsideWriteStatement(node: TSESTree.Node): boolean {
       while (node.parent) {
         node = node.parent;
@@ -133,8 +134,11 @@ export default ESLintUtils.RuleCreator(
     }
 
     return {
-      Program() {
-        findLoadBeforeRead(context.getScope());
+      Program(node) {
+        const scope = sourceCode.getScope
+                    ? sourceCode.getScope(node)
+                    : context.getScope();
+        findLoadBeforeRead(scope);
       },
     };
   },

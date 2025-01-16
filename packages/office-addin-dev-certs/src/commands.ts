@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import commander from "commander";
+import { OptionValues } from "commander";
 import { parseNumber } from "office-addin-cli";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as defaults from "./defaults";
@@ -13,12 +13,12 @@ import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
 
-export async function install(command: commander.Command) {
+export async function install(options: OptionValues) {
   try {
-    const days = parseDays(command.days);
-    const domains = parseDomains(command.domains);
+    const days = parseDays(options.days);
+    const domains = parseDomains(options.domains);
 
-    await ensureCertificatesAreInstalled(days, domains, command.machine);
+    await ensureCertificatesAreInstalled(days, domains, options.machine);
     usageDataObject.reportSuccess("install");
   } catch (err: any) {
     usageDataObject.reportException("install", err);
@@ -58,9 +58,9 @@ function parseDomains(optionValue: any): string[] | undefined {
   }
 }
 
-export async function uninstall(command: commander.Command) {
+export async function uninstall(options: OptionValues) {
   try {
-    await uninstallCaCertificate(command.machine);
+    await uninstallCaCertificate(options.machine);
     deleteCertificateFiles(defaults.certificateDirectory);
     usageDataObject.reportSuccess("uninstall");
   } catch (err: any) {
@@ -69,7 +69,7 @@ export async function uninstall(command: commander.Command) {
   }
 }
 
-export async function verify(command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */) {
+export async function verify(options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */) {
   try {
     if (await verifyCertificates()) {
       console.log(

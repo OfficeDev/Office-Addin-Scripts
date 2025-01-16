@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import commnder from "commander";
+import { OptionValues } from "commander";
 import { parseNumber } from "office-addin-cli";
 import { defaultPort, TestServer } from "./testServer";
 
 /* global console */
 
-export async function start(command: commnder.Command) {
-  const testServerPort: number = command.port !== undefined ? parseTestServerPort(command.port) : defaultPort;
+export async function start(options: OptionValues) {
+  const testServerPort: number = options.port !== undefined ? parseTestServerPort(options.port) : defaultPort;
   const testServer = new TestServer(testServerPort);
   const serverStarted: boolean = await testServer.startTestServer();
 

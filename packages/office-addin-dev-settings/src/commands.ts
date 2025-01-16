@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import commander from "commander";
+import { OptionValues } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo, OfficeApp, parseOfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import {
@@ -20,18 +20,18 @@ import { AccountOperation, updateM365Account } from "./publish";
 
 /* global process, console */
 
-export async function appcontainer(manifestPath: string, command: commander.Command) {
+export async function appcontainer(manifestPath: string, options: OptionValues) {
   if (isAppcontainerSupported()) {
     try {
-      if (command.loopback) {
+      if (options.loopback) {
         try {
-          const askForConfirmation: boolean = command.yes !== true;
+          const askForConfirmation: boolean = options.yes !== true;
           const allowed = await ensureLoopbackIsEnabled(manifestPath, askForConfirmation);
           console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
         } catch (err) {
           throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
         }
-      } else if (command.preventLoopback) {
+      } else if (options.preventLoopback) {
         try {
           const name = await getAppcontainerNameFromManifestPath(manifestPath);
           await removeLoopbackExemptionForAppcontainer(name);
@@ -74,11 +74,11 @@ export async function clear(manifestPath: string) {
   }
 }
 
-export async function debugging(manifestPath: string, command: commander.Command) {
+export async function debugging(manifestPath: string, options: OptionValues) {
   try {
-    if (command.enable) {
-      await enableDebugging(manifestPath, command);
-    } else if (command.disable) {
+    if (options.enable) {
+      await enableDebugging(manifestPath, options);
+    } else if (options.disable) {
       await disableDebugging(manifestPath);
     } else {
       await isDebuggingEnabled(manifestPath);
@@ -144,13 +144,13 @@ export async function disableRuntimeLogging() {
   }
 }
 
-export async function enableDebugging(manifestPath: string, command: commander.Command) {
+export async function enableDebugging(manifestPath: string, options: OptionValues) {
   try {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
 
     validateManifestId(manifest);
 
-    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(command.debugMethod), command.openDevTools);
+    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(options.debugMethod), options.openDevTools);
 
     console.log("Debugging has been enabled.");
     usageDataObject.reportSuccess("enableDebugging()");
@@ -248,11 +248,11 @@ export async function isRuntimeLoggingEnabled() {
   }
 }
 
-export async function liveReload(manifestPath: string, command: commander.Command) {
+export async function liveReload(manifestPath: string, options: OptionValues) {
   try {
-    if (command.enable) {
+    if (options.enable) {
       await enableLiveReload(manifestPath);
-    } else if (command.disable) {
+    } else if (options.disable) {
       await disableLiveReload(manifestPath);
     } else {
       await isLiveReloadEnabled(manifestPath);
@@ -297,7 +297,7 @@ export function parseWebViewType(webViewString?: string): devSettings.WebViewTyp
 
 export async function m365Account(
   operation: AccountOperation,
-  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
     await updateM365Account(operation);
@@ -310,7 +310,7 @@ export async function m365Account(
 
 export async function register(
   manifestPath: string,
-  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
     await devSettings.registerAddIn(manifestPath);
@@ -322,7 +322,7 @@ export async function register(
 }
 
 export async function registered(
-  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
     const registeredAddins = await devSettings.getRegisterAddIns();
@@ -352,12 +352,12 @@ export async function registered(
   }
 }
 
-export async function runtimeLogging(command: commander.Command) {
+export async function runtimeLogging(options: OptionValues) {
   try {
-    if (command.enable) {
-      const path: string | undefined = typeof command.enable === "string" ? command.enable : undefined;
+    if (options.enable) {
+      const path: string | undefined = typeof options.enable === "string" ? options.enable : undefined;
       await enableRuntimeLogging(path);
-    } else if (command.disable) {
+    } else if (options.disable) {
       await disableRuntimeLogging();
     } else {
       await isRuntimeLoggingEnabled();
@@ -369,13 +369,13 @@ export async function runtimeLogging(command: commander.Command) {
   }
 }
 
-export async function sideload(manifestPath: string, type: string | undefined, command: commander.Command) {
+export async function sideload(manifestPath: string, type: string | undefined, options: OptionValues) {
   try {
-    const app: OfficeApp | undefined = command.app ? parseOfficeApp(command.app) : undefined;
+    const app: OfficeApp | undefined = options.app ? parseOfficeApp(options.app) : undefined;
     const canPrompt = true;
-    const document: string | undefined = command.document ? command.document : undefined;
+    const document: string | undefined = options.document ? options.document : undefined;
     const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
-    const registration: string = command.registration;
+    const registration: string = options.registration;
 
     await sideloadAddIn(manifestPath, app, canPrompt, appType, document, registration);
     usageDataObject.reportSuccess("sideload");
@@ -385,13 +385,13 @@ export async function sideload(manifestPath: string, type: string | undefined, c
   }
 }
 
-export async function setSourceBundleUrl(manifestPath: string, command: commander.Command) {
+export async function setSourceBundleUrl(manifestPath: string, options: OptionValues) {
   try {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const host = parseStringCommandOption(command.host);
-    const port = parseStringCommandOption(command.port);
-    const path = parseStringCommandOption(command.path);
-    const extension = parseStringCommandOption(command.extension);
+    const host = parseStringCommandOption(options.host);
+    const port = parseStringCommandOption(options.port);
+    const path = parseStringCommandOption(options.path);
+    const extension = parseStringCommandOption(options.extension);
     const components = new devSettings.SourceBundleUrlComponents(host, port, path, extension);
 
     validateManifestId(manifest);
@@ -407,15 +407,15 @@ export async function setSourceBundleUrl(manifestPath: string, command: commande
   }
 }
 
-export async function sourceBundleUrl(manifestPath: string, command: commander.Command) {
+export async function sourceBundleUrl(manifestPath: string, options: OptionValues) {
   try {
     if (
-      command.host !== undefined ||
-      command.port !== undefined ||
-      command.path !== undefined ||
-      command.extension !== undefined
+      options.host !== undefined ||
+      options.port !== undefined ||
+      options.path !== undefined ||
+      options.extension !== undefined
     ) {
-      await setSourceBundleUrl(manifestPath, command);
+      await setSourceBundleUrl(manifestPath, options);
     } else {
       await getSourceBundleUrl(manifestPath);
     }
@@ -444,7 +444,7 @@ function toDebuggingMethod(text?: string): devSettings.DebuggingMethod {
 
 export async function unregister(
   manifestPath: string,
-  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
+  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
     if (manifestPath === "all") {

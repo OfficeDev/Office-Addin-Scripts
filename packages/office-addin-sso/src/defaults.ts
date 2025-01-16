@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import path from "path";
-import * as usageData from "office-addin-usage-data";
+import { instrumentationKeyForOfficeAddinCLITools, OfficeAddinUsageData } from "office-addin-usage-data";
 
 /* global process, __dirname */
 
@@ -39,8 +39,8 @@ export const testFallbackAuthDialogFilePath: string = path.resolve(`${process.cw
 export const testManifestFilePath = path.resolve(`${process.cwd()}/test/test-manifest.xml`);
 
 // Usage data defaults
-export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData({
+export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
   projectName: "office-addin-sso",
-  instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
+  instrumentationKey: instrumentationKeyForOfficeAddinCLITools,
   raisePrompt: false,
 });
