@@ -1,6 +1,6 @@
 {
   "name": "office-addin-dev-certs",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "For managing certificates when developing Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -35,8 +35,8 @@
     "commander": "^13.0.0",
     "fs-extra": "^11.2.0",
     "mkcert": "^3.2.0",
-    "office-addin-cli": "^2.0.1",
-    "office-addin-usage-data": "^2.0.1"
+    "office-addin-cli": "^2.0.2",
+    "office-addin-usage-data": "^2.0.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
@@ -46,7 +46,7 @@
     "@types/sinon": "^17.0.3",
     "concurrently": "^9.0.0",
     "mocha": "^11.0.0",
-    "office-addin-lint": "^3.0.1",
+    "office-addin-lint": "^3.0.2",
     "rimraf": "^6.0.1",
     "sinon": "^19.0.2",
     "ts-node": "^10.9.1",
