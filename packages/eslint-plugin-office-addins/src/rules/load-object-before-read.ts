@@ -21,7 +21,7 @@ export default ESLintUtils.RuleCreator(
     },
     schema: [],
   },
-  create: function (context: any) {
+  create: function (context) {
     const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isInsideWriteStatement(node: TSESTree.Node): boolean {
       while (node.parent) {
@@ -45,7 +45,7 @@ export default ESLintUtils.RuleCreator(
 
     function findLoadBeforeRead(scope: Scope) {
       scope.variables.forEach((variable: Variable) => {
-        let loadLocation: Map<string, number> = new Map<string, number>();
+        const loadLocation: Map<string, number> = new Map<string, number>();
         let getFound: boolean = false;
 
         variable.references.forEach((reference: Reference) => {
@@ -88,7 +88,7 @@ export default ESLintUtils.RuleCreator(
 
             if (methodCall && isLoadCall(methodCall)) {
               const argument = methodCall.arguments[0];
-              let propertyNames: string[] = argument
+              const propertyNames: string[] = argument
                 ? parsePropertiesArgument(argument)
                 : ["*"];
               propertyNames.forEach((propertyName: string) => {
@@ -136,8 +136,8 @@ export default ESLintUtils.RuleCreator(
     return {
       Program(node) {
         const scope = sourceCode.getScope
-                    ? sourceCode.getScope(node)
-                    : context.getScope();
+          ? sourceCode.getScope(node)
+          : context.getScope();
         findLoadBeforeRead(scope);
       },
     };

@@ -12,7 +12,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if ((filePath.endsWith(".zip") || filePath.endsWith(".xml")) && fs.existsSync(filePath)) {
       const pathSwitch = filePath.endsWith(".zip") ? "--file-path" : "--xml-path";
-      const sideloadCommand = `npx @microsoft/teamsapp-cli install ${pathSwitch} "${filePath}"`;
+      const sideloadCommand = `npx @microsoft/teamsapp-cli install ${pathSwitch} "${filePath}" --interactive false`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
@@ -52,7 +52,8 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
 export async function uninstallWithTeams(id: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (id.startsWith("U_")) {
-      const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall "--title-id" ${id}`;
+      // Can also use manifest id?
+      const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall "--title-id" ${id} --interactive false`;
 
       console.log(`running: ${uninstallCommand}`);
       childProcess.exec(uninstallCommand, (error, stdout, stderr) => {

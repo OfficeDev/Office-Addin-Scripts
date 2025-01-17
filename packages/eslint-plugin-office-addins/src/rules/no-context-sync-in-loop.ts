@@ -17,8 +17,7 @@ export default ESLintUtils.RuleCreator(
     },
     schema: [],
   },
-  create: function (context: any) {
-    const sourceCode = context.sourceCode ?? context.getSourceCode();
+  create: function (context) {
     return {
       ":matches(ForStatement, ForInStatement, WhileStatement, DoWhileStatement, ForOfStatement) CallExpression[callee.object.name='context'][callee.property.name='sync']"(
         node: TSESTree.CallExpression,
