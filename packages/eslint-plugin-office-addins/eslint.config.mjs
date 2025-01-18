@@ -12,11 +12,10 @@ export default [
   eslintConfigPrettier,
   {
     files: ["**/*.{js,mjs,cjs,ts,cts,mts}"],
-  },
-  {
+    ignores: ["**/node_modules/**", "**/lib/**"],
     plugins: {
       "@typescript-eslint": typescriptplugin,
-      "prettier": prettierplugin,
+      prettier: prettierplugin,
     },
 
     languageOptions: {
@@ -29,8 +28,6 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-
-        project: "./tsconfig.json",
       },
     },
 
