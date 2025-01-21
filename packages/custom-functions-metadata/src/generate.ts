@@ -1,8 +1,6 @@
 import { IFunction, IEnum, IGenerateResult, IParseTreeResult, parseTree } from "./parseTree";
 import { existsSync, readFileSync } from "fs";
 
-/* global console */
-
 /**
  * Generate the metadata of the custom functions
  * @param inputFile - File that contains the custom functions
@@ -49,7 +47,11 @@ export async function generateCustomFunctionsMetadata(
     });
 
     if (functions.length > 0) {
-      const metadata: { allowCustomDataForDataTypeAny: boolean; functions: IFunction[]; enums?: IEnum[] } = {
+      const metadata: {
+        allowCustomDataForDataTypeAny: boolean;
+        functions: IFunction[];
+        enums?: IEnum[];
+      } = {
         allowCustomDataForDataTypeAny: true,
         functions: functions,
         enums: enums,

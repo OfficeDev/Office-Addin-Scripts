@@ -5,8 +5,6 @@ import { writeFileSync } from "fs";
 import { logErrorMessage } from "office-addin-usage-data";
 import { generateCustomFunctionsMetadata } from "./generate";
 
-/* global console */
-
 export async function generate(input: string | string[], outputPath: string) {
   try {
     if (!input) {

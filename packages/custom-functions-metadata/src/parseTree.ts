@@ -177,16 +177,16 @@ const CELLVALUETYPE_MAPPINGS = {
 };
 
 const CELLVALUETYPE_TO_BASICTYPE_MAPPINGS = {
-  "cellvalue": "any",
-  "booleancellvalue": "boolean",
-  "doublecellvalue": "number",
-  "entitycellvalue": "any",
-  "errorcellvalue": "any",
-  "formattednumbercellvalue": "number",
-  "linkedentitycellvalue": "any",
-  "localimagecellvalue": "any",
-  "stringcellvalue": "string",
-  "webimagecellvalue": "any",
+  cellvalue: "any",
+  booleancellvalue: "boolean",
+  doublecellvalue: "number",
+  entitycellvalue: "any",
+  errorcellvalue: "any",
+  formattednumbercellvalue: "number",
+  linkedentitycellvalue: "any",
+  localimagecellvalue: "any",
+  stringcellvalue: "string",
+  webimagecellvalue: "any",
 };
 
 type CustomFunctionsSchemaDimensionality = "invalid" | "scalar" | "matrix";
@@ -228,7 +228,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     }
     ts.forEachChild(node, buildEnums);
   }
-  
+
   // Build list for custom enums tagged with "@customenum"
   function buildCustomEnums(node: ts.Node) {
     if (ts.isEnumDeclaration(node)) {
@@ -238,7 +238,11 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
   }
 
   function buildSingleCustomEnum(node: ts.Node) {
-    if (!ts.isEnumDeclaration(node) || !node.parent || node.parent.kind !== ts.SyntaxKind.SourceFile) {
+    if (
+      !ts.isEnumDeclaration(node) ||
+      !node.parent ||
+      node.parent.kind !== ts.SyntaxKind.SourceFile
+    ) {
       return;
     }
 
@@ -258,7 +262,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
     if (checkForDuplicate(metadataEnumIds, id)) {
       const errorString = `@${CUSTOM_ENUM} tag specifies a duplicate name: ${id}`;
-      extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+      extras.push({
+        errors: [logError(errorString, getPosition(enumDeclaration))],
+        javascriptFunctionName: "",
+      });
     }
 
     metadataEnumIds.push(id);
@@ -272,10 +279,13 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
       const typeMatch = comment?.match(/\{\s*(string|number)\s*\}/);
       if (!typeMatch) {
         const errorString = `Unknown enum type defined after @${CUSTOM_ENUM} tag. Please use "{string}" or "{number}": ${id}`;
-        extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+        extras.push({
+          errors: [logError(errorString, getPosition(enumDeclaration))],
+          javascriptFunctionName: "",
+        });
       }
 
-      jsDocType = typeMatch? typeMatch[1].trim() : null;
+      jsDocType = typeMatch ? typeMatch[1].trim() : null;
     }
 
     // Get the first member of the enum to determine if it is a number or string enum
@@ -287,7 +297,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
         // Check if the enum type matches the type in the JSDoc annotation
         const errorString = `Enum type must match the enum type in annotation: ${id}`;
         if ((isNumberEnum && jsDocType !== "number") || (!isNumberEnum && jsDocType !== "string")) {
-          extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+          extras.push({
+            errors: [logError(errorString, getPosition(enumDeclaration))],
+            javascriptFunctionName: "",
+          });
           return;
         }
       }
@@ -296,10 +309,18 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
     const values: IEnumValue[] = [];
     let defaultValueForNumberEnum = 0;
     for (const member of enumDeclaration.members) {
-      const value = member.initializer ? JSON.parse(member.initializer.getText()) : defaultValueForNumberEnum++;
-      if ((isNumberEnum && typeof value !== "number") || (!isNumberEnum && typeof value !== "string")) {
+      const value = member.initializer
+        ? JSON.parse(member.initializer.getText())
+        : defaultValueForNumberEnum++;
+      if (
+        (isNumberEnum && typeof value !== "number") ||
+        (!isNumberEnum && typeof value !== "string")
+      ) {
         const errorString = `Enum value type must be consistent: ${id}`;
-        extras.push({ errors: [logError(errorString, getPosition(enumDeclaration))], javascriptFunctionName: "" });
+        extras.push({
+          errors: [logError(errorString, getPosition(enumDeclaration))],
+          javascriptFunctionName: "",
+        });
         return;
       }
 
@@ -600,8 +621,7 @@ function validateName(
   if (!startsWithLetterRegEx.test(name)) {
     errorString = `The custom ${type} name "${name}" should start with an alphabetic character.`;
     extra.errors.push(logError(errorString, position));
-  }
-  else if (!validNameRegEx.test(name)) {
+  } else if (!validNameRegEx.test(name)) {
     errorString = `The custom ${type} name "${name}" should contain only alphabetic characters, numbers (0-9), period (.), and underscore (_).`;
     extra.errors.push(logError(errorString, position));
   }
@@ -638,8 +658,10 @@ function getOptions(
     requiresStreamAddress: isAddressRequired(func) && isStreaming(func, isStreamingFunction),
     stream: isStreaming(func, isStreamingFunction),
     volatile: isVolatile(func),
-    requiresParameterAddresses: isRequiresParameterAddresses(func) && !isStreaming(func, isStreamingFunction),
-    requiresStreamParameterAddresses: isRequiresParameterAddresses(func) && isStreaming(func, isStreamingFunction),
+    requiresParameterAddresses:
+      isRequiresParameterAddresses(func) && !isStreaming(func, isStreamingFunction),
+    requiresStreamParameterAddresses:
+      isRequiresParameterAddresses(func) && isStreaming(func, isStreamingFunction),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
@@ -750,7 +772,12 @@ function getResults(
       return defaultResultItem;
     }
 
-    resultType = getParamType(lastParameterType.typeArguments[0], extra, basicEnums, customEnums).type;
+    resultType = getParamType(
+      lastParameterType.typeArguments[0],
+      extra,
+      basicEnums,
+      customEnums
+    ).type;
     resultDim = getParamDim(lastParameterType.typeArguments[0]);
   } else if (func.type) {
     if (
@@ -861,7 +888,12 @@ function getParameters(parameterItem: IGetParametersArguments): IFunctionParamet
       if (!typeNode && parameterJSDocTypeNode) {
         typeNode = parameterJSDocTypeNode;
       }
-      const ptype = getParamType(typeNode, parameterItem.extra, parameterItem.basicEnums, parameterItem.customEnums);
+      const ptype = getParamType(
+        typeNode,
+        parameterItem.extra,
+        parameterItem.basicEnums,
+        parameterItem.customEnums
+      );
 
       const pMetadataItem: IFunctionParameter = {
         description: parameterItem.jsDocParamInfo[name],
@@ -1254,7 +1286,12 @@ function hasInvocationParameter(
  * Gets the parameter type of the node
  * @param node TypeNode
  */
-function getParamType(node: ts.TypeNode, extra: IFunctionExtras, basicEnums: string[], customEnums: IEnum[]): IParameterType {
+function getParamType(
+  node: ts.TypeNode,
+  extra: IFunctionExtras,
+  basicEnums: string[],
+  customEnums: IEnum[]
+): IParameterType {
   let type = "any";
   // Only get type for typescript files. js files will return "any" for all types
   if (!node) {
@@ -1279,13 +1316,13 @@ function getParamType(node: ts.TypeNode, extra: IFunctionExtras, basicEnums: str
     let nodeTypeName = typeReferenceNode.typeName.getText();
     if (basicEnums.indexOf(nodeTypeName) >= 0) {
       // Type found in the basicEnumList
-      return  { type: type };
+      return { type: type };
     }
 
     for (const enumItem of customEnums) {
       if (enumItem.id === nodeTypeName) {
         // Type found in the customEnumList
-        return  { type: enumItem.type, customEnumType: nodeTypeName };
+        return { type: enumItem.type, customEnumType: nodeTypeName };
       }
     }
 
