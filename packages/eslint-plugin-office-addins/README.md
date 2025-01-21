@@ -20,7 +20,7 @@ $ npm install eslint-plugin-office-addins --save-dev
 
 ## Usage
 
-Add `office-addins` to the plugins section of your `.eslintrc` configuration file. You can omit the `eslint-plugin-` prefix:
+Add `office-addins` to the plugins section of your `eslint.config.js` configuration file. You can omit the `eslint-plugin-` prefix:
 
 ```json
 {

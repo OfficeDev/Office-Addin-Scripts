@@ -11,7 +11,7 @@ describe("test cases", function () {
     const lintExpectedCommand = "./test/cases/basic/functions.ts";
     const lintFixExpectedCommand = "--fix ./test/cases/basic/functions.ts";
     const prettierExpectedCommand = "--parser typescript --write ./test/cases/basic/functions.ts";
-    const lintExpectedTestConfig = ".eslintrc.test.json";
+    const lintExpectedTestConfig = "eslint.config.test.mjs";
 
     const lintCheckCommand = prettierLint.getLintCheckCommand(inputFile);
     assert.strictEqual(
