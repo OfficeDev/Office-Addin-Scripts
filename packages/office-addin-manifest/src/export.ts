@@ -4,9 +4,10 @@ import AdmZip from "adm-zip";
 import path from "path";
 import { ManifestUtil, devPreview } from "@microsoft/teams-manifest";
 
-/* global console */
-
-export async function exportMetadataPackage(output: string = "", manifest: string = "manifest.json"): Promise<string> {
+export async function exportMetadataPackage(
+  output: string = "",
+  manifest: string = "manifest.json"
+): Promise<string> {
   const zip: AdmZip = await createZip(manifest);
 
   if (output === "") {

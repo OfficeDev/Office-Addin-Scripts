@@ -7,10 +7,11 @@ import { ManifestInfo, ManifestType } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 
 export class ManifestHandlerJson extends ManifestHandler {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   async modifyManifest(guid?: string, displayName?: string): Promise<devPreview.DevPreviewSchema> {
     try {
-      const appManifest: devPreview.DevPreviewSchema = await ManifestUtil.loadFromPath(this.manifestPath);
+      const appManifest: devPreview.DevPreviewSchema = await ManifestUtil.loadFromPath(
+        this.manifestPath
+      );
 
       if (typeof guid !== "undefined") {
         if (!guid || guid === "random") {
@@ -24,7 +25,9 @@ export class ManifestHandlerJson extends ManifestHandler {
       }
       return appManifest;
     } catch (err) {
-      throw new Error(`Unable to modify json data for manifest file: ${this.manifestPath}. \n${err}`);
+      throw new Error(
+        `Unable to modify json data for manifest file: ${this.manifestPath}. \n${err}`
+      );
     }
   }
 
@@ -64,5 +67,4 @@ export class ManifestHandlerJson extends ManifestHandler {
   async writeManifestData(manifestData: devPreview.DevPreviewSchema): Promise<void> {
     await ManifestUtil.writeToPath(this.manifestPath, manifestData);
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
