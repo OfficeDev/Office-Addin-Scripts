@@ -4,8 +4,6 @@
 import childProcess from "child_process";
 import fs from "fs";
 
-/* global console */
-
 export type AccountOperation = "login" | "logout";
 
 export async function registerWithTeams(filePath: string): Promise<string> {
@@ -22,7 +20,9 @@ export async function registerWithTeams(filePath: string): Promise<string> {
           console.log(`\n${stdout}\n--Error sideloading!--\nError: ${error}\nSTDERR:\n${stderr}`);
           reject(error);
         } else {
-          console.log(`\n${stdout}\nSuccessfully registered package! (${titleId})\n STDERR: ${stderr}\n`);
+          console.log(
+            `\n${stdout}\nSuccessfully registered package! (${titleId})\n STDERR: ${stderr}\n`
+          );
           resolve(titleId);
         }
       });
@@ -39,7 +39,9 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
     console.log(`running: ${authCommand}`);
     childProcess.exec(authCommand, (error, stdout, stderr) => {
       if (error || (stderr.length > 0 && /Debugger attached\./.test(stderr) == false)) {
-        console.log(`Error running auth command\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
+        console.log(
+          `Error running auth command\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`
+        );
         reject(error);
       } else {
         console.log(`Successfully ran auth command.\n`);

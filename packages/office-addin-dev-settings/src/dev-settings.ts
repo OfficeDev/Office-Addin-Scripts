@@ -8,8 +8,6 @@ import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process */
-
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
 export { toWebViewTypeName } from "./dev-settings-windows";
@@ -126,7 +124,9 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       if (pathExists) {
         const stat = fs.statSync(path);
         if (stat.isDirectory()) {
-          throw new ExpectedError(`You need to specify the path to a file. This is a directory: "${path}".`);
+          throw new ExpectedError(
+            `You need to specify the path to a file. This is a directory: "${path}".`
+          );
         }
       }
       try {
@@ -238,7 +238,10 @@ export async function registerAddIn(manifestPath: string, registration?: string)
   }
 }
 
-export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
+export async function setSourceBundleUrl(
+  addinId: string,
+  components: SourceBundleUrlComponents
+): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.setSourceBundleUrl(addinId, components);

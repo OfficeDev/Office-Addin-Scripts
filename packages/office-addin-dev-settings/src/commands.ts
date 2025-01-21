@@ -3,7 +3,12 @@
 
 import { OptionValues } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
-import { ManifestInfo, OfficeApp, parseOfficeApp, OfficeAddinManifest } from "office-addin-manifest";
+import {
+  ManifestInfo,
+  OfficeApp,
+  parseOfficeApp,
+  OfficeAddinManifest,
+} from "office-addin-manifest";
 import {
   ensureLoopbackIsEnabled,
   getAppcontainerNameFromManifestPath,
@@ -17,8 +22,6 @@ import { sideloadAddIn } from "./sideload";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 import { AccountOperation, updateM365Account } from "./publish";
-
-/* global process, console */
 
 export async function appcontainer(manifestPath: string, options: OptionValues) {
   if (isAppcontainerSupported()) {
@@ -91,10 +94,16 @@ export async function debugging(manifestPath: string, options: OptionValues) {
 }
 
 function displaySourceBundleUrl(components: devSettings.SourceBundleUrlComponents) {
-  console.log(`host: ${components.host !== undefined ? `"${components.host}"` : '"localhost" (default)'}`);
-  console.log(`port: ${components.port !== undefined ? `"${components.port}"` : '"8081" (default)'}`);
+  console.log(
+    `host: ${components.host !== undefined ? `"${components.host}"` : '"localhost" (default)'}`
+  );
+  console.log(
+    `port: ${components.port !== undefined ? `"${components.port}"` : '"8081" (default)'}`
+  );
   console.log(`path: ${components.path !== undefined ? `"${components.path}"` : "(default)"}`);
-  console.log(`extension: ${components.extension !== undefined ? `"${components.extension}"` : '".bundle" (default)'}`);
+  console.log(
+    `extension: ${components.extension !== undefined ? `"${components.extension}"` : '".bundle" (default)'}`
+  );
   console.log();
   console.log(`Source bundle url: ${components.url}`);
   console.log();
@@ -150,7 +159,12 @@ export async function enableDebugging(manifestPath: string, options: OptionValue
 
     validateManifestId(manifest);
 
-    await devSettings.enableDebugging(manifest.id!, true, toDebuggingMethod(options.debugMethod), options.openDevTools);
+    await devSettings.enableDebugging(
+      manifest.id!,
+      true,
+      toDebuggingMethod(options.debugMethod),
+      options.openDevTools
+    );
 
     console.log("Debugging has been enabled.");
     usageDataObject.reportSuccess("enableDebugging()");
@@ -194,7 +208,9 @@ export async function getSourceBundleUrl(manifestPath: string) {
 
     validateManifestId(manifest);
 
-    const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(manifest.id!);
+    const components: devSettings.SourceBundleUrlComponents = await devSettings.getSourceBundleUrl(
+      manifest.id!
+    );
 
     displaySourceBundleUrl(components);
     usageDataObject.reportSuccess("getSourceBundleUrl()");
@@ -240,7 +256,9 @@ export async function isRuntimeLoggingEnabled() {
   try {
     const path = await devSettings.getRuntimeLoggingPath();
 
-    console.log(path ? `Runtime logging is enabled. File: ${path}` : "Runtime logging is not enabled.");
+    console.log(
+      path ? `Runtime logging is enabled. File: ${path}` : "Runtime logging is not enabled."
+    );
     usageDataObject.reportSuccess("isRuntimeLoggingEnabled()");
   } catch (err: any) {
     usageDataObject.reportException("isRuntimeLoggingEnabled()", err);
@@ -355,7 +373,8 @@ export async function registered(
 export async function runtimeLogging(options: OptionValues) {
   try {
     if (options.enable) {
-      const path: string | undefined = typeof options.enable === "string" ? options.enable : undefined;
+      const path: string | undefined =
+        typeof options.enable === "string" ? options.enable : undefined;
       await enableRuntimeLogging(path);
     } else if (options.disable) {
       await disableRuntimeLogging();
@@ -369,12 +388,18 @@ export async function runtimeLogging(options: OptionValues) {
   }
 }
 
-export async function sideload(manifestPath: string, type: string | undefined, options: OptionValues) {
+export async function sideload(
+  manifestPath: string,
+  type: string | undefined,
+  options: OptionValues
+) {
   try {
     const app: OfficeApp | undefined = options.app ? parseOfficeApp(options.app) : undefined;
     const canPrompt = true;
     const document: string | undefined = options.document ? options.document : undefined;
-    const appType: AppType | undefined = parseAppType(type || process.env.npm_package_config_app_platform_to_debug);
+    const appType: AppType | undefined = parseAppType(
+      type || process.env.npm_package_config_app_platform_to_debug
+    );
     const registration: string = options.registration;
 
     await sideloadAddIn(manifestPath, app, canPrompt, appType, document, registration);
@@ -481,7 +506,9 @@ export async function webView(manifestPath: string, webViewString?: string) {
 
     const webViewTypeName = devSettings.toWebViewTypeName(webViewType);
     console.log(
-      webViewTypeName ? `The web view type is set to ${webViewTypeName}.` : "The web view type has not been set."
+      webViewTypeName
+        ? `The web view type is set to ${webViewTypeName}.`
+        : "The web view type has not been set."
     );
     usageDataObject.reportSuccess("webView");
   } catch (err: any) {

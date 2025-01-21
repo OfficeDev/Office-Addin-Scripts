@@ -7,8 +7,6 @@ import { OfficeAddinManifest } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process */
-
 export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
 export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
 export const EdgeBrowserName: string = "Microsoft Edge Web Browser";
@@ -130,7 +128,10 @@ export async function ensureLoopbackIsEnabled(
   let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (!isEnabled) {
-    if (!askForConfirmation || (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))) {
+    if (
+      !askForConfirmation ||
+      (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))
+    ) {
       await addLoopbackExemptionForAppcontainer(name);
       isEnabled = true;
     }
@@ -145,7 +146,9 @@ export async function ensureLoopbackIsEnabled(
  */
 export async function getAppcontainerNameFromManifest(manifestPath: string): Promise<string> {
   const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
-  const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
+  const sourceLocation = manifest.defaultSettings
+    ? manifest.defaultSettings.sourceLocation
+    : undefined;
 
   if (sourceLocation === undefined) {
     throw new ExpectedError(`The source location could not be retrieved from the manifest.`);
