@@ -7,8 +7,6 @@ import { Command } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 
-/* global process */
-
 const commander = new Command();
 
 commander.name("office-addin-project");
@@ -23,7 +21,10 @@ commander.on("command:*", function () {
 
 commander
   .command("convert")
-  .option("-m, --manifest <manifest-path>", "Specify the location of the manifest file.  Default is './manifest.xml'")
+  .option(
+    "-m, --manifest <manifest-path>",
+    "Specify the location of the manifest file.  Default is './manifest.xml'"
+  )
   .option(
     "-b, --backup <backup-path>",
     "Specify the location of the backup folder for the project.  Default is './backup.zip'"
@@ -32,7 +33,10 @@ commander
     "-p, --project <project-path>",
     "Specify the location of the root directory of the project.  Default is the directory of the manifest file."
   )
-  .option("--preview-manifest-schema", "Use the devPreview version of the json schema in the manifest output")
+  .option(
+    "--preview-manifest-schema",
+    "Use the devPreview version of the json schema in the manifest output"
+  )
   .option("--confirm", "Confirmes the conversion")
   .action(commands.convert);
 
