@@ -14,7 +14,13 @@ export async function getGraphData(
   queryParamsSegment?: string
 ): Promise<any> {
   try {
-    const oData = await ODataHelper.getData(accessToken, domain, apiURLsegment, versionURLsegment, queryParamsSegment);
+    const oData = await ODataHelper.getData(
+      accessToken,
+      domain,
+      apiURLsegment,
+      versionURLsegment,
+      queryParamsSegment
+    );
     return Promise.resolve(oData);
   } catch (err) {
     return Promise.reject(`Error get Graph data. \n${err}`);

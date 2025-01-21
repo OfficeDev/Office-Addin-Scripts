@@ -9,8 +9,6 @@ import form from "form-urlencoded";
 import jwt from "jsonwebtoken";
 import { JwksClient } from "jwks-rsa";
 
-/* global process, console */
-
 const DISCOVERY_KEYS_ENDPOINT = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
 
 export async function getAccessToken(authorization: string): Promise<any> {

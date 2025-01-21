@@ -9,8 +9,6 @@ import os from "os";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process */
-
 export function addSecretToCredentialStore(
   ssoAppName: string,
   secret: string,
@@ -93,7 +91,11 @@ function envFileConfigured(envFilePath: string = defaults.envDataFilePath): bool
   }
 }
 
-function updateEnvFile(applicationId: string, port: string, envFilePath: string = defaults.envDataFilePath): boolean {
+function updateEnvFile(
+  applicationId: string,
+  port: string,
+  envFilePath: string = defaults.envDataFilePath
+): boolean {
   try {
     // Update .ENV file
     if (fs.existsSync(envFilePath)) {
@@ -103,7 +105,9 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
         return false;
       }
 
-      const updatedAppDataContent = appDataContent.replace("{CLIENT_ID}", applicationId).replace("{PORT}", port);
+      const updatedAppDataContent = appDataContent
+        .replace("{CLIENT_ID}", applicationId)
+        .replace("{PORT}", port);
       fs.writeFileSync(envFilePath, updatedAppDataContent);
       return true;
     } else {
@@ -115,7 +119,10 @@ function updateEnvFile(applicationId: string, port: string, envFilePath: string 
   }
 }
 
-function updateEnvFileSecret(secret: string, envFilePath: string = defaults.envDataFilePath): boolean {
+function updateEnvFileSecret(
+  secret: string,
+  envFilePath: string = defaults.envDataFilePath
+): boolean {
   try {
     // Update .ENV file
     if (fs.existsSync(envFilePath)) {
@@ -176,7 +183,9 @@ function updateFallBackAuthDialogFile(
         throw new ExpectedError(`${defaults.testFallbackAuthDialogFilePath} does not exist`);
       } else {
         const errorMessage: string = `${
-          isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath
+          isTypecript
+            ? defaults.fallbackAuthDialogTypescriptFilePath
+            : defaults.fallbackAuthDialogJavascriptFilePath
         } does not exist`;
         throw new Error(errorMessage);
       }
@@ -195,10 +204,14 @@ function updateFallBackAuthDialogFile(
     return true;
   } catch (err) {
     if (isTest) {
-      throw new Error(`Unable to write SSO application data to ${defaults.testFallbackAuthDialogFilePath}. \n${err}`);
+      throw new Error(
+        `Unable to write SSO application data to ${defaults.testFallbackAuthDialogFilePath}. \n${err}`
+      );
     } else {
       const errorMessage: string = `Unable to write SSO application data to ${
-        isTypecript ? defaults.fallbackAuthDialogTypescriptFilePath : defaults.fallbackAuthDialogJavascriptFilePath
+        isTypecript
+          ? defaults.fallbackAuthDialogTypescriptFilePath
+          : defaults.fallbackAuthDialogJavascriptFilePath
       }. \n${err}`;
       throw new Error(errorMessage);
     }
@@ -216,7 +229,11 @@ function projectManifestConfigured(manifestPath: string): boolean {
   }
 }
 
-async function updateProjectManifest(applicationId: string, port: string, manifestPath: string): Promise<boolean> {
+async function updateProjectManifest(
+  applicationId: string,
+  port: string,
+  manifestPath: string
+): Promise<boolean> {
   try {
     if (fs.existsSync(manifestPath)) {
       // Update manifest with application guid and unique manifest id
@@ -230,7 +247,9 @@ async function updateProjectManifest(applicationId: string, port: string, manife
       // Update manifest file
       const re: RegExp = new RegExp("{application GUID here}", "g");
       const rePort = new RegExp("{PORT}", "g");
-      const updatedManifestContent: string = manifestContent.replace(re, applicationId).replace(rePort, port);
+      const updatedManifestContent: string = manifestContent
+        .replace(re, applicationId)
+        .replace(rePort, port);
       await fs.writeFileSync(manifestPath, updatedManifestContent);
       await OfficeAddinManifest.modifyManifestFile(manifestPath, "random");
       return true;

@@ -7,16 +7,20 @@ import { ManifestInfo, OfficeAddinManifest } from "office-addin-manifest";
 import { usageDataObject } from "./defaults";
 import * as configure from "./configure";
 import { SSOService } from "./server";
-import { addSecretToCredentialStore, writeApplicationData, applicationDataConfigured } from "./ssoDataSettings";
+import {
+  addSecretToCredentialStore,
+  writeApplicationData,
+  applicationDataConfigured,
+} from "./ssoDataSettings";
 import { ExpectedError } from "office-addin-usage-data";
 import inquirer = require("inquirer");
-
-/* global process, console */
 
 export async function configureSSO(manifestPath: string, secretTTL?: string) {
   // Check platform and return if not Windows or Mac
   if (process.platform !== "win32" && process.platform !== "darwin") {
-    console.log(chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`));
+    console.log(
+      chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`)
+    );
     return;
   } else if (applicationDataConfigured(manifestPath)) {
     console.log(chalk.yellow("Project was already previously updated."));
@@ -52,7 +56,9 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
 
   if (!cliInstalled) {
     console.log(
-      chalk.yellow("Azure CLI is not installed.  Installing now before proceeding - this could take a few minutes.")
+      chalk.yellow(
+        "Azure CLI is not installed.  Installing now before proceeding - this could take a few minutes."
+      )
     );
     await configure.installAzureCli();
     if (process.platform === "win32") {
@@ -95,7 +101,10 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
         await configure.grantAdminConsent(applicationJson);
         // Check to set if SharePoint reply urls are set for tenant. If not, set them
         const setSharePointReplyUrls: boolean = await configure.setSharePointTenantReplyUrls(
-          applicationJson["publisherDomain"].substr(0, applicationJson["publisherDomain"].indexOf("."))
+          applicationJson["publisherDomain"].substr(
+            0,
+            applicationJson["publisherDomain"].indexOf(".")
+          )
         );
         if (setSharePointReplyUrls) {
           console.log("Set SharePoint reply urls for tenant");
@@ -114,7 +123,9 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
 
       // Add secret to Credential Store (Windows) or Keychain(Mac)
       if (process.platform === "win32") {
-        console.log(`Adding application secret for ${manifestInfo.displayName} to Windows Credential Store`);
+        console.log(
+          `Adding application secret for ${manifestInfo.displayName} to Windows Credential Store`
+        );
       } else {
         console.log(
           `Adding application secret for ${manifestInfo.displayName} to Mac OS Keychain. You will need to provide an admin password to update the Keychain`
@@ -129,7 +140,11 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
     }
     // Write application data to project files (manifest.xml, .env, src/taskpane/fallbacktaskpane.ts)
     console.log(`Updating source files with application ID and port`);
-    const projectUpdated = await writeApplicationData(applicationJson["appId"], port.toString(), manifestPath);
+    const projectUpdated = await writeApplicationData(
+      applicationJson["appId"],
+      port.toString(),
+      manifestPath
+    );
     if (!projectUpdated) {
       console.log(
         chalk.yellow(
@@ -166,8 +181,12 @@ export async function startSSOService(manifestPath: string) {
   try {
     // Check platform and return if not Windows or Mac
     if (process.platform !== "win32" && process.platform !== "darwin") {
-      console.log(chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`));
-      throw new ExpectedError(`${process.platform} is not supported. Only Windows and Mac are supported`);
+      console.log(
+        chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`)
+      );
+      throw new ExpectedError(
+        `${process.platform} is not supported. Only Windows and Mac are supported`
+      );
     }
     const sso = new SSOService(manifestPath);
     sso.startSsoService();
