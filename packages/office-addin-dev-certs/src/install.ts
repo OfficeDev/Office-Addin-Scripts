@@ -10,8 +10,6 @@ import { isCaCertificateInstalled, verifyCertificates } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, console, __dirname */
-
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
   switch (process.platform) {
     case "win32": {
@@ -23,7 +21,9 @@ function getInstallCommand(caCertificatePath: string, machine: boolean = false):
     case "darwin": {
       // macOS
       const prefix = machine ? "sudo " : "";
-      const keychainFile = machine ? "/Library/Keychains/System.keychain" : "~/Library/Keychains/login.keychain-db";
+      const keychainFile = machine
+        ? "/Library/Keychains/System.keychain"
+        : "~/Library/Keychains/login.keychain-db";
       return `${prefix}security add-trusted-cert -d -r trustRoot -k ${keychainFile} '${caCertificatePath}'`;
     }
     case "linux": {

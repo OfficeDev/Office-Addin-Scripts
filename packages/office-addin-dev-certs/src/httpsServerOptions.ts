@@ -5,8 +5,6 @@ import fs from "fs";
 import * as defaults from "./defaults";
 import { ensureCertificatesAreInstalled } from "./install";
 
-/* global Buffer */
-
 interface IHttpsServerOptions {
   ca: Buffer;
   cert: Buffer;

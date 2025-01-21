@@ -7,8 +7,6 @@ import * as mkcert from "mkcert";
 import path from "path";
 import * as defaults from "./defaults";
 
-/* global console */
-
 /* Generate operation will check if there is already valid certificate installed.
    if yes, then this operation will be no op.
    else, new certificates are generated and installed if --install was provided.
@@ -65,7 +63,9 @@ export async function generateCertificates(
   }
 
   if (caCertificatePath === defaults.caCertificatePath) {
-    console.log("The developer certificates have been generated in " + defaults.certificateDirectory);
+    console.log(
+      "The developer certificates have been generated in " + defaults.certificateDirectory
+    );
   } else {
     console.log("The developer certificates have been generated.");
   }

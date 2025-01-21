@@ -15,8 +15,6 @@ export const outputMarker =
     ? `[${crypto.createHash("md5").update(`${defaults.certificateName}${defaults.caCertificatePath}`).digest("hex")}]`
     : "";
 
-/* global process, Buffer, __dirname */
-
 function getVerifyCommand(returnInvalidCertificate: boolean): string {
   switch (process.platform) {
     case "win32": {
@@ -48,7 +46,9 @@ export function isCaCertificateInstalled(returnInvalidCertificate: boolean = fal
     const output = execSync(command, { stdio: "pipe" }).toString();
     if (process.platform === "win32") {
       // Remove any PowerShell output that preceeds invoking the actual certificate check command
-      return output.slice(output.lastIndexOf(outputMarker) + outputMarker.length).trim().length !== 0;
+      return (
+        output.slice(output.lastIndexOf(outputMarker) + outputMarker.length).trim().length !== 0
+      );
     }
     // script files return empty string if the certificate not found or expired
     if (output.length !== 0) {

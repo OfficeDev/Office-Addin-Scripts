@@ -11,8 +11,6 @@ import { verifyCertificates } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global console */
-
 export async function install(options: OptionValues) {
   try {
     const days = parseDays(options.days);
@@ -69,7 +67,9 @@ export async function uninstall(options: OptionValues) {
   }
 }
 
-export async function verify(options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */) {
+export async function verify(
+  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
+) {
   try {
     if (await verifyCertificates()) {
       console.log(

@@ -9,8 +9,6 @@ import { isCaCertificateInstalled } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, console, __dirname */
-
 function getUninstallCommand(machine: boolean = false): string {
   switch (process.platform) {
     case "win32": {
@@ -34,7 +32,9 @@ function getUninstallCommand(machine: boolean = false): string {
 }
 
 // Deletes the generated certificate files and delete the certificate directory if its empty
-export function deleteCertificateFiles(certificateDirectory: string = defaults.certificateDirectory): void {
+export function deleteCertificateFiles(
+  certificateDirectory: string = defaults.certificateDirectory
+): void {
   if (fsExtra.existsSync(certificateDirectory)) {
     fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostCertificateFileName));
     fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostKeyFileName));
