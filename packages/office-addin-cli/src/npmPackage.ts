@@ -3,8 +3,6 @@
 
 import readPackageJson, { ScriptsObject } from "read-package-json-fast";
 
-/* global process */
-
 let scripts: ScriptsObject | undefined;
 
 export function clearCachedScripts() {
