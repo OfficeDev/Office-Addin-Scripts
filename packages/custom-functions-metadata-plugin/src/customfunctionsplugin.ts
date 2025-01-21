@@ -5,8 +5,6 @@ import { generateCustomFunctionsMetadata, IGenerateResult } from "custom-functio
 import path from "path";
 import { Compiler, Compilation, sources, WebpackError, NormalModule } from "webpack";
 
-/* global require */
-
 const pluginName = "CustomFunctionsMetadataPlugin";
 
 type Options = { input: string; output: string };
