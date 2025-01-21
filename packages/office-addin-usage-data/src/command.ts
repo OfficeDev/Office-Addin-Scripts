@@ -5,8 +5,6 @@ import * as defaults from "./defaults";
 import { UsageDataLevel } from "./usageData";
 import * as jsonData from "./usageDataSettings";
 
-/* global console */
-
 export function listUsageDataSettings(): void {
   const usageDataSettings = jsonData.readUsageDataSettings(defaults.groupName);
 

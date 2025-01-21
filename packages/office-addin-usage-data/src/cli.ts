@@ -7,8 +7,6 @@ import { Command } from "commander";
 import { logErrorMessage } from "./log";
 import * as commands from "./command";
 
-/* global process */
-
 const commander = new Command();
 
 commander.name("office-addin-usage-data");
