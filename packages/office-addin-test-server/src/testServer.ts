@@ -6,6 +6,8 @@ import express from "express";
 import https from "https";
 import * as devCerts from "office-addin-dev-certs";
 
+/* global process */
+
 export const defaultPort: number = 4201;
 
 export class TestServer {

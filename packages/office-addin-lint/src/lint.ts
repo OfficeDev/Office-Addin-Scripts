@@ -5,6 +5,8 @@ import fs from "fs";
 import path from "path";
 import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
+/* global process require __dirname */
+
 const eslintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
 const eslintDir = path.parse(eslintPath).dir;

@@ -6,6 +6,8 @@ import crypto from "crypto";
 import net from "net";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global process */
+
 /**
  * Determines whether a port is in use.
  * @param port port number (0 - 65535)

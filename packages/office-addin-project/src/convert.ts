@@ -10,6 +10,8 @@ import { exec } from "child_process";
 import { convert } from "office-addin-manifest-converter";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global console process */
+
 const execAsync = util.promisify(exec);
 const skipBackup: string[] = ["node_modules"];
 

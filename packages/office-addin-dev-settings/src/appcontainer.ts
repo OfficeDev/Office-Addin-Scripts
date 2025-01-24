@@ -7,6 +7,8 @@ import { OfficeAddinManifest } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global process */
+
 export const EdgeBrowserAppcontainerName: string = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe";
 export const EdgeWebViewAppcontainerName: string = "Microsoft.win32webviewhost_cw5n1h2txyewy";
 export const EdgeBrowserName: string = "Microsoft Edge Web Browser";

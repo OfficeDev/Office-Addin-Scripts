@@ -4,6 +4,8 @@
 import childProcess from "child_process";
 import fs from "fs";
 
+/* global console */
+
 export type AccountOperation = "login" | "logout";
 
 export async function registerWithTeams(filePath: string): Promise<string> {

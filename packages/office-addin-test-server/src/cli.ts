@@ -6,6 +6,8 @@ import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 import { defaultPort } from "./testServer";
 
+/* global process */
+
 const commander = new Command();
 
 commander.name("office-addin-test-server");

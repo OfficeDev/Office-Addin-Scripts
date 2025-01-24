@@ -12,6 +12,8 @@ import { stopDebugging } from "./stop";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global process */
+
 function determineManifestPath(platform: Platform, dev: boolean): string {
   let manifestPath = process.env.npm_package_config_manifest_location || "";
   manifestPath = manifestPath

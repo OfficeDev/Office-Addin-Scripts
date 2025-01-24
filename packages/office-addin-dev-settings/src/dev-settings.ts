@@ -8,6 +8,8 @@ import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global process */
+
 const defaultRuntimeLogFileName = "OfficeAddins.log.txt";
 
 export { toWebViewTypeName } from "./dev-settings-windows";

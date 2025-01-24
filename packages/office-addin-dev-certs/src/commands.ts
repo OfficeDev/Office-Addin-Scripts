@@ -11,6 +11,8 @@ import { verifyCertificates } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global console */
+
 export async function install(options: OptionValues) {
   try {
     const days = parseDays(options.days);

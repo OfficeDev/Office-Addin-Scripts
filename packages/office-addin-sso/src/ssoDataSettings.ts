@@ -9,6 +9,8 @@ import os from "os";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global process */
+
 export function addSecretToCredentialStore(
   ssoAppName: string,
   secret: string,

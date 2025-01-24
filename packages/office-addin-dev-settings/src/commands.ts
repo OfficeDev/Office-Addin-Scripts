@@ -23,6 +23,8 @@ import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 import { AccountOperation, updateM365Account } from "./publish";
 
+/* global console process */
+
 export async function appcontainer(manifestPath: string, options: OptionValues) {
   if (isAppcontainerSupported()) {
     try {

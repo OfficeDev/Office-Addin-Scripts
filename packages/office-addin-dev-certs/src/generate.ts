@@ -7,6 +7,8 @@ import * as mkcert from "mkcert";
 import path from "path";
 import * as defaults from "./defaults";
 
+/* global console */
+
 /* Generate operation will check if there is already valid certificate installed.
    if yes, then this operation will be no op.
    else, new certificates are generated and installed if --install was provided.

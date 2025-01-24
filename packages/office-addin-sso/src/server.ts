@@ -9,6 +9,8 @@ import { App } from "./middle-tier/app";
 import { getSecretFromCredentialStore } from "./ssoDataSettings";
 import { usageDataObject } from "./defaults";
 
+/* global console process require */
+
 require("dotenv").config();
 
 export class SSOService {

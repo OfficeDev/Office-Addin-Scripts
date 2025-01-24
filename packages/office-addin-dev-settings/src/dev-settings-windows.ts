@@ -22,6 +22,8 @@ import * as registry from "./registry";
 import { registerWithTeams, uninstallWithTeams } from "./publish";
 import fspath from "path";
 
+/* global process */
+
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
 
 const OpenDevTools: string = "OpenDevTools";

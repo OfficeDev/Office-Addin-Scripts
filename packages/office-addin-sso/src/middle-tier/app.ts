@@ -4,6 +4,8 @@
  * This file is the main Node.js server file that defines the express middleware.
  */
 
+/* global process require __dirname */
+
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }

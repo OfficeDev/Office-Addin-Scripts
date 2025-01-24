@@ -6,6 +6,8 @@ import readLine from "readline-sync";
 import * as jsonData from "./usageDataSettings";
 import * as defaults from "./defaults";
 
+/* global process */
+
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data

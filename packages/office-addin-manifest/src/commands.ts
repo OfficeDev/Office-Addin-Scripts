@@ -15,6 +15,8 @@ import {
 import { usageDataObject } from "./defaults";
 import { exportMetadataPackage } from "./export";
 
+/* global console process */
+
 function getCommandOptionString(
   option: string | boolean,
   defaultValue?: string

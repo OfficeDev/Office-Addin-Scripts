@@ -8,6 +8,8 @@ import { stopProcess } from "./process";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global console process */
+
 export async function stopDebugging(manifestPath: string) {
   try {
     console.log("Debugging is being stopped...");

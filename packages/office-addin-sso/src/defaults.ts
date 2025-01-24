@@ -7,6 +7,8 @@ import {
   OfficeAddinUsageData,
 } from "office-addin-usage-data";
 
+/* global process __dirname */
+
 // File path defaults
 export const azCliInstallCommandPath: string = path.resolve(
   `${__dirname}/scripts/azCliInstallCmd.ps1`

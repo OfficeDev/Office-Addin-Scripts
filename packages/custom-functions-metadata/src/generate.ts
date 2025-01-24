@@ -1,6 +1,8 @@
 import { IFunction, IEnum, IGenerateResult, IParseTreeResult, parseTree } from "./parseTree";
 import { existsSync, readFileSync } from "fs";
 
+/* global console */
+
 /**
  * Generate the metadata of the custom functions
  * @param inputFile - File that contains the custom functions

@@ -10,6 +10,8 @@ import { isCaCertificateInstalled, verifyCertificates } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global console process __dirname */
+
 function getInstallCommand(caCertificatePath: string, machine: boolean = false): string {
   switch (process.platform) {
     case "win32": {

@@ -9,6 +9,8 @@ import fs from "fs";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global console process require setTimeout */
+
 require("dotenv").config();
 
 export async function createNewApplication(

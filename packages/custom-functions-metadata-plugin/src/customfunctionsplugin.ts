@@ -5,6 +5,8 @@ import { generateCustomFunctionsMetadata, IGenerateResult } from "custom-functio
 import path from "path";
 import { Compiler, Compilation, sources, WebpackError, NormalModule } from "webpack";
 
+/* global require */
+
 const pluginName = "CustomFunctionsMetadataPlugin";
 
 type Options = { input: string; output: string };
@@ -19,7 +21,9 @@ class CustomFunctionsMetadataPlugin {
   public static generateResults: Record<string, IGenerateResult> = {};
 
   public apply(compiler: Compiler) {
-    let input: string[] = Array.isArray(this.options.input) ? this.options.input : [this.options.input];
+    let input: string[] = Array.isArray(this.options.input)
+      ? this.options.input
+      : [this.options.input];
     let generateResult: IGenerateResult;
     input = input.map((file) => path.resolve(file));
 
@@ -29,9 +33,13 @@ class CustomFunctionsMetadataPlugin {
 
     compiler.hooks.compilation.tap(pluginName, (compilation: Compilation) => {
       if (generateResult.errors.length > 0) {
-        generateResult.errors.forEach((err: string) => compilation.errors.push(new WebpackError(input + " " + err)));
+        generateResult.errors.forEach((err: string) =>
+          compilation.errors.push(new WebpackError(input + " " + err))
+        );
       } else {
-        compilation.assets[this.options.output] = new sources.RawSource(generateResult.metadataJson);
+        compilation.assets[this.options.output] = new sources.RawSource(
+          generateResult.metadataJson
+        );
         CustomFunctionsMetadataPlugin.generateResults[this.options.input] = generateResult;
       }
 

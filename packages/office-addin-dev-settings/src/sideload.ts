@@ -25,6 +25,8 @@ import * as registry from "./registry";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global Buffer console process URL __dirname */
+
 /**
  * Create an Office document in the temporary files directory
  * which can be opened to launch the Office app and load the add-in.

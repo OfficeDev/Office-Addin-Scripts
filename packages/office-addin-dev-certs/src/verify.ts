@@ -9,6 +9,8 @@ import * as defaults from "./defaults";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global Buffer process __dirname */
+
 // On win32 this is a unique hash used with PowerShell command to reliably delineate command output
 export const outputMarker =
   process.platform === "win32"

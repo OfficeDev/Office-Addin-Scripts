@@ -17,6 +17,8 @@ import { startDetachedProcess } from "./process";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global console process setTimeout */
+
 export enum AppType {
   Desktop = "desktop",
   Web = "web",

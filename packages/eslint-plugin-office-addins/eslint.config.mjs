@@ -1,5 +1,4 @@
 import tsParser from "@typescript-eslint/parser";
-import globals from "globals";
 import typescriptplugin from "@typescript-eslint/eslint-plugin";
 import prettierplugin from "eslint-plugin-prettier";
 import eslintjs from "@eslint/js";
@@ -22,8 +21,6 @@ export default [
       parser: tsParser,
       ecmaVersion: 6,
       sourceType: "module",
-      globals: { ...globals.browser, ...globals.node },
-
       parserOptions: {
         ecmaFeatures: {
           jsx: true,

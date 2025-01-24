@@ -9,6 +9,8 @@
 import { Command } from "commander";
 import { run } from "./debugger";
 
+/* global process */
+
 const commander = new Command();
 
 commander

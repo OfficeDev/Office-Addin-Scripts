@@ -15,6 +15,8 @@ import {
 import { ExpectedError } from "office-addin-usage-data";
 import inquirer = require("inquirer");
 
+/* global console process */
+
 export async function configureSSO(manifestPath: string, secretTTL?: string) {
   // Check platform and return if not Windows or Mac
   if (process.platform !== "win32" && process.platform !== "darwin") {

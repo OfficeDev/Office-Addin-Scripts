@@ -13,6 +13,8 @@
 
 import fetch from "node-fetch";
 
+/* global console global process */
+
 declare var __fbBatchedBridge: any;
 declare var __platformBundles: any;
 
