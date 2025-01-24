@@ -10,7 +10,7 @@ import child from "child_process";
 import { fork } from "child_process";
 import WebSocket = require("ws");
 
-/* global console, __dirname, setTimeout */
+/* global console setTimeout __dirname */
 
 export function run(
   host: string = "localhost",

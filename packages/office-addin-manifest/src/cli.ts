@@ -29,7 +29,10 @@ commander
 
 commander
   .command("export")
-  .option("-m, --manifest <manfest-path>", "Specify the location of the manifest file.  Default is './manifest.json'")
+  .option(
+    "-m, --manifest <manfest-path>",
+    "Specify the location of the manifest file.  Default is './manifest.json'"
+  )
   .option(
     "-o, --output <output-path>",
     "Specify where to save the package.  Default is next to the manifest file input"

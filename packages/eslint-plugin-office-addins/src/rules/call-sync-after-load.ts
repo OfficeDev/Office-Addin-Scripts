@@ -25,7 +25,7 @@ export default ESLintUtils.RuleCreator(
     },
     schema: [],
   },
-  create: function (context: any) {
+  create: function (context) {
     const sourceCode = context.sourceCode ?? context.getSourceCode();
     type VariableProperty = {
       variable: string;
@@ -119,8 +119,8 @@ export default ESLintUtils.RuleCreator(
     return {
       Program(node) {
         const scope = sourceCode.getScope
-                    ? sourceCode.getScope(node)
-                    : context.getScope();
+          ? sourceCode.getScope(node)
+          : context.getScope();
         apiReferences = findOfficeApiReferences(scope);
         apiReferences.sort((left, right) => {
           return (

@@ -20,7 +20,7 @@ $ npm install eslint-plugin-excel-custom-functions --save-dev
 
 ## Usage
 
-Add `excel-custom-functions` to the plugins section of your `.eslintrc` configuration file. You can omit the `eslint-plugin-` prefix:
+Add `excel-custom-functions` to the plugins section of your `eslint.config.js` configuration file. You can omit the `eslint-plugin-` prefix:
 
 ```json
 {

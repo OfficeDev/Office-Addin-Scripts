@@ -11,7 +11,12 @@ import {
   OfficeAddinManifest,
   ManifestType,
 } from "office-addin-manifest";
-import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
+import {
+  DebuggingMethod,
+  RegisteredAddin,
+  SourceBundleUrlComponents,
+  WebViewType,
+} from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
 import { registerWithTeams, uninstallWithTeams } from "./publish";
@@ -118,7 +123,9 @@ export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const values = await registry.getValues(key);
 
   // if the registry value name and data are the same, then the manifest path was used as the name
-  return values.map((value) => new RegisteredAddin(value.name !== value.data ? value.name : "", value.data));
+  return values.map(
+    (value) => new RegisteredAddin(value.name !== value.data ? value.name : "", value.data)
+  );
 }
 
 export async function getRuntimeLoggingPath(): Promise<string | undefined> {
@@ -147,8 +154,12 @@ export async function getWebView(addinId: string): Promise<WebViewType | undefin
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
 
-  const useDirectDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, UseDirectDebugger));
-  const useWebDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, UseProxyDebugger));
+  const useDirectDebugger: boolean = isRegistryValueTrue(
+    await registry.getValue(key, UseDirectDebugger)
+  );
+  const useWebDebugger: boolean = isRegistryValueTrue(
+    await registry.getValue(key, UseProxyDebugger)
+  );
 
   return useDirectDebugger || useWebDebugger;
 }
@@ -179,7 +190,10 @@ export async function registerAddIn(manifestPath: string, registration?: string)
   const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
   // Register using the service
-  if (manifest.manifestType === ManifestType.JSON || appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
+  if (
+    manifest.manifestType === ManifestType.JSON ||
+    appsInManifest.indexOf(OfficeApp.Outlook) >= 0
+  ) {
     if (!registration) {
       let filePath = "";
       if (manifest.manifestType === ManifestType.JSON) {
@@ -202,7 +216,10 @@ export async function registerAddIn(manifestPath: string, registration?: string)
   return registry.addStringValue(key, manifest.id || "", manifestPath);
 }
 
-export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
+export async function setSourceBundleUrl(
+  addinId: string,
+  components: SourceBundleUrlComponents
+): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
 
   if (components.host !== undefined) {
@@ -238,7 +255,10 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-export async function setWebView(addinId: string, webViewType: WebViewType | undefined): Promise<void> {
+export async function setWebView(
+  addinId: string,
+  webViewType: WebViewType | undefined
+): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   switch (webViewType) {
     case undefined:

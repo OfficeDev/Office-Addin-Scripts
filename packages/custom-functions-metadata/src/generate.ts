@@ -49,7 +49,11 @@ export async function generateCustomFunctionsMetadata(
     });
 
     if (functions.length > 0) {
-      const metadata: { allowCustomDataForDataTypeAny: boolean; functions: IFunction[]; enums?: IEnum[] } = {
+      const metadata: {
+        allowCustomDataForDataTypeAny: boolean;
+        functions: IFunction[];
+        enums?: IEnum[];
+      } = {
         allowCustomDataForDataTypeAny: true,
         functions: functions,
         enums: enums,

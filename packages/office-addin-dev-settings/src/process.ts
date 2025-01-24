@@ -4,7 +4,7 @@
 import childProcess from "child_process";
 import { ChildProcess, ExecException } from "child_process";
 
-/* global process, console */
+/* global console process */
 
 export async function startProcess(commandLine: string, verbose: boolean = false): Promise<void> {
   return new Promise<void>((resolve, reject) => {

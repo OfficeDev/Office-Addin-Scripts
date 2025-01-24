@@ -231,6 +231,6 @@ export class OfficeMockObject {
   private _valueBeforeLoaded: unknown;
   private _isObject: boolean | undefined;
   private _host: OfficeApp | undefined;
-  /* eslint-disable-next-line */
+
   [key: string]: any;
 }

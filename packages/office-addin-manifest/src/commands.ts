@@ -6,13 +6,21 @@ import { OptionValues } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo } from "./manifestInfo";
 import { OfficeAddinManifest } from "./manifestOperations";
-import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
+import {
+  ManifestValidation,
+  ManifestValidationIssue,
+  ManifestValidationProduct,
+  validateManifest,
+} from "./validate";
 import { usageDataObject } from "./defaults";
 import { exportMetadataPackage } from "./export";
 
-/* global console, process */
+/* global console process */
 
-function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
+function getCommandOptionString(
+  option: string | boolean,
+  defaultValue?: string
+): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
   // when the option is provided with a value, it will be of type "string", return the specified value;
   // when the option is provided without a value, it will be of type "boolean", return undefined.
@@ -92,7 +100,9 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
 }
 
 function logManifestValidationIssue(issue: ManifestValidationIssue) {
-  console.log(`${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``));
+  console.log(
+    `${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``)
+  );
 
   if (issue.code) {
     console.log(`  - Details: ${issue.code}`);
@@ -107,7 +117,9 @@ function logManifestValidationIssue(issue: ManifestValidationIssue) {
 
 function logManifestValidationSupportedProducts(products: ManifestValidationProduct[] | undefined) {
   if (products) {
-    const productTitles = new Set(products.filter((product) => product.title).map((product) => product.title));
+    const productTitles = new Set(
+      products.filter((product) => product.title).map((product) => product.title)
+    );
 
     if (productTitles.size > 0) {
       console.log(
@@ -141,15 +153,14 @@ export async function modify(manifestPath: string, options: OptionValues) {
   }
 }
 
-export async function validate(
-  manifestPath: string,
-  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
-) {
+export async function validate(manifestPath: string, options: OptionValues) {
   try {
     const verifyProduction: boolean = options.production;
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
     if (validation.status && validation.status != 200) {
-      console.log(`Unable to validate the manifest.\n${validation.status}\n${validation.statusText}`);
+      console.log(
+        `Unable to validate the manifest.\n${validation.status}\n${validation.statusText}`
+      );
     } else if (validation.report) {
       logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);

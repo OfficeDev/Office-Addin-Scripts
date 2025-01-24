@@ -37,7 +37,10 @@ export class ManifestHandlerXml extends ManifestHandler {
       manifest.defaultLocale = xmlMethods.getXmlElementValue(officeApp, "DefaultLocale");
       manifest.description = xmlMethods.getXmlElementAttributeValue(officeApp, "Description");
       manifest.displayName = xmlMethods.getXmlElementAttributeValue(officeApp, "DisplayName");
-      manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "HighResolutionIconUrl");
+      manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(
+        officeApp,
+        "HighResolutionIconUrl"
+      );
       manifest.hosts = xmlMethods.getXmlElementsAttributeValue(officeApp, "Hosts", "Host", "Name");
       manifest.iconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "IconUrl");
       manifest.officeAppType = xmlMethods.getXmlAttributeValue(officeApp, "xsi:type");
@@ -50,9 +53,18 @@ export class ManifestHandlerXml extends ManifestHandler {
       if (defaultSettingsXml) {
         const defaultSettings: DefaultSettings = new DefaultSettings();
 
-        defaultSettings.requestedHeight = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedHeight");
-        defaultSettings.requestedWidth = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedWidth");
-        defaultSettings.sourceLocation = xmlMethods.getXmlElementAttributeValue(defaultSettingsXml, "SourceLocation");
+        defaultSettings.requestedHeight = xmlMethods.getXmlElementValue(
+          defaultSettingsXml,
+          "RequestedHeight"
+        );
+        defaultSettings.requestedWidth = xmlMethods.getXmlElementValue(
+          defaultSettingsXml,
+          "RequestedWidth"
+        );
+        defaultSettings.sourceLocation = xmlMethods.getXmlElementAttributeValue(
+          defaultSettingsXml,
+          "SourceLocation"
+        );
 
         manifest.defaultSettings = defaultSettings;
       }

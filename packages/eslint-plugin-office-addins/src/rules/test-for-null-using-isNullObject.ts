@@ -24,7 +24,7 @@ export default ESLintUtils.RuleCreator(
     schema: [],
     fixable: <"code" | "whitespace">"code",
   },
-  create: function (context: any) {
+  create: function (context) {
     const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isConditionalTestExpression(
       node: TSESTree.Identifier | TSESTree.JSXIdentifier,
@@ -123,9 +123,9 @@ export default ESLintUtils.RuleCreator(
               messageId: "useIsNullObject",
               data: { name: identifier.name },
               fix: function (fixer: RuleFixer) {
-                var ruleFix: RuleFix;
+                let ruleFix: RuleFix;
                 if (isInBinaryNullTest(identifier) && identifier.parent) {
-                  let newTest = identifier.name + ".isNullObject";
+                  const newTest = identifier.name + ".isNullObject";
                   ruleFix = fixer.replaceText(identifier.parent, newTest);
                 } else {
                   ruleFix = fixer.insertTextAfter(identifier, ".isNullObject");
@@ -145,8 +145,8 @@ export default ESLintUtils.RuleCreator(
     return {
       "Program:exit"(node) {
         const scope = sourceCode.getScope
-                    ? sourceCode.getScope(node)
-                    : context.getScope();
+          ? sourceCode.getScope(node)
+          : context.getScope();
         findNullObjectNullTests(scope);
       },
     };
