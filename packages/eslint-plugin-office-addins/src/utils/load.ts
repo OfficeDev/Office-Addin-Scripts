@@ -48,7 +48,7 @@ function parseObjectExpressionProperty(
       property.type === AST_NODE_TYPES.Property &&
       property.key.type === AST_NODE_TYPES.Identifier
     ) {
-      let propertyName: string = property.key.name;
+      const propertyName: string = property.key.name;
 
       if (property.value.type === AST_NODE_TYPES.ObjectExpression) {
         const composedProperty = parseObjectExpressionProperty(property.value);
@@ -70,7 +70,7 @@ function parseObjectExpressionProperty(
 }
 
 function parseLoadStringArgument(argument: string): string[] {
-  let properties: string[] = [];
+  const properties: string[] = [];
   argument
     .replace(/\s/g, "")
     .split(",")

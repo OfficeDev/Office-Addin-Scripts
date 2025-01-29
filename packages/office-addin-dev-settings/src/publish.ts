@@ -12,7 +12,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if ((filePath.endsWith(".zip") || filePath.endsWith(".xml")) && fs.existsSync(filePath)) {
       const pathSwitch = filePath.endsWith(".zip") ? "--file-path" : "--xml-path";
-      const sideloadCommand = `npx @microsoft/teamsapp-cli install ${pathSwitch} "${filePath}"`;
+      const sideloadCommand = `npx @microsoft/teamsapp-cli install ${pathSwitch} "${filePath}" --interactive false`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
@@ -22,7 +22,9 @@ export async function registerWithTeams(filePath: string): Promise<string> {
           console.log(`\n${stdout}\n--Error sideloading!--\nError: ${error}\nSTDERR:\n${stderr}`);
           reject(error);
         } else {
-          console.log(`\n${stdout}\nSuccessfully registered package! (${titleId})\n STDERR: ${stderr}\n`);
+          console.log(
+            `\n${stdout}\nSuccessfully registered package! (${titleId})\n STDERR: ${stderr}\n`
+          );
           resolve(titleId);
         }
       });
@@ -39,7 +41,9 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
     console.log(`running: ${authCommand}`);
     childProcess.exec(authCommand, (error, stdout, stderr) => {
       if (error || (stderr.length > 0 && /Debugger attached\./.test(stderr) == false)) {
-        console.log(`Error running auth command\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`);
+        console.log(
+          `Error running auth command\n STDOUT: ${stdout}\n ERROR: ${error}\n STDERR: ${stderr}`
+        );
         reject(error);
       } else {
         console.log(`Successfully ran auth command.\n`);
@@ -52,7 +56,8 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
 export async function uninstallWithTeams(id: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (id.startsWith("U_")) {
-      const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall "--title-id" ${id}`;
+      // Can also use manifest id?
+      const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall "--title-id" ${id} --interactive false`;
 
       console.log(`running: ${uninstallCommand}`);
       childProcess.exec(uninstallCommand, (error, stdout, stderr) => {

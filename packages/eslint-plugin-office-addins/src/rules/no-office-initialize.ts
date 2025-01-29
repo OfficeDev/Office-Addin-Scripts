@@ -16,7 +16,7 @@ export default ESLintUtils.RuleCreator(
     },
     schema: [],
   },
-  create: function (context: any) {
+  create: function (context) {
     return {
       "AssignmentExpression[left.object.name='Office'][left.property.name='initialize']"(
         node: TSESTree.AssignmentExpression,

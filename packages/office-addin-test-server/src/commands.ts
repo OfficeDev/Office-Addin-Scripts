@@ -8,7 +8,8 @@ import { defaultPort, TestServer } from "./testServer";
 /* global console */
 
 export async function start(options: OptionValues) {
-  const testServerPort: number = options.port !== undefined ? parseTestServerPort(options.port) : defaultPort;
+  const testServerPort: number =
+    options.port !== undefined ? parseTestServerPort(options.port) : defaultPort;
   const testServer = new TestServer(testServerPort);
   const serverStarted: boolean = await testServer.startTestServer();
 

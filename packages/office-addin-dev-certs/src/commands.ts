@@ -69,7 +69,9 @@ export async function uninstall(options: OptionValues) {
   }
 }
 
-export async function verify(options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */) {
+export async function verify(
+  options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
+) {
   try {
     if (await verifyCertificates()) {
       console.log(

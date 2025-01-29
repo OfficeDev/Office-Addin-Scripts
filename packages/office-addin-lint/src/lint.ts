@@ -5,15 +5,15 @@ import fs from "fs";
 import path from "path";
 import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
 
-/* global require, __dirname, process */
+/* global process require __dirname */
 
 const eslintPath = require.resolve("eslint");
 const prettierPath = require.resolve("prettier");
 const eslintDir = path.parse(eslintPath).dir;
 const eslintFilePath = path.resolve(eslintDir, "../bin/eslint.js");
 const prettierFilePath = path.resolve(prettierPath, "../bin/prettier.cjs");
-const eslintConfigPath = path.resolve(__dirname, "../config/.eslintrc.json");
-const eslintTestConfigPath = path.resolve(__dirname, "../config/.eslintrc.test.json");
+const eslintConfigPath = path.resolve(__dirname, "../config/eslint.config.mjs");
+const eslintTestConfigPath = path.resolve(__dirname, "../config/eslint.config.test.mjs");
 
 function execCommand(command: string) {
   const execSync = require("child_process").execSync;
@@ -25,10 +25,10 @@ function normalizeFilePath(filePath: string): string {
 }
 
 function getEsLintBaseCommand(useTestConfig: boolean = false): string {
-  const projLintConfig = path.resolve(process.cwd(), ".eslintrc.json");
+  const projLintConfig = path.resolve(process.cwd(), "eslint.config.mjs");
   const prodConfig = fs.existsSync(projLintConfig) ? projLintConfig : eslintConfigPath;
   const configFilePath = useTestConfig ? eslintTestConfigPath : prodConfig;
-  const eslintBaseCommand: string = `node "${eslintFilePath}" -c "${configFilePath}" --resolve-plugins-relative-to "${__dirname}"`;
+  const eslintBaseCommand: string = `node "${eslintFilePath}" -c "${configFilePath}"`;
   return eslintBaseCommand;
 }
 

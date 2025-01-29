@@ -92,7 +92,11 @@ export function getProcessIdsForPort(port: number): Promise<number[]> {
               .trim()
               .split(" ")
               .filter((text) => text);
-            if (local_address !== undefined && local_address.endsWith(`:${port}`) && program !== undefined) {
+            if (
+              local_address !== undefined &&
+              local_address.endsWith(`:${port}`) &&
+              program !== undefined
+            ) {
               const pid = parseInt(program, 10);
               if (!isNaN(pid)) {
                 processIds.add(pid);

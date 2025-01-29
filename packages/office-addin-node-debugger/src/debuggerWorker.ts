@@ -8,12 +8,12 @@
  *
  * @format
  */
-/* global __fbBatchedBridge, self, importScripts, postMessage, onmessage: true */
+/* global __fbBatchedBridge, importScripts */
 /* eslint @typescript-eslint/no-unused-vars: 0 */
 
 import fetch from "node-fetch";
 
-/* global global, process, console */
+/* global console global process */
 
 declare var __fbBatchedBridge: any;
 declare var __platformBundles: any;
@@ -43,7 +43,11 @@ process.on("message", (message) => {
       function evalJS(js: string): void {
         try {
           /* eslint-disable-next-line no-eval */
-          eval(js.replace(/this\["webpackHotUpdate"\]/g, 'self["webpackHotUpdate"]').replace("GLOBAL", "global"));
+          eval(
+            js
+              .replace(/this\["webpackHotUpdate"\]/g, 'self["webpackHotUpdate"]')
+              .replace("GLOBAL", "global")
+          );
         } catch (error: any) {
           console.log(`Error Message: ${error.message}`);
           console.log(`Error stack: ${error.stack}`);

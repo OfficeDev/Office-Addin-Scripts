@@ -17,7 +17,7 @@ import { startDetachedProcess } from "./process";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, console, setTimeout */
+/* global console process setTimeout */
 
 export enum AppType {
   Desktop = "desktop",
@@ -125,7 +125,9 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
         const isRunning: boolean = await waitUntilDevServerIsRunning(port);
 
         if (isRunning) {
-          console.log(`The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`);
+          console.log(
+            `The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`
+          );
         } else {
           throw new Error(`The dev server is not running on port ${port}.`);
         }
@@ -288,11 +290,14 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
     // live reload can only be enabled for the desktop app type
     // when using proxy debugging and the packager
-    const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
+    const canEnableLiveReload: boolean =
+      isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
     // only use live reload if enabled and it can be enabled
     const useLiveReload = enableLiveReload && canEnableLiveReload;
 
-    console.log(enableDebugging ? "Debugging is being started..." : "Starting without debugging...");
+    console.log(
+      enableDebugging ? "Debugging is being started..." : "Starting without debugging..."
+    );
     console.log(`App type: ${appType}`);
 
     if (manifestPath.endsWith(".zip")) {
@@ -325,7 +330,12 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
     // enable debugging
     if (isDesktopAppType && isWindowsPlatform) {
-      await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
+      await devSettings.enableDebugging(
+        manifestInfo.id,
+        enableDebugging,
+        debuggingMethod,
+        openDevTools
+      );
       if (enableDebugging) {
         console.log(`Enabled debugging for add-in ${manifestInfo.id}.`);
       }
@@ -334,7 +344,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     // enable runtimelogging
     if (isDesktopAppType && isWindowsPlatform) {
       const path = await devSettings.getRuntimeLoggingPath();
-      if(path) {
+      if (path) {
         console.log(`Runtime logging is enabled. File: ${path}`);
       } else {
         console.log("Enabling runtime logging..");

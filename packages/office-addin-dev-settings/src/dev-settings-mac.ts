@@ -41,13 +41,20 @@ function getSideloadDirectory(app: OfficeApp): string | undefined {
     case OfficeApp.Excel:
       return path.join(os.homedir(), "Library/Containers/com.microsoft.Excel/Data/Documents/wef");
     case OfficeApp.PowerPoint:
-      return path.join(os.homedir(), "Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef");
+      return path.join(
+        os.homedir(),
+        "Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef"
+      );
     case OfficeApp.Word:
       return path.join(os.homedir(), "Library/Containers/com.microsoft.Word/Data/Documents/wef");
   }
 }
 
-export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp[], registration?: string) {
+export async function registerAddIn(
+  manifestPath: string,
+  officeApps?: OfficeApp[],
+  registration?: string
+) {
   try {
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
 
@@ -55,7 +62,9 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
       officeApps = getOfficeAppsForManifestHosts(manifest.hosts);
 
       if (officeApps.length === 0) {
-        throw new ExpectedError("The manifest file doesn't specify any hosts for the Office Add-in.");
+        throw new ExpectedError(
+          "The manifest file doesn't specify any hosts for the Office Add-in."
+        );
       }
     }
 
@@ -83,7 +92,10 @@ export async function registerAddIn(manifestPath: string, officeApps?: OfficeApp
 
       if (sideloadDirectory) {
         // include manifest id in sideload filename
-        const sideloadPath = path.join(sideloadDirectory, `${manifest.id}.${path.basename(manifestPath)}`);
+        const sideloadPath = path.join(
+          sideloadDirectory,
+          `${manifest.id}.${path.basename(manifestPath)}`
+        );
 
         fs.ensureDirSync(sideloadDirectory);
         fs.ensureLinkSync(manifestPath, sideloadPath);

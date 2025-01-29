@@ -9,13 +9,13 @@ import * as defaults from "./defaults";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+/* global Buffer process __dirname */
+
 // On win32 this is a unique hash used with PowerShell command to reliably delineate command output
 export const outputMarker =
   process.platform === "win32"
     ? `[${crypto.createHash("md5").update(`${defaults.certificateName}${defaults.caCertificatePath}`).digest("hex")}]`
     : "";
-
-/* global process, Buffer, __dirname */
 
 function getVerifyCommand(returnInvalidCertificate: boolean): string {
   switch (process.platform) {
@@ -48,7 +48,9 @@ export function isCaCertificateInstalled(returnInvalidCertificate: boolean = fal
     const output = execSync(command, { stdio: "pipe" }).toString();
     if (process.platform === "win32") {
       // Remove any PowerShell output that preceeds invoking the actual certificate check command
-      return output.slice(output.lastIndexOf(outputMarker) + outputMarker.length).trim().length !== 0;
+      return (
+        output.slice(output.lastIndexOf(outputMarker) + outputMarker.length).trim().length !== 0
+      );
     }
     // script files return empty string if the certificate not found or expired
     if (output.length !== 0) {

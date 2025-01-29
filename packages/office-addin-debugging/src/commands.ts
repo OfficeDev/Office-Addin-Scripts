@@ -16,7 +16,9 @@ import { ExpectedError } from "office-addin-usage-data";
 
 function determineManifestPath(platform: Platform, dev: boolean): string {
   let manifestPath = process.env.npm_package_config_manifest_location || "";
-  manifestPath = manifestPath.replace("${flavor}", dev ? "dev" : "prod").replace("${platform}", platform);
+  manifestPath = manifestPath
+    .replace("${flavor}", dev ? "dev" : "prod")
+    .replace("${platform}", platform);
 
   if (!manifestPath) {
     throw new ExpectedError(`The manifest path was not provided.`);
@@ -43,7 +45,11 @@ function parseDevServerPort(optionValue: any): number | undefined {
   return devServerPort;
 }
 
-export async function start(manifestPath: string, platform: string | undefined, options: OptionValues) {
+export async function start(
+  manifestPath: string,
+  platform: string | undefined,
+  options: OptionValues
+) {
   try {
     const appPlatformToDebug: Platform | undefined = parsePlatform(
       platform || process.env.npm_package_config_app_platform_to_debug || Platform.Win32
@@ -51,20 +57,28 @@ export async function start(manifestPath: string, platform: string | undefined, 
     const appTypeToDebug: AppType | undefined = devSettings.parseAppType(
       appPlatformToDebug || process.env.npm_package_config_app_type_to_debug || AppType.Desktop
     );
-    const appToDebug: string | undefined = options.app || process.env.npm_package_config_app_to_debug;
+    const appToDebug: string | undefined =
+      options.app || process.env.npm_package_config_app_to_debug;
     const app: OfficeApp | undefined = appToDebug ? parseOfficeApp(appToDebug) : undefined;
     const dev: boolean = options.prod ? false : true;
     const debuggingMethod = parseDebuggingMethod(options.debugMethod);
-    const devServer: string | undefined = options.devServer || (await getPackageJsonScript("dev-server"));
-    const devServerPort = parseDevServerPort(options.devServerPort || process.env.npm_package_config_dev_server_port);
-    const document: string | undefined = options.document || process.env.npm_package_config_document;
+    const devServer: string | undefined =
+      options.devServer || (await getPackageJsonScript("dev-server"));
+    const devServerPort = parseDevServerPort(
+      options.devServerPort || process.env.npm_package_config_dev_server_port
+    );
+    const document: string | undefined =
+      options.document || process.env.npm_package_config_document;
     const enableDebugging: boolean = options.debug;
     const enableLiveReload: boolean = options.liveReload === true;
     const enableSideload: boolean = options.sideload !== false; // enable if true or undefined; only disable if false
     const openDevTools: boolean = options.devTools === true;
-    const packager: string | undefined = options.packager || (await getPackageJsonScript("packager"));
-    const packagerHost: string | undefined = options.PackagerHost || process.env.npm_package_config_packager_host;
-    const packagerPort: string | undefined = options.PackagerPort || process.env.npm_package_config_packager_port;
+    const packager: string | undefined =
+      options.packager || (await getPackageJsonScript("packager"));
+    const packagerHost: string | undefined =
+      options.PackagerHost || process.env.npm_package_config_packager_host;
+    const packagerPort: string | undefined =
+      options.PackagerPort || process.env.npm_package_config_packager_port;
     const sourceBundleUrlComponents = new devSettings.SourceBundleUrlComponents(
       options.sourceBundleUrlHost,
       options.sourceBundleUrlPort,
@@ -81,7 +95,9 @@ export async function start(manifestPath: string, platform: string | undefined, 
     }
 
     if (appPlatformToDebug === Platform.Android || appPlatformToDebug === Platform.iOS) {
-      throw new ExpectedError(`Platform type ${appPlatformToDebug} not currently supported for debugging`);
+      throw new ExpectedError(
+        `Platform type ${appPlatformToDebug} not currently supported for debugging`
+      );
     }
 
     if (!manifestPath) {
@@ -112,7 +128,11 @@ export async function start(manifestPath: string, platform: string | undefined, 
   }
 }
 
-export async function stop(manifestPath: string, platform: string | undefined, options: OptionValues) {
+export async function stop(
+  manifestPath: string,
+  platform: string | undefined,
+  options: OptionValues
+) {
   try {
     const appPlatformToDebug: Platform | undefined = parsePlatform(
       platform || process.env.npm_package_config_app_plaform_to_debug || Platform.Win32
