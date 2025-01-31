@@ -281,7 +281,6 @@ describe("Appcontainer", async function () {
 describe("Registration", function () {
   if (isWindows || isMac) {
     const manifestsFolder = fspath.resolve("test/files/manifests");
-    this.timeout(6000);
 
     this.beforeAll(async function () {
       await devSettings.unregisterAllAddIns();
@@ -291,7 +290,7 @@ describe("Registration", function () {
     });
     describe("basic functionality", function () {
       it("No add-ins should be registered", async function () {
-        const registered = await devSettings.getRegisterAddIns();
+        const registered: devSettings.RegisteredAddin[] = await devSettings.getRegisteredAddIns();
         assert.strictEqual(registered.length, 0);
       });
       it("Can register an add-in", async function () {
@@ -303,7 +302,7 @@ describe("Registration", function () {
             )
           : manifestPath;
         await devSettings.registerAddIn(manifestPath);
-        const registeredAddins = await devSettings.getRegisterAddIns();
+        const registeredAddins: devSettings.RegisteredAddin[] = await devSettings.getRegisteredAddIns();
         const [registeredAddin] = registeredAddins;
         assert.strictEqual(registeredAddins.length, 1);
         assert.strictEqual(registeredAddin.id, "6dd581d2-98d1-4eaf-9506-e0a24be515f5");
@@ -312,7 +311,7 @@ describe("Registration", function () {
       it("Can unregister an add-in", async function () {
         const manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
         await devSettings.unregisterAddIn(manifestPath);
-        const registeredAddins = await devSettings.getRegisterAddIns();
+        const registeredAddins: devSettings.RegisteredAddin[] = await devSettings.getRegisteredAddIns();
         assert.strictEqual(registeredAddins.length, 0);
       });
     });
@@ -337,7 +336,7 @@ describe("Registration", function () {
       it("Can register two add-ins", async function () {
         await devSettings.registerAddIn(firstManifestPath);
         await devSettings.registerAddIn(secondManifestPath);
-        const registeredAddins = await devSettings.getRegisterAddIns();
+        const registeredAddins: devSettings.RegisteredAddin[] = await devSettings.getRegisteredAddIns();
         const [first, second] = registeredAddins;
         assert.strictEqual(registeredAddins.length, 2);
         assert.strictEqual(first.id, firstManifestId);
@@ -347,7 +346,7 @@ describe("Registration", function () {
       });
       it("Can unregister one add-in", async function () {
         await devSettings.unregisterAddIn(secondManifestPath);
-        const registeredAddins = await devSettings.getRegisterAddIns();
+        const registeredAddins: devSettings.RegisteredAddin[] = await devSettings.getRegisteredAddIns();
         const [first] = registeredAddins;
         assert.strictEqual(registeredAddins.length, 1);
         assert.strictEqual(first.id, firstManifestId);
@@ -407,7 +406,7 @@ describe("Registration", function () {
           await devSettings.registerAddIn(manifestPath);
 
           // Verify manifest is set in Developer registry key
-          const registeredAddins = await devSettings.getRegisterAddIns();
+          const registeredAddins: devSettings.RegisteredAddin[] = await devSettings.getRegisteredAddIns();
           const [registeredAddin] = registeredAddins;
           assert.strictEqual(registeredAddins.length, 1);
           assert.strictEqual(registeredAddin.id, "6dd581d2-98d1-4eaf-9506-e0a24be515f5");

@@ -310,7 +310,8 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
     const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
     const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
-    // Register using the service
+    // Unregister using the service
+    // TODO: remove if statement when the service supports all hosts
     if (
       manifest.manifestType === ManifestType.JSON ||
       appsInManifest.indexOf(OfficeApp.Outlook) >= 0
@@ -327,13 +328,11 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
 }
 
 export async function unregisterAllAddIns(): Promise<void> {
-  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
-  const values = await registry.getValues(key);
+    const registeredAddins: RegisteredAddin[] = await getRegisteredAddIns();
 
-  for (const value of values) {
-    await unacquire(key, value.name);
-    await registry.deleteValue(key, value.name);
-  }
+    for (const addin of registeredAddins) {
+        await unregisterAddIn(addin.id, addin.manifestPath);
+    }
 }
 
 async function unacquire(key: registry.RegistryKey, id: string) {
