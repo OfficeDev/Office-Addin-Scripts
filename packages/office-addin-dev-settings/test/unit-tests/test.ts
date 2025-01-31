@@ -281,9 +281,13 @@ describe("Appcontainer", async function () {
 describe("Registration", function () {
   if (isWindows || isMac) {
     const manifestsFolder = fspath.resolve("test/files/manifests");
+    this.timeout(6000);
 
     this.beforeAll(async function () {
       await devSettings.unregisterAllAddIns();
+    });
+    this.afterEach(async function () {
+      await devSettingsWindows.disableRefreshAddins();
     });
     describe("basic functionality", function () {
       it("No add-ins should be registered", async function () {
