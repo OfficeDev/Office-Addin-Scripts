@@ -53,25 +53,33 @@ export async function updateM365Account(operation: AccountOperation): Promise<vo
   });
 }
 
-export async function uninstallWithTeams(id: string): Promise<void> {
+export async function uninstallWithTeams(id: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    if (id.startsWith("U_")) {
-      // Can also use manifest id?
-      const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall "--title-id" ${id} --interactive false`;
+    const guidRegex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
+    const manifestIdRegex = new RegExp(`^${guidRegex.source}$`);
+    const titleIdRegex = new RegExp(`^U_${guidRegex.source}$`);
+    let mode: string = "";
 
-      console.log(`running: ${uninstallCommand}`);
-      childProcess.exec(uninstallCommand, (error, stdout, stderr) => {
-        if (error || stderr.match('"error"')) {
-          console.log(`\n${stdout}\n--Error uninstalling!--\n${error}\n STDERR: ${stderr}`);
-          reject(error);
-        } else {
-          console.log(`\n${stdout}\nSuccessfully uninstalled!\n STDERR: ${stderr}\n`);
-          resolve();
-        }
-      });
+    if (titleIdRegex.test(id)) {
+      mode = `--mode title-id --title-id ${id}`;
+    } else if (manifestIdRegex.test(id)) {
+      mode = `--mode manifest-id --manifest-id ${id}`;
     } else {
-      console.error(`Error: Invalid title id "${id}".  Add-in is still installed.`);
-      resolve();
+      console.error(`Error: Invalid id "${id}".  Add-in is still installed.`);
+      resolve(false);
+      return;
     }
+
+    const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall ${mode} --interactive false`;
+    console.log(`running: ${uninstallCommand}`);
+    childProcess.exec(uninstallCommand, (error, stdout, stderr) => {
+      if (error || stderr.match('"error"')) {
+        console.log(`\n${stdout}\n--Error uninstalling!--\n${error}\n STDERR: ${stderr}`);
+        reject(error);
+      } else {
+        console.log(`\n${stdout}\nSuccessfully uninstalled!\n STDERR: ${stderr}\n`);
+        resolve(true);
+      }
+    });
   });
 }

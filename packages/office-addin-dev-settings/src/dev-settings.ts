@@ -153,7 +153,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
 /**
  * Returns the manifest paths for the add-ins that are registered
  */
-export async function getRegisterAddIns(): Promise<RegisteredAddin[]> {
+export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   switch (process.platform) {
     case "darwin":
       return devSettingsMac.getRegisteredAddIns();

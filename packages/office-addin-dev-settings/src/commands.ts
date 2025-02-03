@@ -345,7 +345,7 @@ export async function registered(
   options: OptionValues /* eslint-disable-line @typescript-eslint/no-unused-vars */
 ) {
   try {
-    const registeredAddins = await devSettings.getRegisterAddIns();
+    const registeredAddins: devSettings.RegisteredAddin[] = await devSettings.getRegisteredAddIns();
 
     if (registeredAddins.length > 0) {
       for (const addin of registeredAddins) {
