@@ -6,6 +6,7 @@ import XRegExp = require("xregexp");
 
 export interface ICustomFunctionsMetadata {
   functions: IFunction[];
+  enums: IEnum[];
 }
 
 export interface IFunction {
@@ -39,6 +40,7 @@ export interface IFunctionParameter {
   dimensionality?: string;
   optional?: boolean;
   repeating?: boolean;
+  customEnumType?: string;
 }
 
 interface IParameterType {
