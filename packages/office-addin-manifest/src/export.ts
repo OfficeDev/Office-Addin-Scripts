@@ -2,7 +2,8 @@ import fs from "fs";
 import fsExtra from "fs-extra";
 import AdmZip from "adm-zip";
 import path from "path";
-import { ManifestUtil, devPreview } from "@microsoft/teams-manifest";
+import { DeclarativeCopilotManifestSchema } from "@microsoft/teams-manifest";
+import { DevPreviewSchema } from "./devPreviewManifest";
 
 /* global console */
 
@@ -20,6 +21,12 @@ export async function exportMetadataPackage(
   return Promise.resolve(output);
 }
 
+function readJsonFileSync<JsonType>(filePath: string): JsonType {
+  const jsonText = fs.readFileSync(filePath, "utf8");
+  const jsonObject: JsonType = JSON.parse(jsonText);
+  return jsonObject;
+}
+
 async function createZip(manifestPath: string): Promise<AdmZip> {
   const absolutePath: string = path.resolve(manifestPath);
   const manifestDir: string = path.dirname(absolutePath);
@@ -31,7 +38,36 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
-  const manifest: devPreview.DevPreviewSchema = await ManifestUtil.loadFromPath(manifestPath);
+  const manifest: DevPreviewSchema = readJsonFileSync(manifestPath);
+  const agents = manifest?.copilotAgents?.declarativeAgents;
+
+  if (agents) {
+    agents.forEach((agent, agentIndex) => {
+      const file: string = agent?.file;
+      const filePath = path.join(manifestDir, file);
+
+      if (!fs.existsSync(filePath)) {
+        throw new Error(
+          `copilotAgents.declarativeAgents[${agentIndex}].file does not exist:  ${filePath}`
+        );
+      }
+
+      zip.addLocalFile(filePath, "", file);
+      const agentJson: DeclarativeCopilotManifestSchema = readJsonFileSync(filePath);
+
+      agentJson?.actions?.forEach((action, actionIndex) => {
+        if (action?.file) {
+          const actionFilePath = path.join(manifestDir, action.file);
+          if (!fs.existsSync(actionFilePath)) {
+            throw new Error(`actions[${actionIndex}].file does not exist: ${actionFilePath}`);
+          }
+
+          zip.addLocalFile(actionFilePath, "", action.file);
+        }
+      });
+    });
+  }
+
   addIconFile(manifest.icons?.color, manifestDir, zip);
   addIconFile(manifest.icons?.outline, manifestDir, zip);
 
