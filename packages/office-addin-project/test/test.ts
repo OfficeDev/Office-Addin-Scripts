@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as assert from "assert";
-import * as fs from "fs";
-import * as mocha from "mocha";
-import * as path from "path";
+import assert from "assert";
+import fs from "fs";
+import { describe, it } from "mocha";
+import path from "path";
 import { convertProject } from "../src/convert";
 import { convert } from "office-addin-manifest-converter";
 

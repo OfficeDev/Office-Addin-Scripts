@@ -1,12 +1,15 @@
-import * as fs from "fs";
-import * as fsExtra from "fs-extra";
-import * as AdmZip from "adm-zip";
-import * as path from "path";
+import fs from "fs";
+import fsExtra from "fs-extra";
+import AdmZip from "adm-zip";
+import path from "path";
 import { ManifestUtil, devPreview } from "@microsoft/teams-manifest";
 
 /* global console */
 
-export async function exportMetadataPackage(output: string = "", manifest: string = "manifest.json"): Promise<string> {
+export async function exportMetadataPackage(
+  output: string = "",
+  manifest: string = "manifest.json"
+): Promise<string> {
   const zip: AdmZip = await createZip(manifest);
 
   if (output === "") {

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
+import fs from "fs";
 import * as defaults from "./defaults";
 import { ensureCertificatesAreInstalled } from "./install";
 
@@ -13,8 +13,12 @@ interface IHttpsServerOptions {
   key: Buffer;
 }
 
-export async function getHttpsServerOptions(): Promise<IHttpsServerOptions> {
-  await ensureCertificatesAreInstalled();
+export async function getHttpsServerOptions(
+  daysUntilCertificateExpires?: number,
+  domains?: string[],
+  machine?: boolean
+): Promise<IHttpsServerOptions> {
+  await ensureCertificatesAreInstalled(daysUntilCertificateExpires, domains, machine);
 
   const httpsServerOptions = {} as IHttpsServerOptions;
   try {

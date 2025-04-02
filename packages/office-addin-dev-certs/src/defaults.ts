@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as os from "os";
-import * as path from "path";
-import * as usageData from "office-addin-usage-data";
+import os from "os";
+import path from "path";
+import {
+  instrumentationKeyForOfficeAddinCLITools,
+  OfficeAddinUsageData,
+} from "office-addin-usage-data";
 
 // Default certificate names
 export const certificateDirectoryName = ".office-addin-dev-certs";
@@ -11,7 +14,10 @@ export const certificateDirectory = path.join(os.homedir(), certificateDirectory
 export const caCertificateFileName = "ca.crt";
 export const caCertificatePath = path.join(certificateDirectory, caCertificateFileName);
 export const localhostCertificateFileName = "localhost.crt";
-export const localhostCertificatePath = path.join(certificateDirectory, localhostCertificateFileName);
+export const localhostCertificatePath = path.join(
+  certificateDirectory,
+  localhostCertificateFileName
+);
 export const localhostKeyFileName = "localhost.key";
 export const localhostKeyPath = path.join(certificateDirectory, localhostKeyFileName);
 
@@ -24,8 +30,8 @@ export const locality = "Redmond";
 export const state = "WA";
 
 // Usage data defaults
-export const usageDataObject: usageData.OfficeAddinUsageData = new usageData.OfficeAddinUsageData({
+export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
   projectName: "office-addin-dev-certs",
-  instrumentationKey: usageData.instrumentationKeyForOfficeAddinCLITools,
+  instrumentationKey: instrumentationKeyForOfficeAddinCLITools,
   raisePrompt: false,
 });

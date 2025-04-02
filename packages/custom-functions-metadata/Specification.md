@@ -10,8 +10,11 @@ The function parameter types may be provided using the [@param](#param) tag in J
 
 ## Tags
 * [@cancelable](#cancelable)
+* [@capturesCallingObject](#capturescallingobject)
 * [@customfunction](#customfunction) id name
+* [@excludeFromAutoComplete](#excludeFromAutoComplete)
 * [@helpurl](#helpurl) url
+* [@linkedEntityLoadService](#linkedEntityLoadService)
 * [@param](#param) _{type}_ name description
 * [@requiresAddress](#requiresAddress)
 * [@requiresParameterAddresses](#requiresParameterAddresses)
@@ -30,6 +33,11 @@ If the last function parameter is of type `CustomFunctions.CancelableInvocation`
 
  A function cannot have both `@cancelable` and `@streaming` tags.
 
+---
+### @capturesCallingObject
+
+Indicates that the custom function captures the calling object i.e. the [Excel.CellValue](https://learn.microsoft.com/es-es/javascript/api/excel/excel.cellvalue)
+object that invoked the custom function, in the first parameter.
 
 ---
 ### @customfunction
@@ -60,11 +68,32 @@ Provides the display name for the custom function.
 * Maximum length is 128 characters.
 
 ---
+### @excludeFromAutoComplete
+
+Indicates that the function will be excluded from the autocomplete drop-down list and Formula Builder.
+
+If the function is manually spelled correctly in the grid, the function will still execute.
+
+A function cannot have both `@excludeFromAutoComplete` and `@linkedEntityLoadService` tags.
+
+---
 ### @helpurl
 
 Syntax: @helpurl _url_
 
 The provided _url_ is displayed in Excel.
+
+---
+### @linkedEntityLoadService
+
+Indicates that the function is a "special" custom function that is meant to act as the "loadFunction" for user defined `LinkedEntityDataDomain`s. 
+
+The function will be excluded from the autocomplete drop-down list and Formula Builder since it should only callable by the Excel runtime.
+
+* Must accept and return a single non-repeating, non-optional, scalar parameter of type `unknown`.
+* Must not be a XLL-compatible custom function.
+* Must allow rich data as input.
+* A `@linkedEntityLoadService` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, `@excludeFromAutoComplete`, or `@capturesCallingObject` tags.
 
 ---
 ### @param 
@@ -166,3 +195,23 @@ A function can return a Promise, which will provide the value when the promise i
 ### Other types
 
 Any other type will be treated as an error.
+
+---
+## Custom enums
+
+The `@customEnum` JSDoc tag can be used in TypeScript to mark an enum as a custom enum. When a custom function uses this custom enum as the type for its arguments, the enum values will be displayed in a dropdown list for the end user when they enter the function.
+
+### Tag @customEnum
+
+Syntaxt: @customEnum _{type}_
+
+Specify this tag to mark the TypeScript enum as an Excel custom enum. 
+
+This tag is required to generate metadata for the custom enum.
+
+* `{type}` should specify the type information within curly braces. Accepted types are `string` and `number`. Optional: if not specified, the type of the first enum value will be used.
+* Only TypeScript is supported, as JavaScript does not support enums.
+* The enum name must start with an alphabetic character and be unique. Allowed characters are: A-Z, a-z, 0-9, underscore (_), and period (.).
+* The maximum length of an enum name is 128 characters.
+* If values of enum members are omitted, the first member will be assigned a numeric value of `0`, with subsequent values auto-incremented.
+* The types of enum members must be consistent. Mixed types within an enum will be treated as an error.

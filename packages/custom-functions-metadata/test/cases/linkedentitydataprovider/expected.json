@@ -1,0 +1,21 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test the linkedEntityLoadService tag",
+            "id": "LINKEDENTITYLOADSERVICETEST",
+            "name": "LINKEDENTITYLOADSERVICETEST",
+            "options": {
+                "linkedEntityLoadService": true
+            },
+            "parameters": [
+                {
+                    "description": "Represents a request to the `@linkedEntityLoadService` custom function to load `LinkedEntityCellValue` objects.",
+                    "name": "request",
+                    "type": "any"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

@@ -33,7 +33,7 @@ export class OfficeMockObject {
     }
     let properties: string[] = [];
 
-    if (propertyArgument === undefined) { 
+    if (propertyArgument === undefined) {
       // an empty load call mean load all properties
       properties = ["*"];
     } else if (typeof propertyArgument === "string") {
@@ -47,18 +47,18 @@ export class OfficeMockObject {
     properties.forEach((property: string) => {
       this.loadMultipleProperties(property);
     });
+
+    return this;
   }
 
   /**
    * Mock replacement for the sync method in the Office.js API
    */
   async sync() {
-    this._properties.forEach(
-      async (property: OfficeMockObject, key: string) => {
-        await property.sync();
-        this.updatePropertyCall(key);
-      }
-    );
+    this._properties.forEach(async (property: OfficeMockObject, key: string) => {
+      await property.sync();
+      this.updatePropertyCall(key);
+    });
     if (this._loaded) {
       this._value = this._valueBeforeLoaded;
     }
@@ -149,19 +149,15 @@ export class OfficeMockObject {
     let composedProperties: string[] = [];
 
     Object.keys(objectData).forEach((propertyName: string) => {
-      const property: OfficeMockObject | undefined =
-        this._properties.get(propertyName);
+      const property: OfficeMockObject | undefined = this._properties.get(propertyName);
 
       if (property) {
         const propertyValue: ObjectData = objectData[propertyName];
         if (property._isObject) {
-          const composedProperty: string[] =
-            property.parseObjectPropertyIntoArray(propertyValue);
+          const composedProperty: string[] = property.parseObjectPropertyIntoArray(propertyValue);
           if (composedProperty.length !== 0) {
             composedProperty.forEach((prop: string) => {
-              composedProperties = composedProperties.concat(
-                propertyName + "/" + prop
-              );
+              composedProperties = composedProperties.concat(propertyName + "/" + prop);
             });
           }
         } else if (propertyValue) {
@@ -182,11 +178,7 @@ export class OfficeMockObject {
       const property = objectData[propertyName];
       const dataType: string = typeof property;
 
-      if (
-        dataType === "object" &&
-        !Array.isArray(property) &&
-        !(property instanceof Date)
-      ) {
+      if (dataType === "object" && !Array.isArray(property) && !(property instanceof Date)) {
         this.addMock(propertyName);
         this[propertyName].populate(property);
       } else {
@@ -239,6 +231,6 @@ export class OfficeMockObject {
   private _valueBeforeLoaded: unknown;
   private _isObject: boolean | undefined;
   private _host: OfficeApp | undefined;
-  /* eslint-disable-next-line */
+
   [key: string]: any;
 }

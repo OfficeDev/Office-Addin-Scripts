@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import { OptionValues } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as defaults from "./defaults";
 import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
@@ -16,15 +16,17 @@ import { usageDataObject } from "./defaults";
  * 3 default location
  * @param command command options which can contain files
  */
-function getPathToFiles(command: commander.Command): string {
-  const pathToFiles: any = command.files ? command.files : process.env.npm_package_config_lint_files;
+function getPathToFiles(options: OptionValues): string {
+  const pathToFiles: any = options.files
+    ? options.files
+    : process.env.npm_package_config_lint_files;
   return pathToFiles ? pathToFiles : defaults.lintFiles;
 }
 
-export async function lint(command: commander.Command) {
+export async function lint(options: OptionValues) {
   try {
-    const pathToFiles: string = getPathToFiles(command);
-    const useTestConfig: boolean = command.test;
+    const pathToFiles: string = getPathToFiles(options);
+    const useTestConfig: boolean = options.test;
     await performLintCheck(pathToFiles, useTestConfig);
     usageDataObject.reportSuccess("lint");
   } catch (err: any) {
@@ -38,10 +40,10 @@ export async function lint(command: commander.Command) {
   }
 }
 
-export async function lintFix(command: commander.Command) {
+export async function lintFix(options: OptionValues) {
   try {
-    const pathToFiles: string = getPathToFiles(command);
-    const useTestConfig: boolean = command.test;
+    const pathToFiles: string = getPathToFiles(options);
+    const useTestConfig: boolean = options.test;
     await performLintFix(pathToFiles, useTestConfig);
     usageDataObject.reportSuccess("lintFix");
   } catch (err: any) {
@@ -55,9 +57,9 @@ export async function lintFix(command: commander.Command) {
   }
 }
 
-export async function prettier(command: commander.Command) {
+export async function prettier(options: OptionValues) {
   try {
-    const pathToFiles: string = getPathToFiles(command);
+    const pathToFiles: string = getPathToFiles(options);
     await makeFilesPrettier(pathToFiles);
     usageDataObject.reportSuccess("prettier");
   } catch (err: any) {

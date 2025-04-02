@@ -1,4 +1,5 @@
 {
+    "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
             "description": "custom function with 1d repeating parameter",

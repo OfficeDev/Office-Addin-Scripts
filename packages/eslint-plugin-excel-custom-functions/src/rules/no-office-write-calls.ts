@@ -1,18 +1,6 @@
-import {
-  TSESTree,
-  ESLintUtils,
-  ParserServices,
-} from "@typescript-eslint/utils";
-import {
-  REPO_URL,
-  callExpressionAnalysis,
-  assignmentExpressionAnalysis,
-} from "./utils";
-import {
-  RuleContext,
-  RuleMetaDataDocs,
-  RuleMetaData,
-} from "@typescript-eslint/utils/dist/ts-eslint";
+import { TSESTree, ESLintUtils, ParserServices } from "@typescript-eslint/utils";
+import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis } from "./utils";
+import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 import ts from "typescript";
 
 /**
@@ -24,21 +12,18 @@ import ts from "typescript";
 // Rule Definition
 //------------------------------------------------------------------------------
 
-type Options = unknown[];
+type Options = readonly unknown[];
 type MessageIds = "officeWriteCall";
 
-export = {
+export default ESLintUtils.RuleCreator(() => REPO_URL)({
   name: "no-office-write-calls",
-
   meta: {
     docs: {
       description: "Prevents office write api calls",
-      category: "Best Practices",
-      recommended: <RuleMetaDataDocs["recommended"]>"error",
+      recommended: "recommended",
       requiresTypeChecking: true,
-      url: REPO_URL,
     },
-    type: <RuleMetaData<MessageIds>["type"]>"problem",
+    type: "problem",
     messages: <Record<MessageIds, string>>{
       officeWriteCall: "No Office API write calls within Custom Functions",
     },
@@ -46,8 +31,8 @@ export = {
   },
 
   create: function (ruleContext: RuleContext<MessageIds, Options>): {
-    CallExpression: (node: TSESTree.CallExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
-    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void; // eslint-disable-line @typescript-eslint/no-unused-vars
+    CallExpression: (node: TSESTree.CallExpression) => void;
+    AssignmentExpression: (node: TSESTree.AssignmentExpression) => void;
   } {
     const services: ParserServices = ESLintUtils.getParserServices(ruleContext);
     const typeChecker: ts.TypeChecker = services.program.getTypeChecker();
@@ -83,14 +68,9 @@ export = {
       },
 
       AssignmentExpression: function (node: TSESTree.AssignmentExpression) {
-        assignmentExpressionAnalysis(
-          node,
-          ruleContext,
-          services,
-          typeChecker,
-          true
-        );
+        assignmentExpressionAnalysis(node, ruleContext, services, typeChecker, true);
       },
     };
   },
-};
+  defaultOptions: [],
+});

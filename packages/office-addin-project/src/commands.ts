@@ -1,21 +1,22 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
-import * as inquirer from "inquirer";
+import { OptionValues } from "commander";
+import inquirer from "inquirer";
 import { logErrorMessage } from "office-addin-usage-data";
 import { usageDataObject } from "./defaults";
 import { convertProject } from "./convert";
 
-export async function convert(command: commander.Command) {
+export async function convert(options: OptionValues) {
   try {
-    const manifestPath: string = command.manifest ?? "./manifest.xml";
-    const backupPath: string = command.backup ?? "./backup.zip";
-    const projectPath: string = command.project ?? "";
-    const shouldContinue = command.confirm ?? await asksForUserConfirmation();
+    const manifestPath: string = options.manifest ?? "./manifest.xml";
+    const backupPath: string = options.backup ?? "./backup.zip";
+    const projectPath: string = options.project ?? "";
+    const devPreview: boolean = options.preview ?? false;
+    const shouldContinue = options.confirm ?? (await asksForUserConfirmation());
 
     if (shouldContinue) {
-      await convertProject(manifestPath, backupPath, projectPath);
+      await convertProject(manifestPath, backupPath, projectPath, devPreview);
       usageDataObject.reportSuccess("convert", { result: "Project converted" });
     } else {
       usageDataObject.reportSuccess("convert", {

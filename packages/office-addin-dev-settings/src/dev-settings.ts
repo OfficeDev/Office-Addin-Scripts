@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
+import fs from "fs";
 import { OfficeAddinManifest } from "office-addin-manifest";
-import * as fspath from "path";
+import fspath from "path";
 import * as devSettingsMac from "./dev-settings-mac";
 import * as devSettingsWindows from "./dev-settings-windows";
 import { ExpectedError } from "office-addin-usage-data";
@@ -50,6 +50,7 @@ export class SourceBundleUrlComponents {
     const path = this.path !== undefined ? this.path : "{path}";
     const extension = this.extension !== undefined ? this.extension : ".bundle";
 
+    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
     return `http://${host}${host && port ? ":" : ""}${port}/${path}${extension}`;
   }
 
@@ -125,13 +126,15 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
       if (pathExists) {
         const stat = fs.statSync(path);
         if (stat.isDirectory()) {
-          throw new ExpectedError(`You need to specify the path to a file. This is a directory: "${path}".`);
+          throw new ExpectedError(
+            `You need to specify the path to a file. This is a directory: "${path}".`
+          );
         }
       }
       try {
         const file = fs.openSync(path, "a+");
         fs.closeSync(file);
-      } catch (err) {
+      } catch {
         throw new ExpectedError(
           pathExists
             ? `You need to specify the path to a writable file. Unable to write to: "${path}".`
@@ -150,7 +153,7 @@ export async function enableRuntimeLogging(path?: string): Promise<string> {
 /**
  * Returns the manifest paths for the add-ins that are registered
  */
-export async function getRegisterAddIns(): Promise<RegisteredAddin[]> {
+export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   switch (process.platform) {
     case "darwin":
       return devSettingsMac.getRegisteredAddIns();
@@ -237,7 +240,10 @@ export async function registerAddIn(manifestPath: string, registration?: string)
   }
 }
 
-export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
+export async function setSourceBundleUrl(
+  addinId: string,
+  components: SourceBundleUrlComponents
+): Promise<void> {
   switch (process.platform) {
     case "win32":
       return devSettingsWindows.setSourceBundleUrl(addinId, components);

@@ -2,17 +2,25 @@
 // Licensed under the MIT license.
 
 import chalk from "chalk";
-import * as commander from "commander";
+import { OptionValues } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import { ManifestInfo } from "./manifestInfo";
 import { OfficeAddinManifest } from "./manifestOperations";
-import { ManifestValidation, ManifestValidationIssue, ManifestValidationProduct, validateManifest } from "./validate";
+import {
+  ManifestValidation,
+  ManifestValidationIssue,
+  ManifestValidationProduct,
+  validateManifest,
+} from "./validate";
 import { usageDataObject } from "./defaults";
 import { exportMetadataPackage } from "./export";
 
-/* global console, process */
+/* global console process */
 
-function getCommandOptionString(option: string | boolean, defaultValue?: string): string | undefined {
+function getCommandOptionString(
+  option: string | boolean,
+  defaultValue?: string
+): string | undefined {
   // For a command option defined with an optional value, e.g. "--option [value]",
   // when the option is provided with a value, it will be of type "string", return the specified value;
   // when the option is provided without a value, it will be of type "boolean", return undefined.
@@ -92,7 +100,9 @@ function logManifestValidationWarnings(warnings: ManifestValidationIssue[] | und
 }
 
 function logManifestValidationIssue(issue: ManifestValidationIssue) {
-  console.log(`${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``));
+  console.log(
+    `${issue.title}: ${issue.content}` + (issue.helpUrl ? ` (link: ${issue.helpUrl})` : ``)
+  );
 
   if (issue.code) {
     console.log(`  - Details: ${issue.code}`);
@@ -107,7 +117,9 @@ function logManifestValidationIssue(issue: ManifestValidationIssue) {
 
 function logManifestValidationSupportedProducts(products: ManifestValidationProduct[] | undefined) {
   if (products) {
-    const productTitles = new Set(products.filter((product) => product.title).map((product) => product.title));
+    const productTitles = new Set(
+      products.filter((product) => product.title).map((product) => product.title)
+    );
 
     if (productTitles.size > 0) {
       console.log(
@@ -126,11 +138,11 @@ function logManifestValidationSupportedProducts(products: ManifestValidationProd
   }
 }
 
-export async function modify(manifestPath: string, command: commander.Command) {
+export async function modify(manifestPath: string, options: OptionValues) {
   try {
     // if the --guid command option is provided without a value, use "" to specify to change to a random guid value.
-    const guid: string | undefined = getCommandOptionString(command.guid, "");
-    const displayName: string | undefined = getCommandOptionString(command.displayName);
+    const guid: string | undefined = getCommandOptionString(options.guid, "");
+    const displayName: string | undefined = getCommandOptionString(options.displayName);
 
     const manifest = await OfficeAddinManifest.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
@@ -141,15 +153,14 @@ export async function modify(manifestPath: string, command: commander.Command) {
   }
 }
 
-export async function validate(
-  manifestPath: string,
-  command: commander.Command /* eslint-disable-line @typescript-eslint/no-unused-vars */
-) {
+export async function validate(manifestPath: string, options: OptionValues) {
   try {
-    const verifyProduction: boolean = command.production;
+    const verifyProduction: boolean = options.production;
     const validation: ManifestValidation = await validateManifest(manifestPath, verifyProduction);
     if (validation.status && validation.status != 200) {
-      console.log(`Unable to validate the manifest.\n${validation.status}\n${validation.statusText}`);
+      console.log(
+        `Unable to validate the manifest.\n${validation.status}\n${validation.statusText}`
+      );
     } else if (validation.report) {
       logManifestValidationInfos(validation.report.notes);
       logManifestValidationErrors(validation.report.errors);
@@ -174,10 +185,10 @@ export async function validate(
   }
 }
 
-export async function exportManifest(command: commander.Command) {
+export async function exportManifest(options: OptionValues) {
   try {
-    const outputPath: string = command.output ?? "";
-    const manifestPath: string = command.manifest ?? "./manifest.json";
+    const outputPath: string = options.output ?? "";
+    const manifestPath: string = options.manifest ?? "./manifest.json";
 
     await exportMetadataPackage(outputPath, manifestPath);
     usageDataObject.reportSuccess("export");

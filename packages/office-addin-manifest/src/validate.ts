@@ -97,13 +97,16 @@ export async function validateManifest(
       let response;
 
       try {
-        response = await fetch(`https://validationgateway.omex.office.net/package/api/check?clientId=${clientId}`, {
-          body: stream,
-          headers: {
-            "Content-Type": "application/xml",
-          },
-          method: "POST",
-        });
+        response = await fetch(
+          `https://validationgateway.omex.office.net/package/api/check?clientId=${clientId}`,
+          {
+            body: stream,
+            headers: {
+              "Content-Type": "application/xml",
+            },
+            method: "POST",
+          }
+        );
       } catch (err) {
         throw new Error(`Unable to contact the manifest validation service.\n${err}`);
       }

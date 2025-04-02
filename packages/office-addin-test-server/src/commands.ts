@@ -1,14 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commnder from "commander";
+import { OptionValues } from "commander";
 import { parseNumber } from "office-addin-cli";
 import { defaultPort, TestServer } from "./testServer";
 
 /* global console */
 
-export async function start(command: commnder.Command) {
-  const testServerPort: number = command.port !== undefined ? parseTestServerPort(command.port) : defaultPort;
+export async function start(options: OptionValues) {
+  const testServerPort: number =
+    options.port !== undefined ? parseTestServerPort(options.port) : defaultPort;
   const testServer = new TestServer(testServerPort);
   const serverStarted: boolean = await testServer.startTestServer();
 
@@ -26,6 +27,8 @@ function parseTestServerPort(optionValue: any): number {
     if (testServerPort < 0 || testServerPort > 65535) {
       throw new Error("port should be between 0 and 65535.");
     }
+  } else {
+    throw new Error("Error parsing port number.");
   }
   return testServerPort;
 }

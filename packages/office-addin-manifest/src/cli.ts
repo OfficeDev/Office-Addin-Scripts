@@ -3,11 +3,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import { Command } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 
 /* global process */
+
+const commander = new Command();
 
 commander.name("office-addin-manifest");
 commander.version(process.env.npm_package_version || "(version not available)");
@@ -27,7 +29,10 @@ commander
 
 commander
   .command("export")
-  .option("-m, --manifest <manfest-path>", "Specify the location of the manifest file.  Default is './manifest.json'")
+  .option(
+    "-m, --manifest <manfest-path>",
+    "Specify the location of the manifest file.  Default is './manifest.json'"
+  )
   .option(
     "-o, --output <output-path>",
     "Specify where to save the package.  Default is next to the manifest file input"

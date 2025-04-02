@@ -1,31 +1,26 @@
-import { TSESTree } from "@typescript-eslint/utils";
-import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/utils/dist/ts-eslint-scope";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
+import { Reference, Scope, Variable } from "@typescript-eslint/scope-manager";
 import { isGetFunction } from "../utils/getFunction";
 import { parseLoadArguments, isLoadFunction } from "../utils/load";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#calling-load-without-parameters-not-recommended",
+)({
   name: "no-empty-load",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"problem",
+    type: "problem",
     messages: {
       emptyLoad: "Calling load without any argument slows down your add-in.",
     },
     docs: {
       description:
         "Calling load without any argument causes unneeded data to load and slows down your add-in.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Best Practices",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#calling-load-without-parameters-not-recommended",
     },
     schema: [],
   },
-  create: function (context: any) {
+  create: function (context) {
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isEmptyLoad(node: TSESTree.MemberExpression): boolean {
       if (isLoadFunction(node)) {
         const propertyNames: string[] = parseLoadArguments(node);
@@ -78,9 +73,13 @@ export = {
     }
 
     return {
-      Program() {
-        findEmptyLoad(context.getScope());
+      Program(node) {
+        const scope = sourceCode.getScope
+          ? sourceCode.getScope(node)
+          : context.getScope();
+        findEmptyLoad(scope);
       },
     };
   },
-};
+  defaultOptions: [],
+});

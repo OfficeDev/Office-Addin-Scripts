@@ -1,6 +1,6 @@
 {
   "name": "office-addin-project",
-  "version": "0.7.3",
+  "version": "1.0.3",
   "description": "Provides project wide commands to an Office Addin Project",
   "main": "./lib/main.js",
   "scripts": {
@@ -18,27 +18,26 @@
     "office-js"
   ],
   "dependencies": {
-    "adm-zip": "^0.5.9",
-    "commander": "^6.2.1",
+    "adm-zip": "0.5.12",
+    "commander": "^13.0.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^7.3.3",
-    "office-addin-manifest": "^1.12.5",
-    "office-addin-manifest-converter": "^0.2.3",
-    "office-addin-usage-data": "^1.6.5",
-    "path": "^0.12.7"
+    "office-addin-manifest": "^2.0.3",
+    "office-addin-manifest-converter": "^0.4.1",
+    "office-addin-usage-data": "^2.0.3"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.0",
     "@types/fs-extra": "^9.0.13",
     "@types/inquirer": "^6.5.0",
-    "@types/mocha": "^9.1.1",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^14.17.2",
     "@types/semver": "^7.3.9",
     "assert": "^2.0.0",
-    "concurrently": "^7.0.0",
-    "mocha": "^10.0.0",
-    "office-addin-lint": "^2.2.5",
-    "rimraf": "^3.0.2",
+    "concurrently": "^9.0.0",
+    "mocha": "^11.0.0",
+    "office-addin-lint": "^3.0.3",
+    "rimraf": "^6.0.1",
     "semver": "^7.3.5",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
@@ -52,6 +51,7 @@
   "bugs": {
     "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
   },
+  "prettier": "office-addin-prettier-config",
   "author": "Office Dev",
   "license": "MIT"
 }

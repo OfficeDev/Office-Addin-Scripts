@@ -3,11 +3,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import { Command } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 
 /* global process */
+
+const commander = new Command();
 
 commander.name("office-addin-project");
 commander.version(process.env.npm_package_version || "(version not available)");
@@ -33,7 +35,11 @@ commander
     "-p, --project <project-path>",
     "Specify the location of the root directory of the project.  Default is the directory of the manifest file."
   )
-  .option( "--confirm", "Confirmes the conversion")
+  .option(
+    "--preview-manifest-schema",
+    "Use the devPreview version of the json schema in the manifest output"
+  )
+  .option("--confirm", "Confirmes the conversion")
   .action(commands.convert);
 
 if (process.argv.length > 2) {

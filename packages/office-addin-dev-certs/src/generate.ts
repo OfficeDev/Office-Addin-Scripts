@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as fsExtra from "fs-extra";
+import fs from "fs";
+import fsExtra from "fs-extra";
 import * as mkcert from "mkcert";
-import * as path from "path";
+import path from "path";
 import * as defaults from "./defaults";
 
 /* global console */
@@ -28,12 +28,12 @@ export async function generateCertificates(
     throw new Error(`Unable to create the directory.\n${err}`);
   }
 
-  const cACertificateInfo: mkcert.CACertificateInfo = {
+  const cACertificateInfo: mkcert.CertificateAuthorityOptions = {
     countryCode: defaults.countryCode,
     locality: defaults.locality,
     organization: defaults.certificateName,
     state: defaults.state,
-    validityDays: daysUntilCertificateExpires,
+    validity: daysUntilCertificateExpires,
   };
   let caCertificate: mkcert.Certificate;
   try {
@@ -42,11 +42,10 @@ export async function generateCertificates(
     throw new Error(`Unable to generate the CA certificate.\n${err}`);
   }
 
-  const localhostCertificateInfo: mkcert.CertificateInfo = {
-    caCert: caCertificate.cert,
-    caKey: caCertificate.key,
+  const localhostCertificateInfo: mkcert.CertificateOptions = {
+    ca: caCertificate,
     domains,
-    validityDays: daysUntilCertificateExpires,
+    validity: daysUntilCertificateExpires,
   };
   let localhostCertificate: mkcert.Certificate;
   try {
@@ -66,7 +65,9 @@ export async function generateCertificates(
   }
 
   if (caCertificatePath === defaults.caCertificatePath) {
-    console.log("The developer certificates have been generated in " + defaults.certificateDirectory);
+    console.log(
+      "The developer certificates have been generated in " + defaults.certificateDirectory
+    );
   } else {
     console.log("The developer certificates have been generated.");
   }

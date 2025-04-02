@@ -1,17 +1,16 @@
-import { TSESTree } from "@typescript-eslint/utils";
-import {
-  Reference,
-  Scope,
-  Variable,
-} from "@typescript-eslint/utils/dist/ts-eslint-scope";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
+import { Reference, Scope, Variable } from "@typescript-eslint/scope-manager";
 import { isLoadCall, parsePropertiesArgument } from "../utils/load";
 import { findCallExpression, findPropertiesRead } from "../utils/utils";
 import { isGetFunction, isGetOrNullObjectFunction } from "../utils/getFunction";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
+)({
   name: "load-object-before-read",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"problem",
+    type: "problem",
     messages: {
       loadBeforeRead:
         "An explicit load call on '{{name}}' for property '{{loadValue}}' needs to be made before the property can be read.",
@@ -19,15 +18,11 @@ export = {
     docs: {
       description:
         "Before you can read the properties of a proxy object, you must explicitly load the properties.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Possible Errors",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/application-specific-api-model#load",
     },
     schema: [],
   },
-  create: function (context: any) {
+  create: function (context) {
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
     function isInsideWriteStatement(node: TSESTree.Node): boolean {
       while (node.parent) {
         node = node.parent;
@@ -40,7 +35,7 @@ export = {
     function hasBeenLoaded(
       node: TSESTree.Node,
       loadLocation: Map<string, number>,
-      propertyName: string
+      propertyName: string,
     ): boolean {
       return (
         loadLocation.has(propertyName) && // If reference came after load, return
@@ -50,7 +45,7 @@ export = {
 
     function findLoadBeforeRead(scope: Scope) {
       scope.variables.forEach((variable: Variable) => {
-        let loadLocation: Map<string, number> = new Map<string, number>();
+        const loadLocation: Map<string, number> = new Map<string, number>();
         let getFound: boolean = false;
 
         variable.references.forEach((reference: Reference) => {
@@ -93,7 +88,7 @@ export = {
 
             if (methodCall && isLoadCall(methodCall)) {
               const argument = methodCall.arguments[0];
-              let propertyNames: string[] = argument
+              const propertyNames: string[] = argument
                 ? parsePropertiesArgument(argument)
                 : ["*"];
               propertyNames.forEach((propertyName: string) => {
@@ -139,9 +134,13 @@ export = {
     }
 
     return {
-      Program() {
-        findLoadBeforeRead(context.getScope());
+      Program(node) {
+        const scope = sourceCode.getScope
+          ? sourceCode.getScope(node)
+          : context.getScope();
+        findLoadBeforeRead(scope);
       },
     };
   },
-};
+  defaultOptions: [],
+});

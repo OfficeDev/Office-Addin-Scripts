@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as AdmZip from "adm-zip";
-import * as fetch from "node-fetch";
-import * as fs from "fs";
-import * as fspath from "path";
+import AdmZip from "adm-zip";
+import fetch from "node-fetch";
+import fs from "fs";
+import fspath from "path";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
-import * as os from "os";
+import os from "os";
 import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
 import { OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
@@ -17,7 +17,7 @@ import { startDetachedProcess } from "./process";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, console, setTimeout */
+/* global console process setTimeout */
 
 export enum AppType {
   Desktop = "desktop",
@@ -61,7 +61,7 @@ export async function isPackagerRunning(statusUrl: string): Promise<boolean> {
     const text = await response.text();
     console.log(`packager: ${text}`);
     return statusRunningResponse === text;
-  } catch (err) {
+  } catch {
     return false;
   }
 }
@@ -125,7 +125,9 @@ export async function runDevServer(commandLine: string, port?: number): Promise<
         const isRunning: boolean = await waitUntilDevServerIsRunning(port);
 
         if (isRunning) {
-          console.log(`The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`);
+          console.log(
+            `The dev server is running on port ${port}. Process id: ${devServerProcess.pid}`
+          );
         } else {
           throw new Error(`The dev server is not running on port ${port}.`);
         }
@@ -146,6 +148,7 @@ export async function runPackager(
   port: string = "8081"
 ): Promise<void> {
   if (commandLine) {
+    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
     const packagerUrl: string = `http://${host}:${port}`;
     const statusUrl: string = `${packagerUrl}/status`;
 
@@ -287,11 +290,14 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
     // live reload can only be enabled for the desktop app type
     // when using proxy debugging and the packager
-    const canEnableLiveReload: boolean = isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
+    const canEnableLiveReload: boolean =
+      isDesktopAppType && isProxyDebuggingMethod && !!packagerCommandLine;
     // only use live reload if enabled and it can be enabled
     const useLiveReload = enableLiveReload && canEnableLiveReload;
 
-    console.log(enableDebugging ? "Debugging is being started..." : "Starting without debugging...");
+    console.log(
+      enableDebugging ? "Debugging is being started..." : "Starting without debugging..."
+    );
     console.log(`App type: ${appType}`);
 
     if (manifestPath.endsWith(".zip")) {
@@ -306,14 +312,46 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     // enable loopback for Edge
     if (isWindowsPlatform && parseInt(os.release(), 10) === 10) {
       const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
-      await devSettings.ensureLoopbackIsEnabled(name);
+      try {
+        await devSettings.ensureLoopbackIsEnabled(name);
+      } catch (err: any) {
+        // if add loopback exemption failed, report the error then continue
+        console.error(err);
+        console.warn(
+          "Failed to add loopback exemption.\nWill try to sideload the Office Add-in without the loopback exemption, but it might not load correctly from localhost.\n"
+        );
+        usageDataObject.reportException("startDebugging()", err, {
+          app: app,
+          document: document,
+          appType: appType,
+        });
+      }
     }
 
     // enable debugging
     if (isDesktopAppType && isWindowsPlatform) {
-      await devSettings.enableDebugging(manifestInfo.id, enableDebugging, debuggingMethod, openDevTools);
+      await devSettings.enableDebugging(
+        manifestInfo.id,
+        enableDebugging,
+        debuggingMethod,
+        openDevTools
+      );
       if (enableDebugging) {
         console.log(`Enabled debugging for add-in ${manifestInfo.id}.`);
+      }
+    }
+
+    // enable runtimelogging
+    if (isDesktopAppType && isWindowsPlatform) {
+      const path = await devSettings.getRuntimeLoggingPath();
+      if (path) {
+        console.log(`Runtime logging is enabled. File: ${path}`);
+      } else {
+        console.log("Enabling runtime logging..");
+        await devSettings.enableRuntimeLogging(path);
+
+        const logPath = await devSettings.getRuntimeLoggingPath();
+        console.log(`Runtime logging has been enabled. File: ${logPath}`);
       }
     }
 
@@ -434,8 +472,7 @@ async function extractManifest(zipPath: string): Promise<string> {
   const manifestPath = fspath.join(targetPath, "manifest.json");
   if (fs.existsSync(manifestPath)) {
     return manifestPath;
-  }
-  else {
+  } else {
     throw new Error(`The zip file '${zipPath}' does not contain a "manifest.json" file`);
   }
 }

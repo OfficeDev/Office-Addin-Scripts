@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as assert from "assert";
-import * as mocha from "mocha";
+import assert from "assert";
+import { describe, it } from "mocha";
 import { OfficeMockObject } from "../src/main";
 
 const testObject = {
@@ -94,6 +94,13 @@ describe("Test OfficeMockObject class", function() {
       assert.strictEqual(officeMock.range.color, "blue");
 
       assert.strictEqual(officeMock.notAProperty, undefined);
+    });
+    it("Load call with assignment", async function() {
+      const officeMock = new OfficeMockObject(testObject);
+
+      const range = officeMock.range.load("color");
+      await officeMock.sync();
+      assert.strictEqual(range.color, "blue");
     });
     it("Missing load", async function() {
       const officeMock = new OfficeMockObject(testObject);

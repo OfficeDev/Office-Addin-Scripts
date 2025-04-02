@@ -3,11 +3,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import { Command } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 
-/* global process, console */
+/* global console process */
+
+const commander = new Command();
 
 commander.name("office-addin-dev-settings");
 commander.version(process.env.npm_package_version || "(version not available)");
@@ -66,9 +68,12 @@ commander
 commander
   .command("sideload <manifest-path> [app-type]")
   .description("Launch Office with the Office Add-in loaded.")
-  .option("-a,--app <app>", `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`)
+  .option(
+    "-a,--app <app>",
+    `The Office app to launch. ("Excel", "Outlook", "PowerPoint", or "Word")`
+  )
   .option("-d,--document <document>", `The file path or url of the Office document to open.`)
-  .option("--registration <registration>", `Id of the registered json add-in`)
+  .option("--registration <registration>", `Id of the registered add-in`)
   .action(commands.sideload)
   .on("--help", () => {
     console.log("\n[app-type] specifies the type of Office app::\n");
@@ -82,7 +87,10 @@ commander
   .option("-h,--host <host>", `The host name to use, or "" to use the default ('localhost').`)
   .option("-p,--port <port>", `The port number to use, or "" to use the default (8081).`)
   .option("--path <path>", `The path to use, or "" to use the default.`)
-  .option("-e,--extension <extension>", `The extension to use, or "" to use the default (".bundle").`)
+  .option(
+    "-e,--extension <extension>",
+    `The extension to use, or "" to use the default (".bundle").`
+  )
   .action(commands.sourceBundleUrl);
 
 commander

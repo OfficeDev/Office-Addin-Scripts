@@ -4,12 +4,12 @@
  * This file defines the routes within the authRoute router.
  */
 
-import * as fetch from "node-fetch";
-import * as form from "form-urlencoded";
-import * as jwt from "jsonwebtoken";
+import fetch from "node-fetch";
+import form from "form-urlencoded";
+import jwt from "jsonwebtoken";
 import { JwksClient } from "jwks-rsa";
 
-/* global process, console */
+/* global console process */
 
 const DISCOVERY_KEYS_ENDPOINT = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
 
@@ -59,7 +59,7 @@ export function validateJwt(req, res, next): void {
       audience: process.env.CLIENT_ID,
     };
 
-    jwt.verify(token, getSigningKeys, validationOptions, (err, payload) => {
+    jwt.verify(token, getSigningKeys, validationOptions, (err) => {
       //custom logic to regex search for tenant id in the issuer.
       //test multi tenant setup.
       //test msa

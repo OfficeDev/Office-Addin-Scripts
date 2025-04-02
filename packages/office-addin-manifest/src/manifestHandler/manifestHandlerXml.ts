@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as util from "util";
+import fs from "fs";
+import util from "util";
 import { v4 as uuidv4 } from "uuid";
-import * as xml2js from "xml2js";
+import xml2js from "xml2js";
 import * as xmlMethods from "../xml";
-import { DefaultSettings, ManifestInfo } from "../manifestInfo";
+import { DefaultSettings, ManifestInfo, ManifestType } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 const writeFileAsync = util.promisify(fs.writeFile);
 export type Xml = xmlMethods.Xml;
@@ -37,7 +37,10 @@ export class ManifestHandlerXml extends ManifestHandler {
       manifest.defaultLocale = xmlMethods.getXmlElementValue(officeApp, "DefaultLocale");
       manifest.description = xmlMethods.getXmlElementAttributeValue(officeApp, "Description");
       manifest.displayName = xmlMethods.getXmlElementAttributeValue(officeApp, "DisplayName");
-      manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "HighResolutionIconUrl");
+      manifest.highResolutionIconUrl = xmlMethods.getXmlElementAttributeValue(
+        officeApp,
+        "HighResolutionIconUrl"
+      );
       manifest.hosts = xmlMethods.getXmlElementsAttributeValue(officeApp, "Hosts", "Host", "Name");
       manifest.iconUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "IconUrl");
       manifest.officeAppType = xmlMethods.getXmlAttributeValue(officeApp, "xsi:type");
@@ -45,13 +48,23 @@ export class ManifestHandlerXml extends ManifestHandler {
       manifest.providerName = xmlMethods.getXmlElementValue(officeApp, "ProviderName");
       manifest.supportUrl = xmlMethods.getXmlElementAttributeValue(officeApp, "SupportUrl");
       manifest.version = xmlMethods.getXmlElementValue(officeApp, "Version");
+      manifest.manifestType = ManifestType.XML;
 
       if (defaultSettingsXml) {
         const defaultSettings: DefaultSettings = new DefaultSettings();
 
-        defaultSettings.requestedHeight = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedHeight");
-        defaultSettings.requestedWidth = xmlMethods.getXmlElementValue(defaultSettingsXml, "RequestedWidth");
-        defaultSettings.sourceLocation = xmlMethods.getXmlElementAttributeValue(defaultSettingsXml, "SourceLocation");
+        defaultSettings.requestedHeight = xmlMethods.getXmlElementValue(
+          defaultSettingsXml,
+          "RequestedHeight"
+        );
+        defaultSettings.requestedWidth = xmlMethods.getXmlElementValue(
+          defaultSettingsXml,
+          "RequestedWidth"
+        );
+        defaultSettings.sourceLocation = xmlMethods.getXmlElementAttributeValue(
+          defaultSettingsXml,
+          "SourceLocation"
+        );
 
         manifest.defaultSettings = defaultSettings;
       }

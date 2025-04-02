@@ -2,14 +2,14 @@
 /*
     This file provides server configuration, startup and stop
 */
-import * as https from "https";
+import https from "https";
 import * as devCerts from "office-addin-dev-certs";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { App } from "./middle-tier/app";
 import { getSecretFromCredentialStore } from "./ssoDataSettings";
 import { usageDataObject } from "./defaults";
 
-/* global require, process, console */
+/* global console process require */
 
 require("dotenv").config();
 
@@ -33,10 +33,9 @@ export class SSOService {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
       }
       await this.getSecret(isTest);
-      await this.startServer(this.app.appInstance, this.port);
-      this.ssoServiceStarted = true;
+      this.ssoServiceStarted = await this.startServer(this.app.appInstance, this.port);
       usageDataObject.reportSuccess("startSsoService()");
-      return Promise.resolve(true);
+      return Promise.resolve(this.ssoServiceStarted);
     } catch (err) {
       console.error(`Failed to start SSO server. ${err}`);
       usageDataObject.reportException("startSsoService()", err);
@@ -61,7 +60,9 @@ export class SSOService {
   public async startServer(app, port): Promise<boolean> {
     try {
       const options = await devCerts.getHttpsServerOptions();
-      this.server = https.createServer(options, app).listen(port, () => console.log(`Server running on ${port}`));
+      this.server = https
+        .createServer(options, app)
+        .listen(port, () => console.log(`Server running on ${port}`));
       return Promise.resolve(true);
     } catch (err) {
       const errorMessage: string = `Unable to start test server on port ${port}: \n${err}`;

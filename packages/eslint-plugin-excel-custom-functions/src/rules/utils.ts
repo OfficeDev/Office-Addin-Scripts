@@ -1,11 +1,6 @@
 import { parse as parsePath } from "path";
-import {
-  AST_NODE_TYPES,
-  ESLintUtils,
-  TSESLint,
-  TSESTree,
-} from "@typescript-eslint/utils";
-import * as ts from "typescript";
+import { AST_NODE_TYPES, ESLintUtils, TSESLint, TSESTree } from "@typescript-eslint/utils";
+import ts from "typescript";
 
 export enum OfficeCalls {
   WRITE = "WRITE",
@@ -14,7 +9,7 @@ export enum OfficeCalls {
 }
 
 type RequiredParserServices = ReturnType<typeof ESLintUtils.getParserServices>;
-export type Options = unknown[];
+export type Options = readonly unknown[];
 export type MessageIds = string;
 
 export const REPO_URL = "https://aka.ms/o-a-scripts";
@@ -27,10 +22,7 @@ export const createRule = ESLintUtils.RuleCreator((name) => {
 
 // Code to determine if function has @customfunction tag
 
-export function isCustomFunction(
-  node: TSESTree.Node,
-  services: RequiredParserServices
-): boolean {
+export function isCustomFunction(node: TSESTree.Node, services: RequiredParserServices): boolean {
   const functionStarts = getAllFunctionStarts(node, services);
   for (let i = 0; i < functionStarts.length; i++) {
     if (getJsDocCustomFunction(ts.getJSDocTags(functionStarts[i]))) {
@@ -132,9 +124,7 @@ export function isOfficeFuncWriteOrRead(
   services: RequiredParserServices
 ): OfficeCalls | undefined {
   if (isOfficeObject(node.callee, typeChecker, services)) {
-    let type = typeChecker.getTypeAtLocation(
-      services.esTreeNodeToTSNodeMap.get(node.callee)
-    );
+    let type = typeChecker.getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node.callee));
     let symbol = type.getSymbol();
     let symbolText = symbol ? typeChecker.symbolToString(symbol) : undefined;
     if (
@@ -154,9 +144,7 @@ export function isOfficeFuncWriteOrRead(
     let callSignatures = type.getCallSignatures();
 
     return callSignatures.some((callSignature) => {
-      return (
-        1 << 14 === ((1 << 14) & callSignature.getReturnType().flags.valueOf())
-      ); //bit-wise check to see if void is included in flags (See TypeFlags documentation in Typescript)
+      return 1 << 14 === ((1 << 14) & callSignature.getReturnType().flags.valueOf()); //bit-wise check to see if void is included in flags (See TypeFlags documentation in Typescript)
     })
       ? OfficeCalls.WRITE
       : OfficeCalls.READ;
@@ -178,14 +166,8 @@ export function isOfficeObject(
   if (earlierMember) {
     return true;
   }
-  const officeDeclarations = getFunctionDeclarations(
-    node,
-    typeChecker,
-    services
-  );
-  return officeDeclarations
-    ? officeDeclarations.some(isParentNodeOfficeNamespace)
-    : false;
+  const officeDeclarations = getFunctionDeclarations(node, typeChecker, services);
+  return officeDeclarations ? officeDeclarations.some(isParentNodeOfficeNamespace) : false;
 }
 
 function isParentNodeOfficeNamespace(
@@ -201,9 +183,7 @@ function isParentNodeOfficeNamespace(
   ) {
     return true;
   } else {
-    return node.parent
-      ? isParentNodeOfficeNamespace(node.parent, index, decArray)
-      : false;
+    return node.parent ? isParentNodeOfficeNamespace(node.parent, index, decArray) : false;
   }
 }
 
@@ -231,15 +211,11 @@ export function isHelperFunc(
   typeChecker: ts.TypeChecker,
   services: RequiredParserServices
 ): boolean {
-  const functionDeclarations = getFunctionDeclarations(
-    node,
-    typeChecker,
-    services
-  );
+  const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
   let output = functionDeclarations
     ? functionDeclarations.some((declaration) => {
         let sourceFile = declaration.getSourceFile();
-        return !services.program.isSourceFileFromExternalLibrary(sourceFile);
+        return !services.program?.isSourceFileFromExternalLibrary(sourceFile);
       })
     : false;
 
@@ -285,10 +261,7 @@ export function reportIfCalledFromCustomFunction(
   >,
   officeCallingFuncs?: Set<ts.Node>
 ): void {
-  bubbleUpNewCallingFuncs(
-    nodeToBubbleUpFrom,
-    helperFuncToHelperFuncMap
-  ).forEach((bubbledUp) => {
+  bubbleUpNewCallingFuncs(nodeToBubbleUpFrom, helperFuncToHelperFuncMap).forEach((bubbledUp) => {
     if (officeCallingFuncs) {
       officeCallingFuncs.add(bubbledUp);
     }
@@ -345,11 +318,7 @@ export function callExpressionAnalysis(
       }
     }
   } else if (isHelperFunc(node, typeChecker, services)) {
-    const functionDeclarations = getFunctionDeclarations(
-      node,
-      typeChecker,
-      services
-    );
+    const functionDeclarations = getFunctionDeclarations(node, typeChecker, services);
 
     if (functionDeclarations && functionDeclarations.length > 0) {
       superNodeMe(functionDeclarations, helperFuncToHelperFuncMap);
@@ -362,9 +331,7 @@ export function callExpressionAnalysis(
         ) {
           // If this is in a custom function and if this call expression is noted as having an office call in it, report
           ruleContext.report({
-            messageId: isCheckingForWrite
-              ? "officeWriteCall"
-              : "officeReadCall",
+            messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
             loc: node.loc,
             node: node,
           });
@@ -373,15 +340,11 @@ export function callExpressionAnalysis(
           // Should later analysis reveal that the call expression has an office call in it, we have the report ready
           helperFuncToMentionsMap.set(
             functionDeclarations[0],
-            (helperFuncToMentionsMap.get(functionDeclarations[0]) || []).concat(
-              {
-                messageId: isCheckingForWrite
-                  ? "officeWriteCall"
-                  : "officeReadCall",
-                loc: node.loc,
-                node: node,
-              }
-            )
+            (helperFuncToMentionsMap.get(functionDeclarations[0]) || []).concat({
+              messageId: isCheckingForWrite ? "officeWriteCall" : "officeReadCall",
+              loc: node.loc,
+              node: node,
+            })
           );
         }
       }
@@ -392,10 +355,9 @@ export function callExpressionAnalysis(
         // add an inner function -> parent function mapping for later tracking
         helperFuncToHelperFuncMap.set(
           functionDeclarations[0],
-          (
-            helperFuncToHelperFuncMap.get(functionDeclarations[0]) ||
-            new Set<ts.Node>([])
-          ).add(functionStart)
+          (helperFuncToHelperFuncMap.get(functionDeclarations[0]) || new Set<ts.Node>([])).add(
+            functionStart
+          )
         );
 
         // Releases all queued reports for that function and any parent functions that use it
@@ -418,11 +380,7 @@ export function assignmentExpressionAnalysis(
   isCheckingForWrite: boolean = false
 ): void {
   if (
-    isOfficeObject(
-      isCheckingForWrite ? node.left : node.right,
-      typeChecker,
-      services
-    ) &&
+    isOfficeObject(isCheckingForWrite ? node.left : node.right, typeChecker, services) &&
     isCustomFunction(node, services)
   ) {
     ruleContext.report({

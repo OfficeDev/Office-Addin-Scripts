@@ -8,9 +8,12 @@ import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 
 /* global process */
+
 const program = new Command();
 
-program.name("custom-functions-metadata").version(process.env.npm_package_version || "(version not available)");
+program
+  .name("custom-functions-metadata")
+  .version(process.env.npm_package_version || "(version not available)");
 
 program
   .command("generate")

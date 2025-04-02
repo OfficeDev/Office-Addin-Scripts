@@ -1,9 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as fs from "fs";
-import * as childProcess from "child_process";
-import * as AdmZip from "adm-zip";
+import fs from "fs";
+import AdmZip from "adm-zip";
 import {
   AddInType,
   getAddInTypeForManifestOfficeAppType,
@@ -12,11 +11,12 @@ import {
   ManifestInfo,
   OfficeApp,
   OfficeAddinManifest,
+  ManifestType,
 } from "office-addin-manifest";
 import open = require("open");
 import semver = require("semver");
-import * as os from "os";
-import * as path from "path";
+import os from "os";
+import path from "path";
 import { AppType } from "./appType";
 import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";
@@ -25,7 +25,7 @@ import * as registry from "./registry";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global __dirname, Buffer, console, process, URL */
+/* global Buffer console process URL __dirname */
 
 /**
  * Create an Office document in the temporary files directory
@@ -34,7 +34,11 @@ import { ExpectedError } from "office-addin-usage-data";
  * @param manifest Manifest for the add-in.
  * @returns Path to the file.
  */
-export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInfo, document?: string): Promise<string> {
+export async function generateSideloadFile(
+  app: OfficeApp,
+  manifest: ManifestInfo,
+  document?: string
+): Promise<string> {
   if (!manifest.id) {
     throw new ExpectedError("The manifest does not contain the id for the add-in.");
   }
@@ -53,7 +57,9 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
   }
 
   const documentWasProvided = document && document !== "";
-  const templatePath = documentWasProvided ? path.resolve(document) : getTemplatePath(app, addInType);
+  const templatePath = documentWasProvided
+    ? path.resolve(document)
+    : getTemplatePath(app, addInType);
 
   if (!templatePath) {
     throw new ExpectedError(`Sideload is not supported for apptype: ${addInType}.`);
@@ -86,12 +92,19 @@ export async function generateSideloadFile(app: OfficeApp, manifest: ManifestInf
       .replace(/00000000-0000-0000-0000-000000000000/g, manifest.id)
       .replace(/1.0.0.0/g, manifest.version);
 
+    const webExtensionFolderPath = webExtensionPath.substring(0, webExtensionPath.lastIndexOf("/"));
     templateZip.getEntries().forEach(function (entry) {
       var data: Buffer = entry.getData();
-      if (entry == extEntry) {
+      if (entry == extEntry && manifest.manifestType == ManifestType.XML) {
         data = Buffer.from(webExtensionXml);
       }
-      outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
+      // If manifestType is JSON, remove the web extension folder
+      if (
+        !entry.entryName.startsWith(webExtensionFolderPath) ||
+        manifest.manifestType !== ManifestType.JSON
+      ) {
+        outZip.addFile(entry.entryName, data, entry.comment, entry.attr);
+      }
     });
 
     // Write the file
@@ -123,7 +136,10 @@ export async function generateSideloadUrl(
     throw new ExpectedError("The manifest does not contain the id for the add-in.");
   }
 
-  if (manifest.defaultSettings === undefined || manifest.defaultSettings.sourceLocation === undefined) {
+  if (
+    manifest.defaultSettings === undefined ||
+    manifest.defaultSettings.sourceLocation === undefined
+  ) {
     throw new ExpectedError("The manifest does not contain the SourceLocation for the add-in");
   }
 
@@ -132,7 +148,10 @@ export async function generateSideloadUrl(
     throw new ExpectedError("The SourceLocation in the manifest does not use the HTTPS protocol.");
   }
 
-  if (sourceLocationUrl.host.indexOf("localhost") === -1 && sourceLocationUrl.host.indexOf("127.0.0.1") === -1) {
+  if (
+    sourceLocationUrl.host.indexOf("localhost") === -1 &&
+    sourceLocationUrl.host.indexOf("127.0.0.1") === -1
+  ) {
     throw new ExpectedError(
       "The hostname specified by the SourceLocation in the manifest is not supported for sideload. The hostname should be 'localhost' or 127.0.0.1."
     );
@@ -215,7 +234,12 @@ function isSideloadingSupportedForDesktopHost(app: OfficeApp): boolean {
 }
 
 function isSideloadingSupportedForWebHost(app: OfficeApp): boolean {
-  if (app === OfficeApp.Excel || app === OfficeApp.PowerPoint || app === OfficeApp.Project || app === OfficeApp.Word) {
+  if (
+    app === OfficeApp.Excel ||
+    app === OfficeApp.PowerPoint ||
+    app === OfficeApp.Project ||
+    app === OfficeApp.Word
+  ) {
     return true;
   }
   return false;
@@ -227,12 +251,17 @@ function hasOfficeVersion(targetVersion: string, currentVersion: string): boolea
 
 async function getOutlookVersion(): Promise<string | undefined> {
   try {
-    const key = new registry.RegistryKey(`HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`);
-    const outlookInstallVersion: string | undefined = await registry.getStringValue(key, "ClientVersionToReport");
+    const key = new registry.RegistryKey(
+      `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration`
+    );
+    const outlookInstallVersion: string | undefined = await registry.getStringValue(
+      key,
+      "ClientVersionToReport"
+    );
     const outlookSmallerVersion = outlookInstallVersion?.split(`.`, 3).join(`.`);
 
     return outlookSmallerVersion;
-  } catch (err) {
+  } catch {
     return undefined;
   }
 }
@@ -271,7 +300,7 @@ function makePathUnique(originalPath: string, tryToDelete: boolean = false): str
       try {
         fs.unlinkSync(currentPath);
         deleted = true;
-      } catch (err) {
+      } catch {
         // no error (file is in use)
       }
     }
@@ -314,7 +343,9 @@ export async function sideloadAddIn(
 
     if (app) {
       if (appsInManifest.indexOf(app) < 0) {
-        throw new ExpectedError(`The Office Add-in manifest does not support ${getOfficeAppName(app)}.`);
+        throw new ExpectedError(
+          `The Office Add-in manifest does not support ${getOfficeAppName(app)}.`
+        );
       }
     } else {
       switch (appsInManifest.length) {
@@ -376,7 +407,12 @@ async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document
   }
 }
 
-async function launchWebApp(app: OfficeApp, manifestPath: string, manifest: ManifestInfo, document: string) {
+async function launchWebApp(
+  app: OfficeApp,
+  manifestPath: string,
+  manifest: ManifestInfo,
+  document: string
+) {
   if (!isSideloadingSupportedForWebHost(app)) {
     throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} web app is not supported.`);
   }

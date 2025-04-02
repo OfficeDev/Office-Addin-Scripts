@@ -1,27 +1,25 @@
-import { TSESTree } from "@typescript-eslint/utils";
+import { ESLintUtils, TSESTree } from "@typescript-eslint/utils";
 
-export = {
+export default ESLintUtils.RuleCreator(
+  () =>
+    "https://docs.microsoft.com/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
+)({
   name: "no-office-initialize",
   meta: {
-    type: <"problem" | "suggestion" | "layout">"suggestion",
+    type: "suggestion",
     messages: {
       noOfficeInitialize:
         "Office.onReady() is preferred over Office.initialize.",
     },
     docs: {
       description: "Office.onReady() is more flexible than Office.initialize.",
-      category: <
-        "Best Practices" | "Stylistic Issues" | "Variables" | "Possible Errors"
-      >"Best Practices",
-      recommended: <false | "error" | "warn">false,
-      url: "https://docs.microsoft.com/office/dev/add-ins/develop/initialize-add-in#initialize-with-officeonready",
     },
     schema: [],
   },
-  create: function (context: any) {
+  create: function (context) {
     return {
       "AssignmentExpression[left.object.name='Office'][left.property.name='initialize']"(
-        node: TSESTree.AssignmentExpression
+        node: TSESTree.AssignmentExpression,
       ) {
         context.report({
           node: node,
@@ -30,4 +28,5 @@ export = {
       },
     };
   },
-};
+  defaultOptions: [],
+});

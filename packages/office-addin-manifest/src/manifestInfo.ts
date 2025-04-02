@@ -7,6 +7,11 @@ export class DefaultSettings {
   public requestedHeight?: string;
 }
 
+export enum ManifestType {
+  JSON = "json",
+  XML = "xml",
+}
+
 export class ManifestInfo {
   public id?: string;
   public allowSnapshot?: string;
@@ -23,6 +28,7 @@ export class ManifestInfo {
   public providerName?: string;
   public supportUrl?: string;
   public version?: string;
+  public manifestType?: ManifestType;
 
   public defaultSettings?: DefaultSettings;
 }

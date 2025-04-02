@@ -3,11 +3,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import { Command } from "commander";
 import { logErrorMessage } from "./log";
 import * as commands from "./command";
 
 /* global process */
+
+const commander = new Command();
 
 commander.name("office-addin-usage-data");
 commander.version(process.env.npm_package_version || "(version not available)");
@@ -17,9 +19,15 @@ commander
   .description(`Display the current usage data settings.`)
   .action(commands.listUsageDataSettings);
 
-commander.command(`off`).description(`Turn off reporting of anonymous usage data.`).action(commands.turnUsageDataOff);
+commander
+  .command(`off`)
+  .description(`Turn off reporting of anonymous usage data.`)
+  .action(commands.turnUsageDataOff);
 
-commander.command(`on`).description(`Turn on reporting of anonymous usage data.`).action(commands.turnUsageDataOn);
+commander
+  .command(`on`)
+  .description(`Turn on reporting of anonymous usage data.`)
+  .action(commands.turnUsageDataOn);
 
 // if the command is not known, display an error
 commander.on("command:*", function () {

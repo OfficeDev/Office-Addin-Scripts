@@ -2,14 +2,14 @@
 // Licensed under the MIT license.
 
 import { execSync } from "child_process";
-import * as fsExtra from "fs-extra";
-import * as path from "path";
+import fsExtra from "fs-extra";
+import path from "path";
 import * as defaults from "./defaults";
 import { isCaCertificateInstalled } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global process, console, __dirname */
+/* global console process __dirname */
 
 function getUninstallCommand(machine: boolean = false): string {
   switch (process.platform) {
@@ -24,15 +24,19 @@ function getUninstallCommand(machine: boolean = false): string {
       const script = path.resolve(__dirname, "../scripts/uninstall.sh");
       return `sudo sh '${script}' '${defaults.certificateName}'`;
     }
-    case "linux":
-      return `sudo rm -r /usr/local/share/ca-certificates/office-addin-dev-certs/${defaults.caCertificateFileName} && sudo /usr/sbin/update-ca-certificates --fresh`;
+    case "linux": {
+      const script = path.resolve(__dirname, "../scripts/uninstall_linux.sh");
+      return `sudo sh '${script}' '${defaults.caCertificateFileName}'`;
+    }
     default:
       throw new ExpectedError(`Platform not supported: ${process.platform}`);
   }
 }
 
 // Deletes the generated certificate files and delete the certificate directory if its empty
-export function deleteCertificateFiles(certificateDirectory: string = defaults.certificateDirectory): void {
+export function deleteCertificateFiles(
+  certificateDirectory: string = defaults.certificateDirectory
+): void {
   if (fsExtra.existsSync(certificateDirectory)) {
     fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostCertificateFileName));
     fsExtra.removeSync(path.join(certificateDirectory, defaults.localhostKeyFileName));

@@ -3,7 +3,7 @@
     This file provides the provides functionality to get data from OData-compliant endpoints.
 */
 
-import * as https from "https";
+import https from "https";
 
 export class ODataHelper {
   static getData(

@@ -1,18 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import {
-  generateCustomFunctionsMetadata,
-  IGenerateResult,
-} from "custom-functions-metadata";
-import * as path from "path";
-import {
-  Compiler,
-  Compilation,
-  sources,
-  WebpackError,
-  NormalModule,
-} from "webpack";
+import { generateCustomFunctionsMetadata, IGenerateResult } from "custom-functions-metadata";
+import path from "path";
+import { Compiler, Compilation, sources, WebpackError, NormalModule } from "webpack";
 
 /* global require */
 
@@ -49,28 +40,24 @@ class CustomFunctionsMetadataPlugin {
         compilation.assets[this.options.output] = new sources.RawSource(
           generateResult.metadataJson
         );
-        CustomFunctionsMetadataPlugin.generateResults[this.options.input] =
-          generateResult;
+        CustomFunctionsMetadataPlugin.generateResults[this.options.input] = generateResult;
       }
 
       // trigger the loader to add code to the functions files
-      NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(
-        pluginName,
-        (_, module) => {
-          const found = input.find((item) => module.userRequest.endsWith(item));
-          if (found) {
-            module.loaders.push({
-              loader: require.resolve("./loader.js"),
-              options: {
-                input: this.options.input,
-                file: found,
-              },
-              ident: null,
-              type: null,
-            });
-          }
+      NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(pluginName, (_, module) => {
+        const found = input.find((item) => module.userRequest.endsWith(item));
+        if (found) {
+          module.loaders.push({
+            loader: require.resolve("./loader.js"),
+            options: {
+              input: this.options.input,
+              file: found,
+            },
+            ident: null,
+            type: null,
+          });
         }
-      );
+      });
     });
   }
 }

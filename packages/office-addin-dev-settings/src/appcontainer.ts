@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as childProcess from "child_process";
-import inquirer = require("inquirer");
+import childProcess from "child_process";
+import inquirer from "inquirer";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { URL } from "whatwg-url";
 import { ExpectedError } from "office-addin-usage-data";
@@ -130,7 +130,10 @@ export async function ensureLoopbackIsEnabled(
   let isEnabled = await isLoopbackExemptionForAppcontainer(name);
 
   if (!isEnabled) {
-    if (!askForConfirmation || (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))) {
+    if (
+      !askForConfirmation ||
+      (await getUserConfirmation(getDisplayNameFromManifestPath(manifestPath)))
+    ) {
       await addLoopbackExemptionForAppcontainer(name);
       isEnabled = true;
     }
@@ -145,7 +148,9 @@ export async function ensureLoopbackIsEnabled(
  */
 export async function getAppcontainerNameFromManifest(manifestPath: string): Promise<string> {
   const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
-  const sourceLocation = manifest.defaultSettings ? manifest.defaultSettings.sourceLocation : undefined;
+  const sourceLocation = manifest.defaultSettings
+    ? manifest.defaultSettings.sourceLocation
+    : undefined;
 
   if (sourceLocation === undefined) {
     throw new ExpectedError(`The source location could not be retrieved from the manifest.`);

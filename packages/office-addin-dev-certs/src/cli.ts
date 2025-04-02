@@ -3,12 +3,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as commander from "commander";
+import { Command } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as commands from "./commands";
 import * as defaults from "./defaults";
 
 /* global process */
+
+const commander = new Command();
 
 commander.name("office-addin-dev-certs");
 commander.version(process.env.npm_package_version || "(version not available)");
@@ -24,7 +26,9 @@ commander
     "--domains <domains>",
     `List of IP address and domains separated by commas. Default: ${defaults.domain.join(",")}`
   )
-  .description(`Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`)
+  .description(
+    `Generate an SSL certificate for "localhost" issued by a CA certificate which is installed.`
+  )
   .action(commands.install);
 
 commander.command("verify").description(`Verify the CA certificate.`).action(commands.verify);

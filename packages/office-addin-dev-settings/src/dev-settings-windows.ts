@@ -9,12 +9,18 @@ import {
   ManifestInfo,
   OfficeApp,
   OfficeAddinManifest,
+  ManifestType,
 } from "office-addin-manifest";
-import { DebuggingMethod, RegisteredAddin, SourceBundleUrlComponents, WebViewType } from "./dev-settings";
+import {
+  DebuggingMethod,
+  RegisteredAddin,
+  SourceBundleUrlComponents,
+  WebViewType,
+} from "./dev-settings";
 import { ExpectedError } from "office-addin-usage-data";
 import * as registry from "./registry";
-import { registerWithTeams, unacquireWithTeams } from "./publish";
-import * as fspath from "path";
+import { registerWithTeams, uninstallWithTeams } from "./publish";
+import fspath from "path";
 
 /* global process */
 
@@ -22,6 +28,7 @@ const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Micro
 
 const OpenDevTools: string = "OpenDevTools";
 export const OutlookSideloadManifestPath: string = "OutlookSideloadManifestPath";
+const RefreshAddins: string = "RefreshAddins";
 const RuntimeLogging: string = "RuntimeLogging";
 const SourceBundleExtension: string = "SourceBundleExtension";
 const SourceBundleHost: string = "SourceBundleHost";
@@ -73,12 +80,6 @@ export async function enableLiveReload(addinId: string, enable: boolean = true):
   return registry.addBooleanValue(key, UseLiveReload, enable);
 }
 
-async function enableOutlookSideloading(manifestPath: string): Promise<void> {
-  const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
-
-  return registry.addStringValue(key, "", manifestPath); // empty string for the default value
-}
-
 export async function enableRuntimeLogging(path: string): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(RuntimeLogging);
 
@@ -118,11 +119,13 @@ export async function getOpenDevTools(addinId: string): Promise<boolean> {
 
 export async function getRegisteredAddIns(): Promise<RegisteredAddin[]> {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
-
   const values = await registry.getValues(key);
+  const filteredValues = values.filter((value) => value.name !== RefreshAddins);
 
   // if the registry value name and data are the same, then the manifest path was used as the name
-  return values.map((value) => new RegisteredAddin(value.name !== value.data ? value.name : "", value.data));
+  return filteredValues.map(
+    (value) => new RegisteredAddin(value.name !== value.data ? value.name : "", value.data)
+  );
 }
 
 export async function getRuntimeLoggingPath(): Promise<string | undefined> {
@@ -151,8 +154,12 @@ export async function getWebView(addinId: string): Promise<WebViewType | undefin
 export async function isDebuggingEnabled(addinId: string): Promise<boolean> {
   const key: registry.RegistryKey = getDeveloperSettingsRegistryKey(addinId);
 
-  const useDirectDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, UseDirectDebugger));
-  const useWebDebugger: boolean = isRegistryValueTrue(await registry.getValue(key, UseProxyDebugger));
+  const useDirectDebugger: boolean = isRegistryValueTrue(
+    await registry.getValue(key, UseDirectDebugger)
+  );
+  const useWebDebugger: boolean = isRegistryValueTrue(
+    await registry.getValue(key, UseProxyDebugger)
+  );
 
   return useDirectDebugger || useWebDebugger;
 }
@@ -180,30 +187,39 @@ function isRegistryValueTrue(value?: registry.RegistryValue): boolean {
 
 export async function registerAddIn(manifestPath: string, registration?: string): Promise<void> {
   const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
+  const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
 
-  if (manifestPath.endsWith(".json")) {
+  // Register using the service
+  if (
+    manifest.manifestType === ManifestType.JSON ||
+    appsInManifest.indexOf(OfficeApp.Outlook) >= 0
+  ) {
     if (!registration) {
-      const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
-      const zipPath: string = await exportMetadataPackage(targetPath, manifestPath);
-      registration = await registerWithTeams(zipPath);
+      let filePath = "";
+      if (manifest.manifestType === ManifestType.JSON) {
+        const targetPath: string = fspath.join(process.env.TEMP as string, "manifest.zip");
+        filePath = await exportMetadataPackage(targetPath, manifestPath);
+      } else if (manifest.manifestType === ManifestType.XML) {
+        filePath = manifestPath;
+      }
+      registration = await registerWithTeams(filePath);
+      await enableRefreshAddins();
     }
 
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
     await registry.addStringValue(key, TitleId, registration);
-  } else if (manifestPath.endsWith(".xml")) {
-    const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
-
-    if (appsInManifest.indexOf(OfficeApp.Outlook) >= 0) {
-      enableOutlookSideloading(manifestPath);
-    }
   }
+
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   await registry.deleteValue(key, manifestPath); // in case the manifest path was previously used as the key
   return registry.addStringValue(key, manifest.id || "", manifestPath);
 }
 
-export async function setSourceBundleUrl(addinId: string, components: SourceBundleUrlComponents): Promise<void> {
+export async function setSourceBundleUrl(
+  addinId: string,
+  components: SourceBundleUrlComponents
+): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
 
   if (components.host !== undefined) {
@@ -239,7 +255,10 @@ export async function setSourceBundleUrl(addinId: string, components: SourceBund
   }
 }
 
-export async function setWebView(addinId: string, webViewType: WebViewType | undefined): Promise<void> {
+export async function setWebView(
+  addinId: string,
+  webViewType: WebViewType | undefined
+): Promise<void> {
   const key = getDeveloperSettingsRegistryKey(addinId);
   switch (webViewType) {
     case undefined:
@@ -288,7 +307,17 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
 
   if (addinId) {
-    await unacquire(key, addinId);
+    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
+    const appsInManifest = getOfficeAppsForManifestHosts(manifest.hosts);
+
+    // Unregister using the service
+    // TODO: remove if statement when the service supports all hosts
+    if (
+      manifest.manifestType === ManifestType.JSON ||
+      appsInManifest.indexOf(OfficeApp.Outlook) >= 0
+    ) {
+      await unacquire(key, addinId);
+    }
     await registry.deleteValue(key, addinId);
   }
 
@@ -299,23 +328,34 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
 }
 
 export async function unregisterAllAddIns(): Promise<void> {
-  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
-  const values = await registry.getValues(key);
+    const registeredAddins: RegisteredAddin[] = await getRegisteredAddIns();
 
-  for (const value of values) {
-    await unacquire(key, value.name);
-    await registry.deleteValue(key, value.name);
-  }
+    for (const addin of registeredAddins) {
+        await unregisterAddIn(addin.id, addin.manifestPath);
+    }
 }
 
 async function unacquire(key: registry.RegistryKey, id: string) {
   const manifest = await registry.getStringValue(key, id);
-  if (manifest != undefined && manifest.endsWith(".json")) {
+  if (manifest != undefined) {
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
     const registration = await registry.getStringValue(key, TitleId);
-    if (registration != undefined) {
-      unacquireWithTeams(registration);
-      registry.deleteValue(key, TitleId);
+    const uninstallId = registration != undefined ? registration : id;
+    if (await uninstallWithTeams(uninstallId)) {
+      if (registration != undefined) {
+        registry.deleteValue(key, TitleId);
+      }
+      await enableRefreshAddins();
     }
   }
+}
+
+async function enableRefreshAddins() {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  await registry.addBooleanValue(key, RefreshAddins, true);
+}
+
+export async function disableRefreshAddins() {
+  const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
+  await registry.deleteValue(key, RefreshAddins);
 }

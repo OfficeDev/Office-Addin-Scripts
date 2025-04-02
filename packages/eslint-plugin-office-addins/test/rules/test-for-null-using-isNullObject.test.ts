@@ -1,14 +1,14 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
-import rule from '../../src/rules/test-for-null-using-isNullObject';
+import { RuleTester, TestCaseError } from "@typescript-eslint/rule-tester";
+import rule from "../../src/rules/test-for-null-using-isNullObject";
 
-const ruleTester = new ESLintUtils.RuleTester({
-  parser: '@typescript-eslint/parser',
-});
+const ruleTester = new RuleTester();
 
-const errors = [{ messageId: "useIsNullObject", data: { name: "dataSheet" } }];
+const errors: TestCaseError<"useIsNullObject">[] = [
+  { messageId: "useIsNullObject", data: { name: "dataSheet" } },
+];
 
-ruleTester.run('test-for-null-using-isNullObject', rule, {
-  valid: [ 
+ruleTester.run("test-for-null-using-isNullObject", rule, {
+  valid: [
     {
       code: `
       await Excel.run(async (context) =>  {
@@ -19,17 +19,6 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
             }
             dataSheet.position = 1;
          });
-      });`,
-    },
-    {
-      code: `
-      var dataSheet;
-      dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
-      return context.sync().then(function () {
-        if (dataSheet.isNullObject) {
-          dataSheet = context.workbook.worksheets.add("Data");
-        }
-        dataSheet.position = 1;
       });`,
     },
     {
@@ -67,10 +56,10 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
       errors,
       output: `
       await Excel.run(async (context) =>  {
-        var dataSheet = context.workbook.worksheets.getItemOrNullObject(\"Data\");
+        var dataSheet = context.workbook.worksheets.getItemOrNullObject("Data");
         return context.sync().then(function () {
           if (dataSheet.isNullObject) {
-            dataSheet = context.workbook.worksheets.add(\"Data\");
+            dataSheet = context.workbook.worksheets.add("Data");
           }
           dataSheet.position = 1;
         });
@@ -221,5 +210,5 @@ ruleTester.run('test-for-null-using-isNullObject', rule, {
         dataSheet.position = 1;
       });`,
     },
-  ]
+  ],
 });

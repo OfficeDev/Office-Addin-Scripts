@@ -8,11 +8,11 @@ export enum PropertyType {
 }
 
 const navigationProperties: Set<string> = new Set<string>(
-  propertiesJson.navigational
+  propertiesJson.navigational,
 );
 const scalarProperties: Set<string> = new Set<string>(propertiesJson.scalar);
 const ambiguousProperties: Set<string> = new Set<string>(
-  propertiesJson.ambiguous
+  propertiesJson.ambiguous,
 );
 
 export function getPropertyType(propertyName: string): PropertyType {

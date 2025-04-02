@@ -3,13 +3,13 @@
  *
  * This file defines Azure application registration.
  */
-import * as childProcess from "child_process";
+import childProcess from "child_process";
 import * as defaults from "./defaults";
-import * as fs from "fs";
+import fs from "fs";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
-/* global require, process, console, setTimeout */
+/* global console process require setTimeout */
 
 require("dotenv").config();
 
@@ -23,7 +23,10 @@ export async function createNewApplication(
     const reName = new RegExp("{SSO-AppName}", "g");
     const rePort = new RegExp("{PORT}", "g");
     azRestCommand = azRestCommand.replace(reName, ssoAppName).replace(rePort, port);
-    const applicationJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */);
+    const applicationJson: Object = await promiseExecuteCommand(
+      azRestCommand,
+      true /* returnJson */
+    );
 
     if (applicationJson) {
       await isApplicationReady(applicationJson["appId"]);
@@ -54,7 +57,12 @@ export async function isAzureCliInstalled(): Promise<boolean> {
       case "win32": {
         const appsInstalledWindowsCommand: string = `powershell -ExecutionPolicy Bypass -File "${defaults.getInstalledAppsPath}"`;
         const appsWindows: any = await promiseExecuteCommand(appsInstalledWindowsCommand);
-        cliInstalled = appsWindows.filter((app) => app.DisplayName === "Microsoft Azure CLI").length > 0;
+        cliInstalled = appsWindows.filter((app) => {
+          if (app !== null && app.DisplayName && typeof app.DisplayName === "string") {
+            if (app.DisplayName.includes("Microsoft Azure CLI")) return true;
+          }
+          return false;
+        });
         // Send usage data
         usageDataObject.reportSuccess("isAzureCliInstalled()", {
           cliInstalled: cliInstalled,
@@ -63,7 +71,10 @@ export async function isAzureCliInstalled(): Promise<boolean> {
       }
       case "darwin": {
         const appsInstalledMacCommand = "brew list";
-        const appsMac: Object | string = await promiseExecuteCommand(appsInstalledMacCommand, false /* returnJson */);
+        const appsMac: Object | string = await promiseExecuteCommand(
+          appsInstalledMacCommand,
+          false /* returnJson */
+        );
         cliInstalled = appsMac.toString().includes("azure-cli");
         // Send usage data
         usageDataObject.reportSuccess("isAzureCliInstalled()", {
@@ -148,14 +159,14 @@ export async function logIntoAzure(): Promise<Object> {
   );
   if (Object.keys(userJson).length < 1) {
     // Try alternate login
-    logoutAzure();
+    await logoutAzure();
     userJson = await promiseExecuteCommand("az login");
   }
   return userJson;
 }
 
 export async function logoutAzure(): Promise<Object> {
-  return await promiseExecuteCommand("az logout");
+  return await promiseExecuteCommand("az logout", true /* returnJson */, true /* expectError */);
 }
 
 async function promiseExecuteCommand(
@@ -182,9 +193,15 @@ async function promiseExecuteCommand(
   });
 }
 
-export async function setApplicationSecret(applicationJson: Object): Promise<string> {
+export async function setApplicationSecret(
+  applicationJson: Object,
+  secretTTL?: number
+): Promise<string> {
   try {
     let azRestCommand: string = await fs.readFileSync(defaults.azRestAddSecretCommandPath, "utf8");
+    let now = new Date();
+    let expirationDate = new Date(now.setDate(now.getDate() + secretTTL)).toISOString();
+    azRestCommand = azRestCommand.replace("<Token_Expire_Date>", expirationDate);
     azRestCommand = azRestCommand.replace("<App_Object_ID>", applicationJson["id"]);
     const secretJson: Object = await promiseExecuteCommand(azRestCommand);
     return secretJson["secretText"];
@@ -195,7 +212,10 @@ export async function setApplicationSecret(applicationJson: Object): Promise<str
 }
 
 export async function setIdentifierUri(applicationJson: Object, port: string): Promise<void> {
-  let azRestCommand: string = await fs.readFileSync(defaults.azRestSetIdentifierUriCommmandPath, "utf8");
+  let azRestCommand: string = await fs.readFileSync(
+    defaults.azRestSetIdentifierUriCommmandPath,
+    "utf8"
+  );
   azRestCommand = azRestCommand
     .replace("<App_Object_ID>", applicationJson["id"])
     .replace("<App_Id>", applicationJson["appId"])
@@ -213,7 +233,11 @@ export async function setIdentifierUri(applicationJson: Object, port: string): P
 export async function setSignInAudience(applicationJson: Object): Promise<void> {
   let azRestCommand: string = fs.readFileSync(defaults.azRestSetSigninAudienceCommandPath, "utf8");
   azRestCommand = azRestCommand.replace("<App_Object_ID>", applicationJson["id"]);
-  let signInAudienceSet: boolean = await waitUntil(() => tryRunAzureCommand(azRestCommand), 10, 1000);
+  let signInAudienceSet: boolean = await waitUntil(
+    () => tryRunAzureCommand(azRestCommand),
+    10,
+    1000
+  );
 
   if (!signInAudienceSet) {
     const errorMessage: string = `Unable to set signInAudience.  See results of each attempt`;
@@ -230,7 +254,10 @@ export async function setSharePointTenantReplyUrls(tenantName: string): Promise<
     const sharePointServiceId: string = "57fb890c-0dab-4253-a5e0-7188c88b2bb4";
 
     // Get tenant name and construct SharePoint SSO reply urls with tenant name
-    let azRestCommand: string = fs.readFileSync(defaults.azRestGetOrganizationDetailsCommandPath, "utf8");
+    let azRestCommand: string = fs.readFileSync(
+      defaults.azRestGetOrganizationDetailsCommandPath,
+      "utf8"
+    );
     const oneDriveReplyUrl: string = `https://${tenantName}-my.sharepoint.com/_forms/singlesignon.aspx`;
     const sharePointReplyUrl: string = `https://${tenantName}.sharepoint.com/_forms/singlesignon.aspx`;
 
@@ -259,7 +286,9 @@ export async function setSharePointTenantReplyUrls(tenantName: string): Promise<
     if (setReplyUrls && servicePrinicipalObjectlId) {
       azRestCommand = fs.readFileSync(defaults.azRestAddTenantReplyUrlsCommandPath, "utf8");
       const reName = new RegExp("<TENANT-NAME>", "g");
-      azRestCommand = azRestCommand.replace(reName, tenantName).replace("<SP-OBJECTID>", servicePrinicipalObjectlId);
+      azRestCommand = azRestCommand
+        .replace(reName, tenantName)
+        .replace("<SP-OBJECTID>", servicePrinicipalObjectlId);
       await promiseExecuteCommand(azRestCommand);
     }
 
@@ -323,7 +352,11 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
   }
 }
 
-async function waitUntil(callback: () => Promise<boolean>, retryCount: number, retryDelay: number): Promise<boolean> {
+async function waitUntil(
+  callback: () => Promise<boolean>,
+  retryCount: number,
+  retryDelay: number
+): Promise<boolean> {
   let done: boolean = false;
   let attempts: number = 0;
 
@@ -357,7 +390,11 @@ async function tryRunAzureCommand(azureCommand: string) {
 async function checkIsApplicationReady(appId: string): Promise<boolean> {
   try {
     const azRestCommand: string = `az ad app show --id ${appId}`;
-    const appJson: Object = await promiseExecuteCommand(azRestCommand, true /* returnJson */, true /* expectError */);
+    const appJson: Object = await promiseExecuteCommand(
+      azRestCommand,
+      true /* returnJson */,
+      true /* expectError */
+    );
     return appJson !== "";
   } catch (err) {
     const errorMessage: string = `Unable to get application info: \n${err}`;
