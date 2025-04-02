@@ -52,6 +52,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   This package allows a Node instance to serve as a proxy for debugging a JavaScript runtime hosted by an Office application.
 
+* [office-addin-project](packages/office-addin-project/README.md)
+
+  This package provides the ability to do project wide commands for Office Add-ins, such as conversion.
+
 * [office-addin-sso](packages/office-addin-sso/README.md)
 
   This package provides the ability to register an application in Azure Active Directory and infrastructure for implementing single sign-on (SSO) taskpane add-ins.
