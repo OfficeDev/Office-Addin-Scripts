@@ -15,7 +15,6 @@
     "exec": "lerna exec --concurrency 1 --no-bail --no-sort --stream",
     "lint": "lerna run lint --parallel",
     "lint:fix": "lerna run lint:fix --parallel",
-    "postinstall": "lerna bootstrap",
     "prettier": "lerna run prettier --parallel",
     "publish:next": "lerna publish --dist-tag next",
     "test": "lerna run test",
@@ -31,5 +30,6 @@
   },
   "overrides": {
     "git-url-parse": "^13.0.0"
-  }
+  },
+  "workspaces": ["packages/*"]
 }

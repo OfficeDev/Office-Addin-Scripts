@@ -11,6 +11,7 @@
     "noEmitHelpers": true,
     "rootDir": ".",
     "types": ["node", "jest"],
+    "isolatedModules": true
   },
   "include": ["src/**/*.ts", "tests/**/*.ts", "node_modules/@types/**/*.d.ts"],
 }

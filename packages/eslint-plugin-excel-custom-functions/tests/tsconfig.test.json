@@ -7,8 +7,8 @@
     "strict": true,
     "target": "es5",
     "lib": ["es5", "dom"],
-    // Reduce parse time by not auto-including all @types
-    "types": []
+    // Add Office types here
+    "types": ["office-js"]
   },
   "include": ["fixtures", "../node_modules/@types/**/*.d.ts"],
 }
