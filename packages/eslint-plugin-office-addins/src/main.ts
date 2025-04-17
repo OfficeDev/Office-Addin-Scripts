@@ -2,7 +2,6 @@ import rules from "./rules";
 import tsParser from "@typescript-eslint/parser";
 import typescriptplugin from "@typescript-eslint/eslint-plugin";
 import prettierplugin from "eslint-plugin-prettier";
-//import reactplugin from "eslint-plugin-react";
 import eslintjs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 
