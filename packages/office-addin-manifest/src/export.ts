@@ -2,7 +2,11 @@ import fs from "fs";
 import fsExtra from "fs-extra";
 import AdmZip from "adm-zip";
 import path from "path";
-import { ManifestUtil, devPreview } from "@microsoft/teams-manifest";
+import {
+  AppManifestUtils,
+  DeclarativeAgentManifest,
+  TeamsManifestVDevPreview,
+} from "@microsoft/app-manifest";
 
 /* global console */
 
@@ -31,21 +35,51 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
-  const manifest: devPreview.DevPreviewSchema = await ManifestUtil.loadFromPath(manifestPath);
-  addIconFile(manifest.icons?.color, manifestDir, zip);
-  addIconFile(manifest.icons?.outline, manifestDir, zip);
+  const manifest: TeamsManifestVDevPreview = (await AppManifestUtils.readTeamsManifest(
+    manifestPath
+  )) as TeamsManifestVDevPreview;
+
+  // Add icons
+  addZipFile(manifest.icons?.color, manifestDir, zip);
+  addZipFile(manifest.icons?.outline, manifestDir, zip);
+
+  // Add localization files
+  const languages = manifest.localizationInfo?.additionalLanguages;
+  if (languages) {
+    languages.forEach((language) => {
+      addZipFile(language?.file, manifestDir, zip);
+    });
+  }
+
+  // Add Declarative Copilot Agents
+  const agents = manifest?.copilotAgents?.declarativeAgents;
+  if (agents) {
+    for (const agent of agents) {
+      const agentFile: string = agent?.file;
+      addZipFile(agentFile, manifestDir, zip);
+
+      const agentRelDir: string = path.dirname(agentFile);
+      const agentManifest: DeclarativeAgentManifest =
+        await AppManifestUtils.readDeclarativeAgentManifest(path.join(manifestDir, agentFile));
+      agentManifest?.actions?.forEach((action) => {
+        if (action?.file) {
+          addZipFile(path.join(agentRelDir, action.file), manifestDir, zip);
+        }
+      });
+    }
+  }
 
   return Promise.resolve(zip);
 }
 
-function addIconFile(iconPath: string, manifestDir: string, zip: AdmZip) {
-  if (iconPath && !iconPath.startsWith("https://")) {
-    const filePath: string = path.join(manifestDir, iconPath);
-    const iconDir: string = path.dirname(iconPath);
-    if (fs.existsSync(filePath)) {
-      zip.addLocalFile(filePath, iconDir === "." ? "" : iconDir);
+function addZipFile(filePath: string, baseDir: string, zip: AdmZip) {
+  if (filePath && !filePath.startsWith("https://")) {
+    const fullPath: string = path.join(baseDir, filePath);
+    const fileDir: string = path.dirname(filePath);
+    if (fs.existsSync(fullPath)) {
+      zip.addLocalFile(fullPath, fileDir === "." ? "" : fileDir);
     } else {
-      console.log(`Icon File ${filePath} does not exist`);
+      throw new Error(`File to zip "${fullPath}' does not exist`);
     }
   }
 }
