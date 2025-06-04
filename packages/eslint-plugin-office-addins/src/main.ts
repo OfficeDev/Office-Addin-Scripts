@@ -1,9 +1,8 @@
 import rules from "./rules";
-import tsParser from "@typescript-eslint/parser";
-import typescriptplugin from "@typescript-eslint/eslint-plugin";
-import prettierplugin from "eslint-plugin-prettier";
 import eslintjs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
+import prettierplugin from "eslint-plugin-prettier";
+import tseslint from "typescript-eslint";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const reactplugin = require("eslint-plugin-react");
@@ -14,24 +13,24 @@ const reactnativeplugin = require("eslint-plugin-react-native");
 const plugin = {
   meta: {
     name: "eslint-plugin-office-addins",
-    version: "5.0.0",
+    version: "5.1.0",
   },
   rules,
   configs: {},
 };
 
-const recommended = [
+const recommended = tseslint.config(
   eslintjs.configs.recommended,
   eslintConfigPrettier,
   {
     files: ["**/*.{js,mjs,cjs,ts,cts,mts}"],
     plugins: {
-      "@typescript-eslint": typescriptplugin,
+      "@typescript-eslint": tseslint.plugin,
       "office-addins": plugin,
       prettier: prettierplugin,
     },
     languageOptions: {
-      parser: tsParser,
+      parser: tseslint.parser,
       ecmaVersion: 6,
       sourceType: "module",
       parserOptions: {
@@ -57,11 +56,11 @@ const recommended = [
       "office-addins/test-for-null-using-isNullObject": "error",
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
-  },
-];
+  }
+);
 
-const react = [
-  reactplugin.configs.flat.recommended,
+const react = tseslint.config(
+  ...reactplugin.configs.flat.recommended,
   ...recommended,
   {
     plugins: {
@@ -73,34 +72,34 @@ const react = [
         version: "detect",
       },
     },
-  },
-];
+  }
+);
 
-const reactnative = [
-  reactnativeplugin.configs.all,
+const reactnative = tseslint.config(
+  ...reactnativeplugin.configs.all,
   ...recommended,
   {
     plugins: {
       "office-addins": plugin,
-      react: reactnativeplugin,
+      "react-native": reactnativeplugin,
     },
     settings: {
       react: {
         version: "detect",
       },
     },
-  },
-];
+  }
+);
 
-const test = [
+const test = tseslint.config(
   ...recommended,
   {
     plugins: {
       "office-addins": plugin,
     },
     rules: {},
-  },
-];
+  }
+);
 
 Object.assign(plugin.configs, {
   recommended,
@@ -109,4 +108,4 @@ Object.assign(plugin.configs, {
   test,
 });
 
-module.exports = plugin;
+export default plugin;

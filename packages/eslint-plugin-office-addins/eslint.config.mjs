@@ -1,24 +1,22 @@
-import tsParser from "@typescript-eslint/parser";
-import typescriptplugin from "@typescript-eslint/eslint-plugin";
-import prettierplugin from "eslint-plugin-prettier";
 import eslintjs from "@eslint/js";
-import eslintts from "typescript-eslint";
+import tseslint from "typescript-eslint";
+import prettierplugin from "eslint-plugin-prettier";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
   eslintjs.configs.recommended,
-  ...eslintts.configs.recommended,
+  ...tseslint.configs.recommended,
   eslintConfigPrettier,
   {
     files: ["**/*.{js,mjs,cjs,ts,cts,mts}"],
     ignores: ["**/node_modules/**", "**/lib/**"],
     plugins: {
-      "@typescript-eslint": typescriptplugin,
+      "@typescript-eslint": tseslint.plugin,
       prettier: prettierplugin,
     },
 
     languageOptions: {
-      parser: tsParser,
+      parser: tseslint.parser,
       ecmaVersion: 6,
       sourceType: "module",
       parserOptions: {
