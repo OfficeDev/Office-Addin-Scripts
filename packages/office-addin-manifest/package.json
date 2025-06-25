@@ -22,7 +22,7 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "@microsoft/app-manifest": "^1.0.0-rc.0",
+    "@microsoft/app-manifest": "^1.0.0",
     "adm-zip": "0.5.16",
     "chalk": "^2.4.2",
     "commander": "^13.0.0",
