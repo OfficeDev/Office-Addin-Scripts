@@ -1,0 +1,1 @@
+Since @syncSupport is present, the last function parameter should be of type CustomFunctions.Invocation : (10,40)

@@ -30,6 +30,7 @@ export interface IFunctionOptions {
   excludeFromAutoComplete?: boolean;
   linkedEntityLoadService?: boolean;
   capturesCallingObject?: boolean;
+  syncSupport?: boolean
 }
 
 export interface IFunctionParameter {
@@ -132,6 +133,7 @@ const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 const STREAMING = "streaming";
 const VOLATILE = "volatile";
+const SYNCSUPPORT = "syncsupport";
 
 const TYPE_MAPPINGS = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -462,7 +464,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.requiresStreamParameterAddresses &&
             !options.excludeFromAutoComplete &&
             !options.linkedEntityLoadService &&
-            !options.capturesCallingObject
+            !options.capturesCallingObject &&
+            !options.syncSupport
           ) {
             delete functionMetadata.options;
           } else {
@@ -504,6 +507,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.capturesCallingObject) {
               delete options.capturesCallingObject;
+            }
+
+            if (!options.syncSupport) {
+              delete options.syncSupport;
             }
           }
 
@@ -667,6 +674,7 @@ function getOptions(
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
+    syncSupport: isSyncSupport(func),
   };
 
   if (isAddressRequired(func) || isRequiresParameterAddresses(func)) {
@@ -1060,6 +1068,14 @@ function isLinkedEntityLoadService(node: ts.Node): boolean {
  */
 function capturesCallingObject(node: ts.Node): boolean {
   return hasTag(node, CAPTURESCALLINGOBJECT);
+}
+
+/**
+ * Returns true if syncSupport tag found in comments
+ * @param node jsDocs node
+ */
+function isSyncSupport(node: ts.Node): boolean {
+  return hasTag(node, SYNCSUPPORT);
 }
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
