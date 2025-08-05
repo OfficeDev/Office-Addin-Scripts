@@ -5,7 +5,7 @@
  * Test missing invocation parameter type
  * @param x string
  * @customfunction
- * @syncSupport
+ * @sync
  */
 function customFunctionInvocationTest(x: string) {
     // Empty

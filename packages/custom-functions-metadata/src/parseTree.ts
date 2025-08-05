@@ -30,7 +30,7 @@ export interface IFunctionOptions {
   excludeFromAutoComplete?: boolean;
   linkedEntityLoadService?: boolean;
   capturesCallingObject?: boolean;
-  syncSupport?: boolean
+  sync?: boolean
 }
 
 export interface IFunctionParameter {
@@ -133,7 +133,7 @@ const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 const STREAMING = "streaming";
 const VOLATILE = "volatile";
-const SYNCSUPPORT = "syncsupport";
+const SYNC = "sync";
 
 const TYPE_MAPPINGS = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -465,7 +465,7 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.excludeFromAutoComplete &&
             !options.linkedEntityLoadService &&
             !options.capturesCallingObject &&
-            !options.syncSupport
+            !options.sync
           ) {
             delete functionMetadata.options;
           } else {
@@ -509,8 +509,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
               delete options.capturesCallingObject;
             }
 
-            if (!options.syncSupport) {
-              delete options.syncSupport;
+            if (!options.sync) {
+              delete options.sync;
             }
           }
 
@@ -674,7 +674,7 @@ function getOptions(
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
-    syncSupport: isSyncSupport(func),
+    sync: isSync(func),
   };
 
   if (isAddressRequired(func) || isRequiresParameterAddresses(func)) {
@@ -685,6 +685,14 @@ function getOptions(
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
+  }
+
+  if (isSync(func)) {
+    if (!isInvocationFunction) {
+      const functionPosition = getPosition(func, func.parameters.end);
+      const errorString = `Since @sync is present, the last function parameter should be of type CustomFunctions.Invocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
   }
@@ -1071,11 +1079,11 @@ function capturesCallingObject(node: ts.Node): boolean {
 }
 
 /**
- * Returns true if syncSupport tag found in comments
+ * Returns true if sync tag found in comments
  * @param node jsDocs node
  */
-function isSyncSupport(node: ts.Node): boolean {
-  return hasTag(node, SYNCSUPPORT);
+function isSync(node: ts.Node): boolean {
+  return hasTag(node, SYNC);
 }
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
