@@ -30,6 +30,7 @@ export interface IFunctionOptions {
   excludeFromAutoComplete?: boolean;
   linkedEntityLoadService?: boolean;
   capturesCallingObject?: boolean;
+  supportSync?: boolean;
 }
 
 export interface IFunctionParameter {
@@ -132,6 +133,7 @@ const REQUIRESADDRESS = "requiresaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
 const STREAMING = "streaming";
 const VOLATILE = "volatile";
+const SUPPORT_SYNC = "supportsync";
 
 const TYPE_MAPPINGS = {
   [ts.SyntaxKind.NumberKeyword]: "number",
@@ -420,6 +422,21 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             extra
           );
 
+          // Detect if the function body contains Rich API usage (Excel.RequestContext or Excel.run)
+          let hasRichAPICall = false;
+          if (functionDeclaration.body) {
+            const bodyText = functionDeclaration.body.getFullText();
+            // Fast case-sensitive check first
+            if (bodyText.indexOf("Excel.RequestContext") !== -1 || bodyText.indexOf("Excel.run") !== -1) {
+              hasRichAPICall = true;
+            }
+          }
+
+          if (options.supportSync && !isInvocationFunction && hasRichAPICall) {
+            const errorString = `@supportSync function doesn't have CustomFunctions.Invocation when calling RichAPI`;
+            functionErrors.push(logError(errorString, position));
+          }
+
           const funcName: string = functionDeclaration.name ? functionDeclaration.name.text : "";
           const id = normalizeCustomFunctionId(idNameArray[0] || funcName);
           const name = idNameArray[1] || id;
@@ -462,7 +479,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.requiresStreamParameterAddresses &&
             !options.excludeFromAutoComplete &&
             !options.linkedEntityLoadService &&
-            !options.capturesCallingObject
+            !options.capturesCallingObject &&
+            !options.supportSync
           ) {
             delete functionMetadata.options;
           } else {
@@ -504,6 +522,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.capturesCallingObject) {
               delete options.capturesCallingObject;
+            }
+
+            if (!options.supportSync) {
+              delete options.supportSync;
             }
           }
 
@@ -667,6 +689,7 @@ function getOptions(
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
+    supportSync: supportSync(func),
   };
 
   if (isAddressRequired(func) || isRequiresParameterAddresses(func)) {
@@ -708,6 +731,13 @@ function getOptions(
     }
 
     const errorString = `${errorParam} cannot be used with @linkedEntityLoadService.`;
+    extra.errors.push(logError(errorString, functionPosition));
+  }
+
+  // supportSync can't coexist with volatile and streaming
+  if (optionsItem.supportSync && (optionsItem.volatile || optionsItem.stream)) {
+    const functionPosition = getPosition(func);
+    const errorString = `@supportSync cannot be used with ${optionsItem.volatile ? '@volatile' : '@streaming'}.`;
     extra.errors.push(logError(errorString, functionPosition));
   }
 
@@ -1064,6 +1094,14 @@ function capturesCallingObject(node: ts.Node): boolean {
 
 function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
   return (tag.tagName.escapedText as string).toLowerCase() === tagName;
+}
+
+/**
+ * Returns true if sync tag found in comments
+ * @param node jsDocs node
+ */
+function supportSync(node: ts.Node): boolean {
+  return hasTag(node, SUPPORT_SYNC);
 }
 
 /**
