@@ -2,17 +2,17 @@
 // Licensed under the MIT license.
 
 /**
- * Test supportSync can't coexist with stream
+ * Test supportSync can't coexist with streaming
  * @param x string
  * @customfunction
  * @supportSync
- * @stream
+ * @streaming
  */
 async function customFunctionSyncStream(x: string) {
 }
 
 /**
- * Test supportSync can't coexist with stream
+ * Test supportSync can't coexist with volatile
  * @param x string
  * @customfunction
  * @supportSync
