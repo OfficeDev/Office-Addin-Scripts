@@ -1,0 +1,2 @@
+@supportSync function doesn't have CustomFunctions.Invocation when calling RichAPI (1,1)
+@supportSync function doesn't have CustomFunctions.Invocation when calling RichAPI (12,2)

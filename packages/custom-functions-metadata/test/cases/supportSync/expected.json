@@ -1,0 +1,20 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test function for supportSync tag",
+            "id": "SUPPORTSYNCTEST",
+            "name": "SUPPORTSYNCTEST",
+            "options": {
+                "supportSync": true
+            },
+            "parameters": [
+                {
+                    "name": "x",
+                    "type": "string"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}

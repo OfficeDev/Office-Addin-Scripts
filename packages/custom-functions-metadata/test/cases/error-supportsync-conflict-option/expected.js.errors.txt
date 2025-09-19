@@ -1,0 +1,2 @@
+@supportSync cannot be used with @streaming. (1,1)
+@supportSync cannot be used with @volatile. (12,2)
