@@ -25,7 +25,7 @@
     "adm-zip": "0.5.12",
     "commander": "^13.0.0",
     "fs-extra": "^11.2.0",
-    "inquirer": "^7.3.3",
+    "inquirer": "^12.10.0",
     "junk": "^3.1.0",
     "office-addin-manifest": "^2.1.0",
     "office-addin-usage-data": "^2.0.4",
