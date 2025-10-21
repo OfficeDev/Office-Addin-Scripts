@@ -12,7 +12,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if ((filePath.endsWith(".zip") || filePath.endsWith(".xml")) && fs.existsSync(filePath)) {
       const pathSwitch = filePath.endsWith(".zip") ? "--file-path" : "--xml-path";
-      const sideloadCommand = `npx @microsoft/teamsapp-cli install ${pathSwitch} "${filePath}" --interactive false`;
+      const sideloadCommand = `npx @microsoft/m365agentstoolkit-cli install ${pathSwitch} "${filePath}" --interactive false`;
 
       console.log(`running: ${sideloadCommand}`);
       childProcess.exec(sideloadCommand, (error, stdout, stderr) => {
@@ -36,7 +36,7 @@ export async function registerWithTeams(filePath: string): Promise<string> {
 
 export async function updateM365Account(operation: AccountOperation): Promise<void> {
   return new Promise((resolve, reject) => {
-    const authCommand = `npx @microsoft/teamsapp-cli auth ${operation} m365`;
+    const authCommand = `npx @microsoft/m365agentstoolkit-cli auth ${operation} m365`;
 
     console.log(`running: ${authCommand}`);
     childProcess.exec(authCommand, (error, stdout, stderr) => {
@@ -70,7 +70,7 @@ export async function uninstallWithTeams(id: string): Promise<boolean> {
       return;
     }
 
-    const uninstallCommand = `npx @microsoft/teamsapp-cli uninstall ${mode} --interactive false`;
+    const uninstallCommand = `npx @microsoft/m365agentstoolkit-cli uninstall ${mode} --interactive false`;
     console.log(`running: ${uninstallCommand}`);
     childProcess.exec(uninstallCommand, (error, stdout, stderr) => {
       if (error || stderr.match('"error"')) {

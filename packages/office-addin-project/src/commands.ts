@@ -30,11 +30,9 @@ export async function convert(options: OptionValues) {
 }
 
 async function asksForUserConfirmation(): Promise<boolean> {
-  const question = {
+  const answers = await inquirer.prompt({
     message: `This command will convert your current xml manifest to a json manifest and then proceed to upgrade your project dependencies to ensure compatibility with the new project structure.\nHowever, in order for this newly updated project to function correctly you must be using a compatible version of Office applications.\nWould you like to continue?`,
     name: "didUserConfirm",
-    type: "confirm",
-  };
-  const answers = await inquirer.prompt([question]);
+    type: "confirm",});
   return (answers as any).didUserConfirm;
 }
