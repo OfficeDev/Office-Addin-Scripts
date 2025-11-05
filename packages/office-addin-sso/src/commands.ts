@@ -13,7 +13,7 @@ import {
   applicationDataConfigured,
 } from "./ssoDataSettings";
 import { ExpectedError } from "office-addin-usage-data";
-import inquirer = require("inquirer");
+import inquirer from "inquirer";
 
 /* global console process */
 
@@ -26,12 +26,11 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
     return;
   } else if (applicationDataConfigured(manifestPath)) {
     console.log(chalk.yellow("Project was already previously updated."));
-    const question = {
+    const answer = await inquirer.prompt({
       message: `Continue anyway?`,
       name: "didUserConfirm",
       type: "confirm",
-    };
-    const answer = await inquirer.prompt([question]);
+    });
     if (!answer.didUserConfirm) {
       return;
     }
