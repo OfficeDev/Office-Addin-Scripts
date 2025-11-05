@@ -13,13 +13,8 @@ steps:
 - script: |
     echo === SCRIPT START ===
     echo Script file path: %~f0
-    echo Showing raw script file contents:
-    type "%~f0"
     echo === ENV SNAPSHOT ===
     echo CD: %CD%
-    where node
-    where npm
-    where npx
     echo === LIST ROOT FILES ===
     dir /b
     echo === VERIFY PACKAGES DIR ===
@@ -27,7 +22,7 @@ steps:
     echo === LERNA BINARY? ===
     where lerna || echo lerna not found
     echo === NPM LIST (root, depth 0) ===
-    npm ls --depth=0 || echo npm ls had non-zero exit: !ERRORLEVEL!
+    npm ls lerna || echo npm ls had non-zero exit: !ERRORLEVEL!
     echo === RUN npm ci (timed) ===
     echo %TIME%
     npm ci || echo npm ci failed: !ERRORLEVEL!

@@ -1,7 +1,7 @@
 steps:
 - script: |
     echo Enable EdgeWebView Loopback
-    npm exec office-addin-dev-settings appcontainer EdgeWebView --loopback --yes
+    npx office-addin-dev-settings appcontainer EdgeWebView --loopback --yes
     
     echo Set Edge WebView Registry Settings
     
