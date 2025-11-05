@@ -3,4 +3,4 @@ steps:
   displayName: "Build"
   inputs:
     command: custom
-    customCommand: "run build"
+    customCommand: "run build -- --stream --concurrency 1"
