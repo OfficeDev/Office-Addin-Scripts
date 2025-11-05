@@ -11,20 +11,6 @@
 
 steps:
 - script: |
-    echo === SCRIPT START ===
-    echo Script file path: %~f0
-    echo === ENV SNAPSHOT ===
-    echo CD: %CD%
-    echo === RUN npm ci (timed) ===
-    echo %TIME%
-    npm ci || echo npm ci failed
-    echo %TIME%
-    echo === POST-INSTALL CHECK ===
-    where lerna || echo lerna still not found
-    npm ls lerna || echo lerna not listed
-    echo === DIRECT LERNA LIST ===
-    npx lerna list || echo lerna list failed
-    echo === RUN BUILD DIRECT (bypass npm script) ===
-    npx lerna run build --stream --concurrency 1 || echo lerna run failed
-    echo === SCRIPT END ===
-  displayName: Build diagnostics (cmd)
+    npx lerna list
+    npx lerna run build --stream --concurrency 1
+  displayName: Build (script)
