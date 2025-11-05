@@ -3,5 +3,8 @@ steps:
     node -v
     npm -v
     npm ci
-    npm run build --loglevel verbose
+    npm run build -- --stream --concurrency 1
   displayName: Build (script)
+  env:
+    LERNA_DEBUG: "*"
+    NPM_CONFIG_LOGLEVEL: "verbose"
