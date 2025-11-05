@@ -1,10 +1,43 @@
+# steps:
+# - script: |
+#     node -v
+#     npm -v
+#     npm ci
+#     npm run build -- --stream --concurrency 1
+#   displayName: Build (script)
+#   env:
+#     LERNA_DEBUG: "*"
+#     NPM_CONFIG_LOGLEVEL: "verbose"
+
 steps:
 - script: |
-    node -v
-    npm -v
-    npm ci
-    npm run build -- --stream --concurrency 1
-  displayName: Build (script)
-  env:
-    LERNA_DEBUG: "*"
-    NPM_CONFIG_LOGLEVEL: "verbose"
+    echo === SCRIPT START ===
+    echo Script file path: %~f0
+    echo Showing raw script file contents:
+    type "%~f0"
+    echo === ENV SNAPSHOT ===
+    echo CD: %CD%
+    where node
+    where npm
+    where npx
+    echo === LIST ROOT FILES ===
+    dir /b
+    echo === VERIFY PACKAGES DIR ===
+    dir /b packages
+    echo === LERNA BINARY? ===
+    where lerna || echo lerna not found
+    echo === NPM LIST (root, depth 0) ===
+    npm ls --depth=0 || echo npm ls had non-zero exit: !ERRORLEVEL!
+    echo === RUN npm ci (timed) ===
+    echo %TIME%
+    npm ci || echo npm ci failed: !ERRORLEVEL!
+    echo %TIME%
+    echo === POST-INSTALL CHECK ===
+    where lerna || echo lerna still not found
+    npm ls lerna || echo lerna not listed
+    echo === DIRECT LERNA LIST ===
+    npx lerna list || echo lerna list failed: !ERRORLEVEL!
+    echo === RUN BUILD DIRECT (bypass npm script) ===
+    npx lerna run build --stream --concurrency 1 || echo lerna run failed: !ERRORLEVEL!
+    echo === SCRIPT END ===
+  displayName: Build diagnostics (cmd)
