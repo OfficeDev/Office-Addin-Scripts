@@ -15,24 +15,16 @@ steps:
     echo Script file path: %~f0
     echo === ENV SNAPSHOT ===
     echo CD: %CD%
-    echo === LIST ROOT FILES ===
-    dir /b
-    echo === VERIFY PACKAGES DIR ===
-    dir /b packages
-    echo === LERNA BINARY? ===
-    where lerna || echo lerna not found
-    echo === NPM LIST (root, depth 0) ===
-    npm ls lerna || echo npm ls had non-zero exit: !ERRORLEVEL!
     echo === RUN npm ci (timed) ===
     echo %TIME%
-    npm ci || echo npm ci failed: !ERRORLEVEL!
+    npm ci || echo npm ci failed
     echo %TIME%
     echo === POST-INSTALL CHECK ===
     where lerna || echo lerna still not found
     npm ls lerna || echo lerna not listed
     echo === DIRECT LERNA LIST ===
-    npx lerna list || echo lerna list failed: !ERRORLEVEL!
+    npx lerna list || echo lerna list failed
     echo === RUN BUILD DIRECT (bypass npm script) ===
-    npx lerna run build --stream --concurrency 1 || echo lerna run failed: !ERRORLEVEL!
+    npx lerna run build --stream --concurrency 1 || echo lerna run failed
     echo === SCRIPT END ===
   displayName: Build diagnostics (cmd)
