@@ -9,6 +9,4 @@ steps:
     type lerna.json 2>nul || echo (no lerna.json here)
     echo Contents of .:
     dir /b packages 2>nul || echo (no packages dir here)
-    echo If nested repo exists:
-    dir /b Office-Addin-Scripts 2>nul
   displayName: Locate repo
