@@ -1,0 +1,7 @@
+steps:
+- script: |
+    node -v
+    npm -v
+    npm ci
+    npm run build --loglevel verbose
+  displayName: Build (script)
