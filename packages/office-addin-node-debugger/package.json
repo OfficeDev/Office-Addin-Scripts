@@ -4,7 +4,7 @@
   "description": "Files for enabling office add-in web debugging using Node and VS Code.",
   "main": "./lib/debugger.js",
   "scripts": {
-    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "build": "rimraf lib && tsc -p tsconfig.json",
     "lint": "office-addin-lint check",
     "lint:fix": "office-addin-lint fix",
     "prettier": "office-addin-lint prettier",

@@ -4,7 +4,7 @@
   "description": "A command-line interface for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
-    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "build": "rimraf lib && tsc -p tsconfig.json",
     "cli": "node lib/cli.js",
     "lint": "eslint src/**/*.{ts,tsx,js,jsx}",
     "lint:fix": "eslint src/**/*.{ts,tsx,js,jsx} --fix",

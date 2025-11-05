@@ -4,7 +4,7 @@
   "description": "Provide eslint and prettier integration",
   "main": "./lib/main.js",
   "scripts": {
-    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "build": "rimraf lib && tsc -p tsconfig.json",
     "cli": "node lib/cli.js",
     "lint": "node lib/cli.js check",
     "lint:fix": "node lib/cli.js fix",
