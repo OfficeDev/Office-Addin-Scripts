@@ -26,14 +26,14 @@
     "read-package-json-fast": "^2.0.2"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.6",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^14.17.2",
     "@types/node-fetch": "^2.5.10",
     "concurrently": "^9.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-office-addins": "^4.0.5",
     "eslint-plugin-prettier": "^3.4.0",
-    "mocha": "^11.0.1",
+    "mocha": "^11.7.5",
     "office-addin-prettier-config": "^2.0.1",
     "office-addin-usage-data": "^2.0.5",
     "prettier": "^3.5.3",

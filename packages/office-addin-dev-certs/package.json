@@ -41,7 +41,7 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/mkcert": "^1.2.2",
-    "@types/mocha": "^10.0.6",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^14.17.2",
     "@types/sinon": "^17.0.3",
     "concurrently": "^9.0.0",

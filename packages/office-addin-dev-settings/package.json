@@ -40,7 +40,7 @@
     "@microsoft/eslint-plugin-sdl": "^1.0.1",
     "@types/adm-zip": "^0.5.5",
     "@types/fs-extra": "^11.0.4",
-    "@types/mocha": "^10.0.6",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.11.27",
     "@types/node-fetch": "^2.6.11",
     "@types/semver": "^7.3.4",

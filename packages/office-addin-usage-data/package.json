@@ -27,13 +27,13 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.6",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^14.17.2",
     "concurrently": "^9.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-office-addins": "^4.0.5",
     "eslint-plugin-prettier": "^5.2.1",
-    "mocha": "^11.0.1",
+    "mocha": "^11.7.5",
     "office-addin-prettier-config": "^2.0.1",
     "rimraf": "^6.0.1",
     "sinon": "^19.0.2",
