@@ -7,19 +7,18 @@ steps:
     dir /ad /b
     echo Attempt to show lerna.json:
     type lerna.json 2>nul || echo (no lerna.json here)
-    echo Contents of .:
+    echo Contents of packages:
     dir /b packages 2>nul || echo (no packages dir here)
     echo.
     echo Check for package.json files in packages:
     dir /s /b packages\*\package.json 2>nul || echo (no package.json files found)
     echo.
-    echo Node and NPM versions:
-    node -v
-    npm -v
+    echo Contents of packages\office-addin-cli:
+    dir /b packages\office-addin-cli 2>nul || echo (no packages\office-addin-cli dir here)
     echo.
     echo Lerna version and info:
     npx lerna --version
     npx lerna list --loglevel silly
     echo Checking npm workspaces:
     npm list --workspaces --depth=0
-  displayName: Locate repo
+  displayName: Diagnostic Info
