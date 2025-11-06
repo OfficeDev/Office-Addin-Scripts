@@ -1,6 +1,11 @@
+# steps:
+# - task: Npm@1
+#   displayName: "Build"
+#   inputs:
+#     command: custom
+#     customCommand: "run build"
+
 steps:
-- task: Npm@1
-  displayName: "Build"
-  inputs:
-    command: custom
-    customCommand: "run build"
+- powershell: |
+    npm run build
+  displayName: Build packages
