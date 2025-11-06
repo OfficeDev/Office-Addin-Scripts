@@ -9,8 +9,23 @@
 #     LERNA_DEBUG: "*"
 #     NPM_CONFIG_LOGLEVEL: "verbose"
 
+# steps:
+# - script: |
+#     npx lerna list
+#     npx lerna run build --stream --concurrency 1
+#   displayName: Build (script)
+
 steps:
 - script: |
-    npx lerna list
-    npx lerna run build --stream --concurrency 1
-  displayName: Build (script)
+    echo Current directory:
+    cd
+    echo.
+    echo Test glob pattern manually:
+    for /d %%d in (packages\*) do @echo Package dir: %%d
+    echo.
+    echo Lerna list with full debug:
+    set LERNA_PACKAGE_LOG_LEVEL=silly
+    echo.
+    echo Try lerna run with explicit package:
+    npx lerna run build --scope office-addin-cli --stream
+  displayName: Build (script) with debugging
