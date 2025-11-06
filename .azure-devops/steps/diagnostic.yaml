@@ -20,7 +20,11 @@ steps:
     type packages\office-addin-cli\package.json 2>nul || echo (cannot read package.json)
     echo.
     echo Checking npm workspaces:
-    npm list --workspaces --depth=0
+    call npm list --workspaces --depth=0
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
     echo.
     echo Git status (check if files are ignored):
     git status --short

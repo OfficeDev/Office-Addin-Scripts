@@ -23,6 +23,22 @@ steps:
     echo Test glob pattern manually:
     for /d %%d in (packages\*) do @echo Package dir: %%d
     echo.
+    echo Check if package.json files are readable:
+    for /d %%d in (packages\*) do @(
+      if exist %%d\package.json (
+        echo Found package.json in %%d
+        type %%d\package.json | findstr /C:"\"name\"" /C:"\"build\""
+      ) else (
+        echo NO package.json in %%d
+      )
+    )
+    echo.
+    echo Try reading one package.json directly:
+    type packages\office-addin-cli\package.json
+    echo.
+    echo Check file attributes:
+    attrib packages\office-addin-cli\package.json
+    echo.
     echo Lerna list with full debug:
     set LERNA_PACKAGE_LOG_LEVEL=silly
     echo.
