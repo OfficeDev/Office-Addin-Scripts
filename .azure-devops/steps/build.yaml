@@ -9,3 +9,4 @@ steps:
 - powershell: |
     npm run build
   displayName: Build packages
+  errorActionPreference: Continue

@@ -27,3 +27,4 @@ steps:
 - powershell:
     npm install
   displayName: "Install NPM packages"
+  errorActionPreference: Continue
