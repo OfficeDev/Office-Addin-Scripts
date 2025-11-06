@@ -1,20 +1,3 @@
-# steps:
-# - script: |
-#     node -v
-#     npm -v
-#     npm ci
-#     npm run build -- --stream --concurrency 1
-#   displayName: Build (script)
-#   env:
-#     LERNA_DEBUG: "*"
-#     NPM_CONFIG_LOGLEVEL: "verbose"
-
-# steps:
-# - script: |
-#     npx lerna list
-#     npx lerna run build --stream --concurrency 1
-#   displayName: Build (script)
-
 steps:
 - script: |
     echo Node and NPM versions:
@@ -46,11 +29,6 @@ steps:
     echo.
     echo === Run build ===
     npx lerna run build --no-ci --stream --concurrency 1
+    echo === Workaround: Use npm workspaces directly ===
+    npm run build
   displayName: Build (script) with debugging
-  #   echo === Workaround: Use npm workspaces directly ===
-  #   npm run build
-  #   if errorlevel 1 (
-  #       echo npm list failed with exit code %ERRORLEVEL%
-  #       exit /b 0
-  #   )
-  # displayName: Build (script) with debugging
