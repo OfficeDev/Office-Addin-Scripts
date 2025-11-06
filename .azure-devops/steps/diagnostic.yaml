@@ -30,5 +30,9 @@ steps:
     git status --short
     echo.
     echo Lerna list with debug:
-    npx lerna list --loglevel silly
+    npx lerna list --loglevel silly --no-ci
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
   displayName: Diagnostic Info

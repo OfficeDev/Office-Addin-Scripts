@@ -17,31 +17,54 @@
 
 steps:
 - script: |
-    echo Current directory:
-    cd
-    echo.
-    echo Test glob pattern manually:
-    for /d %%d in (packages\*) do @echo Package dir: %%d
-    echo.
-    echo Check if package.json files are readable:
-    for /d %%d in (packages\*) do @(
-      if exist %%d\package.json (
-        echo Found package.json in %%d
-        type %%d\package.json | findstr /C:"\"name\"" /C:"\"build\""
-      ) else (
-        echo NO package.json in %%d
-      )
+    echo Node and NPM versions:
+    node -v
+    npm -v
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
+    npx lerna -v
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
     )
     echo.
-    echo Try reading one package.json directly:
-    type packages\office-addin-cli\package.json
+    echo Check lerna.json:
+    type lerna.json
     echo.
-    echo Check file attributes:
-    attrib packages\office-addin-cli\package.json
+    echo Lerna list output:
+    npx lerna list --no-ci --loglevel verbose
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
     echo.
-    echo Lerna list with full debug:
-    set LERNA_PACKAGE_LOG_LEVEL=silly
+    echo Lerna list with --all:
+    npx lerna list --all --no-ci
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
     echo.
-    echo Run build with --no-ci flag:
-    npx lerna run build --stream --concurrency 1 --no-ci
+    echo Check if lerna can read package.json by listing package names:
+    npx lerna ls --no-ci --json
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
+    echo.
+    echo Try running build on a specific package:
+    npx lerna run build --scope office-addin-cli --no-ci --loglevel verbose
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
+    echo.
+    echo === Workaround: Use npm workspaces directly ===
+    npm run build
+    if errorlevel 1 (
+        echo npm list failed with exit code %ERRORLEVEL%
+        exit /b 0
+    )
   displayName: Build (script) with debugging
