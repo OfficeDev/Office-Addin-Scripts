@@ -26,6 +26,6 @@ steps:
     echo Lerna list with full debug:
     set LERNA_PACKAGE_LOG_LEVEL=silly
     echo.
-    echo Try lerna run with explicit package:
-    npx lerna run build --scope office-addin-cli --stream
+    echo Run build with --no-ci flag:
+    npx lerna run build --stream --concurrency 1 --no-ci
   displayName: Build (script) with debugging
