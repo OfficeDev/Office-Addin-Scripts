@@ -20,46 +20,25 @@ steps:
     echo Node and NPM versions:
     node -v
     npm -v
-    if errorlevel 1 (
-        echo npm list failed with exit code %ERRORLEVEL%
-        exit /b 0
-    )
+    echo.
+    echo Check if lerna is installed:
+    where lerna
+    echo.
+    echo Check node_modules:
+    dir * 2>nul || echo No lerna in 
+    echo.
+    echo Try npx lerna version:
     npx lerna -v
-    if errorlevel 1 (
-        echo npm list failed with exit code %ERRORLEVEL%
-        exit /b 0
-    )
+    echo Exit code: %ERRORLEVEL%
     echo.
-    echo Check lerna.json:
-    type lerna.json
+    echo Check if lerna exists in package-lock:
+    findstr /C:"\"lerna\"" 
     echo.
-    echo Lerna list output:
-    npx lerna list --no-ci --loglevel verbose
-    if errorlevel 1 (
-        echo npm list failed with exit code %ERRORLEVEL%
-        exit /b 0
-    )
+    echo List installed packages:
+    npm list --depth=0
     echo.
-    echo Lerna list with --all:
-    npx lerna list --all --no-ci
-    if errorlevel 1 (
-        echo npm list failed with exit code %ERRORLEVEL%
-        exit /b 0
-    )
-    echo.
-    echo Check if lerna can read package.json by listing package names:
-    npx lerna ls --no-ci --json
-    if errorlevel 1 (
-        echo npm list failed with exit code %ERRORLEVEL%
-        exit /b 0
-    )
-    echo.
-    echo Try running build on a specific package:
-    npx lerna run build --scope office-addin-cli --no-ci --loglevel verbose
-    if errorlevel 1 (
-        echo npm list failed with exit code %ERRORLEVEL%
-        exit /b 0
-    )
+    echo Try running lerna directly from node_modules:
+    node  -v
     echo.
     echo === Workaround: Use npm workspaces directly ===
     npm run build

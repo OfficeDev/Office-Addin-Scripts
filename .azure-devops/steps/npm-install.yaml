@@ -4,3 +4,8 @@ steps:
   inputs:
     command: custom
     customCommand: "install"
+- script: |
+    echo Verify npm install completed:
+    dir node_modules\.bin\lerna* 2>nul || echo No lerna binary found
+    npm list lerna
+  displayName: "Verify Lerna installation"
