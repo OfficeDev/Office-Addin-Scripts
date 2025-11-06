@@ -1,25 +1,30 @@
 steps:
 - powershell: |
-    Write-Host "Node and NPM versions:"
-    node -v
-    npm -v
-    Write-Host ""
+    Write-Host "=== Diagnostics ==="
     Write-Host "Current directory:"
     Get-Location
     Write-Host ""
-    Write-Host "Check if lerna is installed:"
-    Get-Command lerna -ErrorAction SilentlyContinue
+    Write-Host "Contents of lerna.json:"
+    Get-Content lerna.json
     Write-Host ""
-    Write-Host "Try npx lerna version:"
-    npx lerna -v
-    Write-Host "Lerna version exit code: $LASTEXITCODE"
+    Write-Host "Check packages directory:"
+    Get-ChildItem packages -Directory | Select-Object Name
     Write-Host ""
-    Write-Host "Try running lerna list:"
-    npx lerna list --no-ci
-    Write-Host "Lerna list exit code: $LASTEXITCODE"
+    Write-Host "Check for package.json files:"
+    Get-ChildItem packages\*\package.json | Select-Object FullName
     Write-Host ""
-    Write-Host "=== Run build ==="
-    npx lerna run build --no-ci --stream --concurrency 1
-  displayName: Build (script) with debugging - PowerShell
+    Write-Host "Read one package.json to verify it's valid:"
+    Get-Content packages\office-addin-cli\package.json | Select-Object -First 5
+    Write-Host ""
+    Write-Host "=== Try Lerna with explicit config ==="
+    npx lerna list --loglevel silly
+    Write-Host ""
+    Write-Host "=== Alternative: Use npm workspaces ==="
+    npm run build --workspaces --if-present
+  displayName: Build with npm workspaces
+  errorActionPreference: Continue
 - script: node -v && npm -v && npx lerna -v && npx lerna list --no-ci && npx lerna run build --no-ci --stream --concurrency 1
   displayName: Build (script) - single line
+
+
+  
