@@ -1,6 +1,26 @@
 steps:
+- script: |
+    echo Check npm configuration:
+    npm config list
+    echo.
+    echo Check registry access:
+    npm ping
+    echo.
+    echo Check npm cache:
+    npm cache verify
+  displayName: "npm diagnostics"
+  errorActionPreference: Continue
+  
 - task: Npm@1
   displayName: "Install NPM packages"
   inputs:
     command: custom
-    customCommand: "install"
+    customCommand: "install --verbose"
+  timeoutInMinutes: 10
+  
+- script: |
+    echo Verify npm install completed:
+    dir node_modules\.bin\lerna* 2>nul || echo No lerna binary found
+    npm list lerna
+  displayName: "Verify Lerna installation"
+  errorActionPreference: Continue
