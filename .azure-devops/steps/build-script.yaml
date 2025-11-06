@@ -1,34 +1,25 @@
 steps:
-- script: |
-    echo Node and NPM versions:
+- powershell: |
+    Write-Host "Node and NPM versions:"
     node -v
     npm -v
-    echo.
-    echo Current directory:
-    cd
-    echo.
-    echo Check if lerna is installed:
-    where lerna 2>nul || echo lerna not in PATH
-    echo.
-    echo Check node_modules\.bin:
-    dir node_modules\.bin\lerna* 2>nul || echo No lerna in node_modules\.bin
-    echo.
-    echo Try npx lerna version:
+    Write-Host ""
+    Write-Host "Current directory:"
+    Get-Location
+    Write-Host ""
+    Write-Host "Check if lerna is installed:"
+    Get-Command lerna -ErrorAction SilentlyContinue
+    Write-Host ""
+    Write-Host "Try npx lerna version:"
     npx lerna -v
-    echo Lerna version exit code: %ERRORLEVEL%
-    echo.
-    echo List installed packages:
-    npm list --depth=0 2>nul || echo npm list failed
-    echo.
-    echo Try running lerna list:
+    Write-Host "Lerna version exit code: $LASTEXITCODE"
+    Write-Host ""
+    Write-Host "Try running lerna list:"
     npx lerna list --no-ci
-    echo Lerna list exit code: %ERRORLEVEL%
-    echo.
-    echo Try running lerna list with verbose:
-    npx lerna list --no-ci --loglevel verbose
-    echo.
-    echo === Run build ===
+    Write-Host "Lerna list exit code: $LASTEXITCODE"
+    Write-Host ""
+    Write-Host "=== Run build ==="
     npx lerna run build --no-ci --stream --concurrency 1
-    echo === Workaround: Use npm workspaces directly ===
-    npm run build
-  displayName: Build (script) with debugging
+  displayName: Build (script) with debugging - PowerShell
+- script: node -v && npm -v && npx lerna -v && npx lerna list --no-ci && npx lerna run build --no-ci --stream --concurrency 1
+  displayName: Build (script) - single line
