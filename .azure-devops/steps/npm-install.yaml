@@ -9,7 +9,6 @@ steps:
     echo Check npm cache:
     npm cache verify
   displayName: "npm diagnostics"
-  errorActionPreference: Continue
   
 - task: Npm@1
   displayName: "Install NPM packages"
@@ -23,4 +22,3 @@ steps:
     dir node_modules\.bin\lerna* 2>nul || echo No lerna binary found
     npm list lerna
   displayName: "Verify Lerna installation"
-  errorActionPreference: Continue
