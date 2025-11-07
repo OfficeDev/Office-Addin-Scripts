@@ -90,5 +90,4 @@ steps:
     
     Set-Location $root
   displayName: 'Build packages individually'
-  pwsh: true
   continueOnError: false

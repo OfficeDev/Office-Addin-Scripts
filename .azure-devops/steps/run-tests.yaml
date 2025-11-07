@@ -2,4 +2,3 @@ steps:
 - powershell: |
     npm run test --verbose -- --stream --concurrency 1 --loglevel silly
   displayName: Run tests (script)
-  pwsh: true
