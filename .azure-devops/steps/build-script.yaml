@@ -1,9 +1,9 @@
 steps:
-- powershell: |
-    npx lerna list --loglevel silly
-    npm run build -- --loglevel silly --no-bail
-  displayName: Build with powershell
-  continueOnError: true
+# - powershell: |
+#     npx lerna list --loglevel silly
+#     npm run build -- --loglevel silly --no-bail
+#   displayName: Build with powershell
+#   continueOnError: true
 - powershell: |
     npx lerna list --loglevel silly
     npm run build -- --loglevel silly --no-bail --scope eslint-plugin-office-addins
