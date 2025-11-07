@@ -1,5 +1,6 @@
 steps:
 - powershell: |
+    npm ls nx
     npm run build
   displayName: Build with powershell
   errorActionPreference: Continue
