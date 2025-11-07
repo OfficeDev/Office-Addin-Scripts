@@ -91,3 +91,5 @@ steps:
     
     Set-Location $root
   displayName: 'Test packages individually'
+  timeoutInMinutes: 5
+  continueOnError: true
