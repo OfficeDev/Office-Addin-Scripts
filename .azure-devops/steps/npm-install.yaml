@@ -1,34 +1,13 @@
-# steps:
-# - script: |
-#     echo Check npm configuration:
-#     npm config list
-#     echo.
-#     echo Check registry access:
-#     npm ping
-#     echo.
-#     echo Check npm cache:
-#     npm cache verify
-#   displayName: "npm diagnostics"
-  
-# - task: Npm@1
-#   displayName: "Install NPM packages"
-#   inputs:
-#     command: custom
-#     customCommand: "install --verbose"
-#   timeoutInMinutes: 10
-  
-# - script: |
-#     echo Verify npm install completed:
-#     dir node_modules\.bin\lerna* 2>nul || echo No lerna binary found
-#     npm list lerna
-#   displayName: "Verify Lerna installation"
-
 steps:
-- powershell:
+- script: |
     npm config list
   displayName: "List NPM config"
   continueOnError: true
-- powershell:
-    npm ci --no-progress --verbose
-  displayName: "PS Install NPM packages"
-  continueOnError: true
+
+- script: |
+    npm ci --prefer-offline --no-audit --no-fund --loglevel=verbose
+  displayName: "Install NPM packages"
+  timeoutInMinutes: 10
+  env:
+    NPM_CONFIG_PROGRESS: "false"
+    NPM_CONFIG_LOGLEVEL: "verbose"
