@@ -27,8 +27,8 @@ steps:
 - powershell:
     npm config list
   displayName: "List NPM config"
-  errorActionPreference: Continue
+  continueOnError: true
 - powershell:
-    npm install
+    npm ci --no-progress --verbose
   displayName: "PS Install NPM packages"
-  errorActionPreference: Continue
+  continueOnError: true
