@@ -1,7 +1,8 @@
 steps:
 - powershell: |
-    npx lerna ls
-    npm run build
+    npx lerna list
+    npx lerna list --all
+    npx lerna list --no-ci
   displayName: Build with powershell
   errorActionPreference: Continue
 - script: node -v && npm -v && npx lerna -v && npx lerna list --no-ci && npx lerna run build --no-ci --stream --concurrency 1
