@@ -1,6 +1,6 @@
 steps:
-- powershell: |
+- pwsh: |
     npx lerna list --loglevel silly
     npm run build --workspaces --if-present --verbose
-  displayName: Build with powershell
+  displayName: Build with pwsh
   continueOnError: true

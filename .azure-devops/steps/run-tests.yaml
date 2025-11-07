@@ -1,14 +1,4 @@
-# steps:
-# - task: Npm@1
-#   displayName: "Run tests"
-#   inputs:
-#     command: custom
-#     customCommand: "run test"
-
 steps:
-- script: |
-    npm run test -- --stream --concurrency 1
+- pwsh: |
+    npm run test --verbose -- --stream --concurrency 1 --loglevel silly
   displayName: Run tests (script)
-  env:
-    LERNA_DEBUG: "*"
-    NPM_CONFIG_LOGLEVEL: "verbose"

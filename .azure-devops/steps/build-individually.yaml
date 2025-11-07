@@ -2,74 +2,92 @@ steps:
 # Build packages in dependency order without using Lerna or npm workspaces
 # Each package is built by calling npm run build directly in its directory
 
-- script: |
-    echo  "==== Level 0: No internal dependencies ===="
-    echo "Building office-addin-prettier-config..."
-    echo "No build script found, skipping..."
-
-    echo "==== Level 1: Depends only on Level 0 ===="
-    echo "Building eslint-plugin-office-addins..."
-    cd packages/eslint-plugin-office-addins
+- pwsh: |
+    $ErrorActionPreference = "Stop"
+    $root = Get-Location
+    
+    Write-Host "==== Level 0: No internal dependencies ===="
+    Write-Host "Building office-addin-prettier-config..."
+    Write-Host "No build script found, skipping..."
+    
+    Write-Host "==== Level 1: Depends only on Level 0 ===="
+    Write-Host "Building eslint-plugin-office-addins..."
+    Set-Location "$root/packages/eslint-plugin-office-addins"
     npm run build
-    echo "Building office-addin-usage-data..."
-    cd packages/office-addin-usage-data
+    
+    Write-Host "Building office-addin-usage-data..."
+    Set-Location "$root/packages/office-addin-usage-data"
     npm run build
-
-    echo "==== Level 2: Depends on Level 0-1 ===="
-    echo "Building office-addin-cli..."
-    cd packages/office-addin-cli
+    
+    Write-Host "==== Level 2: Depends on Level 0-1 ===="
+    Write-Host "Building office-addin-cli..."
+    Set-Location "$root/packages/office-addin-cli"
     npm run build
-    echo "Building eslint-config-office-addins..."
-    cd packages/eslint-config-office-addins
+    
+    Write-Host "Building eslint-config-office-addins..."
+    Set-Location "$root/packages/eslint-config-office-addins"
     npm run build
-    echo "Building office-addin-lint..."
-    cd packages/office-addin-lint
+    
+    Write-Host "Building office-addin-lint..."
+    Set-Location "$root/packages/office-addin-lint"
     npm run build
-
-    echo "==== Level 3: Depends on Level 0-2 ===="
-    echo "Building office-addin-node-debugger..."
-    cd packages/office-addin-node-debugger
+    
+    Write-Host "==== Level 3: Depends on Level 0-2 ===="
+    Write-Host "Building office-addin-node-debugger..."
+    Set-Location "$root/packages/office-addin-node-debugger"
     npm run build
-    echo "Building office-addin-manifest..."
-    cd packages/office-addin-manifest
+    
+    Write-Host "Building office-addin-manifest..."
+    Set-Location "$root/packages/office-addin-manifest"
     npm run build
-    echo "Building custom-functions-metadata..."
-    cd packages/custom-functions-metadata
+    
+    Write-Host "Building custom-functions-metadata..."
+    Set-Location "$root/packages/custom-functions-metadata"
     npm run build
-    echo "Building eslint-plugin-excel-custom-functions..."
-    cd packages/eslint-plugin-excel-custom-functions
+    
+    Write-Host "Building eslint-plugin-excel-custom-functions..."
+    Set-Location "$root/packages/eslint-plugin-excel-custom-functions"
     npm run build
-
-    echo "==== Level 4: Depends on Level 0-3 ===="
-    echo "Building office-addin-dev-certs..."
-    cd packages/office-addin-dev-certs
+    
+    Write-Host "==== Level 4: Depends on Level 0-3 ===="
+    Write-Host "Building office-addin-dev-certs..."
+    Set-Location "$root/packages/office-addin-dev-certs"
     npm run build
-    echo "Building office-addin-dev-settings..."
-    cd packages/office-addin-dev-settings
+    
+    Write-Host "Building office-addin-dev-settings..."
+    Set-Location "$root/packages/office-addin-dev-settings"
     npm run build
-    echo "Building office-addin-mock..."
-    cd packages/office-addin-mock
+    
+    Write-Host "Building office-addin-mock..."
+    Set-Location "$root/packages/office-addin-mock"
     npm run build
-    echo "Building office-addin-project..."
-    cd packages/office-addin-project
+    
+    Write-Host "Building office-addin-project..."
+    Set-Location "$root/packages/office-addin-project"
     npm run build
-    echo "Building custom-functions-metadata-plugin..."
-    cd packages/custom-functions-metadata-plugin
+    
+    Write-Host "Building custom-functions-metadata-plugin..."
+    Set-Location "$root/packages/custom-functions-metadata-plugin"
     npm run build
-
-    echo "==== Level 5: Depends on Level 0-4 ===="
-    echo "Building office-addin-test-server..."
-    cd packages/office-addin-test-server
+    
+    Write-Host "==== Level 5: Depends on Level 0-4 ===="
+    Write-Host "Building office-addin-test-server..."
+    Set-Location "$root/packages/office-addin-test-server"
     npm run build
-    echo "Building office-addin-debugging..."
-    cd packages/office-addin-debugging
+    
+    Write-Host "Building office-addin-debugging..."
+    Set-Location "$root/packages/office-addin-debugging"
     npm run build
-    cd packages/office-addin-sso
+    
+    Write-Host "Building office-addin-sso..."
+    Set-Location "$root/packages/office-addin-sso"
     npm run build
-
-    echo "==== Level 6: Depends on Level 0-5 ===="
-    echo "Building office-addin-test-helpers..."
-    cd packages/office-addin-test-helpers
+    
+    Write-Host "==== Level 6: Depends on Level 0-5 ===="
+    Write-Host "Building office-addin-test-helpers..."
+    Set-Location "$root/packages/office-addin-test-helpers"
     npm run build
-  displayName: 'Build package individually'
-  continueOnError: true
+    
+    Set-Location $root
+  displayName: 'Build packages individually'
+  continueOnError: false
