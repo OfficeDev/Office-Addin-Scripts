@@ -1,27 +1,7 @@
 steps:
 - powershell: |
-    Write-Host "=== Diagnostics ==="
-    Write-Host "Current directory:"
-    Get-Location
-    Write-Host ""
-    Write-Host "Contents of lerna.json:"
-    Get-Content lerna.json
-    Write-Host ""
-    Write-Host "Check packages directory:"
-    Get-ChildItem packages -Directory | Select-Object Name
-    Write-Host ""
-    Write-Host "Check for package.json files:"
-    Get-ChildItem packages\*\package.json | Select-Object FullName
-    Write-Host ""
-    Write-Host "Read one package.json to verify it's valid:"
-    Get-Content packages\office-addin-cli\package.json | Select-Object -First 5
-    Write-Host ""
-    Write-Host "=== Try Lerna with explicit config ==="
-    npx lerna list --loglevel silly
-    Write-Host ""
-    Write-Host "=== Alternative: Use npm workspaces ==="
-    npm run build --workspaces --if-present
-  displayName: Build with npm workspaces
+    npm run build
+  displayName: Build with powershell
   errorActionPreference: Continue
 - script: node -v && npm -v && npx lerna -v && npx lerna list --no-ci && npx lerna run build --no-ci --stream --concurrency 1
   displayName: Build (script) - single line
