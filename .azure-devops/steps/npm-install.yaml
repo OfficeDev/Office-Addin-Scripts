@@ -1,9 +1,13 @@
 steps:
+- script: |
+    npm config list
+  displayName: "List NPM config"
+  continueOnError: true
 - task: Npm@1
   displayName: "Install NPM packages"
   inputs:
     command: custom
-    customCommand: "install"
+    customCommand: "ci --prefer-offline --no-audit --no-fund --verbose --no-progress"
 - script: |
     echo Verify npm install completed:
     dir node_modules\.bin\lerna* 2>nul || echo No lerna binary found
