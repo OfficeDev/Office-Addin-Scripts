@@ -31,5 +31,5 @@
   "overrides": {
     "git-url-parse": "^13.0.0"
   },
-  "workspaces": ["packages/*"]
+  "workspaces": ["./packages/*"]
 }
