@@ -2,7 +2,7 @@ steps:
 # Build packages in dependency order without using Lerna or npm workspaces
 # Each package is built by calling npm run build directly in its directory
 
-- pwsh: |
+- powershell: |
     $ErrorActionPreference = "Stop"
     $root = Get-Location
     
@@ -90,4 +90,5 @@ steps:
     
     Set-Location $root
   displayName: 'Build packages individually'
+  pwsh: true
   continueOnError: false
