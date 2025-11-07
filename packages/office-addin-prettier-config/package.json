@@ -4,6 +4,7 @@
   "description": "Prettier config for Office-Addins",
   "main": "prettier.config.js",
   "scripts": {
+    "build": "echo \"No build\" ",
     "test": "echo \"No tests\" "
   },
   "author": "OfficeDev",
