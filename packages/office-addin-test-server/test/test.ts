@@ -3,7 +3,6 @@
 
 import assert from "assert";
 import { describe, it } from "mocha";
-import * as testHelper from "office-addin-test-helpers";
 import { TestServer } from "../src/testServer";
 const port: number = 4201;
 const testServer = new TestServer(port);
@@ -30,7 +29,7 @@ describe("End-to-end validation of test server", function () {
   describe("Ping server for response", function () {
     let testServerResponse: any;
     it("Test server should have responded to ping", async function () {
-      testServerResponse = await testHelper.pingTestServer(port);
+      testServerResponse = await pingTestServer(port);
       assert.equal(testServerResponse !== undefined, true);
       assert.equal(testServerResponse.status, 200);
       assert.equal(testServerResponse.platform, platformName);
@@ -68,5 +67,44 @@ async function _sendTestData(): Promise<boolean> {
   testData[valueKey] = testValue;
   testValues.push(testData);
 
-  return testHelper.sendTestResults(testValues, port);
+  return sendTestResults(testValues, port);
 }
+
+async function sendTestResults(data: object, port: number): Promise<boolean> {
+  const json = JSON.stringify(data);
+  const url: string = `https://localhost:${port}/results/`;
+  const dataUrl: string = url + "?data=" + encodeURIComponent(json);
+
+  try {
+    await fetch(dataUrl, {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function pingTestServer(port: number): Promise<TestServerResponse> {
+  const serverResponse: TestServerResponse = { status: 0, platform: "", error: null };
+  try {
+    const pingUrl: string = `https://localhost:${port}/ping`;
+    const response = await fetch(pingUrl);
+    serverResponse.status = response.status;
+    const text = await response.text();
+    serverResponse.platform = text;
+    return Promise.resolve(serverResponse);
+  } catch (err) {
+    serverResponse.error = err;
+    return Promise.reject(serverResponse);
+  }
+}
+interface TestServerResponse {
+  status: number;
+  platform: string;
+  error: any;
+}
+
+
