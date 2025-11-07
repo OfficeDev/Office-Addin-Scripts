@@ -26,6 +26,9 @@
 steps:
 - powershell:
     npm config list
+  displayName: "List NPM config"
+  errorActionPreference: Continue
+- powershell:
     npm install
   displayName: "PS Install NPM packages"
   errorActionPreference: Continue
