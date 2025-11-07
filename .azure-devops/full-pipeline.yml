@@ -32,8 +32,7 @@ extends:
       - job: Windows_10_Latest
         steps:
         - template: /.azure-devops/steps/npm-install.yaml@self
-        - template: /.azure-devops/steps/diagnostic.yaml@self
-        - template: /.azure-devops/steps/build-script.yaml@self
+        - template: /.azure-devops/steps/build-individually.yaml@self
         - template: /.azure-devops/steps/devcerts.yml@self
         - template: /.azure-devops/steps/edgewebview.yml@self
         - template: /.azure-devops/steps/test.yml@self

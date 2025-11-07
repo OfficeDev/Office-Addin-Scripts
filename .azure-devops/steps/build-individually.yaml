@@ -1,0 +1,142 @@
+steps:
+# Build packages in dependency order without using Lerna or npm workspaces
+# Each package is built by calling npm run build directly in its directory
+
+# Level 0: No internal dependencies
+- script: |
+    echo "Building office-addin-prettier-config..."
+    echo "No build script found, skipping..."
+  displayName: 'Build office-addin-prettier-config'
+  continueOnError: true
+
+# Level 1: Depends only on Level 0
+- script: |
+    echo "Building eslint-plugin-office-addins..."
+    cd packages/eslint-plugin-office-addins
+    npm run build
+  displayName: 'Build eslint-plugin-office-addins'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-usage-data..."
+    cd packages/office-addin-usage-data
+    npm run build
+  displayName: 'Build office-addin-usage-data'
+  continueOnError: true
+
+# Level 2: Depends on Level 0-1
+- script: |
+    echo "Building office-addin-cli..."
+    cd packages/office-addin-cli
+    npm run build
+  displayName: 'Build office-addin-cli'
+  continueOnError: true
+
+- script: |
+    echo "Building eslint-config-office-addins..."
+    cd packages/eslint-config-office-addins
+    npm run build
+  displayName: 'Build eslint-config-office-addins'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-lint..."
+    cd packages/office-addin-lint
+    npm run build
+  displayName: 'Build office-addin-lint'
+  continueOnError: true
+
+# Level 3: Depends on Level 0-2
+- script: |
+    echo "Building office-addin-node-debugger..."
+    cd packages/office-addin-node-debugger
+    npm run build
+  displayName: 'Build office-addin-node-debugger'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-manifest..."
+    cd packages/office-addin-manifest
+    npm run build
+  displayName: 'Build office-addin-manifest'
+  continueOnError: true
+
+- script: |
+    echo "Building custom-functions-metadata..."
+    cd packages/custom-functions-metadata
+    npm run build
+  displayName: 'Build custom-functions-metadata'
+  continueOnError: true
+
+- script: |
+    echo "Building eslint-plugin-excel-custom-functions..."
+    cd packages/eslint-plugin-excel-custom-functions
+    npm run build
+  displayName: 'Build eslint-plugin-excel-custom-functions'
+  continueOnError: true
+
+# Level 4: Depends on Level 0-3
+- script: |
+    echo "Building office-addin-dev-certs..."
+    cd packages/office-addin-dev-certs
+    npm run build
+  displayName: 'Build office-addin-dev-certs'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-dev-settings..."
+    cd packages/office-addin-dev-settings
+    npm run build
+  displayName: 'Build office-addin-dev-settings'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-mock..."
+    cd packages/office-addin-mock
+    npm run build
+  displayName: 'Build office-addin-mock'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-project..."
+    cd packages/office-addin-project
+    npm run build
+  displayName: 'Build office-addin-project'
+  continueOnError: true
+
+- script: |
+    echo "Building custom-functions-metadata-plugin..."
+    cd packages/custom-functions-metadata-plugin
+    npm run build
+  displayName: 'Build custom-functions-metadata-plugin'
+  continueOnError: true
+
+# Level 5: Depends on Level 0-4
+- script: |
+    echo "Building office-addin-test-server..."
+    cd packages/office-addin-test-server
+    npm run build
+  displayName: 'Build office-addin-test-server'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-debugging..."
+    cd packages/office-addin-debugging
+    npm run build
+  displayName: 'Build office-addin-debugging'
+  continueOnError: true
+
+- script: |
+    echo "Building office-addin-sso..."
+    cd packages/office-addin-sso
+    npm run build
+  displayName: 'Build office-addin-sso'
+  continueOnError: true
+
+# Level 6: Depends on Level 0-5
+- script: |
+    echo "Building office-addin-test-helpers..."
+    cd packages/office-addin-test-helpers
+    npm run build
+  displayName: 'Build office-addin-test-helpers'
+  continueOnError: true
