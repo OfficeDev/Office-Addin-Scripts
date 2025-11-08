@@ -35,7 +35,7 @@ extends:
         - template: /.azure-devops/steps/build-individually.yaml@self
         - template: /.azure-devops/steps/devcerts.yml@self
         - template: /.azure-devops/steps/edgewebview.yml@self
-        - template: /.azure-devops/steps/test-individually.yml@self
+        - template: /.azure-devops/steps/test-individually.yaml@self
       - job: Linux
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
