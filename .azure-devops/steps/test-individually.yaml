@@ -1,0 +1,95 @@
+steps:
+# Test packages in dependency order without using Lerna or npm workspaces
+# Each package is tested by calling npm run test directly in its directory
+
+- powershell: |
+    $ErrorActionPreference = "Stop"
+    $root = Get-Location
+    
+    Write-Host "==== Level 0: No internal dependencies ===="
+    Write-Host "Testing office-addin-prettier-config..."
+    Set-Location "$root/packages/office-addin-prettier-config"
+    npm run test
+    
+    Write-Host "==== Level 1: Depends only on Level 0 ===="
+    Write-Host "Testing eslint-plugin-office-addins..."
+    Set-Location "$root/packages/eslint-plugin-office-addins"
+    npm run test
+    
+    Write-Host "Testing office-addin-usage-data..."
+    Set-Location "$root/packages/office-addin-usage-data"
+    npm run test
+    
+    Write-Host "==== Level 2: Depends on Level 0-1 ===="
+    Write-Host "Testing office-addin-cli..."
+    Set-Location "$root/packages/office-addin-cli"
+    npm run test
+    
+    Write-Host "Testing eslint-config-office-addins..."
+    Set-Location "$root/packages/eslint-config-office-addins"
+    npm run test
+    
+    Write-Host "Testing office-addin-lint..."
+    Set-Location "$root/packages/office-addin-lint"
+    npm run test
+    
+    Write-Host "==== Level 3: Depends on Level 0-2 ===="
+    Write-Host "Testing office-addin-node-debugger..."
+    Set-Location "$root/packages/office-addin-node-debugger"
+    npm run test
+    
+    Write-Host "Testing office-addin-manifest..."
+    Set-Location "$root/packages/office-addin-manifest"
+    npm run test
+    
+    Write-Host "Testing custom-functions-metadata..."
+    Set-Location "$root/packages/custom-functions-metadata"
+    npm run test
+    
+    Write-Host "Testing eslint-plugin-excel-custom-functions..."
+    Set-Location "$root/packages/eslint-plugin-excel-custom-functions"
+    npm run test
+    
+    Write-Host "==== Level 4: Depends on Level 0-3 ===="
+    Write-Host "Testing office-addin-dev-certs..."
+    Set-Location "$root/packages/office-addin-dev-certs"
+    npm run test
+    
+    Write-Host "Testing office-addin-dev-settings..."
+    Set-Location "$root/packages/office-addin-dev-settings"
+    npm run test
+    
+    Write-Host "Testing office-addin-mock..."
+    Set-Location "$root/packages/office-addin-mock"
+    npm run test
+    
+    Write-Host "Testing office-addin-project..."
+    Set-Location "$root/packages/office-addin-project"
+    npm run test
+    
+    Write-Host "Testing custom-functions-metadata-plugin..."
+    Set-Location "$root/packages/custom-functions-metadata-plugin"
+    npm run test
+    
+    Write-Host "==== Level 5: Depends on Level 0-4 ===="
+    Write-Host "Testing office-addin-test-server..."
+    Set-Location "$root/packages/office-addin-test-server"
+    npm run test
+    
+    Write-Host "Testing office-addin-debugging..."
+    Set-Location "$root/packages/office-addin-debugging"
+    npm run test
+    
+    Write-Host "Testing office-addin-sso..."
+    Set-Location "$root/packages/office-addin-sso"
+    npm run test
+    
+    Write-Host "==== Level 6: Depends on Level 0-5 ===="
+    Write-Host "Testing office-addin-test-helpers..."
+    Set-Location "$root/packages/office-addin-test-helpers"
+    npm run test
+    
+    Set-Location $root
+  displayName: 'Test packages individually'
+  timeoutInMinutes: 5
+  continueOnError: true
