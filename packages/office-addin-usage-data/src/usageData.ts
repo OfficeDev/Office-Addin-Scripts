@@ -43,7 +43,8 @@ export class ExpectedError extends Error {
  * UpdateData options
  * @member groupName Group name for usage data settings (Optional)
  * @member projectName The name of the project that is using the usage data package.
- * @member instrumentationKey Instrumentation key for usage data resource
+ * @member connectionString Application Insights connection string (Optional, takes precedence over instrumentationKey and one is required)
+ * @member instrumentationKey Instrumentation key for usage data resource (Optional, used if connectionString is not provided and one is required)
  * @member promptQuestion Question displayed to user over opt-in for usage data (Optional)
  * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt) (Optional)
  * @member usageDataLevel User's response to the prompt for usage data (Optional)
@@ -53,7 +54,8 @@ export class ExpectedError extends Error {
 export interface IUsageDataOptions {
   groupName?: string;
   projectName: string;
-  instrumentationKey: string;
+  connectionString?: string;
+  instrumentationKey?: string;
   promptQuestion?: string;
   raisePrompt?: boolean;
   usageDataLevel?: UsageDataLevel;
@@ -88,8 +90,11 @@ export class OfficeAddinUsageData {
         ...usageDataOptions,
       };
 
-      if (this.options.instrumentationKey === undefined) {
-        throw new Error("Instrumentation Key not defined - cannot create usage data object");
+      // Validate that either connectionString or instrumentationKey is provided
+      if (!this.options.connectionString && !this.options.instrumentationKey) {
+        throw new Error(
+          "Either connectionString or instrumentationKey must be provided - cannot create usage data object"
+        );
       }
 
       if (this.options.groupName === undefined) {
@@ -119,7 +124,26 @@ export class OfficeAddinUsageData {
       }
       this.options.deviceID = jsonData.readDeviceID();
       if (this.options.usageDataLevel === UsageDataLevel.on) {
-        appInsights.setup(this.options.instrumentationKey).setAutoCollectExceptions(false).start();
+        // Application Insights v3 requires connection string format
+        // Use connectionString if provided, otherwise convert instrumentationKey to connection string format
+        let connectionString: string;
+
+        if (this.options.connectionString) {
+          connectionString = this.options.connectionString;
+        } else if (this.options.instrumentationKey) {
+          // Convert instrumentation key to connection string if needed
+          connectionString = this.options.instrumentationKey.includes("InstrumentationKey=")
+            ? this.options.instrumentationKey
+            : `InstrumentationKey=${this.options.instrumentationKey}`;
+        } else {
+          throw new Error("No connection string or instrumentation key available");
+        }
+
+        // Only call setup if Application Insights hasn't been initialized yet
+        // This prevents warnings about duplicate API registrations in tests
+        if (!appInsights.defaultClient) {
+          appInsights.setup(connectionString).setAutoCollectExceptions(false).start();
+        }
         this.usageDataClient = appInsights.defaultClient;
         this.removeApplicationInsightsSensitiveInformation();
       }
@@ -146,15 +170,22 @@ export class OfficeAddinUsageData {
    */
   public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      const usageDataEvent = new appInsights.Contracts.EventData();
-      usageDataEvent.name = this.options.isForTesting ? `${eventName}-test` : eventName;
+      const name = this.options.isForTesting ? `${eventName}-test` : eventName;
       try {
+        const properties: { [key: string]: string } = {};
+        const measurements: { [key: string]: number } = {};
+
         for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          usageDataEvent.properties[key] = value;
-          usageDataEvent.measurements[key + " durationElapsed"] = elapsedTime;
+          properties[key] = value;
+          measurements[key + " durationElapsed"] = elapsedTime;
         }
-        usageDataEvent.properties["deviceID"] = this.options.deviceID;
-        this.usageDataClient.trackEvent(usageDataEvent);
+        properties["deviceID"] = this.options.deviceID;
+
+        this.usageDataClient.trackEvent({
+          name,
+          properties,
+          measurements,
+        });
         this.eventsSent++;
       } catch (err) {
         this.reportError("sendUsageDataEvents", err);
@@ -242,11 +273,11 @@ export class OfficeAddinUsageData {
   }
 
   /**
-   * Returns the instrumentation key associated with the resource
-   * @returns The usage data instrumentation key
+   * Returns the connection string or instrumentation key associated with the resource
+   * @returns The usage data connection string or instrumentation key
    */
   public getUsageDataKey(): string {
-    return this.options.instrumentationKey;
+    return this.options.connectionString || this.options.instrumentationKey || "";
   }
 
   /**
@@ -328,10 +359,8 @@ export class OfficeAddinUsageData {
             ? Object.create(err)
             : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
-        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
-          exception: this.maskFilePaths(error),
-          properties: {},
-        };
+        const properties: { [key: string]: string } = {};
+
         Object.entries({
           Succeeded: false,
           Method: method,
@@ -340,9 +369,13 @@ export class OfficeAddinUsageData {
           ...data,
           deviceID: this.options.deviceID,
         }).forEach((entry) => {
-          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
+          properties[entry[0]] = JSON.stringify(entry[1]);
         });
-        this.usageDataClient.trackException(exceptionTelemetryObj);
+
+        this.usageDataClient.trackException({
+          exception: this.maskFilePaths(error),
+          properties,
+        });
         this.exceptionsSent++;
       } catch (e) {
         this.reportError("reportException", e);
@@ -404,19 +437,21 @@ export class OfficeAddinUsageData {
             ? Object.create(err)
             : new Error(`${this.options.projectName} error: ${err}`);
         error.name = this.getEventName();
-        let exceptionTelemetryObj: appInsights.Contracts.ExceptionTelemetry = {
-          exception: this.maskFilePaths(error),
-          properties: {},
-        };
+        const properties: { [key: string]: string } = {};
+
         Object.entries({
           Succeeded: false,
           Method: method,
           ...this.defaultData,
           ...data,
         }).forEach((entry) => {
-          exceptionTelemetryObj.properties[entry[0]] = JSON.stringify(entry[1]);
+          properties[entry[0]] = JSON.stringify(entry[1]);
         });
-        this.usageDataClient.trackException(exceptionTelemetryObj);
+
+        this.usageDataClient.trackException({
+          exception: this.maskFilePaths(error),
+          properties,
+        });
         this.exceptionsSent++;
       } catch (e) {
         this.reportError("sendUsageDataException", e);
@@ -463,14 +498,17 @@ export class OfficeAddinUsageData {
   public sendUsageDataEvent(data: object = {}) {
     if (this.getUsageDataLevel() === UsageDataLevel.on) {
       try {
-        let eventTelemetryObj = new appInsights.Contracts.EventData();
-        eventTelemetryObj.name = this.getEventName();
-        eventTelemetryObj.properties = {
+        const name = this.getEventName();
+        const properties = {
           ...this.defaultData,
           ...data,
           deviceID: this.options.deviceID,
         };
-        this.usageDataClient.trackEvent(eventTelemetryObj);
+
+        this.usageDataClient.trackEvent({
+          name,
+          properties,
+        });
         this.eventsSent++;
       } catch (e) {
         this.reportError("sendUsageDataEvent", e);
