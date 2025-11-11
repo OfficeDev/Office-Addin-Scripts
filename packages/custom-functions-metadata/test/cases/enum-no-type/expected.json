@@ -14,7 +14,7 @@
                     "description": "param of enum type planets",
                     "name": "second",
                     "type": "string",
-                    "customEnumType": "PLANETS"
+                    "customEnumId": "PLANETS"
                 }
             ],
             "result": {}
@@ -33,7 +33,7 @@
                     "name": "second",
                     "repeating": true,
                     "type": "number",
-                    "customEnumType": "NUMBERS"
+                    "customEnumId": "NUMBERS"
                 }
             ],
             "result": {}
@@ -46,42 +46,42 @@
             "values": [
                 {
                     "name": "mercury",
-                    "value": "mercuryvalue",
+                    "stringValue": "mercuryvalue",
                     "tooltip": "mercury is the first planet from the sun"
                 },
                 {
                     "name": "venus",
-                    "value": "venusvalue",
+                    "stringValue": "venusvalue",
                     "tooltip": "venus is the second planet from the sun"
                 },
                 {
                     "name": "earth",
-                    "value": "earthvalue",
+                    "stringValue": "earthvalue",
                     "tooltip": "earth is the third planet from the sun"
                 },
                 {
                     "name": "mars",
-                    "value": "marsvalue",
+                    "stringValue": "marsvalue",
                     "tooltip": "mars is the fourth planet from the sun"
                 },
                 {
                     "name": "jupiter",
-                    "value": "jupitervalue",
+                    "stringValue": "jupitervalue",
                     "tooltip": "jupiter is the fifth planet from the sun"
                 },
                 {
                     "name": "saturn",
-                    "value": "saturnvalue",
+                    "stringValue": "saturnvalue",
                     "tooltip": "saturn is the sixth planet from the sun"
                 },
                 {
                     "name": "uranus",
-                    "value": "uranusvalue",
+                    "stringValue": "uranusvalue",
                     "tooltip": "uranus is the seventh planet from the sun"
                 },
                 {
                     "name": "neptune",
-                    "value": "neptunevalue",
+                    "stringValue": "neptunevalue",
                     "tooltip": "neptune is the eighth planet from the sun"
                 }
             ]
@@ -92,27 +92,27 @@
             "values": [
                 {
                     "name": "One",
-                    "value": 1,
+                    "numberValue": 1,
                     "tooltip": "One"
                 },
                 {
                     "name": "Two",
-                    "value": 2,
+                    "numberValue": 2,
                     "tooltip": "Two"
                 },
                 {
                     "name": "Three",
-                    "value": 3,
+                    "numberValue": 3,
                     "tooltip": "Three"
                 },
                 {
                     "name": "Four",
-                    "value": 4,
+                    "numberValue": 4,
                     "tooltip": "Four"
                 },
                 {
                     "name": "Five",
-                    "value": 5,
+                    "numberValue": 5,
                     "tooltip": "Five"
                 }
             ]
@@ -123,27 +123,27 @@
             "values": [
                 {
                     "name": "One",
-                    "value": 0,
+                    "numberValue": 0,
                     "tooltip": ""
                 },
                 {
                     "name": "Two",
-                    "value": 1,
+                    "numberValue": 1,
                     "tooltip": ""
                 },
                 {
                     "name": "Three",
-                    "value": 2,
+                    "numberValue": 2,
                     "tooltip": ""
                 },
                 {
                     "name": "Four",
-                    "value": 3,
+                    "numberValue": 3,
                     "tooltip": ""
                 },
                 {
                     "name": "Five",
-                    "value": 4,
+                    "numberValue": 4,
                     "tooltip": ""
                 }
             ]
