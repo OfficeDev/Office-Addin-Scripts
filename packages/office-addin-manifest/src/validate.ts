@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { createReadStream } from "fs";
-import { AppManifestUtils, TeamsManifestVDevPreview } from "@microsoft/app-manifest";
+import { AppManifestUtils, DevPreviewSchema } from "@microsoft/app-manifest";
 import fetch from "node-fetch";
 import { OfficeAddinManifest } from "./manifestOperations";
 import { usageDataObject } from "./defaults";
@@ -74,9 +74,9 @@ export async function validateManifest(
     await OfficeAddinManifest.readManifestFile(manifestPath);
 
     if (manifestPath.endsWith(".json")) {
-      const manifest: TeamsManifestVDevPreview = (await AppManifestUtils.readTeamsManifest(
+      const manifest: DevPreviewSchema = (await AppManifestUtils.readTeamsManifest(
         manifestPath
-      )) as TeamsManifestVDevPreview;
+      )) as DevPreviewSchema;
       const validationResult: string[] = await AppManifestUtils.validateAgainstSchema(manifest);
       if (validationResult.length !== 0) {
         // There are errors
