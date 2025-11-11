@@ -109,7 +109,7 @@ export class OfficeAddinUsageData {
       // is defaults.generatorOffice and a office-addin-usage-data file hasn't been written yet, write one out.
       if (
         this.options.projectName === defaults.generatorOffice &&
-        this.options.instrumentationKey === defaults.instrumentationKeyForOfficeAddinCLITools &&
+        this.options.connectionString === defaults.connectionStringForOfficeAddinCLITools &&
         jsonData.needToPromptForUsageData(this.options.groupName)
       ) {
         jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);

@@ -24,7 +24,7 @@ const mockDeviceID = uuidv4();
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
   projectName: "office-addin-usage-data",
-  instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
+  connectionString: defaults.connectionStringForOfficeAddinCLITools,
   promptQuestion:
     "-----------------------------------------\nDo you want to opt-in for usage data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
@@ -34,7 +34,7 @@ const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   deviceID: mockDeviceID,
 };
 
-describe("Test office-addin-usage data-package", function () {
+describe("Test office-addin-usage-data package", function () {
   this.beforeAll(function () {
     try {
       if (fs.existsSync(defaults.usageDataJsonFilePath)) {
@@ -69,7 +69,7 @@ describe("Test office-addin-usage data-package", function () {
           usageDataLevel: officeAddinUsageData.UsageDataLevel.off,
           projectName: "office-addin-usage-data",
           groupName: "TestGroupName",
-          instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
+          connectionString: defaults.connectionStringForOfficeAddinCLITools,
         });
       });
     });
@@ -153,7 +153,10 @@ describe("Test office-addin-usage data-package", function () {
   });
   describe("Test getUsageDataKey method", () => {
     it("should return usage data key", () => {
-      assert.equal(addInUsageData.getUsageDataKey(), "de0d9e7c-1f46-4552-bc21-4e43e489a015");
+      assert.equal(
+        addInUsageData.getUsageDataKey(),
+        defaults.connectionStringForOfficeAddinCLITools
+      );
     });
   });
   describe("Test getEventsSent method", () => {
@@ -245,7 +248,7 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test modifySetting method", () => {
     it("should modify or create specific property to new value", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -269,7 +272,7 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test readUsageDataJsonData method", () => {
     it("should read and return parsed object object from usage data", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -283,7 +286,7 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test readUsageDataLevel method", () => {
     it("should read and return object's usage data level from file", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -300,7 +303,7 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test readUsageDataObjectProperty method", () => {
     it("should read and return parsed object object from usage data", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -318,7 +321,7 @@ describe("Test office-addin-usage data-package", function () {
     it("should write to already existing file", () => {
       fs.writeFileSync(defaults.usageDataJsonFilePath, "");
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -350,7 +353,7 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test writeUsageDataJsonData method", () => {
     it("should create new existing file with correct format", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -383,7 +386,7 @@ describe("Test office-addin-usage data-package", function () {
     it("should check if groupName exists", () => {
       fs.writeFileSync(defaults.usageDataJsonFilePath, "test");
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
