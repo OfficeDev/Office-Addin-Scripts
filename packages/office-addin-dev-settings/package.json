@@ -34,7 +34,7 @@
     "winreg": "1.2.4"
   },
   "peerDependencies": {
-    "@microsoft/m365agentstoolkit-cli": "^1.0.4"
+    "@microsoft/m365agentstoolkit-cli": "^1.1.1"
   },
   "devDependencies": {
     "@microsoft/eslint-plugin-sdl": "^1.0.1",
