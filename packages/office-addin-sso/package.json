@@ -1,6 +1,6 @@
 {
   "name": "office-addin-sso",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "Configure SSO for Office Addin project and provide SSO authentication service.",
   "main": "./lib/main.js",
   "scripts": {
