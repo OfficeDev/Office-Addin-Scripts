@@ -1,6 +1,6 @@
 {
   "name": "office-addin-cli",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "A command-line interface for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -31,11 +31,11 @@
     "@types/node-fetch": "^2.5.10",
     "concurrently": "^9.0.0",
     "eslint": "^9.0.0",
-    "eslint-plugin-office-addins": "^4.0.5",
+    "eslint-plugin-office-addins": "^4.0.6",
     "eslint-plugin-prettier": "^3.4.0",
     "mocha": "^11.0.1",
     "office-addin-prettier-config": "^2.0.1",
-    "office-addin-usage-data": "^2.0.5",
+    "office-addin-usage-data": "^2.0.6",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.1",
