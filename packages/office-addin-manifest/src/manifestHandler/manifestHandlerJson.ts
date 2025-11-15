@@ -1,17 +1,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { AppManifestUtils, TeamsManifestVDevPreview } from "@microsoft/app-manifest";
+import { AppManifestUtils, DevPreviewSchema } from "@microsoft/app-manifest";
 import { v4 as uuidv4 } from "uuid";
 import { ManifestInfo, ManifestType } from "../manifestInfo";
 import { ManifestHandler } from "./manifestHandler";
 
 export class ManifestHandlerJson extends ManifestHandler {
-  async modifyManifest(guid?: string, displayName?: string): Promise<TeamsManifestVDevPreview> {
+  async modifyManifest(guid?: string, displayName?: string): Promise<DevPreviewSchema> {
     try {
-      const appManifest: TeamsManifestVDevPreview = (await AppManifestUtils.readTeamsManifest(
+      const appManifest: DevPreviewSchema = (await AppManifestUtils.readTeamsManifest(
         this.manifestPath
-      )) as TeamsManifestVDevPreview;
+      )) as DevPreviewSchema;
 
       if (typeof guid !== "undefined") {
         if (!guid || guid === "random") {
@@ -33,16 +33,16 @@ export class ManifestHandlerJson extends ManifestHandler {
 
   async parseManifest(): Promise<ManifestInfo> {
     try {
-      const file: TeamsManifestVDevPreview = (await AppManifestUtils.readTeamsManifest(
+      const file: DevPreviewSchema = (await AppManifestUtils.readTeamsManifest(
         this.manifestPath
-      )) as TeamsManifestVDevPreview;
+      )) as DevPreviewSchema;
       return this.getManifestInfo(file);
     } catch (err) {
       throw new Error(`Unable to read data for manifest file: ${this.manifestPath}. \n${err}`);
     }
   }
 
-  getManifestInfo(appManifest: TeamsManifestVDevPreview): ManifestInfo {
+  getManifestInfo(appManifest: DevPreviewSchema): ManifestInfo {
     const manifestInfo: ManifestInfo = new ManifestInfo();
 
     // Need to handle mutliple version of the prerelease json manifest schema
@@ -66,7 +66,7 @@ export class ManifestHandlerJson extends ManifestHandler {
     return manifestInfo;
   }
 
-  async writeManifestData(manifestData: TeamsManifestVDevPreview): Promise<void> {
+  async writeManifestData(manifestData: DevPreviewSchema): Promise<void> {
     await AppManifestUtils.writeTeamsManifest(this.manifestPath, manifestData);
   }
 }

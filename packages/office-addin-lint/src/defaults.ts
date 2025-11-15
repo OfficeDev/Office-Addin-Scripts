@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import {
-  instrumentationKeyForOfficeAddinCLITools,
+  connectionStringForOfficeAddinCLITools,
   OfficeAddinUsageData,
 } from "office-addin-usage-data";
 
@@ -23,6 +23,6 @@ export enum PrettierExitCode {
 // Usage data defaults
 export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
   projectName: "office-addin-lint",
-  instrumentationKey: instrumentationKeyForOfficeAddinCLITools,
+  connectionString: connectionStringForOfficeAddinCLITools,
   raisePrompt: false,
 });

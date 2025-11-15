@@ -5,7 +5,7 @@ import path from "path";
 import {
   AppManifestUtils,
   DeclarativeAgentManifest,
-  TeamsManifestVDevPreview,
+  DevPreviewSchema,
 } from "@microsoft/app-manifest";
 
 /* global console */
@@ -35,9 +35,9 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
     throw new Error(`The file '${manifestPath}' does not exist`);
   }
 
-  const manifest: TeamsManifestVDevPreview = (await AppManifestUtils.readTeamsManifest(
+  const manifest: DevPreviewSchema = (await AppManifestUtils.readTeamsManifest(
     manifestPath
-  )) as TeamsManifestVDevPreview;
+  )) as DevPreviewSchema;
 
   // Add icons
   addZipFile(manifest.icons?.color, manifestDir, zip);
