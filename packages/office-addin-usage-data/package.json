@@ -1,6 +1,6 @@
 {
   "name": "office-addin-usage-data",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Provides infrastructure to send usage data events and exceptions.",
   "main": "./lib/main.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "Office Add-in"
   ],
   "dependencies": {
-    "applicationinsights": "^1.7.3",
+    "applicationinsights": "^3.12.0",
     "commander": "^13.0.0",
     "readline-sync": "^1.4.9",
     "uuid": "8.3.2"
@@ -31,7 +31,7 @@
     "@types/node": "^14.17.2",
     "concurrently": "^9.0.0",
     "eslint": "^9.0.0",
-    "eslint-plugin-office-addins": "^4.0.5",
+    "eslint-plugin-office-addins": "^4.0.6",
     "eslint-plugin-prettier": "^5.2.1",
     "mocha": "^11.0.1",
     "office-addin-prettier-config": "^2.0.1",

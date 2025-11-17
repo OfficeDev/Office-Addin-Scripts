@@ -4,7 +4,7 @@
 import os from "os";
 import path from "path";
 import {
-  instrumentationKeyForOfficeAddinCLITools,
+  connectionStringForOfficeAddinCLITools,
   OfficeAddinUsageData,
 } from "office-addin-usage-data";
 
@@ -32,6 +32,6 @@ export const state = "WA";
 // Usage data defaults
 export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
   projectName: "office-addin-dev-certs",
-  instrumentationKey: instrumentationKeyForOfficeAddinCLITools,
+  connectionString: connectionStringForOfficeAddinCLITools,
   raisePrompt: false,
 });

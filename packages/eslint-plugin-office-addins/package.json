@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-office-addins",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "eslint plugin for office-addins",
   "keywords": [
     "eslint",
@@ -27,13 +27,13 @@
     "prettier": "^3.2.5",
     "requireindex": "~1.2.0",
     "typescript": "^5.4.3",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "~8.8.0"
   },
   "devDependencies": {
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.12.3",
-    "@typescript-eslint/rule-tester": "^8.0.0",
+    "@typescript-eslint/rule-tester": "~8.8.0",
     "jest": "^29.7.0",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.1.2"

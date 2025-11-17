@@ -24,7 +24,7 @@ const mockDeviceID = uuidv4();
 const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   groupName: "office-addin-usage-data",
   projectName: "office-addin-usage-data",
-  instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
+  connectionString: defaults.connectionStringForOfficeAddinCLITools,
   promptQuestion:
     "-----------------------------------------\nDo you want to opt-in for usage data?[y/n]\n-----------------------------------------",
   raisePrompt: false,
@@ -34,7 +34,7 @@ const usageDataObject: officeAddinUsageData.IUsageDataOptions = {
   deviceID: mockDeviceID,
 };
 
-describe("Test office-addin-usage data-package", function () {
+describe("Test office-addin-usage-data package", function () {
   this.beforeAll(function () {
     try {
       if (fs.existsSync(defaults.usageDataJsonFilePath)) {
@@ -69,7 +69,7 @@ describe("Test office-addin-usage data-package", function () {
           usageDataLevel: officeAddinUsageData.UsageDataLevel.off,
           projectName: "office-addin-usage-data",
           groupName: "TestGroupName",
-          instrumentationKey: defaults.instrumentationKeyForOfficeAddinCLITools,
+          connectionString: defaults.connectionStringForOfficeAddinCLITools,
         });
       });
     });
@@ -153,7 +153,10 @@ describe("Test office-addin-usage data-package", function () {
   });
   describe("Test getUsageDataKey method", () => {
     it("should return usage data key", () => {
-      assert.equal(addInUsageData.getUsageDataKey(), "de0d9e7c-1f46-4552-bc21-4e43e489a015");
+      assert.equal(
+        addInUsageData.getUsageDataKey(),
+        defaults.connectionStringForOfficeAddinCLITools
+      );
     });
   });
   describe("Test getEventsSent method", () => {
@@ -209,7 +212,10 @@ describe("Test office-addin-usage data-package", function () {
       addInUsageData.maskFilePaths(errWithBackslash);
 
       assert.strictEqual(compareErrorWithBackslash.message, errWithBackslash.message);
-      assert.strictEqual((errWithBackslash.stack ?? "").includes(compareErrorWithBackslash.stack), true);
+      assert.strictEqual(
+        (errWithBackslash.stack ?? "").includes(compareErrorWithBackslash.stack),
+        true
+      );
     });
     it("should parse error file paths with slashs and backslashs", () => {
       addInUsageData.setUsageDataOff();
@@ -242,24 +248,31 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test modifySetting method", () => {
     it("should modify or create specific property to new value", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
-        usageDataInstances: { [usageDataObject.groupName as string]: { usageDataLevel }, deviceID: mockDeviceID },
+        usageDataInstances: {
+          [usageDataObject.groupName as string]: { usageDataLevel },
+          deviceID: mockDeviceID,
+        },
       };
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(jsonObject));
       const usageDataJsonData = jsonData.readUsageDataJsonData();
       const testPropertyName = "testProperty";
-      usageDataJsonData.usageDataInstances[usageDataObject.groupName as string][testPropertyName] = 0;
+      usageDataJsonData.usageDataInstances[usageDataObject.groupName as string][testPropertyName] =
+        0;
       jsonData.modifyUsageDataJsonData(usageDataObject.groupName as string, testPropertyName, 0);
-      assert.equal(JSON.stringify(usageDataJsonData), JSON.stringify(jsonData.readUsageDataJsonData()));
+      assert.equal(
+        JSON.stringify(usageDataJsonData),
+        JSON.stringify(jsonData.readUsageDataJsonData())
+      );
     });
   });
   describe("Test readUsageDataJsonData method", () => {
     it("should read and return parsed object object from usage data", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -273,7 +286,7 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test readUsageDataLevel method", () => {
     it("should read and return object's usage data level from file", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -290,7 +303,7 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test readUsageDataObjectProperty method", () => {
     it("should read and return parsed object object from usage data", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
@@ -308,18 +321,25 @@ describe("Test office-addin-usage data-package", function () {
     it("should write to already existing file", () => {
       fs.writeFileSync(defaults.usageDataJsonFilePath, "");
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
-        usageDataInstances: { [usageDataObject.groupName as string]: { usageDataLevel }, deviceID: mockDeviceID },
+        usageDataInstances: {
+          [usageDataObject.groupName as string]: { usageDataLevel },
+          deviceID: mockDeviceID,
+        },
       };
       jsonData.writeUsageDataJsonData(
         usageDataObject.groupName as string,
         usageDataObject.usageDataLevel as officeAddinUsageData.UsageDataLevel
       );
       assert.equal(
-        JSON.stringify(jsonObject["usageDataInstances"][usageDataObject.groupName as string], null, 2),
+        JSON.stringify(
+          jsonObject["usageDataInstances"][usageDataObject.groupName as string],
+          null,
+          2
+        ),
         JSON.stringify(
           JSON.parse(fs.readFileSync(defaults.usageDataJsonFilePath, "utf8"))["usageDataInstances"][
             usageDataObject.groupName as string
@@ -333,18 +353,25 @@ describe("Test office-addin-usage data-package", function () {
   describe("Test writeUsageDataJsonData method", () => {
     it("should create new existing file with correct format", () => {
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
-        usageDataInstances: { [usageDataObject.groupName as string]: { usageDataLevel }, deviceID: mockDeviceID },
+        usageDataInstances: {
+          [usageDataObject.groupName as string]: { usageDataLevel },
+          deviceID: mockDeviceID,
+        },
       };
       jsonData.writeUsageDataJsonData(
         usageDataObject.groupName as string,
         usageDataObject.usageDataLevel as officeAddinUsageData.UsageDataLevel
       );
       assert.equal(
-        JSON.stringify(jsonObject["usageDataInstances"][usageDataObject.groupName as string], null, 2),
+        JSON.stringify(
+          jsonObject["usageDataInstances"][usageDataObject.groupName as string],
+          null,
+          2
+        ),
         JSON.stringify(
           JSON.parse(fs.readFileSync(defaults.usageDataJsonFilePath, "utf8"))["usageDataInstances"][
             usageDataObject.groupName as string
@@ -359,11 +386,14 @@ describe("Test office-addin-usage data-package", function () {
     it("should check if groupName exists", () => {
       fs.writeFileSync(defaults.usageDataJsonFilePath, "test");
       const usageDataLevel = usageDataObject.usageDataLevel;
-      let jsonObject = {};
+      let jsonObject: Record<string, any> = {};
       jsonObject[usageDataObject.groupName as string] = usageDataObject.usageDataLevel;
       jsonObject = { usageDataInstances: jsonData };
       jsonObject = {
-        usageDataInstances: { [usageDataObject.groupName as string]: { usageDataLevel }, deviceID: mockDeviceID },
+        usageDataInstances: {
+          [usageDataObject.groupName as string]: { usageDataLevel },
+          deviceID: mockDeviceID,
+        },
       };
       fs.writeFileSync(defaults.usageDataJsonFilePath, JSON.stringify(jsonObject));
       assert.equal(true, jsonData.groupNameExists("office-addin-usage-data"));
@@ -385,7 +415,10 @@ describe("Test office-addin-usage data-package", function () {
   });
   describe("Test reportSuccess", () => {
     it("should send success events successfully", () => {
-      addInUsageData.reportSuccess("testMethod-reportSuccess", { TestVal: 42, OtherTestVal: "testing" });
+      addInUsageData.reportSuccess("testMethod-reportSuccess", {
+        TestVal: 42,
+        OtherTestVal: "testing",
+      });
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
     it("should send success events successfully, even when there's no additional data", () => {
@@ -395,14 +428,21 @@ describe("Test office-addin-usage data-package", function () {
   });
   describe("Test reportExpectedException", () => {
     it("should send successful fail events successfully", () => {
-      addInUsageData.reportExpectedException("testMethod-reportExpectedException", new Error("Test"), {
-        TestVal: 42,
-        OtherTestVal: "testing",
-      });
+      addInUsageData.reportExpectedException(
+        "testMethod-reportExpectedException",
+        new Error("Test"),
+        {
+          TestVal: 42,
+          OtherTestVal: "testing",
+        }
+      );
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
     it("should send successful fail events successfully, even when there's no additional data", () => {
-      addInUsageData.reportExpectedException("testMethod-reportExpectedException", new Error("Test"));
+      addInUsageData.reportExpectedException(
+        "testMethod-reportExpectedException",
+        new Error("Test")
+      );
       assert.equal(addInUsageData.getEventsSent(), 1);
     });
   });

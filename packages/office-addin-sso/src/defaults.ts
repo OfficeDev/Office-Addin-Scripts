@@ -3,7 +3,7 @@
 
 import path from "path";
 import {
-  instrumentationKeyForOfficeAddinCLITools,
+  connectionStringForOfficeAddinCLITools,
   OfficeAddinUsageData,
 } from "office-addin-usage-data";
 
@@ -60,6 +60,6 @@ export const testManifestFilePath = path.resolve(`${process.cwd()}/test/test-man
 // Usage data defaults
 export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
   projectName: "office-addin-sso",
-  instrumentationKey: instrumentationKeyForOfficeAddinCLITools,
+  connectionString: connectionStringForOfficeAddinCLITools,
   raisePrompt: false,
 });

@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 
 import {
-  instrumentationKeyForOfficeAddinCLITools,
+  connectionStringForOfficeAddinCLITools,
   OfficeAddinUsageData,
 } from "office-addin-usage-data";
 
 // Usage data defaults
 export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
   projectName: "office-addin-dev-settings",
-  instrumentationKey: instrumentationKeyForOfficeAddinCLITools,
+  connectionString: connectionStringForOfficeAddinCLITools,
   raisePrompt: false,
 });
