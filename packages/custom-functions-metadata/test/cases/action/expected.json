@@ -1,0 +1,21 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Test the action tag",
+            "id": "ACTIONTEST",
+            "name": "ACTIONTEST",
+            "options": {
+                "action": true
+            },
+            "parameters": [
+                {
+                    "description": "Invocation context object containing information about where and how the action was triggered",
+                    "name": "actionInvocationContext",
+                    "type": "any"
+                }
+            ],
+            "result": {}
+        }
+    ]
+}
