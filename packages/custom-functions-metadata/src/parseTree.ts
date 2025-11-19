@@ -42,12 +42,12 @@ export interface IFunctionParameter {
   dimensionality?: string;
   optional?: boolean;
   repeating?: boolean;
-  customEnumType?: string;
+  customEnumId?: string;
 }
 
 interface IParameterType {
   type: string;
-  customEnumType?: string;
+  customEnumId?: string;
   cellValueType?: string;
 }
 
@@ -64,7 +64,8 @@ export interface IEnum {
 
 interface IEnumValue {
   name: string;
-  value: string | number;
+  stringValue?: string;
+  numberValue?: number;
   tooltip: string;
 }
 
@@ -338,7 +339,11 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           .join("\n")
           .replace(/^\s*[/*]+\s?/gm, "") // Strip leading slashes, asterisks, and whitespace
           .replace(/\s*[/*]+$/gm, "") || ""; // Strip trailing slashes, asterisks, and whitespace
-      values.push({ name: name, value: value, tooltip: tooltip });
+      if (isNumberEnum) {
+        values.push({ name: name, numberValue: value, tooltip: tooltip });
+      } else {
+        values.push({ name: name, stringValue: value, tooltip: tooltip });
+      }
     }
 
     const enumItem: IEnum = {
@@ -1414,7 +1419,7 @@ function getParamType(
     for (const enumItem of customEnums) {
       if (enumItem.id === nodeTypeName) {
         // Type found in the customEnumList
-        return { type: enumItem.type, customEnumType: nodeTypeName };
+        return { type: enumItem.type, customEnumId: nodeTypeName };
       }
     }
 
