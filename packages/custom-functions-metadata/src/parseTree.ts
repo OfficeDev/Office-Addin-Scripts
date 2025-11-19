@@ -736,8 +736,6 @@ function getOptions(
       errorParam = "@requiresParameterAddresses";
     } else if (optionsItem.capturesCallingObject) {
       errorParam = "@capturesCallingObject";
-    } else if (optionsItem.action) {
-      errorParam = "@action";
     }
 
     const errorString = `${errorParam} cannot be used with @linkedEntityLoadService.`;
