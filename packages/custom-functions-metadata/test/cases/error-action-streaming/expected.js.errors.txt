@@ -1,0 +1,1 @@
+@streaming cannot be used with @action. (1,1)
