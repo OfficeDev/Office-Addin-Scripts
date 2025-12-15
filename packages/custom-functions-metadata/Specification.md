@@ -9,6 +9,7 @@ Add the `@customfunction` tag in the comments for a JavaScript or TypeScript fun
 The function parameter types may be provided using the [@param](#param) tag in JavaScript, or from the [Function type](http://www.typescriptlang.org/docs/handbook/functions.html) in TypeScript. For more information, see the [@param](#param) tag and [Types](#Types) section.
 
 ## Tags
+* [@action](#action)
 * [@cancelable](#cancelable)
 * [@capturesCallingObject](#capturescallingobject)
 * [@customfunction](#customfunction) id name
@@ -23,6 +24,19 @@ The function parameter types may be provided using the [@param](#param) tag in J
 * [@volatile](#volatile)
 
 ---
+### @action
+
+Indicates that the function is an action that is run when a user defined `Action` is triggered.
+
+The function will be excluded from the autocomplete drop-down list and Formula Builder since it should only callable by the Excel runtime.
+
+* Must accept a single non-repeating, non-optional, scalar parameter of type `unknown`.
+* The function must have return type void.
+* Must not be a XLL-compatible custom function.
+* Must allow rich data as input.
+* An `@action` function cannot be combined with `@linkedEntityLoadService`, `@capturesCallingObject`, `@streaming`, `@volatile`, or `@excludeFromAutoComplete` tags.
+
+
 ### @cancelable
 
 Indicates that a custom function wants to perform an action when the function is canceled. 
@@ -93,7 +107,7 @@ The function will be excluded from the autocomplete drop-down list and Formula B
 * Must accept and return a single non-repeating, non-optional, scalar parameter of type `unknown`.
 * Must not be a XLL-compatible custom function.
 * Must allow rich data as input.
-* A `@linkedEntityLoadService` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, `@excludeFromAutoComplete`, or `@capturesCallingObject` tags.
+* A `@linkedEntityLoadService` function cannot be combined with `@streaming`, `@volatile`, `@requiresAddress`, `@requiresParameterAddresses`, `@excludeFromAutoComplete`, `@action`, or `@capturesCallingObject` tags.
 
 ---
 ### @param 

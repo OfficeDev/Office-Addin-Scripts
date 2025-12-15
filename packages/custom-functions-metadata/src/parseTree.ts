@@ -31,6 +31,7 @@ export interface IFunctionOptions {
   linkedEntityLoadService?: boolean;
   capturesCallingObject?: boolean;
   supportSync?: boolean;
+  action?: boolean;
 }
 
 export interface IFunctionParameter {
@@ -123,6 +124,7 @@ interface IJsDocParamType {
 }
 
 // JSDoc tags
+const ACTION = "action";
 const CANCELABLE = "cancelable";
 const CAPTURESCALLINGOBJECT = "capturescallingobject";
 const CUSTOM_ENUM = "customenum"; // case insensitive @CustomEnum tag to identify custom enums in JSDoc
@@ -485,7 +487,8 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
             !options.excludeFromAutoComplete &&
             !options.linkedEntityLoadService &&
             !options.capturesCallingObject &&
-            !options.supportSync
+            !options.supportSync &&
+            !options.action
           ) {
             delete functionMetadata.options;
           } else {
@@ -531,6 +534,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
 
             if (!options.supportSync) {
               delete options.supportSync;
+            }
+
+            if (!options.action) {
+              delete options.action;
             }
           }
 
@@ -695,6 +702,7 @@ function getOptions(
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
     supportSync: supportSync(func),
+    action: isAction(func),
   };
 
   if (isAddressRequired(func) || isRequiresParameterAddresses(func)) {
@@ -743,6 +751,42 @@ function getOptions(
   if (optionsItem.supportSync && (optionsItem.volatile || optionsItem.stream)) {
     const functionPosition = getPosition(func);
     const errorString = `@supportSync cannot be used with ${optionsItem.volatile ? '@volatile' : '@streaming'}.`;
+    extra.errors.push(logError(errorString, functionPosition));
+  }
+
+  if (
+    optionsItem.action &&
+    (optionsItem.excludeFromAutoComplete ||
+      optionsItem.volatile ||
+      optionsItem.stream ||
+      optionsItem.requiresAddress ||
+      optionsItem.requiresParameterAddresses ||
+      optionsItem.capturesCallingObject ||
+      optionsItem.linkedEntityLoadService ||
+      optionsItem.supportSync)
+  ) {
+    let errorParam: string = "";
+    const functionPosition = getPosition(func);
+
+    if (optionsItem.excludeFromAutoComplete) {
+      errorParam = "@excludeFromAutoComplete";
+    } else if (optionsItem.volatile) {
+      errorParam = "@volatile";
+    } else if (optionsItem.stream) {
+      errorParam = "@streaming";
+    } else if (optionsItem.requiresAddress) {
+      errorParam = "@requiresAddress";
+    } else if (optionsItem.requiresParameterAddresses) {
+      errorParam = "@requiresParameterAddresses";
+    } else if (optionsItem.capturesCallingObject) {
+      errorParam = "@capturesCallingObject";
+    } else if (optionsItem.linkedEntityLoadService) {
+      errorParam = "@linkedEntityLoadService";
+    } else if (optionsItem.supportSync) {
+      errorParam = "@supportSync";
+    }
+
+    const errorString = `${errorParam} cannot be used with @action.`;
     extra.errors.push(logError(errorString, functionPosition));
   }
 
@@ -1107,6 +1151,14 @@ function containsTag(tag: ts.JSDocTag, tagName: string): boolean {
  */
 function supportSync(node: ts.Node): boolean {
   return hasTag(node, SUPPORT_SYNC);
+}
+
+/**
+ * Returns true if action tag found in comments
+ * @param node jsDocs node
+ */
+function isAction(node: ts.Node): boolean {
+  return hasTag(node, ACTION);
 }
 
 /**
