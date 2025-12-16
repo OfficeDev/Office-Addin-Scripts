@@ -15,7 +15,7 @@ import { after, before, describe, it } from "mocha";
 const appId: string = "584c9885-baa7-44ef-95b6-6df1064a2e25";
 const port: string = "3000";
 const ssoAppName: string = "Office-Addin-Taskpane-SSO-Test";
-const secret: string = "9lcUGBHc8F0s/8FINhwLmTUuhn@KBp=_";
+const testValue: string = "9lcUGBHc8F0s/8FINhwLmTUuhn@KBp=_";
 
 describe("Unit Tests", function () {
   before(function () {
@@ -33,13 +33,15 @@ describe("Unit Tests", function () {
       }
     );
     it("Add secret and retrieve secret from credential store", function () {
-      ssoData.addSecretToCredentialStore(ssoAppName, secret, true /* isTest */, copyEnvFile);
-      const retrievedSecret: string = ssoData.getSecretFromCredentialStore(ssoAppName, true /* isTest */).trim();
-      assert.strictEqual(secret, retrievedSecret);
+      ssoData.addSecretToCredentialStore(ssoAppName, testValue, true /* isTest */, copyEnvFile);
+      const retrievedSecret: string = ssoData
+        .getSecretFromCredentialStore(ssoAppName, true /* isTest */)
+        .trim();
+      assert.strictEqual(testValue, retrievedSecret);
 
       // Read from updated env copy and ensure it contains the appId
       const envFile = fs.readFileSync(copyEnvFile, "utf8");
-      assert.equal(envFile.includes(secret), true);
+      assert.equal(envFile.includes(testValue), true);
     });
     after("Delete copies of test files", function () {
       fs.unlinkSync(copyEnvFile);
@@ -47,7 +49,9 @@ describe("Unit Tests", function () {
   });
   describe("writeApplicationData()", function () {
     const copyEnvFile: string = path.resolve(`${__dirname}/copy-test-env`);
-    const copyFallbackAuthTaskpaneFile: string = path.resolve(`${__dirname}/copy-test-fallbackauthtaskpane`);
+    const copyFallbackAuthTaskpaneFile: string = path.resolve(
+      `${__dirname}/copy-test-fallbackauthtaskpane`
+    );
     const copyManifestFile: string = path.resolve(`${__dirname}/copy-test-manifest.xml`);
     before(
       "Create copies of original files so we can edit them and then delete the copies at the end of test",
