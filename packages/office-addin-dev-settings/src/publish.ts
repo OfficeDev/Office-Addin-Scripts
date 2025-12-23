@@ -57,10 +57,15 @@ export async function uninstallWithTeams(id: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const guidRegex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
     const manifestIdRegex = new RegExp(`^${guidRegex.source}$`);
-    const titleIdRegex = new RegExp(`^U_${guidRegex.source}$`);
+    const titleIdRegexU = new RegExp(`^U_${guidRegex.source}$`);
+    const titleIdRegexT = new RegExp(`^T_${guidRegex.source}$`);
     let mode: string = "";
 
-    if (titleIdRegex.test(id)) {
+    if (titleIdRegexT.test(id)) {
+      // T_ IDs must be converted to manifest-id format (strip the T_ prefix)
+      const manifestId = id.substring(2);
+      mode = `--mode manifest-id --manifest-id ${manifestId}`;
+    } else if (titleIdRegexU.test(id)) {
       mode = `--mode title-id --title-id ${id}`;
     } else if (manifestIdRegex.test(id)) {
       mode = `--mode manifest-id --manifest-id ${id}`;
