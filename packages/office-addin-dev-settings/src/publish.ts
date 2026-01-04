@@ -69,7 +69,7 @@ export async function uninstallWithTeams(id: string): Promise<boolean> {
         uninstallId = match[1];
         mode = `--mode manifest-id --manifest-id ${uninstallId}`;
       } else {
-        console.error(`Error: Invalid id "${id}".  Add-in is still installed. archieiieieiieiei`);
+        console.error(`Error: Invalid id "${id}".  Add-in is still installed.`);
         resolve(false);
         return;
       }
