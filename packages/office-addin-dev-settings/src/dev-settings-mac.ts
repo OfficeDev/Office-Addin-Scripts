@@ -119,7 +119,10 @@ export async function unregisterAddIn(addinId: string, manifestPath: string): Pr
 
     if (registeredFileName === manifestFileName || registeredFileName.startsWith(addinId)) {
       if (!registeredFileName.endsWith(".xml")) {
-        uninstallWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
+        // Try manifest id first, fall back to titleId from filename
+        const titleIdFromFilename = registeredFileName.substring(registeredFileName.indexOf(".") + 1);
+        const idToUninstall = addinId || titleIdFromFilename;
+        uninstallWithTeams(idToUninstall);
         // TODO: Add support for refreshing add-ins in Outlook via registry key
       }
       fs.unlinkSync(registeredAddIn.manifestPath);
@@ -133,7 +136,10 @@ export async function unregisterAllAddIns(): Promise<void> {
   for (const registeredAddIn of registeredAddIns) {
     const registeredFileName = path.basename(registeredAddIn.manifestPath);
     if (!registeredFileName.endsWith(".xml")) {
-      uninstallWithTeams(registeredFileName.substring(registeredFileName.indexOf(".") + 1));
+      // Try manifest id first, fall back to titleId from filename
+      const titleIdFromFilename = registeredFileName.substring(registeredFileName.indexOf(".") + 1);
+      const idToUninstall = registeredAddIn.id || titleIdFromFilename;
+      uninstallWithTeams(idToUninstall);
       // TODO: Add support for refreshing add-ins in Outlook via registry key
     }
     fs.unlinkSync(registeredAddIn.manifestPath);

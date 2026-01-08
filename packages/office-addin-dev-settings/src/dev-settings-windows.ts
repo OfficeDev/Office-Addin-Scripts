@@ -340,8 +340,9 @@ async function unacquire(key: registry.RegistryKey, id: string) {
   if (manifest != undefined) {
     const key = getDeveloperSettingsRegistryKey(OutlookSideloadManifestPath);
     const registration = await registry.getStringValue(key, TitleId);
-    const uninstallId = registration != undefined ? registration : id;
-    if (await uninstallWithTeams(uninstallId)) {
+    // Try manifest id first, fall back to titleId from registry
+    const uninstallId = id || registration;
+    if (uninstallId && await uninstallWithTeams(uninstallId)) {
       if (registration != undefined) {
         registry.deleteValue(key, TitleId);
       }
