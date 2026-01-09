@@ -60,9 +60,7 @@ export async function uninstallWithTeams(id: string): Promise<boolean> {
     const titleIdRegex = new RegExp(`^.+_(${guidRegex.source})$`);
     let uninstallId: string = id;
 
-    if (manifestIdRegex.test(id)) {
-      uninstallId = id;
-    } else {
+    if (!manifestIdRegex.test(id)) {
       const match = id.match(titleIdRegex);
       if (match) {
         uninstallId = match[1];
