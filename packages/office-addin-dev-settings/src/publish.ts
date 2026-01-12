@@ -57,20 +57,21 @@ export async function uninstallWithTeams(id: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const guidRegex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
     const manifestIdRegex = new RegExp(`^${guidRegex.source}$`);
-    const titleIdRegex = new RegExp(`^U_${guidRegex.source}$`);
-    let mode: string = "";
+    const titleIdRegex = new RegExp(`^.+_(${guidRegex.source})$`);
+    let uninstallId: string = id;
 
-    if (titleIdRegex.test(id)) {
-      mode = `--mode title-id --title-id ${id}`;
-    } else if (manifestIdRegex.test(id)) {
-      mode = `--mode manifest-id --manifest-id ${id}`;
-    } else {
-      console.error(`Error: Invalid id "${id}".  Add-in is still installed.`);
-      resolve(false);
-      return;
+    if (!manifestIdRegex.test(id)) {
+      const match = id.match(titleIdRegex);
+      if (match) {
+        uninstallId = match[1];
+      } else {
+        console.error(`Error: Invalid id "${id}".  Add-in is still installed.`);
+        resolve(false);
+        return;
+      }
     }
 
-    const uninstallCommand = `npx -p @microsoft/m365agentstoolkit-cli atk uninstall ${mode} --interactive false`;
+    const uninstallCommand = `npx -p @microsoft/m365agentstoolkit-cli atk uninstall --mode manifest-id --manifest-id ${uninstallId} --interactive false`;
     console.log(`running: ${uninstallCommand}`);
     childProcess.exec(uninstallCommand, (error, stdout, stderr) => {
       if (error || stderr.match('"error"')) {
