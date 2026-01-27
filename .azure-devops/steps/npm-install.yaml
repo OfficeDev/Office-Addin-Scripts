@@ -1,14 +1,6 @@
 steps:
-- powershell: |
-    $ErrorActionPreference = "Continue"
-    $env:NPM_CONFIG_PROGRESS = "false"
-    $env:NPM_CONFIG_AUDIT = "false"
-    $env:NPM_CONFIG_FUND = "false"
-    $env:CI = "true"
-    npm ci --no-audit --no-fund --progress=false --loglevel verbose
-    if ($LASTEXITCODE -ne 0) {
-      Write-Error "npm ci failed with exit code $LASTEXITCODE"
-      exit $LASTEXITCODE
-    }
+- task: Npm@1
   displayName: "Install NPM packages"
-  timeoutInMinutes: 5
+  inputs:
+    command: custom
+    customCommand: "install"
