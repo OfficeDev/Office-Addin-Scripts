@@ -31,5 +31,6 @@
   "overrides": {
     "git-url-parse": "^13.0.0"
   },
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/*"],
+  "packageManager": "npm@11.6.1"
 }
