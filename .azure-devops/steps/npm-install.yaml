@@ -1,5 +1,5 @@
 steps:
-- pwsh: |
+- powershell: |
     $env:NPM_CONFIG_PROGRESS = "false"
     $env:NPM_CONFIG_AUDIT = "false"
     $env:NPM_CONFIG_FUND = "false"
