@@ -1,13 +1,9 @@
 steps:
-- task: Npm@1
+- pwsh: |
+    $env:NPM_CONFIG_PROGRESS = "false"
+    $env:NPM_CONFIG_AUDIT = "false"
+    $env:NPM_CONFIG_FUND = "false"
+    $env:CI = "true"
+    npm ci --no-audit --no-fund --progress=false 2>&1 | ForEach-Object { "$_" }
   displayName: "Install NPM packages"
   timeoutInMinutes: 5
-  inputs:
-    command: custom
-    customCommand: "ci --no-audit --no-fund --prefer-offline --progress=false"
-  env:
-    NPM_CONFIG_LOGLEVEL: error
-    NPM_CONFIG_PROGRESS: false
-    NPM_CONFIG_FUND: false
-    NPM_CONFIG_AUDIT: false
-    CI: true
