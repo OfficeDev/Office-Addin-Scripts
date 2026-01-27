@@ -5,7 +5,7 @@ steps:
     $env:NPM_CONFIG_AUDIT = "false"
     $env:NPM_CONFIG_FUND = "false"
     $env:CI = "true"
-    npm ci --no-audit --no-fund --progress=false
+    npm ci --no-audit --no-fund --progress=false --loglevel verbose
     if ($LASTEXITCODE -ne 0) {
       Write-Error "npm ci failed with exit code $LASTEXITCODE"
       exit $LASTEXITCODE
