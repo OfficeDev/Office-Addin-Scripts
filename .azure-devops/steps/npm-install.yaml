@@ -3,8 +3,11 @@ steps:
   displayName: "Install NPM packages"
   timeoutInMinutes: 5
   inputs:
-    command: install
-    verbose: false
+    command: custom
+    customCommand: "ci --no-audit --no-fund --prefer-offline --progress=false"
   env:
     NPM_CONFIG_LOGLEVEL: error
+    NPM_CONFIG_PROGRESS: false
+    NPM_CONFIG_FUND: false
+    NPM_CONFIG_AUDIT: false
     CI: true
