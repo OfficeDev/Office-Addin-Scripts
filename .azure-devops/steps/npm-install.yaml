@@ -1,6 +1,10 @@
 steps:
 - task: Npm@1
   displayName: "Install NPM packages"
+  timeoutInMinutes: 5
   inputs:
-    command: custom
-    customCommand: "install"
+    command: install
+    verbose: false
+  env:
+    NPM_CONFIG_LOGLEVEL: error
+    CI: true
