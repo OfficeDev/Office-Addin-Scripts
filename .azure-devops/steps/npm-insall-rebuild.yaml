@@ -1,0 +1,20 @@
+steps:
+
+- powershell: |
+    $env:NX_SKIP_NX_SETUP = "true"
+    $env:NX_DAEMON = "false"
+    $env:npm_config_fund = "false"
+    $env:npm_config_audit = "false"
+    $env:npm_config_progress = "false"
+    npm ci --ignore-scripts --verbose
+  displayName: Install deps (skip scripts)
+  timeoutInMinutes: 10
+
+# If you have native deps, rebuild only what you actually need. Examples:
+# - powershell: npm rebuild keytar --no-optional
+# - powershell: npm rebuild --no-optional
+# If you have none, you can omit this step entirely.
+- powershell: |
+    npm rebuild --no-optional --verbose
+  displayName: Rebuild native modules (safe)
+  timeoutInMinutes: 10
