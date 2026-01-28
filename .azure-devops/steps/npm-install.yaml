@@ -1,10 +1,8 @@
 steps:
 
-- script: |
-    echo Turn off nx postinstall script
-    set NX_SKIP_NX_SETUP=true
-    set NX_DAEMON=false
-
-    echo install npm packages
-    npm ci --verbose
-  displayName: Debug npm ci
+- powershell: |
+    $env:NX_SKIP_NX_SETUP = "true"
+    $env:NX_DAEMON = "false"
+    npm ci --no-audit --no-fund
+  displayName: Install deps (keep scripts, skip Nx)
+  timeoutInMinutes: 10
