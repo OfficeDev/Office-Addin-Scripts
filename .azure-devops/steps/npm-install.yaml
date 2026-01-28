@@ -1,3 +1,7 @@
 steps:
-- script: npm ci --verbose
+
+- script: |
+    export NX_SKIP_NX_SETUP=true
+    export NX_DAEMON=false
+    npm ci --verbose
   displayName: Debug npm ci
