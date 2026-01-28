@@ -1,7 +1,10 @@
 steps:
 
 - script: |
-    export NX_SKIP_NX_SETUP=true
-    export NX_DAEMON=false
+    echo Turn off nx postinstall script
+    set NX_SKIP_NX_SETUP=true
+    set NX_DAEMON=false
+
+    echo install npm packages
     npm ci --verbose
   displayName: Debug npm ci
