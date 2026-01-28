@@ -1,6 +1,3 @@
 steps:
-- task: Npm@1
-  displayName: "Install NPM packages"
-  inputs:
-    command: custom
-    customCommand: "ci"
+- script: npm ci --verbose
+  displayName: Debug npm ci
