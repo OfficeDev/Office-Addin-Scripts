@@ -31,7 +31,7 @@ extends:
       jobs:
       - job: Windows_Latest
         steps:
-        - template: /.azure-devops/steps/npm-install.yaml@self
+        - template: /.azure-devops/steps/npm-install-no-postinstall.yaml@self
         - template: /.azure-devops/steps/build-individually.yaml@self
         - template: /.azure-devops/steps/devcerts.yml@self
         - template: /.azure-devops/steps/edgewebview.yml@self

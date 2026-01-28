@@ -1,0 +1,6 @@
+steps:
+
+- powershell: |
+    npm ci --ignore-scripts --verbose
+  displayName: Install deps (skip scripts)
+  timeoutInMinutes: 10
