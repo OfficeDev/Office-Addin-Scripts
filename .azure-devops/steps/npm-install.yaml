@@ -1,6 +1,12 @@
+# Using '--ignore-scripts' to skip running lifecycle scripts during installation
+# because they cause hangs in the Azure DevOps environment for components used by
+# lerna.  If a "native bindings" error occurs during build, add a 'npm rebuild'
+# command for that specific package.
+
 steps:
 - task: Npm@1
   displayName: "Install NPM packages"
   inputs:
     command: custom
-    customCommand: "install"
+    customCommand: "ci --ignore-scripts --verbose"
+  timeoutInMinutes: 10
