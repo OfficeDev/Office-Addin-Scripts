@@ -137,3 +137,6 @@ project.xcworkspace
 # local min build config file
 /min-build-config.json
 /packages/hxplatform/src/Telemetry/*.g.*
+
+# Local AI helper files
+CLAUDE.md

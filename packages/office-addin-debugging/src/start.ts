@@ -309,25 +309,6 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
       throw new ExpectedError("Manifest does not contain the id for the Office Add-in.");
     }
 
-    // enable loopback for Edge
-    if (isWindowsPlatform && parseInt(os.release(), 10) === 10) {
-      const name = isDesktopAppType ? "EdgeWebView" : "EdgeWebBrowser";
-      try {
-        await devSettings.ensureLoopbackIsEnabled(name);
-      } catch (err: any) {
-        // if add loopback exemption failed, report the error then continue
-        console.error(err);
-        console.warn(
-          "Failed to add loopback exemption.\nWill try to sideload the Office Add-in without the loopback exemption, but it might not load correctly from localhost.\n"
-        );
-        usageDataObject.reportException("startDebugging()", err, {
-          app: app,
-          document: document,
-          appType: appType,
-        });
-      }
-    }
-
     // enable debugging
     if (isDesktopAppType && isWindowsPlatform) {
       await devSettings.enableDebugging(

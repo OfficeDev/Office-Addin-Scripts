@@ -9,13 +9,6 @@ import {
   parseOfficeApp,
   OfficeAddinManifest,
 } from "office-addin-manifest";
-import {
-  ensureLoopbackIsEnabled,
-  getAppcontainerNameFromManifestPath,
-  isAppcontainerSupported,
-  isLoopbackExemptionForAppcontainer,
-  removeLoopbackExemptionForAppcontainer,
-} from "./appcontainer";
 import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
@@ -25,43 +18,6 @@ import { AccountOperation, updateM365Account } from "./publish";
 
 /* global console process */
 
-export async function appcontainer(manifestPath: string, options: OptionValues) {
-  if (isAppcontainerSupported()) {
-    try {
-      if (options.loopback) {
-        try {
-          const askForConfirmation: boolean = options.yes !== true;
-          const allowed = await ensureLoopbackIsEnabled(manifestPath, askForConfirmation);
-          console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
-        } catch (err) {
-          throw new Error(`Unable to allow loopback for the appcontainer. \n${err}`);
-        }
-      } else if (options.preventLoopback) {
-        try {
-          const name = await getAppcontainerNameFromManifestPath(manifestPath);
-          await removeLoopbackExemptionForAppcontainer(name);
-          console.log(`Loopback is no longer allowed.`);
-        } catch (err) {
-          throw new Error(`Unable to disallow loopback. \n${err}`);
-        }
-      } else {
-        try {
-          const name = await getAppcontainerNameFromManifestPath(manifestPath);
-          const allowed = await isLoopbackExemptionForAppcontainer(name);
-          console.log(allowed ? "Loopback is allowed." : "Loopback is not allowed.");
-        } catch (err) {
-          throw new Error(`Unable to determine if appcontainer allows loopback. \n${err}`);
-        }
-      }
-      usageDataObject.reportSuccess("appcontainer");
-    } catch (err: any) {
-      usageDataObject.reportException("appcontainer", err);
-      logErrorMessage(err);
-    }
-  } else {
-    console.log("Appcontainer is not supported.");
-  }
-}
 
 export async function clear(manifestPath: string) {
   try {
@@ -290,15 +246,6 @@ function parseStringCommandOption(optionValue: any): string | undefined {
 
 export function parseWebViewType(webViewString?: string): devSettings.WebViewType | undefined {
   switch (webViewString ? webViewString.toLowerCase() : undefined) {
-    case "ie":
-    case "ie11":
-    case "internet explorer":
-    case "internetexplorer":
-      return devSettings.WebViewType.IE;
-    case "edgelegacy":
-    case "edge-legacy":
-    case "spartan":
-      return devSettings.WebViewType.Edge;
     case "edge chromium":
     case "edgechromium":
     case "edge-chromium":

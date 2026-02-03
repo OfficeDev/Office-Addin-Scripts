@@ -3,7 +3,6 @@
 Provides the ability to configure developer settings for Office Add-ins.
 
 ## Command-Line Interface
-* [appcontainer](#appcontainer)
 * [clear](#clear)
 * [debugging](#debugging)
 * [live-reload](#live-reload)
@@ -14,34 +13,6 @@ Provides the ability to configure developer settings for Office Add-ins.
 * [source-bundle-url](#source-bundle-url)
 * [unregister](#unregister)
 * [webview](#webview)
-
-#
-
-### appcontainer 
-Display or configure settings related to the appcontainer for an Office Add-in. 
-
-Syntax:
-
-`office-addin-dev-settings appcontainer <manifest> [options]`
-
-`manifest`: path to manifest file.
-
-Without options, displays the appcontainer name.
-
-Notes:
-
-* Without options, displays the appcontainer name and whether access to localhost is allowed.
-* The appcontainer must be registered in order to allow access to loopback addresses.
-
-Options:
-
-`--loopback`
-
-Allow access to loopback addresses such as `localhost`.
- 
-`--prevent-loopback`
-
-Prevent access to loopback addresses such as `localhost`.
 
 #
 
@@ -258,8 +229,8 @@ Syntax:
 
 `office-addin-dev-settings webview <manifest> <web-view-type>`
 
-`manifest`: path to manifest file. 
+`manifest`: path to manifest file.
 
-`web-view-type`: Office webview to load ('edge' or 'edge-chromium, 'edge-legacy', 'ie', or 'default'). 
+`web-view-type`: Office webview to load ('edge' or 'edge-chromium', or 'default'). 
 
 #
