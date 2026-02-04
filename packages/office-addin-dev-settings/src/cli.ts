@@ -15,14 +15,6 @@ commander.name("office-addin-dev-settings");
 commander.version(process.env.npm_package_version || "(version not available)");
 
 commander
-  .command("appcontainer <manifest-path>")
-  .description("Display or configure the appcontainer used to run the Office Add-in.")
-  .option("--loopback", `Allow access to loopback addresses such as "localhost".`)
-  .option("--prevent-loopback", `Prevent access to loopback addresses such as "localhost".`)
-  .option("-y,--yes", "Provide approval without any prompts.")
-  .action(commands.appcontainer);
-
-commander
   .command("clear [manifest-path]")
   .description("Clear all dev settings for the Office Add-in.")
   .action(commands.clear);
@@ -105,8 +97,6 @@ commander
   .on("--help", () => {
     console.log("\nFor [web-view-type], choose one of the following values:\n");
     console.log("\t'edge' or 'edge-chromium' for Microsoft Edge (Chromium)");
-    console.log("\t'edge-legacy' for the legacy Microsoft Edge (EdgeHTML)");
-    console.log("\t'ie' for Internet Explorer 11");
     console.log("\t'default' to remove any preference");
     console.log("\nOmit [web-view-type] to see the current setting.");
   });

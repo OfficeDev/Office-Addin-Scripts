@@ -265,8 +265,6 @@ export async function setWebView(
     case WebViewType.Default:
       await registry.deleteValue(key, WebViewSelection);
       break;
-    case WebViewType.IE:
-    case WebViewType.Edge:
     case WebViewType.EdgeChromium: {
       const webViewString: string = webViewType as string;
       await registry.addStringValue(key, WebViewSelection, webViewString);
@@ -279,10 +277,6 @@ export async function setWebView(
 
 function toWebViewType(webViewString?: string): WebViewType | undefined {
   switch (webViewString ? webViewString.toLowerCase() : undefined) {
-    case "ie":
-      return WebViewType.IE;
-    case "edge":
-      return WebViewType.Edge;
     case "edge chromium":
       return WebViewType.EdgeChromium;
     default:
@@ -292,12 +286,8 @@ function toWebViewType(webViewString?: string): WebViewType | undefined {
 
 export function toWebViewTypeName(webViewType?: WebViewType): string | undefined {
   switch (webViewType) {
-    case WebViewType.Edge:
-      return "legacy Microsoft Edge (EdgeHTML)";
     case WebViewType.EdgeChromium:
       return "Microsoft Edge (Chromium)";
-    case WebViewType.IE:
-      return "Microsoft Internet Explorer";
     default:
       return undefined;
   }

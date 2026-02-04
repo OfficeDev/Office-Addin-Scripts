@@ -23,8 +23,6 @@ export enum DebuggingMethod {
 
 export enum WebViewType {
   Default = "Default",
-  IE = "IE",
-  Edge = "Edge",
   EdgeChromium = "Edge Chromium",
 }
 

@@ -8,7 +8,6 @@ import { OfficeApp, ManifestInfo, OfficeAddinManifest, AddInType } from "office-
 import os from "os";
 import fspath from "path";
 import sinon from "sinon";
-import * as appcontainer from "../../src/appcontainer";
 import { AppType } from "../../src/appType";
 import * as devSettings from "../../src/dev-settings";
 import * as devSettingsWindows from "../../src/dev-settings-windows";
@@ -130,14 +129,6 @@ describe("DevSettingsForAddIn", function () {
         const expected = new devSettings.SourceBundleUrlComponents(undefined, undefined, undefined, undefined);
         await testSetSourceBundleUrlComponents(actual, expected);
       });
-      it("webView can be set to IE", async function () {
-        await devSettings.setWebView(addinId, devSettings.WebViewType.IE);
-        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "IE");
-      });
-      it("webView can be set to Edge", async function () {
-        await devSettings.setWebView(addinId, devSettings.WebViewType.Edge);
-        assert.strictEqual(await devSettingsWindows.getWebView(addinId), "Edge");
-      });
       it("webView can be set to Edge Chromium", async function () {
         await devSettings.setWebView(addinId, devSettings.WebViewType.EdgeChromium);
         assert.strictEqual(await devSettingsWindows.getWebView(addinId), "Edge Chromium");
@@ -224,56 +215,6 @@ describe("can specify to open dev tools", function () {
       await devSettings.disableDebugging(addinId);
       const open = await devSettings.getOpenDevTools(addinId);
       assert.strictEqual(open, false);
-    });
-  }
-});
-
-describe("Appcontainer", async function () {
-  if (isWindows) {
-    describe("getAppcontainerName()", function () {
-      it("developer add-in from https://localhost:3000", function () {
-        assert.strictEqual(
-          appcontainer.getAppcontainerName("https://localhost:3000/index.html"),
-          "1_https___localhost_300004ACA5EC-D79A-43EA-AB47-E50E47DD96FC"
-        );
-      });
-      it("store add-in (ScriptLab)", function () {
-        assert.strictEqual(
-          appcontainer.getAppcontainerName("https://script-lab.azureedge.net", true),
-          "0_https___script-lab.azureedge.net04ACA5EC-D79A-43EA-AB47-E50E47DD96FC"
-        );
-      });
-    });
-    describe("getAppcontainerNameFromManifest()", function () {
-      let sandbox: sinon.SinonSandbox;
-      beforeEach(function () {
-        sandbox = sinon.createSandbox();
-      });
-      afterEach(function () {
-        sandbox.restore();
-      });
-      it("undefined source location", async function () {
-        const manifest: ManifestInfo = { defaultSettings: {} };
-        const readManifestFile = sinon.fake.resolves(manifest);
-        sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
-        try {
-          await appcontainer.getAppcontainerNameFromManifest("https://localhost:3000/index.html");
-          assert.strictEqual(0, 1); // expecting exception
-        } catch (err: any) {
-          assert.strictEqual(
-            err.toString().includes("The source location could not be retrieved from the manifest."),
-            true
-          );
-        }
-      });
-      it("valid source location", async function () {
-        const sourceLocation = { sourceLocation: "https://localhost" };
-        const manifest: ManifestInfo = { defaultSettings: sourceLocation };
-        const readManifestFile = sinon.fake.resolves(manifest);
-        sandbox.stub(OfficeAddinManifest, "readManifestFile").callsFake(readManifestFile);
-        const appcontainerName = await appcontainer.getAppcontainerNameFromManifest("https://localhost");
-        assert.strictEqual(appcontainerName, "1_https___localhost04ACA5EC-D79A-43EA-AB47-E50E47DD96FC");
-      });
     });
   }
 });
