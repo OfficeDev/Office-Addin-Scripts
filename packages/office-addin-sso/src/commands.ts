@@ -13,7 +13,7 @@ import {
   applicationDataConfigured,
 } from "./ssoDataSettings";
 import { ExpectedError } from "office-addin-usage-data";
-import inquirer = require("inquirer");
+import inquirer from "inquirer";
 
 /* global console process */
 
