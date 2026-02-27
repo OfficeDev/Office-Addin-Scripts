@@ -133,7 +133,9 @@ const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const HELPURL_PARAM = "helpurl";
 const LINKEDENTITYLOADSERVICE = "linkedentityloadservice";
 const REQUIRESADDRESS = "requiresaddress";
+const REQUIRESSTREAMADDRESS = "requiresstreamaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
+const REQUIRESSTREAMPARAMETERADDRESSES = "requiresstreamparameteraddresses";
 const STREAMING = "streaming";
 const VOLATILE = "volatile";
 const SUPPORT_SYNC = "supportsync";
@@ -688,16 +690,22 @@ function getOptions(
   isInvocationFunction: boolean,
   extra: IFunctionExtras
 ): IFunctionOptions {
+  const addressRequired = isAddressRequired(func);
+  const streamAddressRequired = isStreamAddressRequired(func);
+  const parameterAddressesRequired = isRequiresParameterAddresses(func);
+  const streamParameterAddressesRequired = isRequiresStreamParameterAddresses(func);
+  const hasStreamingTag = hasTag(func, STREAMING);
+  const streamEnabled = isStreaming(func, isStreamingFunction);
+
   const optionsItem: IFunctionOptions = {
     cancelable: isCancelableTag(func, isCancelableFunction),
-    requiresAddress: isAddressRequired(func) && !isStreaming(func, isStreamingFunction),
-    requiresStreamAddress: isAddressRequired(func) && isStreaming(func, isStreamingFunction),
-    stream: isStreaming(func, isStreamingFunction),
+    requiresAddress: addressRequired && !streamEnabled,
+    requiresStreamAddress: streamAddressRequired || (addressRequired && streamEnabled),
+    stream: streamEnabled,
     volatile: isVolatile(func),
-    requiresParameterAddresses:
-      isRequiresParameterAddresses(func) && !isStreaming(func, isStreamingFunction),
+    requiresParameterAddresses: parameterAddressesRequired && !streamEnabled,
     requiresStreamParameterAddresses:
-      isRequiresParameterAddresses(func) && isStreaming(func, isStreamingFunction),
+      streamParameterAddressesRequired || (parameterAddressesRequired && streamEnabled),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
@@ -705,10 +713,23 @@ function getOptions(
     action: isAction(func),
   };
 
-  if (isAddressRequired(func) || isRequiresParameterAddresses(func)) {
-    let errorParam: string = isAddressRequired(func)
-      ? "@requiresAddress"
-      : "@requiresParameterAddresses";
+  if (
+    addressRequired ||
+    streamAddressRequired ||
+    parameterAddressesRequired ||
+    streamParameterAddressesRequired
+  ) {
+    let errorParam: string = "";
+
+    if (streamAddressRequired) {
+      errorParam = "@requiresStreamAddress";
+    } else if (addressRequired) {
+      errorParam = "@requiresAddress";
+    } else if (streamParameterAddressesRequired) {
+      errorParam = "@requiresStreamParameterAddresses";
+    } else {
+      errorParam = "@requiresParameterAddresses";
+    }
 
     if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
@@ -717,13 +738,28 @@ function getOptions(
     }
   }
 
+  if (streamAddressRequired && !hasStreamingTag) {
+    const functionPosition = getPosition(func, func.parameters.end);
+    const errorString = "@requiresStreamAddress can only be used with @streaming.";
+    extra.errors.push(logError(errorString, functionPosition));
+  }
+
+  if (streamParameterAddressesRequired && !hasStreamingTag) {
+    const functionPosition = getPosition(func, func.parameters.end);
+    const errorString =
+      "@requiresStreamParameterAddresses can only be used with @streaming.";
+    extra.errors.push(logError(errorString, functionPosition));
+  }
+
   if (
     optionsItem.linkedEntityLoadService &&
     (optionsItem.excludeFromAutoComplete ||
       optionsItem.volatile ||
       optionsItem.stream ||
       optionsItem.requiresAddress ||
+      optionsItem.requiresStreamAddress ||
       optionsItem.requiresParameterAddresses ||
+      optionsItem.requiresStreamParameterAddresses ||
       optionsItem.capturesCallingObject)
   ) {
     let errorParam: string = "";
@@ -737,8 +773,12 @@ function getOptions(
       errorParam = "@streaming";
     } else if (optionsItem.requiresAddress) {
       errorParam = "@requiresAddress";
+    } else if (optionsItem.requiresStreamAddress) {
+      errorParam = "@requiresStreamAddress";
     } else if (optionsItem.requiresParameterAddresses) {
       errorParam = "@requiresParameterAddresses";
+    } else if (optionsItem.requiresStreamParameterAddresses) {
+      errorParam = "@requiresStreamParameterAddresses";
     } else if (optionsItem.capturesCallingObject) {
       errorParam = "@capturesCallingObject";
     }
@@ -760,7 +800,9 @@ function getOptions(
       optionsItem.volatile ||
       optionsItem.stream ||
       optionsItem.requiresAddress ||
+      optionsItem.requiresStreamAddress ||
       optionsItem.requiresParameterAddresses ||
+      optionsItem.requiresStreamParameterAddresses ||
       optionsItem.capturesCallingObject ||
       optionsItem.linkedEntityLoadService ||
       optionsItem.supportSync)
@@ -776,8 +818,12 @@ function getOptions(
       errorParam = "@streaming";
     } else if (optionsItem.requiresAddress) {
       errorParam = "@requiresAddress";
+    } else if (optionsItem.requiresStreamAddress) {
+      errorParam = "@requiresStreamAddress";
     } else if (optionsItem.requiresParameterAddresses) {
       errorParam = "@requiresParameterAddresses";
+    } else if (optionsItem.requiresStreamParameterAddresses) {
+      errorParam = "@requiresStreamParameterAddresses";
     } else if (optionsItem.capturesCallingObject) {
       errorParam = "@capturesCallingObject";
     } else if (optionsItem.linkedEntityLoadService) {
@@ -1110,11 +1156,27 @@ function isAddressRequired(node: ts.Node): boolean {
 }
 
 /**
+ * Returns true if requiresStreamAddress tag found in comments
+ * @param node jsDocs node
+ */
+function isStreamAddressRequired(node: ts.Node): boolean {
+  return hasTag(node, REQUIRESSTREAMADDRESS);
+}
+
+/**
  * Returns true if RequiresParameterAddresses tag found in comments
  * @param node jsDocs node
  */
 function isRequiresParameterAddresses(node: ts.Node): boolean {
   return hasTag(node, REQUIRESPARAMETERADDRESSES);
+}
+
+/**
+ * Returns true if requiresStreamParameterAddresses tag found in comments
+ * @param node jsDocs node
+ */
+function isRequiresStreamParameterAddresses(node: ts.Node): boolean {
+  return hasTag(node, REQUIRESSTREAMPARAMETERADDRESSES);
 }
 
 /**

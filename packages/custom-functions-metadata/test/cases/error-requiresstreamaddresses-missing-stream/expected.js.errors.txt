@@ -1,0 +1,2 @@
+@requiresStreamAddress can only be used with @streaming. (12,58)
+@requiresStreamParameterAddresses can only be used with @streaming. (12,58)
