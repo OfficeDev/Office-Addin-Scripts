@@ -1,0 +1,19 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Streams the address of the current cell.",
+            "id": "ADDRESSSTREAM",
+            "name": "ADDRESSSTREAM",
+            "options": {
+                "requiresStreamAddress": true,
+                "stream": true,
+                "requiresStreamParameterAddresses": true
+            },
+            "parameters": [],
+            "result": {
+                "type": "string"
+            }
+        }
+    ]
+}
