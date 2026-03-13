@@ -135,13 +135,9 @@ export async function generateSideloadUrl(
   if (!manifest.id) {
     throw new ExpectedError("The manifest does not contain the id for the add-in.");
   }
-
-  if (
-    manifest.defaultSettings === undefined ||
-    manifest.defaultSettings.sourceLocation === undefined
-  ) {
-    throw new ExpectedError("The manifest does not contain the SourceLocation for the add-in");
-  }
+  
+  manifest.defaultSettings = manifest.defaultSettings ?? {};
+  manifest.defaultSettings.sourceLocation = manifest.defaultSettings.sourceLocation ?? "https://localhost:4000";
 
   const sourceLocationUrl: URL = new URL(manifest.defaultSettings.sourceLocation);
   if (sourceLocationUrl.protocol.indexOf("https") === -1) {
