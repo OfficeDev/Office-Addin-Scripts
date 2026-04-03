@@ -1,13 +1,8 @@
 module.exports = {
-  testEnvironment: 'node',
+  testEnvironment: "node",
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest', 
-      {
-        isolatedModules: true,
-      }
-    ],
+    "^.+\\.tsx?$": ["ts-jest"],
   },
-  testRegex: './tests/.+\\.test\\.ts$',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  testRegex: "./tests/.+\\.test\\.ts$",
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
 };
