@@ -101,6 +101,13 @@ commander
     console.log("\nOmit [web-view-type] to see the current setting.");
   });
 
+commander
+  .command("source-bundle-override-file <addIn-id>")
+  .option("--enable [path]", `Override the source bundle with a file on disk.`)
+  .option("--disable", "Disable overriding of the source bundle.")
+  .description("Configures overriding of the source bundle.")
+  .action(commands.sourceBundleOverrideFile);
+
 // if the command is not known, display an error
 commander.on("command:*", function () {
   logErrorMessage(`The command syntax is not valid.\n`);

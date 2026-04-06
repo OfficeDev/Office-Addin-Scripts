@@ -14,6 +14,7 @@ import * as devSettingsWindows from "../../src/dev-settings-windows";
 import { registerWithTeams } from "../../src/publish";
 import { deleteKey, getStringValue } from "../../src/registry";
 import * as devSettingsSideload from "../../src/sideload";
+import fs from "fs/promises";
 
 /* global process console */
 
@@ -36,6 +37,15 @@ async function testSetSourceBundleUrlComponents(
     actual.url,
     `http://${expected.host || "localhost"}:${expected.port || "8081"}/${expected.path || "{path}"}${expected.extension || ".bundle"}`
   );
+}
+
+async function createTestFile(filePath: string): Promise<void> {
+  try {
+    await fs.writeFile(filePath, "test bundle js content");
+    console.log(filePath + " created successfully.");
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 describe("DevSettingsForAddIn", function () {
@@ -627,4 +637,73 @@ describe("Sideload to web", function () {
     assert.ok(error instanceof Error, "should throw an error");
     assert.strictEqual(error.message, `Sideload to the Outlook web app is not supported.`);
   });
+});
+
+describe("Source bundle override file", function() {
+  if (isWindows) {
+    let sourceBundleOverridePathBeforeTests: string | undefined;
+    const baseDirPath = process.cwd();
+    const jsBundleFileName = "bundle.js";
+    const testBundleOverrideFilePath = fspath.normalize(`${baseDirPath}/${jsBundleFileName}`);
+    const testAddInId = "576e6f16-d42a-4426-bd68-dea093394ed9";
+
+    const sourceBundleEnabledStr = "Source bundle override. Add-in: " + testAddInId + ". Override file: " + testBundleOverrideFilePath;
+    const sourceBundleDisableStr = "Source bundle has not been overriden for add-in " + testAddInId;
+    const errEnableSourceBundleUndefined = "The source bundle override file path is not specified or is invalid.";
+
+    this.beforeAll(async function() {
+      await devSettings.clearDevSettings(testAddInId);
+    });
+
+    this.afterAll(async function() {
+      await devSettings.clearDevSettings(testAddInId);
+      await fs.unlink(testBundleOverrideFilePath);
+    });
+
+    describe("validate before enabling source bundle override file path", function() {
+      it("source bundle override should not be enabled", async function() {
+        assert.strictEqual(await devSettings.isSourceBundleOverriden(testAddInId), sourceBundleDisableStr);
+      });
+    });
+
+    describe("validate enabling source bundle override file path", function() {
+      it("enable source bundle override with NO path", async function() {
+        assert.strictEqual(await devSettings.isSourceBundleOverriden(testAddInId), sourceBundleDisableStr);
+
+        let error;
+        try {
+          await devSettings.enableSourceBundleOverrideFile(testAddInId, undefined);
+        } catch (err: any) {
+          error = err;
+        }
+        assert.ok(error instanceof Error, "error expected");
+        assert.strictEqual(error.message, errEnableSourceBundleUndefined);
+      });
+
+      it("enable source bundle override with VALID path", async function() {
+        assert.strictEqual(await devSettings.isSourceBundleOverriden(testAddInId), sourceBundleDisableStr);
+
+        let error;
+        try {
+          await createTestFile(testBundleOverrideFilePath);
+          await devSettings.enableSourceBundleOverrideFile(testAddInId, testBundleOverrideFilePath);
+
+          const sourceBundleOverridePath = await devSettings.getSourceBundleOverrideFilePath(testAddInId);
+          assert.strictEqual(sourceBundleOverridePath, testBundleOverrideFilePath);
+        } catch (err: any) {
+          console.log(err);
+          assert.fail("unexpected error");
+        }
+      });
+    });
+
+    describe("validate disabling source bundle override", async function() {
+      it("disable source bundle override", async function() {
+        assert.strictEqual(await devSettings.isSourceBundleOverriden(testAddInId), sourceBundleEnabledStr);
+
+        await devSettings.disableSourceBundleOverrideFile(testAddInId);
+        assert.strictEqual(await devSettings.isSourceBundleOverriden(testAddInId), sourceBundleDisableStr);
+      });
+    });
+  }
 });
