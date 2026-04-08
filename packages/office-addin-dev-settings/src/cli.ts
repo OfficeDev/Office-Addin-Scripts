@@ -108,6 +108,13 @@ commander
   .description("Configures overriding of the source bundle.")
   .action(commands.sourceBundleOverrideFile);
 
+commander
+  .command("disk-manifests")
+  .option("--enable [path]", `Enable loading manifests from disk.`)
+  .option("--disable", "Disable loading manifests from disk.")
+  .description("Configures loading manifests from disk.")
+  .action(commands.diskManifests);
+
 // if the command is not known, display an error
 commander.on("command:*", function () {
   logErrorMessage(`The command syntax is not valid.\n`);
