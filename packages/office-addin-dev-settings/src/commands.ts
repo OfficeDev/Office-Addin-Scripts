@@ -568,17 +568,17 @@ export async function diskManifests(options: OptionValues) {
 export async function enableDiskManifests(path?: string) {
   const diskManifestsPath = await devSettings.enableDiskManifests(path);
   console.log(`Disk manifests have been enabled. Path: ${diskManifestsPath}`);
-  usageDataObject.reportSuccess("enableDiskManifests()");
+  usageDataObject.reportSuccess("enableDiskManifests");
 }
 
 export async function disableDiskManifests() {
   await devSettings.disableDiskManifests();
   console.log("Disk manifests have been disabled.");
-  usageDataObject.reportSuccess("disableDiskManifests()");
+  usageDataObject.reportSuccess("disableDiskManifests");
 }
 
 export async function areDiskManifestsEnabled() {
   const res = await devSettings.areDiskManifestsEnabled();
   console.log(res);
-  usageDataObject.reportSuccess("areDiskManifestsEnabled()");
+  usageDataObject.reportSuccess("areDiskManifestsEnabled");
 }

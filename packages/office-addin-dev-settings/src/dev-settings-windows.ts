@@ -46,6 +46,7 @@ const EnableDebugging: string = "EnableDebugging";
 const OutlookDiskProvider: string = "OutlookDiskProvider";
 
 export async function clearDevSettings(addinId: string): Promise<void> {
+  await disableDiskManifests();
   return deleteDeveloperSettingsRegistryKey(addinId);
 }
 
