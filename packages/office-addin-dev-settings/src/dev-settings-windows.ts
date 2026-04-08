@@ -39,6 +39,7 @@ const UseDirectDebugger: string = "UseDirectDebugger";
 const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
 const WebViewSelection: string = "WebViewSelection";
+const JsBundle: string = "JsBundle";
 
 export async function clearDevSettings(addinId: string): Promise<void> {
   return deleteDeveloperSettingsRegistryKey(addinId);
@@ -349,4 +350,30 @@ async function enableRefreshAddins() {
 export async function disableRefreshAddins() {
   const key = new registry.RegistryKey(`${DeveloperSettingsRegistryKey}`);
   await registry.deleteValue(key, RefreshAddins);
+}
+
+export async function enableSourceBundleOverrideFile(addInId: string, path: string) {
+  const developerSettingsRegKey = getDeveloperSettingsRegistryKey(addInId);
+  await registry.addStringValue(developerSettingsRegKey, JsBundle, path);
+}
+
+export async function disableSourceBundleOverrideFile(addInId: string) {
+  const developerSettingsRegKey = getDeveloperSettingsRegistryKey(addInId);
+  await registry.deleteValue(developerSettingsRegKey, JsBundle);
+}
+
+export async function isSourceBundleOverriden(addInId: string) : Promise<string> {
+  const sourceBundleOverridePath = await getSourceBundleOverrideFilePath(addInId);
+
+  if (sourceBundleOverridePath && (sourceBundleOverridePath.length > 0)) {
+    return `Source bundle override. Add-in: ${addInId}. Override file: ${sourceBundleOverridePath}`;
+  }
+
+  return `Source bundle has not been overriden for add-in ${addInId}`;
+}
+
+export async function getSourceBundleOverrideFilePath(addInId: string): Promise<string | undefined> {
+  const developerSettingsRegKey = getDeveloperSettingsRegistryKey(addInId);
+  const sourceBundleOverridePath = await registry.getStringValue(developerSettingsRegKey, JsBundle);
+  return sourceBundleOverridePath;
 }

@@ -234,3 +234,26 @@ Syntax:
 `web-view-type`: Office webview to load ('edge' or 'edge-chromium', or 'default'). 
 
 #
+
+### source-bundle-override-file
+Configures overriding the source bundle of an add-in with a file from disk.
+
+> This switch currently supports the following clients: classic Windows Outlook.
+
+Syntax:
+
+`office-addin-dev-settings source-bundle-override-file [options]`
+
+Without options, displays whether source bundle has been overriden or not.
+
+Options:
+
+`--disable`
+
+Disable overriding the source bundle of an add-in.
+
+`--enable`
+
+Enable overriding the source bundle of an add-in.
+
+#

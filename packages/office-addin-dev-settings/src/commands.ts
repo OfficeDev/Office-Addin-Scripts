@@ -439,6 +439,33 @@ function validateManifestId(manifest: ManifestInfo) {
   }
 }
 
+function isAddInIdDefaultFormat(addInId: string): boolean {
+  // RegEx for the default format of a GUID. Example: 8a23b579-1ec7-4468-8300-7ef76e47cd78
+  const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  const matches = addInId.match(regex);
+  return (matches != null) && (matches.length == 1);
+}
+
+function isAddInIdBracesOrParentheses(addInId: string): boolean {
+  // RegEx for the braces/parentheses format of a GUID.
+  // Examples: {8a23b579-1ec7-4468-8300-7ef76e47cd78} or (8a23b579-1ec7-4468-8300-7ef76e47cd78)
+  const regex = /^[{(][0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}[)}]$/;
+  const matches = addInId.match(regex);
+  return (matches != null) && (matches.length == 1);
+}
+
+function getAddInIdDefaultFormat(addInId: string): string {
+  if (isAddInIdDefaultFormat(addInId)) {
+    return addInId;
+  }
+
+  if (isAddInIdBracesOrParentheses(addInId)) {
+    return addInId.slice(1,37);
+  }
+
+  throw new ExpectedError(`The add-in Id is invalid.`);
+}
+
 export async function webView(manifestPath: string, webViewString?: string) {
   try {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
@@ -462,6 +489,60 @@ export async function webView(manifestPath: string, webViewString?: string) {
     usageDataObject.reportSuccess("webView");
   } catch (err: any) {
     usageDataObject.reportException("webView", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function sourceBundleOverrideFile(addInId: string, options: OptionValues) {
+  try {
+    if (options.enable) {
+      const path: string | undefined = 
+        typeof options.enable === "string" ? options.enable : undefined;
+      await enableSourceBundleOverrideFile(addInId, path);
+    } else if (options.disable) {
+      await disableSourceBundleOverrideFile(addInId);
+    } else {
+      await isSourceBundleOverriden(addInId);
+    }
+    usageDataObject.reportSuccess("sourceBundleOverrideFile");
+  } catch (err: any) {
+    usageDataObject.reportException("sourceBundleOverrideFile", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function enableSourceBundleOverrideFile(addInId: string, path?: string) {
+  try {
+    const formattedAddInId = getAddInIdDefaultFormat(addInId);
+    
+    await devSettings.enableSourceBundleOverrideFile(formattedAddInId, path);
+    console.log(`Source bundle has been overriden. Add-in ID: ${addInId}. Path: ${path}`);
+  } catch (err: any) {
+    usageDataObject.reportException("enableSourceBundleOverrideFile", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function disableSourceBundleOverrideFile(addInId: string) {
+  try {
+    const formattedAddInId = getAddInIdDefaultFormat(addInId);
+
+    await devSettings.disableSourceBundleOverrideFile(formattedAddInId);
+    console.log(`Source bundle override has been removed. Add-in ID: ${addInId}.`);
+  } catch (err: any) {
+    usageDataObject.reportException("disableSourceBundleOverrideFile", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function isSourceBundleOverriden(addInId: string) {
+  try {
+    const formattedAddInId = getAddInIdDefaultFormat(addInId);
+
+    const res = await devSettings.isSourceBundleOverriden(formattedAddInId);
+    console.log(res);
+  } catch (err: any) {
+    usageDataObject.reportException("isSourceBundleOverriden", err);
     logErrorMessage(err);
   }
 }
