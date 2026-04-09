@@ -546,3 +546,39 @@ export async function isSourceBundleOverriden(addInId: string) {
     logErrorMessage(err);
   }
 }
+
+export async function diskManifests(options: OptionValues) {
+  try {
+    if (options.enable) {
+      const path: string | undefined = 
+        typeof options.enable === "string" ? options.enable : undefined;
+      await enableDiskManifests(path);
+    } else if (options.disable) {
+      await disableDiskManifests();
+    } else {
+      await areDiskManifestsEnabled();
+    }
+    usageDataObject.reportSuccess("diskManifests");
+  } catch (err: any) {
+    usageDataObject.reportException("diskManifests", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function enableDiskManifests(path?: string) {
+  const diskManifestsPath = await devSettings.enableDiskManifests(path);
+  console.log(`Disk manifests have been enabled. Path: ${diskManifestsPath}`);
+  usageDataObject.reportSuccess("enableDiskManifests");
+}
+
+export async function disableDiskManifests() {
+  await devSettings.disableDiskManifests();
+  console.log("Disk manifests have been disabled.");
+  usageDataObject.reportSuccess("disableDiskManifests");
+}
+
+export async function areDiskManifestsEnabled() {
+  const res = await devSettings.areDiskManifestsEnabled();
+  console.log(res);
+  usageDataObject.reportSuccess("areDiskManifestsEnabled");
+}

@@ -25,6 +25,7 @@ import fspath from "path";
 /* global process */
 
 const DeveloperSettingsRegistryKey: string = `HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Office\\16.0\\Wef\\Developer`;
+const ProvidersRegistryKey: string = `HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\16.0\\WEF\\Providers`;
 
 const OpenDevTools: string = "OpenDevTools";
 export const OutlookSideloadManifestPath: string = "OutlookSideloadManifestPath";
@@ -40,8 +41,12 @@ const UseLiveReload: string = "UseLiveReload";
 const UseProxyDebugger: string = "UseWebDebugger";
 const WebViewSelection: string = "WebViewSelection";
 const JsBundle: string = "JsBundle";
+const Outlook: string = "Outlook";
+const EnableDebugging: string = "EnableDebugging";
+const OutlookDiskProvider: string = "OutlookDiskProvider";
 
 export async function clearDevSettings(addinId: string): Promise<void> {
+  await disableDiskManifests();
   return deleteDeveloperSettingsRegistryKey(addinId);
 }
 
@@ -95,6 +100,10 @@ export function getDeveloperSettingsRegistryKey(addinId: string): registry.Regis
     throw new ExpectedError("The addIn parameter should be a string.");
   }
   return new registry.RegistryKey(`${DeveloperSettingsRegistryKey}\\${addinId}`);
+}
+
+export function getProvidersRegistryKey(): registry.RegistryKey {
+  return new registry.RegistryKey(`${ProvidersRegistryKey}`);
 }
 
 export async function getEnabledDebuggingMethods(addinId: string): Promise<DebuggingMethod[]> {
@@ -376,4 +385,43 @@ export async function getSourceBundleOverrideFilePath(addInId: string): Promise<
   const developerSettingsRegKey = getDeveloperSettingsRegistryKey(addInId);
   const sourceBundleOverridePath = await registry.getStringValue(developerSettingsRegKey, JsBundle);
   return sourceBundleOverridePath;
+}
+
+export async function enableDiskManifests(path: string) {
+  const providersRegKey = getProvidersRegistryKey();
+  await registry.addStringValue(providersRegKey, OutlookDiskProvider, path);
+
+  const outlookDeveloperRegKey = getDeveloperSettingsRegistryKey(Outlook);
+  await registry.addNumberValue(outlookDeveloperRegKey, EnableDebugging, 1);
+}
+
+export async function disableDiskManifests() {
+  const providersRegKey = getProvidersRegistryKey();
+  await registry.deleteValue(providersRegKey, OutlookDiskProvider);
+
+  const outlookDeveloperRegKey = getDeveloperSettingsRegistryKey(Outlook);
+  await registry.deleteKey(outlookDeveloperRegKey);
+}
+
+export async function areDiskManifestsEnabled(): Promise<string> {
+  const diskManifestsPath = await getDiskManifestsPath();
+  const enableDebugging = await getOutlookEnableDebugging();
+
+  if (diskManifestsPath && enableDebugging && enableDebugging > 0) {
+    return "Disk manifests are enabled. Path = " + diskManifestsPath;
+  }
+
+  return "Disk manifests are disabled";
+}
+
+export async function getDiskManifestsPath(): Promise<string | undefined> {
+  const providersRegKey = getProvidersRegistryKey();
+  const diskManifestsPath = await registry.getStringValue(providersRegKey, OutlookDiskProvider);
+  return diskManifestsPath;
+}
+
+export async function getOutlookEnableDebugging(): Promise<number | undefined> {
+  const outlookDeveloperRegKey = getDeveloperSettingsRegistryKey(Outlook);
+  const enableDebugging = await registry.getNumberValue(outlookDeveloperRegKey, EnableDebugging);
+  return enableDebugging;
 }

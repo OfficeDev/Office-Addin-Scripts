@@ -337,3 +337,56 @@ export async function isSourceBundleOverriden(addInId: string) : Promise<string>
 export async function getSourceBundleOverrideFilePath(addInId: string): Promise<string | undefined> {
   return devSettingsWindows.getSourceBundleOverrideFilePath(addInId);
 }
+
+export async function enableDiskManifests(path?: string) : Promise<string> {
+  switch (process.platform) {
+    case "win32": {
+      const isValidPath = isValidDiskManifestsPath(path);
+      if (path && isValidPath) {
+        await devSettingsWindows.enableDiskManifests(path);
+        return path;
+      }
+      throw new ExpectedError("The disk manifests path is not specified or is invalid. Ensure that it is an existing directory path.");
+    }
+    default:
+        throw new ExpectedError(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+function isValidDiskManifestsPath(path?: string) {
+  let isValid: boolean = false;
+  try {
+    if (path) {
+      const pathExists: boolean = fs.existsSync(path);
+      if (pathExists) {
+        const stat = fs.statSync(path);
+        isValid = stat.isDirectory();
+      }
+    }
+  } catch (err: any) {
+    console.log(err);
+  }
+  return isValid;
+}
+
+export async function disableDiskManifests() : Promise<void> {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.disableDiskManifests();
+    default:
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function areDiskManifestsEnabled() : Promise<string> {
+  switch (process.platform) {
+    case "win32":
+      return devSettingsWindows.areDiskManifestsEnabled();
+    default:
+      throw new ExpectedError(`Platform not supported: ${process.platform}.`);
+  }
+}
+
+export async function getDiskManifestsPath(): Promise<string | undefined> {
+  return devSettingsWindows.getDiskManifestsPath();
+}

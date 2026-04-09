@@ -641,7 +641,6 @@ describe("Sideload to web", function () {
 
 describe("Source bundle override file", function() {
   if (isWindows) {
-    let sourceBundleOverridePathBeforeTests: string | undefined;
     const baseDirPath = process.cwd();
     const jsBundleFileName = "bundle.js";
     const testBundleOverrideFilePath = fspath.normalize(`${baseDirPath}/${jsBundleFileName}`);
@@ -704,6 +703,90 @@ describe("Source bundle override file", function() {
         await devSettings.disableSourceBundleOverrideFile(testAddInId);
         assert.strictEqual(await devSettings.isSourceBundleOverriden(testAddInId), sourceBundleDisableStr);
       });
+    });
+  }
+});
+
+describe("Disk Manifests", function() {
+  if (isWindows) {
+    let diskManifestsPathBeforeTests: string | undefined;
+    const diskManifestsDisableStr = "Disk manifests are disabled";
+    const testExecDirName = "testExec";
+    const baseDirPath = process.cwd();
+    const testExecDirPath = fspath.normalize(`${baseDirPath}/${testExecDirName}`);
+    const enableDiskManifestsError = "The disk manifests path is not specified or is invalid. Ensure that it is an existing directory path.";
+    const diskManifestsEnabledPrefix = "Disk manifests are enabled. Path = ";
+
+    this.beforeAll(async function() {
+      await fsextra.remove(testExecDirPath);
+      await fsextra.mkdir(testExecDirPath);
+      diskManifestsPathBeforeTests = await devSettings.getDiskManifestsPath();
+      await devSettings.disableDiskManifests();
+    });
+
+    this.afterAll(async function() {
+      await fsextra.remove(testExecDirPath);
+      if (diskManifestsPathBeforeTests) {
+        await devSettings.enableDiskManifests(diskManifestsPathBeforeTests);
+      } else {
+        await devSettings.disableDiskManifests();
+      }
+    });
+
+    describe("validate before enabling disk manifests", function() {
+      it("disk manifests should NOT be enabled", async function() {
+        assert.strictEqual(await devSettings.areDiskManifestsEnabled(), diskManifestsDisableStr);
+      });
+    });
+
+    describe("validate enabling disk manifests", function() {
+      it("enable disk manifests with NO path", async function() {
+        assert.strictEqual(await devSettings.areDiskManifestsEnabled(), diskManifestsDisableStr);
+
+        let error;
+        try {
+          await devSettings.enableDiskManifests(undefined);
+        } catch (err: any) {
+          error = err;
+        }
+        assert.ok(error instanceof Error, "error expected");
+        assert.strictEqual(error.message, enableDiskManifestsError);
+      });
+
+      it("enable disk manifests with INVALID path", async function() {
+        assert.strictEqual(await devSettings.areDiskManifestsEnabled(), diskManifestsDisableStr);
+
+        const diskManifestsPath = fspath.join(testExecDirPath, "doesNotExist");
+
+        let error;
+        try {
+          await devSettings.enableDiskManifests(diskManifestsPath);
+        } catch (err: any) {
+          error = err;
+        }
+        assert.ok(error instanceof Error, "error expected");
+        assert.strictEqual(error.message, enableDiskManifestsError);
+      });
+
+      it("enable disk manifests with VALID path", async function() {
+        assert.strictEqual(await devSettings.areDiskManifestsEnabled(), diskManifestsDisableStr);
+
+        try {
+          const path = await devSettings.enableDiskManifests(testExecDirPath);
+          assert.strictEqual(path, testExecDirPath);
+        } catch (err: any) {
+          console.log(err);
+          assert.fail("unexpected error");
+        }
+      });
+    });
+
+    describe("validate disabling disk manifest", async function() {
+      it("disable disk manifests", async function() {
+        assert.strictEqual(await devSettings.areDiskManifestsEnabled(), diskManifestsEnabledPrefix + testExecDirPath);
+        await devSettings.disableDiskManifests();
+        assert.strictEqual(await devSettings.areDiskManifestsEnabled(), diskManifestsDisableStr);
+      })
     });
   }
 });
