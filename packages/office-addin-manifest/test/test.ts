@@ -6,6 +6,8 @@ import assert from "assert";
 import fs from "fs";
 import { afterEach, beforeEach, describe, it } from "mocha";
 import path from "path";
+import sinon from "sinon";
+import * as nodeFetch from "node-fetch";
 import { v1 as uuidv1 } from "uuid";
 import { isUUID } from "validator";
 import {
@@ -857,6 +859,37 @@ describe("Unit Tests", function () {
           result = err.message;
         }
         assert.strictEqual(result.indexOf("ENOENT: no such file or directory") >= 0, true);
+      });
+    });
+    describe("validateManifest() non-OK HTTP response", function () {
+      afterEach(function () {
+        sinon.restore();
+      });
+      it("should return isValid false when service returns 500", async function () {
+        this.timeout(6000);
+        sinon.stub(nodeFetch, "default").resolves({
+          ok: false,
+          status: 500,
+          statusText: "Internal Server Error",
+        } as unknown as nodeFetch.Response);
+        const validation = await validateManifest("test/manifests/TaskPane.manifest.xml");
+        assert.strictEqual(validation.isValid, false);
+        assert.strictEqual(validation.status, 500);
+        assert.strictEqual(validation.statusText, "Internal Server Error");
+        assert.strictEqual(validation.report, undefined);
+      });
+      it("should return isValid false when service returns 429", async function () {
+        this.timeout(6000);
+        sinon.stub(nodeFetch, "default").resolves({
+          ok: false,
+          status: 429,
+          statusText: "Too Many Requests",
+        } as unknown as nodeFetch.Response);
+        const validation = await validateManifest("test/manifests/TaskPane.manifest.xml");
+        assert.strictEqual(validation.isValid, false);
+        assert.strictEqual(validation.status, 429);
+        assert.strictEqual(validation.statusText, "Too Many Requests");
+        assert.strictEqual(validation.report, undefined);
       });
     });
   });
