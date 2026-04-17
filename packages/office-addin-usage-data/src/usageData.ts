@@ -144,8 +144,14 @@ export class OfficeAddinUsageData {
         if (!appInsights.defaultClient) {
           appInsights
             .setup(connectionString)
-            .setAutoCollectExceptions(false)
+            .setAutoDependencyCorrelation(false)
+            .setAutoCollectConsole(false)
             .setAutoCollectDependencies(false)
+            .setAutoCollectExceptions(false)
+            .setAutoCollectHeartbeat(false)
+            .setAutoCollectIncomingRequestAzureFunctions(false)
+            .setAutoCollectPerformance(false, null)
+            .setAutoCollectPreAggregatedMetrics(false)
             .setAutoCollectRequests(false)
             .start();
         }
