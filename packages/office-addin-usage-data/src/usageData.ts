@@ -150,7 +150,7 @@ export class OfficeAddinUsageData {
             .setAutoCollectExceptions(false)
             .setAutoCollectHeartbeat(false)
             .setAutoCollectIncomingRequestAzureFunctions(false)
-            .setAutoCollectPerformance(false, null)
+            .setAutoCollectPerformance(false, false)
             .setAutoCollectPreAggregatedMetrics(false)
             .setAutoCollectRequests(false)
             .start();
