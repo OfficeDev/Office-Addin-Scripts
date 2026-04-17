@@ -142,7 +142,18 @@ export class OfficeAddinUsageData {
         // Only call setup if Application Insights hasn't been initialized yet
         // This prevents warnings about duplicate API registrations in tests
         if (!appInsights.defaultClient) {
-          appInsights.setup(connectionString).setAutoCollectExceptions(false).start();
+          appInsights
+            .setup(connectionString)
+            .setAutoDependencyCorrelation(false)
+            .setAutoCollectConsole(false)
+            .setAutoCollectDependencies(false)
+            .setAutoCollectExceptions(false)
+            .setAutoCollectHeartbeat(false)
+            .setAutoCollectIncomingRequestAzureFunctions(false)
+            .setAutoCollectPerformance(false, false)
+            .setAutoCollectPreAggregatedMetrics(false)
+            .setAutoCollectRequests(false)
+            .start();
         }
         this.usageDataClient = appInsights.defaultClient;
         this.removeApplicationInsightsSensitiveInformation();
