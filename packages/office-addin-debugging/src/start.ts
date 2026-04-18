@@ -16,6 +16,7 @@ import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess } from "./process";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
+import { getDiskManifestDir } from "./shared";
 
 /* global console process setTimeout */
 
@@ -246,6 +247,19 @@ export interface StartDebuggingOptions {
    * If provided, the document to open for sideloading to web.
    */
   document?: string;
+
+  /**
+   * This only works for classic Outlook on Windows.
+   * If provided, load manifest locally.
+   * Note: If enableSideLoad is true, the host will run the sideloaded manifest instead of the local one.
+   */
+  local?: boolean;
+
+  /**
+   * This only works for classic Outlook on Windows.
+   * If provided, this overrides the source bundle to a file on disk.
+   */
+  sourceBundleOverrideFile?: string;
 }
 
 /**
@@ -268,6 +282,8 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     enableSideload,
     openDevTools,
     document,
+    local,
+    sourceBundleOverrideFile,
   } = {
     // Supplied Options
     ...options,
@@ -348,6 +364,23 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     if (isDesktopAppType && isWindowsPlatform) {
       if (sourceBundleUrlComponents) {
         await devSettings.setSourceBundleUrl(manifestInfo.id, sourceBundleUrlComponents);
+      }
+    }
+
+    // setup to run manifest and source bundle locally
+    if (isDesktopAppType && isWindowsPlatform) {
+      if (local) {
+        const diskManifestDir = getDiskManifestDir(false /* create */);
+        const diskManifestFile = fspath.join(diskManifestDir, fspath.basename(manifestPath));
+        await fs.copyFileSync(manifestPath, diskManifestFile);
+        const enableDiskManifests = await devSettings.enableDiskManifests(diskManifestDir);
+        console.log("Using local disk manifest : " + enableDiskManifests);
+      }
+
+      if (sourceBundleOverrideFile) {
+        const sourceBundleOverrideFilePath = fspath.resolve(sourceBundleOverrideFile)
+        await devSettings.enableSourceBundleOverrideFile(manifestInfo.id, sourceBundleOverrideFilePath);
+        console.log("Source bundle overriden to " + sourceBundleOverrideFilePath);
       }
     }
 

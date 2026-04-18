@@ -33,6 +33,8 @@ commander
   .option("--source-bundle-url-port <port>")
   .option("--source-bundle-url-path <path>")
   .option("--source-bundle-url-extension <extension>")
+  .option("--local")
+  .option("--source-bundle-override-file <path>")
   .action(commands.start);
 
 commander
