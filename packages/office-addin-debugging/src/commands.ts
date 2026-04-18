@@ -51,7 +51,6 @@ export async function start(
   platform: string | undefined,
   options: OptionValues
 ) {
-  console.log(JSON.stringify(options));
   try {
     const appPlatformToDebug: Platform | undefined = parsePlatform(
       platform || process.env.npm_package_config_app_platform_to_debug || Platform.Win32
