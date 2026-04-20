@@ -370,7 +370,7 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     // setup to run manifest and source bundle locally
     if (isDesktopAppType && isWindowsPlatform) {
       if (local) {
-        const diskManifestDir = getDiskManifestDir(false /* create */);
+        const diskManifestDir = getDiskManifestDir(true /* create */);
         const diskManifestFile = fspath.join(diskManifestDir, fspath.basename(manifestPath));
         await fs.copyFileSync(manifestPath, diskManifestFile);
         const enableDiskManifests = await devSettings.enableDiskManifests(diskManifestDir);
