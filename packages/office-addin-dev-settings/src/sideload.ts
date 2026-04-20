@@ -388,7 +388,7 @@ export async function sideloadAddIn(
   }
 }
 
-async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document?: string) {
+export async function launchDesktopApp(app: OfficeApp, manifest: ManifestInfo, document?: string) {
   if (!isSideloadingSupportedForDesktopHost(app)) {
     throw new ExpectedError(`Sideload to the ${getOfficeAppName(app)} app is not supported.`);
   }
