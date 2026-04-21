@@ -553,6 +553,7 @@ describe("Sideload to Desktop", function () {
         manifestPath,
         OfficeApp.Project,
         true /* canPrompt */,
+        false /* launchOnly */,
         AppType.Desktop,
         undefined /* document */
       );
@@ -599,7 +600,7 @@ describe("Sideload to web", function () {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.invalidsourcelocationforweb.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web, docurl);
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, false /* launchOnly */, AppType.Web, docurl);
     } catch (err: any) {
       error = err;
     }
@@ -613,7 +614,7 @@ describe("Sideload to web", function () {
     let error;
     let manifestPath = fspath.resolve(manifestsFolder, "manifest.xml");
     try {
-      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, AppType.Web);
+      await devSettingsSideload.sideloadAddIn(manifestPath, OfficeApp.Excel, true /* canPrompt */, false /* launchOnly */, AppType.Web);
     } catch (err: any) {
       error = err;
     }
@@ -628,6 +629,7 @@ describe("Sideload to web", function () {
         manifestPath,
         OfficeApp.Outlook,
         true /* canPrompt */,
+        false /* launchOnly */,
         AppType.Web,
         docurl
       );

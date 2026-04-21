@@ -8,7 +8,7 @@ import fspath from "path";
 import * as devCerts from "office-addin-dev-certs";
 import * as devSettings from "office-addin-dev-settings";
 import os from "os";
-import { DebuggingMethod, sideloadAddIn, launchDesktopApp } from "office-addin-dev-settings";
+import { DebuggingMethod, sideloadAddIn } from "office-addin-dev-settings";
 import { OfficeApp, OfficeAddinManifest } from "office-addin-manifest";
 import * as nodeDebugger from "office-addin-node-debugger";
 import * as debugInfo from "./debugInfo";
@@ -422,13 +422,16 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
     if (enableSideload) {
       try {
-        console.log(`Sideloading the Office Add-in...`);
-        await sideloadAddIn(manifestPath, app, true, appType, document);
+        const launchOnly = local;
+        let msg = `Sideloading the Office Add-in...`;
+        if (launchOnly) {
+          msg = `Disk-loading the Office Add-in...`;
+        }
+        console.log(msg);
+        await sideloadAddIn(manifestPath, app, true, launchOnly, appType, document);
       } catch (err) {
         throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
       }
-    } else if (app && isDesktopAppType && isWindowsPlatform) {
-      await launchDesktopApp(app, manifestInfo, undefined /* document */);
     }
 
     console.log(enableDebugging ? "Debugging started." : "Started.");
