@@ -33,6 +33,7 @@ export async function info(manifestPath: string) {
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("info");
   } catch (err: any) {
+    process.exitCode = 1;
     usageDataObject.reportException("info", err);
     logErrorMessage(err);
   }
@@ -148,6 +149,7 @@ export async function modify(manifestPath: string, options: OptionValues) {
     logManifestInfo(manifestPath, manifest);
     usageDataObject.reportSuccess("modify");
   } catch (err: any) {
+    process.exitCode = 1;
     usageDataObject.reportException("modify", err);
     logErrorMessage(err);
   }
@@ -180,6 +182,7 @@ export async function validate(manifestPath: string, options: OptionValues) {
     process.exitCode = validation.isValid ? 0 : 1;
     usageDataObject.reportSuccess("validate");
   } catch (err: any) {
+    process.exitCode = 1;
     usageDataObject.reportException("validate", err);
     logErrorMessage(err);
   }
@@ -193,6 +196,7 @@ export async function exportManifest(options: OptionValues) {
     await exportMetadataPackage(outputPath, manifestPath);
     usageDataObject.reportSuccess("export");
   } catch (err: any) {
+    process.exitCode = 1;
     usageDataObject.reportException("export", err);
     logErrorMessage(err);
   }

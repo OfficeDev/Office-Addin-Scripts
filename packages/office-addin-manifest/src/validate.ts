@@ -116,6 +116,11 @@ export async function validateManifest(
       validation.status = response.status;
       validation.statusText = response.statusText;
 
+      if (!response.ok) {
+        validation.isValid = false;
+        return validation;
+      }
+
       const text = await response.text();
 
       try {
