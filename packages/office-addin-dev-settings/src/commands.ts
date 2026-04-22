@@ -345,13 +345,14 @@ export async function sideload(
   try {
     const app: OfficeApp | undefined = options.app ? parseOfficeApp(options.app) : undefined;
     const canPrompt = true;
+    const launchOnly = false;
     const document: string | undefined = options.document ? options.document : undefined;
     const appType: AppType | undefined = parseAppType(
       type || process.env.npm_package_config_app_platform_to_debug
     );
     const registration: string = options.registration;
 
-    await sideloadAddIn(manifestPath, app, canPrompt, appType, document, registration);
+    await sideloadAddIn(manifestPath, app, canPrompt, launchOnly, appType, document, registration);
     usageDataObject.reportSuccess("sideload");
   } catch (err: any) {
     usageDataObject.reportException("sideload", err);
