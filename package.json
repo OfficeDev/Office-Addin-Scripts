@@ -29,7 +29,14 @@
     "typescript-eslint": "^8.8.1"
   },
   "overrides": {
-    "git-url-parse": "^13.0.0"
+    "git-url-parse": "^13.0.0",
+    "protobufjs": "^7.5.5",
+    "@xmldom/xmldom": "^0.9.6",
+    "serialize-javascript": "^7.0.5",
+    "fast-xml-parser": "^5.7.0",
+    "tmp": "^0.2.4",
+    "uuid": "^14.0.0",
+    "diff": "^8.0.3"
   },
   "workspaces": ["packages/*"]
 }
