@@ -1,0 +1,1 @@
+Since @requiresStreamAddress is present, the last function parameter should be of type CustomFunctions.StreamingInvocation : (9,43)
