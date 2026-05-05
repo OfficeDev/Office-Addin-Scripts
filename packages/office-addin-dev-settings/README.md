@@ -13,6 +13,7 @@ Provides the ability to configure developer settings for Office Add-ins.
 * [source-bundle-url](#source-bundle-url)
 * [unregister](#unregister)
 * [webview](#webview)
+* [configure-disk-manifests](#configure-disk-manifests)
 
 #
 
@@ -232,5 +233,51 @@ Syntax:
 `manifest`: path to manifest file.
 
 `web-view-type`: Office webview to load ('edge' or 'edge-chromium', or 'default'). 
+
+#
+
+### source-bundle-override-file
+Configures overriding the source bundle of an add-in with a file from disk.
+
+> This switch currently supports the following clients: classic Windows Outlook.
+
+Syntax:
+
+`office-addin-dev-settings source-bundle-override-file [options]`
+
+Without options, displays whether source bundle has been overriden or not.
+
+Options:
+
+`--disable`
+
+Disable overriding the source bundle of an add-in.
+
+`--enable`
+
+Enable overriding the source bundle of an add-in.
+
+#
+
+### disk-manifests
+Configures loading manifests from disk.
+
+> This switch currently supports the following clients: classic Windows Outlook.
+
+Syntax:
+
+`office-addin-dev-settings configure-disk-manifests [options]`
+
+Without options, displays whether loading manifests from disk is enabled.
+
+Options:
+
+`--disable`
+
+Disable loading manifests from disk.
+
+`--enable`
+
+Enable loading manifests from disk.
 
 #

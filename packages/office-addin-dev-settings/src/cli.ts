@@ -101,6 +101,20 @@ commander
     console.log("\nOmit [web-view-type] to see the current setting.");
   });
 
+commander
+  .command("source-bundle-override-file <addIn-id>")
+  .option("--enable [path]", `Override the source bundle with a file on disk.`)
+  .option("--disable", "Disable overriding of the source bundle.")
+  .description("Configures overriding of the source bundle.")
+  .action(commands.sourceBundleOverrideFile);
+
+commander
+  .command("disk-manifests")
+  .option("--enable [path]", `Enable loading manifests from disk.`)
+  .option("--disable", "Disable loading manifests from disk.")
+  .description("Configures loading manifests from disk.")
+  .action(commands.diskManifests);
+
 // if the command is not known, display an error
 commander.on("command:*", function () {
   logErrorMessage(`The command syntax is not valid.\n`);

@@ -7,6 +7,8 @@ import * as debugInfo from "./debugInfo";
 import { stopProcess } from "./process";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
+import { getDiskManifestDir } from "./shared";
+import fs from "fs";
 
 /* global console process */
 
@@ -26,6 +28,11 @@ export async function stopDebugging(manifestPath: string) {
       await clearDevSettings(manifestInfo.id);
     }
 
+    const diskManifestDir = getDiskManifestDir(false /* create */);
+    if (fs.existsSync(diskManifestDir)) {
+      fs.rmSync(diskManifestDir, { recursive: true, force: true });
+    }
+
     // unregister
     try {
       await unregisterAddIn(manifestPath);
@@ -41,9 +48,9 @@ export async function stopDebugging(manifestPath: string) {
     }
 
     console.log("Debugging has been stopped.");
-    usageDataObject.reportSuccess("stopDebugging()");
+    usageDataObject.reportSuccess("stopDebugging");
   } catch (err: any) {
-    usageDataObject.reportException("stopDebugging()", err);
+    usageDataObject.reportException("stopDebugging", err);
     throw err;
   }
 }

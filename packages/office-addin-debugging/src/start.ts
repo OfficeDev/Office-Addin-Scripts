@@ -16,6 +16,7 @@ import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess } from "./process";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
+import { getDiskManifestDir } from "./shared";
 
 /* global console process setTimeout */
 
@@ -246,6 +247,19 @@ export interface StartDebuggingOptions {
    * If provided, the document to open for sideloading to web.
    */
   document?: string;
+
+  /**
+   * This only works for classic Outlook on Windows.
+   * If provided, load manifest locally.
+   * Note: If enableSideLoad is true, the host will run the sideloaded manifest instead of the local one.
+   */
+  local?: boolean;
+
+  /**
+   * This only works for classic Outlook on Windows.
+   * If provided, this overrides the source bundle to a file on disk.
+   */
+  sourceBundleOverrideFile?: string;
 }
 
 /**
@@ -268,6 +282,8 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     enableSideload,
     openDevTools,
     document,
+    local,
+    sourceBundleOverrideFile,
   } = {
     // Supplied Options
     ...options,
@@ -351,6 +367,23 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
       }
     }
 
+    // setup to run manifest and source bundle locally
+    if (isDesktopAppType && isWindowsPlatform) {
+      if (local) {
+        const diskManifestDir = getDiskManifestDir(true /* create */);
+        const diskManifestFile = fspath.join(diskManifestDir, fspath.basename(manifestPath));
+        await fs.copyFileSync(manifestPath, diskManifestFile);
+        const enableDiskManifests = await devSettings.enableDiskManifests(diskManifestDir);
+        console.log("Using local disk manifest : " + enableDiskManifests);
+      }
+
+      if (sourceBundleOverrideFile) {
+        const sourceBundleOverrideFilePath = fspath.resolve(sourceBundleOverrideFile)
+        await devSettings.enableSourceBundleOverrideFile(manifestInfo.id, sourceBundleOverrideFilePath);
+        console.log("Source bundle overriden to " + sourceBundleOverrideFilePath);
+      }
+    }
+
     // Run packager and dev server at the same time and wait for them to complete.
     let packagerPromise: Promise<void> | undefined;
     let devServerPromise: Promise<void> | undefined;
@@ -389,8 +422,13 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
 
     if (enableSideload) {
       try {
-        console.log(`Sideloading the Office Add-in...`);
-        await sideloadAddIn(manifestPath, app, true, appType, document);
+        const launchOnly = local;
+        let msg = `Sideloading the Office Add-in...`;
+        if (launchOnly) {
+          msg = `Disk-loading the Office Add-in...`;
+        }
+        console.log(msg);
+        await sideloadAddIn(manifestPath, app, true, launchOnly, appType, document);
       } catch (err) {
         throw new Error(`Unable to sideload the Office Add-in. \n${err}`);
       }

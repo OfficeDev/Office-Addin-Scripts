@@ -345,13 +345,14 @@ export async function sideload(
   try {
     const app: OfficeApp | undefined = options.app ? parseOfficeApp(options.app) : undefined;
     const canPrompt = true;
+    const launchOnly = false;
     const document: string | undefined = options.document ? options.document : undefined;
     const appType: AppType | undefined = parseAppType(
       type || process.env.npm_package_config_app_platform_to_debug
     );
     const registration: string = options.registration;
 
-    await sideloadAddIn(manifestPath, app, canPrompt, appType, document, registration);
+    await sideloadAddIn(manifestPath, app, canPrompt, launchOnly, appType, document, registration);
     usageDataObject.reportSuccess("sideload");
   } catch (err: any) {
     usageDataObject.reportException("sideload", err);
@@ -439,6 +440,33 @@ function validateManifestId(manifest: ManifestInfo) {
   }
 }
 
+function isAddInIdDefaultFormat(addInId: string): boolean {
+  // RegEx for the default format of a GUID. Example: 8a23b579-1ec7-4468-8300-7ef76e47cd78
+  const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  const matches = addInId.match(regex);
+  return (matches != null) && (matches.length == 1);
+}
+
+function isAddInIdBracesOrParentheses(addInId: string): boolean {
+  // RegEx for the braces/parentheses format of a GUID.
+  // Examples: {8a23b579-1ec7-4468-8300-7ef76e47cd78} or (8a23b579-1ec7-4468-8300-7ef76e47cd78)
+  const regex = /^[{(][0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}[)}]$/;
+  const matches = addInId.match(regex);
+  return (matches != null) && (matches.length == 1);
+}
+
+function getAddInIdDefaultFormat(addInId: string): string {
+  if (isAddInIdDefaultFormat(addInId)) {
+    return addInId;
+  }
+
+  if (isAddInIdBracesOrParentheses(addInId)) {
+    return addInId.slice(1,37);
+  }
+
+  throw new ExpectedError(`The add-in Id is invalid.`);
+}
+
 export async function webView(manifestPath: string, webViewString?: string) {
   try {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
@@ -464,4 +492,94 @@ export async function webView(manifestPath: string, webViewString?: string) {
     usageDataObject.reportException("webView", err);
     logErrorMessage(err);
   }
+}
+
+export async function sourceBundleOverrideFile(addInId: string, options: OptionValues) {
+  try {
+    if (options.enable) {
+      const path: string | undefined = 
+        typeof options.enable === "string" ? options.enable : undefined;
+      await enableSourceBundleOverrideFile(addInId, path);
+    } else if (options.disable) {
+      await disableSourceBundleOverrideFile(addInId);
+    } else {
+      await isSourceBundleOverriden(addInId);
+    }
+    usageDataObject.reportSuccess("sourceBundleOverrideFile");
+  } catch (err: any) {
+    usageDataObject.reportException("sourceBundleOverrideFile", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function enableSourceBundleOverrideFile(addInId: string, path?: string) {
+  try {
+    const formattedAddInId = getAddInIdDefaultFormat(addInId);
+    
+    await devSettings.enableSourceBundleOverrideFile(formattedAddInId, path);
+    console.log(`Source bundle has been overriden. Add-in ID: ${addInId}. Path: ${path}`);
+  } catch (err: any) {
+    usageDataObject.reportException("enableSourceBundleOverrideFile", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function disableSourceBundleOverrideFile(addInId: string) {
+  try {
+    const formattedAddInId = getAddInIdDefaultFormat(addInId);
+
+    await devSettings.disableSourceBundleOverrideFile(formattedAddInId);
+    console.log(`Source bundle override has been removed. Add-in ID: ${addInId}.`);
+  } catch (err: any) {
+    usageDataObject.reportException("disableSourceBundleOverrideFile", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function isSourceBundleOverriden(addInId: string) {
+  try {
+    const formattedAddInId = getAddInIdDefaultFormat(addInId);
+
+    const res = await devSettings.isSourceBundleOverriden(formattedAddInId);
+    console.log(res);
+  } catch (err: any) {
+    usageDataObject.reportException("isSourceBundleOverriden", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function diskManifests(options: OptionValues) {
+  try {
+    if (options.enable) {
+      const path: string | undefined = 
+        typeof options.enable === "string" ? options.enable : undefined;
+      await enableDiskManifests(path);
+    } else if (options.disable) {
+      await disableDiskManifests();
+    } else {
+      await areDiskManifestsEnabled();
+    }
+    usageDataObject.reportSuccess("diskManifests");
+  } catch (err: any) {
+    usageDataObject.reportException("diskManifests", err);
+    logErrorMessage(err);
+  }
+}
+
+export async function enableDiskManifests(path?: string) {
+  const diskManifestsPath = await devSettings.enableDiskManifests(path);
+  console.log(`Disk manifests have been enabled. Path: ${diskManifestsPath}`);
+  usageDataObject.reportSuccess("enableDiskManifests");
+}
+
+export async function disableDiskManifests() {
+  await devSettings.disableDiskManifests();
+  console.log("Disk manifests have been disabled.");
+  usageDataObject.reportSuccess("disableDiskManifests");
+}
+
+export async function areDiskManifestsEnabled() {
+  const res = await devSettings.areDiskManifestsEnabled();
+  console.log(res);
+  usageDataObject.reportSuccess("areDiskManifestsEnabled");
 }

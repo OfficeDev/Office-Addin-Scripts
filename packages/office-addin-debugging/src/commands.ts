@@ -3,6 +3,7 @@
 
 import { OptionValues } from "commander";
 import fs from "fs";
+import fspath from "path";
 import { parseNumber, getPackageJsonScript } from "office-addin-cli";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as devSettings from "office-addin-dev-settings";
@@ -85,6 +86,9 @@ export async function start(
       options.sourceBundleUrlPath,
       options.sourceBundleUrlExtension
     );
+    const local: boolean = options.local === true;
+    const sourceBundleOverrideFile: string | undefined =
+      options.sourceBundleOverrideFile || process.env.npm_package_config_source_bundle_override_file;
 
     if (appPlatformToDebug === undefined) {
       throw new ExpectedError("Please specify the platform to debug.");
@@ -119,6 +123,8 @@ export async function start(
       enableSideload,
       openDevTools,
       document,
+      local,
+      sourceBundleOverrideFile
     });
 
     usageDataObject.reportSuccess("start");
