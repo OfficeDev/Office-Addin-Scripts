@@ -1,1 +1,1 @@
-@requiresStreamAddress can only be used with @streaming. (10,98)
+Since @requiresStreamAddress is present, the last function parameter should be of type CustomFunctions.StreamingInvocation : (9,43)

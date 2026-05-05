@@ -3,10 +3,9 @@
 
 /**
  * Test requires stream address without the @streaming tag.
- * @param invocation stream invocation
  * @customfunction
  * @requiresStreamAddress
  */
-function streamAddressMissingStreamingTag(invocation: CustomFunctions.StreamingInvocation<string>) {
+function streamAddressMissingStreamingTag() {
   // Empty
 }

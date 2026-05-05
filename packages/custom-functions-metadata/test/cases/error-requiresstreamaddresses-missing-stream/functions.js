@@ -4,11 +4,9 @@
 /**
  * Test requires stream addresses without streaming.
  * @param {string} x string
- * @param {CustomFunctions.Invocation} invocation invocation
  * @customfunction
- * @requiresStreamAddress
  * @requiresStreamParameterAddresses
  */
-function streamAddressRequiresStreamingTest(x, invocation) {
+function streamAddressRequiresStreamingTest(x) {
   // Empty
 }
