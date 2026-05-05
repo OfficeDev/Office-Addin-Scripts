@@ -436,7 +436,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           if (functionDeclaration.body) {
             const bodyText = functionDeclaration.body.getFullText();
             // Fast case-sensitive check first
-            if (bodyText.indexOf("Excel.RequestContext") !== -1 || bodyText.indexOf("Excel.run") !== -1) {
+            if (
+              bodyText.indexOf("Excel.RequestContext") !== -1 ||
+              bodyText.indexOf("Excel.run") !== -1
+            ) {
               hasRichAPICall = true;
             }
           }
@@ -783,7 +786,7 @@ function getOptions(
   // supportSync can't coexist with volatile and streaming
   if (optionsItem.supportSync && (optionsItem.volatile || optionsItem.stream)) {
     const functionPosition = getPosition(func);
-    const errorString = `@supportSync cannot be used with ${optionsItem.volatile ? '@volatile' : '@streaming'}.`;
+    const errorString = `@supportSync cannot be used with ${optionsItem.volatile ? "@volatile" : "@streaming"}.`;
     extra.errors.push(logError(errorString, functionPosition));
   }
 
