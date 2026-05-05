@@ -694,18 +694,19 @@ function getOptions(
   const streamAddressRequired = isStreamAddressRequired(func);
   const parameterAddressesRequired = isRequiresParameterAddresses(func);
   const streamParameterAddressesRequired = isRequiresStreamParameterAddresses(func);
-  const hasStreamingTag = hasTag(func, STREAMING);
   const streamEnabled = isStreaming(func, isStreamingFunction);
 
   const optionsItem: IFunctionOptions = {
     cancelable: isCancelableTag(func, isCancelableFunction),
     requiresAddress: addressRequired && !streamEnabled,
-    requiresStreamAddress: streamAddressRequired || (addressRequired && streamEnabled),
+    requiresStreamAddress:
+      (streamAddressRequired && streamEnabled) || (addressRequired && streamEnabled),
     stream: streamEnabled,
     volatile: isVolatile(func),
     requiresParameterAddresses: parameterAddressesRequired && !streamEnabled,
     requiresStreamParameterAddresses:
-      streamParameterAddressesRequired || (parameterAddressesRequired && streamEnabled),
+      (streamParameterAddressesRequired && streamEnabled) ||
+      (parameterAddressesRequired && streamEnabled),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
@@ -713,42 +714,34 @@ function getOptions(
     action: isAction(func),
   };
 
-  if (
-    addressRequired ||
-    streamAddressRequired ||
-    parameterAddressesRequired ||
-    streamParameterAddressesRequired
-  ) {
-    let errorParam: string = "";
+  if (addressRequired || parameterAddressesRequired) {
+    let errorParam: string = addressRequired ? "@requiresAddress" : "@requiresParameterAddresses";
 
-    if (streamAddressRequired) {
-      errorParam = "@requiresStreamAddress";
-    } else if (addressRequired) {
-      errorParam = "@requiresAddress";
-    } else if (streamParameterAddressesRequired) {
-      errorParam = "@requiresStreamParameterAddresses";
-    } else {
-      errorParam = "@requiresParameterAddresses";
+    // Validate that address annotations in streaming functions require StreamingInvocation parameter
+    if (streamEnabled && !isStreamingFunction) {
+      const functionPosition = getPosition(func, func.parameters.end);
+      const errorString = `Since ${errorParam} is present with streaming enabled, the last function parameter should be of type CustomFunctions.StreamingInvocation :`;
+      extra.errors.push(logError(errorString, functionPosition));
     }
-
-    if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
+    // Validate that address annotations in non-streaming and non-cancelable functions require Invocation parameter
+    if (!streamEnabled && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
   }
 
-  if (streamAddressRequired && !hasStreamingTag) {
-    const functionPosition = getPosition(func, func.parameters.end);
-    const errorString = "@requiresStreamAddress can only be used with @streaming.";
-    extra.errors.push(logError(errorString, functionPosition));
-  }
+  // Validate that stream address annotations require StreamingInvocation parameter
+  if (streamAddressRequired || streamParameterAddressesRequired) {
+    let errorParam: string = streamAddressRequired
+      ? "@requiresStreamAddress"
+      : "@requiresStreamParameterAddresses";
 
-  if (streamParameterAddressesRequired && !hasStreamingTag) {
-    const functionPosition = getPosition(func, func.parameters.end);
-    const errorString =
-      "@requiresStreamParameterAddresses can only be used with @streaming.";
-    extra.errors.push(logError(errorString, functionPosition));
+    if (!isStreamingFunction) {
+      const functionPosition = getPosition(func, func.parameters.end);
+      const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.StreamingInvocation :`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
   }
 
   if (
