@@ -133,7 +133,9 @@ const EXCLUDEFROMAUTOCOMPLETE = "excludefromautocomplete";
 const HELPURL_PARAM = "helpurl";
 const LINKEDENTITYLOADSERVICE = "linkedentityloadservice";
 const REQUIRESADDRESS = "requiresaddress";
+const REQUIRESSTREAMADDRESS = "requiresstreamaddress";
 const REQUIRESPARAMETERADDRESSES = "requiresparameteraddresses";
+const REQUIRESSTREAMPARAMETERADDRESSES = "requiresstreamparameteraddresses";
 const STREAMING = "streaming";
 const VOLATILE = "volatile";
 const SUPPORT_SYNC = "supportsync";
@@ -434,7 +436,10 @@ export function parseTree(sourceCode: string, sourceFileName: string): IParseTre
           if (functionDeclaration.body) {
             const bodyText = functionDeclaration.body.getFullText();
             // Fast case-sensitive check first
-            if (bodyText.indexOf("Excel.RequestContext") !== -1 || bodyText.indexOf("Excel.run") !== -1) {
+            if (
+              bodyText.indexOf("Excel.RequestContext") !== -1 ||
+              bodyText.indexOf("Excel.run") !== -1
+            ) {
               hasRichAPICall = true;
             }
           }
@@ -688,16 +693,23 @@ function getOptions(
   isInvocationFunction: boolean,
   extra: IFunctionExtras
 ): IFunctionOptions {
+  const addressRequired = isAddressRequired(func);
+  const streamAddressRequired = isStreamAddressRequired(func);
+  const parameterAddressesRequired = isRequiresParameterAddresses(func);
+  const streamParameterAddressesRequired = isRequiresStreamParameterAddresses(func);
+  const streamEnabled = isStreaming(func, isStreamingFunction);
+
   const optionsItem: IFunctionOptions = {
     cancelable: isCancelableTag(func, isCancelableFunction),
-    requiresAddress: isAddressRequired(func) && !isStreaming(func, isStreamingFunction),
-    requiresStreamAddress: isAddressRequired(func) && isStreaming(func, isStreamingFunction),
-    stream: isStreaming(func, isStreamingFunction),
+    requiresAddress: addressRequired && !streamEnabled,
+    requiresStreamAddress:
+      (streamAddressRequired && streamEnabled) || (addressRequired && streamEnabled),
+    stream: streamEnabled,
     volatile: isVolatile(func),
-    requiresParameterAddresses:
-      isRequiresParameterAddresses(func) && !isStreaming(func, isStreamingFunction),
+    requiresParameterAddresses: parameterAddressesRequired && !streamEnabled,
     requiresStreamParameterAddresses:
-      isRequiresParameterAddresses(func) && isStreaming(func, isStreamingFunction),
+      (streamParameterAddressesRequired && streamEnabled) ||
+      (parameterAddressesRequired && streamEnabled),
     excludeFromAutoComplete: isExcludedFromAutoComplete(func),
     linkedEntityLoadService: isLinkedEntityLoadService(func),
     capturesCallingObject: capturesCallingObject(func),
@@ -705,14 +717,32 @@ function getOptions(
     action: isAction(func),
   };
 
-  if (isAddressRequired(func) || isRequiresParameterAddresses(func)) {
-    let errorParam: string = isAddressRequired(func)
-      ? "@requiresAddress"
-      : "@requiresParameterAddresses";
+  if (addressRequired || parameterAddressesRequired) {
+    let errorParam: string = addressRequired ? "@requiresAddress" : "@requiresParameterAddresses";
 
-    if (!isStreamingFunction && !isCancelableFunction && !isInvocationFunction) {
+    // Validate that address annotations in streaming functions require StreamingInvocation parameter
+    if (streamEnabled && !isStreamingFunction) {
+      const functionPosition = getPosition(func, func.parameters.end);
+      const errorString = `Since ${errorParam} is present with streaming enabled, the last function parameter should be of type CustomFunctions.StreamingInvocation :`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
+    // Validate that address annotations in non-streaming and non-cancelable functions require Invocation parameter
+    if (!streamEnabled && !isCancelableFunction && !isInvocationFunction) {
       const functionPosition = getPosition(func, func.parameters.end);
       const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.Invocation :`;
+      extra.errors.push(logError(errorString, functionPosition));
+    }
+  }
+
+  // Validate that stream address annotations require StreamingInvocation parameter
+  if (streamAddressRequired || streamParameterAddressesRequired) {
+    let errorParam: string = streamAddressRequired
+      ? "@requiresStreamAddress"
+      : "@requiresStreamParameterAddresses";
+
+    if (!isStreamingFunction) {
+      const functionPosition = getPosition(func, func.parameters.end);
+      const errorString = `Since ${errorParam} is present, the last function parameter should be of type CustomFunctions.StreamingInvocation :`;
       extra.errors.push(logError(errorString, functionPosition));
     }
   }
@@ -723,7 +753,9 @@ function getOptions(
       optionsItem.volatile ||
       optionsItem.stream ||
       optionsItem.requiresAddress ||
+      optionsItem.requiresStreamAddress ||
       optionsItem.requiresParameterAddresses ||
+      optionsItem.requiresStreamParameterAddresses ||
       optionsItem.capturesCallingObject)
   ) {
     let errorParam: string = "";
@@ -737,8 +769,12 @@ function getOptions(
       errorParam = "@streaming";
     } else if (optionsItem.requiresAddress) {
       errorParam = "@requiresAddress";
+    } else if (optionsItem.requiresStreamAddress) {
+      errorParam = "@requiresStreamAddress";
     } else if (optionsItem.requiresParameterAddresses) {
       errorParam = "@requiresParameterAddresses";
+    } else if (optionsItem.requiresStreamParameterAddresses) {
+      errorParam = "@requiresStreamParameterAddresses";
     } else if (optionsItem.capturesCallingObject) {
       errorParam = "@capturesCallingObject";
     }
@@ -750,7 +786,7 @@ function getOptions(
   // supportSync can't coexist with volatile and streaming
   if (optionsItem.supportSync && (optionsItem.volatile || optionsItem.stream)) {
     const functionPosition = getPosition(func);
-    const errorString = `@supportSync cannot be used with ${optionsItem.volatile ? '@volatile' : '@streaming'}.`;
+    const errorString = `@supportSync cannot be used with ${optionsItem.volatile ? "@volatile" : "@streaming"}.`;
     extra.errors.push(logError(errorString, functionPosition));
   }
 
@@ -760,7 +796,9 @@ function getOptions(
       optionsItem.volatile ||
       optionsItem.stream ||
       optionsItem.requiresAddress ||
+      optionsItem.requiresStreamAddress ||
       optionsItem.requiresParameterAddresses ||
+      optionsItem.requiresStreamParameterAddresses ||
       optionsItem.capturesCallingObject ||
       optionsItem.linkedEntityLoadService ||
       optionsItem.supportSync)
@@ -776,8 +814,12 @@ function getOptions(
       errorParam = "@streaming";
     } else if (optionsItem.requiresAddress) {
       errorParam = "@requiresAddress";
+    } else if (optionsItem.requiresStreamAddress) {
+      errorParam = "@requiresStreamAddress";
     } else if (optionsItem.requiresParameterAddresses) {
       errorParam = "@requiresParameterAddresses";
+    } else if (optionsItem.requiresStreamParameterAddresses) {
+      errorParam = "@requiresStreamParameterAddresses";
     } else if (optionsItem.capturesCallingObject) {
       errorParam = "@capturesCallingObject";
     } else if (optionsItem.linkedEntityLoadService) {
@@ -1110,11 +1152,27 @@ function isAddressRequired(node: ts.Node): boolean {
 }
 
 /**
+ * Returns true if requiresStreamAddress tag found in comments
+ * @param node jsDocs node
+ */
+function isStreamAddressRequired(node: ts.Node): boolean {
+  return hasTag(node, REQUIRESSTREAMADDRESS);
+}
+
+/**
  * Returns true if RequiresParameterAddresses tag found in comments
  * @param node jsDocs node
  */
 function isRequiresParameterAddresses(node: ts.Node): boolean {
   return hasTag(node, REQUIRESPARAMETERADDRESSES);
+}
+
+/**
+ * Returns true if requiresStreamParameterAddresses tag found in comments
+ * @param node jsDocs node
+ */
+function isRequiresStreamParameterAddresses(node: ts.Node): boolean {
+  return hasTag(node, REQUIRESSTREAMPARAMETERADDRESSES);
 }
 
 /**

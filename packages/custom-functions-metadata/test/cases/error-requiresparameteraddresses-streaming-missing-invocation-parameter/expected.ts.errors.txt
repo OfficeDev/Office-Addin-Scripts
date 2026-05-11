@@ -1,1 +1,1 @@
-Since @requiresParameterAddresses is present, the last function parameter should be of type CustomFunctions.Invocation : (11,48)
+Since @requiresParameterAddresses is present with streaming enabled, the last function parameter should be of type CustomFunctions.StreamingInvocation : (11,48)
