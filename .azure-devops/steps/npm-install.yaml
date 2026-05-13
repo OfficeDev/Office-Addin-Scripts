@@ -8,5 +8,5 @@ steps:
   displayName: "Install NPM packages"
   inputs:
     command: custom
-    customCommand: "ci --ignore-scripts --verbose"
+    customCommand: "install --ignore-scripts --verbose"
   timeoutInMinutes: 10
