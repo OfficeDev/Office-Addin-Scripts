@@ -16,7 +16,6 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import { getGraphData } from "./msgraph-helper";
 import { getAccessToken, validateJwt } from "./ssoauth-helper";
-import { usageDataObject } from "../defaults";
 
 export class App {
   appInstance: express.Express;
@@ -79,12 +78,6 @@ export class App {
       async function (req: any, res: any, next: any) {
         const graphTokenResponse = await getAccessToken(req.get("Authorization"));
         if (graphTokenResponse.claims || graphTokenResponse.error) {
-          graphTokenResponse.claims
-            ? usageDataObject.reportSuccess("getuserdata()", { details: "Got claims response" })
-            : usageDataObject.reportError(
-                "AccessTokenError",
-                new Error("Access Token Error: " + graphTokenResponse.error)
-              );
           res.send(graphTokenResponse);
         } else {
           const graphToken: string = graphTokenResponse.access_token;
@@ -97,10 +90,8 @@ export class App {
           // there will be a code property in the returned object set to a HTTP status (e.g. 401).
           // Relay it to the client. It will caught in the fail callback of `makeGraphApiCall`.
           if (graphData.code) {
-            usageDataObject.reportException("getuserdata()", graphData.code);
             next(createError(graphData.code, "Microsoft Graph error " + JSON.stringify(graphData)));
           } else {
-            usageDataObject.reportSuccess("getuserdata()");
             res.send(graphData);
           }
         }

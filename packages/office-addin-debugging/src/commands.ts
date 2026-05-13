@@ -10,7 +10,6 @@ import * as devSettings from "office-addin-dev-settings";
 import { OfficeApp, parseOfficeApp } from "office-addin-manifest";
 import { AppType, parseDebuggingMethod, parsePlatform, Platform, startDebugging } from "./start";
 import { stopDebugging } from "./stop";
-import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global process */
@@ -127,9 +126,7 @@ export async function start(
       sourceBundleOverrideFile
     });
 
-    usageDataObject.reportSuccess("start");
   } catch (err: any) {
-    usageDataObject.reportException("start", err);
     logErrorMessage(`Unable to start debugging.\n${err}`);
   }
 }
@@ -150,9 +147,7 @@ export async function stop(
     }
 
     await stopDebugging(manifestPath);
-    usageDataObject.reportSuccess("stop");
   } catch (err: any) {
-    usageDataObject.reportException("stop", err);
     logErrorMessage(`Unable to stop debugging.\n${err}`);
   }
 }

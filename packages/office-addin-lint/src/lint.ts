@@ -3,7 +3,7 @@
 
 import fs from "fs";
 import path from "path";
-import { usageDataObject, ESLintExitCode, PrettierExitCode } from "./defaults";
+import { ESLintExitCode, PrettierExitCode } from "./defaults";
 
 /* global process require __dirname */
 
@@ -38,20 +38,8 @@ export function getLintCheckCommand(files: string, useTestConfig: boolean = fals
 }
 
 export function performLintCheck(files: string, useTestConfig: boolean = false) {
-  try {
-    const command = getLintCheckCommand(files, useTestConfig);
-    execCommand(command);
-    usageDataObject.reportSuccess("performLintCheck()", { exitCode: ESLintExitCode.NoLintErrors });
-  } catch (err: any) {
-    if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.reportExpectedException("performLintCheck()", err, {
-        exitCode: ESLintExitCode.HasLintError,
-      });
-    } else {
-      usageDataObject.reportException("performLintCheck()", err);
-    }
-    throw err;
-  }
+  const command = getLintCheckCommand(files, useTestConfig);
+  execCommand(command);
 }
 
 export function getLintFixCommand(files: string, useTestConfig: boolean = false): string {
@@ -60,20 +48,8 @@ export function getLintFixCommand(files: string, useTestConfig: boolean = false)
 }
 
 export function performLintFix(files: string, useTestConfig: boolean = false) {
-  try {
-    const command = getLintFixCommand(files, useTestConfig);
-    execCommand(command);
-    usageDataObject.reportSuccess("performLintFix()", { exitCode: ESLintExitCode.NoLintErrors });
-  } catch (err: any) {
-    if (err.status && err.status == ESLintExitCode.HasLintError) {
-      usageDataObject.reportExpectedException("performLintFix()", err, {
-        exitCode: ESLintExitCode.HasLintError,
-      });
-    } else {
-      usageDataObject.reportException("performLintFix()", err);
-    }
-    throw err;
-  }
+  const command = getLintFixCommand(files, useTestConfig);
+  execCommand(command);
 }
 
 export function getPrettierCommand(files: string): string {
@@ -82,20 +58,6 @@ export function getPrettierCommand(files: string): string {
 }
 
 export function makeFilesPrettier(files: string) {
-  try {
-    const command = getPrettierCommand(files);
-    execCommand(command);
-    usageDataObject.reportSuccess("makeFilesPrettier()", {
-      exitCode: PrettierExitCode.NoFormattingProblems,
-    });
-  } catch (err: any) {
-    if (err.status && err.status == PrettierExitCode.HasFormattingProblem) {
-      usageDataObject.reportExpectedException("makeFilesPrettier()", err, {
-        exitCode: PrettierExitCode.HasFormattingProblem,
-      });
-    } else {
-      usageDataObject.reportException("makeFilesPrettier()", err);
-    }
-    throw err;
-  }
+  const command = getPrettierCommand(files);
+  execCommand(command);
 }

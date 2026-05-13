@@ -1,11 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import {
-  connectionStringForOfficeAddinCLITools,
-  OfficeAddinUsageData,
-} from "office-addin-usage-data";
-
 export const lintFiles = "src/**/*.{ts,tsx,js,jsx}";
 
 export enum ESLintExitCode {
@@ -19,10 +14,3 @@ export enum PrettierExitCode {
   HasFormattingProblem = 1,
   CommandFailed = 2,
 }
-
-// Usage data defaults
-export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
-  projectName: "office-addin-lint",
-  connectionString: connectionStringForOfficeAddinCLITools,
-  raisePrompt: false,
-});

@@ -8,7 +8,6 @@ import * as defaults from "./defaults";
 import { ensureCertificatesAreInstalled } from "./install";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
 import { verifyCertificates } from "./verify";
-import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console */
@@ -19,9 +18,7 @@ export async function install(options: OptionValues) {
     const domains = parseDomains(options.domains);
 
     await ensureCertificatesAreInstalled(days, domains, options.machine);
-    usageDataObject.reportSuccess("install");
   } catch (err: any) {
-    usageDataObject.reportException("install", err);
     logErrorMessage(err);
   }
 }
@@ -62,9 +59,7 @@ export async function uninstall(options: OptionValues) {
   try {
     await uninstallCaCertificate(options.machine);
     deleteCertificateFiles(defaults.certificateDirectory);
-    usageDataObject.reportSuccess("uninstall");
   } catch (err: any) {
-    usageDataObject.reportException("uninstall", err);
     logErrorMessage(err);
   }
 }
@@ -80,9 +75,7 @@ export async function verify(
     } else {
       console.log(`You need to install certificates for trusted access to https://localhost.`);
     }
-    usageDataObject.reportSuccess("verify");
   } catch (err: any) {
-    usageDataObject.reportException("verify", err);
     logErrorMessage(err);
   }
 }

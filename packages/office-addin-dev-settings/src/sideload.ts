@@ -22,7 +22,6 @@ import { registerAddIn } from "./dev-settings";
 import { startDetachedProcess } from "./process";
 import { chooseOfficeApp } from "./prompt";
 import * as registry from "./registry";
-import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global Buffer console process URL __dirname */
@@ -334,60 +333,54 @@ export async function sideloadAddIn(
   document?: string,
   registration?: string,
 ): Promise<void> {
-  try {
-    if (appType === undefined) {
-      appType = AppType.Desktop;
+  if (appType === undefined) {
+    appType = AppType.Desktop;
+  }
+
+  const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
+  const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
+
+  if (app) {
+    if (appsInManifest.indexOf(app) < 0) {
+      throw new ExpectedError(
+        `The Office Add-in manifest does not support ${getOfficeAppName(app)}.`
+      );
     }
-
-    const manifest: ManifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
-    const appsInManifest: OfficeApp[] = getOfficeAppsForManifestHosts(manifest.hosts);
-
-    if (app) {
-      if (appsInManifest.indexOf(app) < 0) {
-        throw new ExpectedError(
-          `The Office Add-in manifest does not support ${getOfficeAppName(app)}.`
-        );
-      }
-    } else {
-      switch (appsInManifest.length) {
-        case 0:
-          throw new ExpectedError("The manifest does not support any Office apps.");
-        case 1:
-          app = appsInManifest[0];
-          break;
-        default:
-          if (canPrompt) {
-            app = await chooseOfficeApp(appsInManifest);
-          }
-          break;
-      }
-    }
-
-    if (!app) {
-      throw new ExpectedError("Please specify the Office app.");
-    }
-
-    switch (appType) {
-      case AppType.Desktop:
-        if (!launchOnly) {
-          await registerAddIn(manifestPath, registration);
-        }
-        await launchDesktopApp(app, manifest, document);
+  } else {
+    switch (appsInManifest.length) {
+      case 0:
+        throw new ExpectedError("The manifest does not support any Office apps.");
+      case 1:
+        app = appsInManifest[0];
         break;
-      case AppType.Web: {
-        if (!document) {
-          throw new ExpectedError(`For sideload to web, you need to specify a document url.`);
-        }
-        await launchWebApp(app, manifestPath, manifest, document);
-        break;
-      }
       default:
-        throw new ExpectedError("Sideload is not supported for the specified app type.");
+        if (canPrompt) {
+          app = await chooseOfficeApp(appsInManifest);
+        }
+        break;
     }
-    usageDataObject.reportSuccess("sideloadAddIn()");
-  } catch (err: any) {
-    usageDataObject.reportException("sideloadAddIn()", err);
-    throw err;
+  }
+
+  if (!app) {
+    throw new ExpectedError("Please specify the Office app.");
+  }
+
+  switch (appType) {
+    case AppType.Desktop:
+      if (!launchOnly) {
+        await registerAddIn(manifestPath, registration);
+      }
+      await launchDesktopApp(app, manifest, document);
+      break;
+    case AppType.Web: {
+      if (!document) {
+        throw new ExpectedError(`For sideload to web, you need to specify a document url.`);
+      }
+      await launchWebApp(app, manifestPath, manifest, document);
+      break;
+    }
+    default:
+      throw new ExpectedError("Sideload is not supported for the specified app type.");
   }
 }
 

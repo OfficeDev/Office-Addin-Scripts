@@ -12,7 +12,6 @@ import {
 import { AppType, parseAppType } from "./appType";
 import * as devSettings from "./dev-settings";
 import { sideloadAddIn } from "./sideload";
-import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 import { AccountOperation, updateM365Account } from "./publish";
 
@@ -28,9 +27,7 @@ export async function clear(manifestPath: string) {
     await devSettings.clearDevSettings(manifest.id!);
 
     console.log("Developer settings have been cleared.");
-    usageDataObject.reportSuccess("clear");
   } catch (err: any) {
-    usageDataObject.reportException("clear", err);
     logErrorMessage(err);
   }
 }
@@ -44,9 +41,7 @@ export async function debugging(manifestPath: string, options: OptionValues) {
     } else {
       await isDebuggingEnabled(manifestPath);
     }
-    usageDataObject.reportSuccess("debugging");
   } catch (err: any) {
-    usageDataObject.reportException("debugging", err);
     logErrorMessage(err);
   }
 }
@@ -76,9 +71,7 @@ export async function disableDebugging(manifestPath: string) {
     await devSettings.disableDebugging(manifest.id!);
 
     console.log("Debugging has been disabled.");
-    usageDataObject.reportSuccess("disableDebugging()");
   } catch (err: any) {
-    usageDataObject.reportException("disableDebugging()", err);
     logErrorMessage(err);
   }
 }
@@ -92,9 +85,7 @@ export async function disableLiveReload(manifestPath: string) {
     await devSettings.disableLiveReload(manifest.id!);
 
     console.log("Live reload has been disabled.");
-    usageDataObject.reportSuccess("disableLiveReload()");
   } catch (err: any) {
-    usageDataObject.reportException("disableLiveReload()", err);
     logErrorMessage(err);
   }
 }
@@ -104,9 +95,7 @@ export async function disableRuntimeLogging() {
     await devSettings.disableRuntimeLogging();
 
     console.log("Runtime logging has been disabled.");
-    usageDataObject.reportSuccess("disableRuntimeLogging()");
   } catch (err: any) {
-    usageDataObject.reportException("disableRuntimeLogging()", err);
     logErrorMessage(err);
   }
 }
@@ -125,9 +114,7 @@ export async function enableDebugging(manifestPath: string, options: OptionValue
     );
 
     console.log("Debugging has been enabled.");
-    usageDataObject.reportSuccess("enableDebugging()");
   } catch (err: any) {
-    usageDataObject.reportException("enableDebugging()", err);
     logErrorMessage(err);
   }
 }
@@ -141,9 +128,7 @@ export async function enableLiveReload(manifestPath: string) {
     await devSettings.enableLiveReload(manifest.id!);
 
     console.log("Live reload has been enabled.");
-    usageDataObject.reportSuccess("enableLiveReload()");
   } catch (err: any) {
-    usageDataObject.reportException("enableLiveReload()", err);
     logErrorMessage(err);
   }
 }
@@ -153,9 +138,7 @@ export async function enableRuntimeLogging(path?: string) {
     const logPath = await devSettings.enableRuntimeLogging(path);
 
     console.log(`Runtime logging has been enabled. File: ${logPath}`);
-    usageDataObject.reportSuccess("enableRuntimeLogging()");
   } catch (err: any) {
-    usageDataObject.reportException("enableRuntimeLogging()", err);
     logErrorMessage(err);
   }
 }
@@ -171,9 +154,7 @@ export async function getSourceBundleUrl(manifestPath: string) {
     );
 
     displaySourceBundleUrl(components);
-    usageDataObject.reportSuccess("getSourceBundleUrl()");
   } catch (err: any) {
-    usageDataObject.reportException("getSourceBundleUrl()", err);
     logErrorMessage(err);
   }
 }
@@ -187,9 +168,7 @@ export async function isDebuggingEnabled(manifestPath: string) {
     const enabled: boolean = await devSettings.isDebuggingEnabled(manifest.id!);
 
     console.log(enabled ? "Debugging is enabled." : "Debugging is not enabled.");
-    usageDataObject.reportSuccess("isDebuggingEnabled()");
   } catch (err: any) {
-    usageDataObject.reportException("isDebuggingEnabled()", err);
     logErrorMessage(err);
   }
 }
@@ -203,9 +182,7 @@ export async function isLiveReloadEnabled(manifestPath: string) {
     const enabled: boolean = await devSettings.isLiveReloadEnabled(manifest.id!);
 
     console.log(enabled ? "Live reload is enabled." : "Live reload is not enabled.");
-    usageDataObject.reportSuccess("isLiveReloadEnabled()");
   } catch (err: any) {
-    usageDataObject.reportException("isLiveReloadEnabled()", err);
     logErrorMessage(err);
   }
 }
@@ -217,9 +194,7 @@ export async function isRuntimeLoggingEnabled() {
     console.log(
       path ? `Runtime logging is enabled. File: ${path}` : "Runtime logging is not enabled."
     );
-    usageDataObject.reportSuccess("isRuntimeLoggingEnabled()");
   } catch (err: any) {
-    usageDataObject.reportException("isRuntimeLoggingEnabled()", err);
     logErrorMessage(err);
   }
 }
@@ -233,9 +208,7 @@ export async function liveReload(manifestPath: string, options: OptionValues) {
     } else {
       await isLiveReloadEnabled(manifestPath);
     }
-    usageDataObject.reportSuccess("liveReload");
   } catch (err: any) {
-    usageDataObject.reportException("liveReload", err);
     logErrorMessage(err);
   }
 }
@@ -268,9 +241,7 @@ export async function m365Account(
 ) {
   try {
     await updateM365Account(operation);
-    usageDataObject.reportSuccess("m365Account");
   } catch (err: any) {
-    usageDataObject.reportException("m365Account", err);
     logErrorMessage(err);
   }
 }
@@ -281,9 +252,7 @@ export async function register(
 ) {
   try {
     await devSettings.registerAddIn(manifestPath);
-    usageDataObject.reportSuccess("register");
   } catch (err: any) {
-    usageDataObject.reportException("register", err);
     logErrorMessage(err);
   }
 }
@@ -312,9 +281,7 @@ export async function registered(
     } else {
       console.log("No add-ins are registered.");
     }
-    usageDataObject.reportSuccess("registered");
   } catch (err: any) {
-    usageDataObject.reportException("registered", err);
     logErrorMessage(err);
   }
 }
@@ -330,9 +297,7 @@ export async function runtimeLogging(options: OptionValues) {
     } else {
       await isRuntimeLoggingEnabled();
     }
-    usageDataObject.reportSuccess("runtimeLogging");
   } catch (err: any) {
-    usageDataObject.reportException("runtimeLogging", err);
     logErrorMessage(err);
   }
 }
@@ -353,9 +318,7 @@ export async function sideload(
     const registration: string = options.registration;
 
     await sideloadAddIn(manifestPath, app, canPrompt, launchOnly, appType, document, registration);
-    usageDataObject.reportSuccess("sideload");
   } catch (err: any) {
-    usageDataObject.reportException("sideload", err);
     logErrorMessage(err);
   }
 }
@@ -375,9 +338,7 @@ export async function setSourceBundleUrl(manifestPath: string, options: OptionVa
 
     console.log("Configured source bundle url.");
     displaySourceBundleUrl(await devSettings.getSourceBundleUrl(manifest.id!));
-    usageDataObject.reportSuccess("setSourceBundleUrl()");
   } catch (err: any) {
-    usageDataObject.reportException("setSourceBundleUrl()", err);
     logErrorMessage(err);
   }
 }
@@ -394,9 +355,7 @@ export async function sourceBundleUrl(manifestPath: string, options: OptionValue
     } else {
       await getSourceBundleUrl(manifestPath);
     }
-    usageDataObject.reportSuccess("sourceBundleUrl");
   } catch (err: any) {
-    usageDataObject.reportException("sourceBundleUrl", err);
     logErrorMessage(err);
   }
 }
@@ -427,9 +386,7 @@ export async function unregister(
     } else {
       await devSettings.unregisterAddIn(manifestPath);
     }
-    usageDataObject.reportSuccess("unregister");
   } catch (err: any) {
-    usageDataObject.reportException("unregister", err);
     logErrorMessage(err);
   }
 }
@@ -487,9 +444,7 @@ export async function webView(manifestPath: string, webViewString?: string) {
         ? `The web view type is set to ${webViewTypeName}.`
         : "The web view type has not been set."
     );
-    usageDataObject.reportSuccess("webView");
   } catch (err: any) {
-    usageDataObject.reportException("webView", err);
     logErrorMessage(err);
   }
 }
@@ -505,9 +460,7 @@ export async function sourceBundleOverrideFile(addInId: string, options: OptionV
     } else {
       await isSourceBundleOverriden(addInId);
     }
-    usageDataObject.reportSuccess("sourceBundleOverrideFile");
   } catch (err: any) {
-    usageDataObject.reportException("sourceBundleOverrideFile", err);
     logErrorMessage(err);
   }
 }
@@ -519,7 +472,6 @@ export async function enableSourceBundleOverrideFile(addInId: string, path?: str
     await devSettings.enableSourceBundleOverrideFile(formattedAddInId, path);
     console.log(`Source bundle has been overriden. Add-in ID: ${addInId}. Path: ${path}`);
   } catch (err: any) {
-    usageDataObject.reportException("enableSourceBundleOverrideFile", err);
     logErrorMessage(err);
   }
 }
@@ -531,7 +483,6 @@ export async function disableSourceBundleOverrideFile(addInId: string) {
     await devSettings.disableSourceBundleOverrideFile(formattedAddInId);
     console.log(`Source bundle override has been removed. Add-in ID: ${addInId}.`);
   } catch (err: any) {
-    usageDataObject.reportException("disableSourceBundleOverrideFile", err);
     logErrorMessage(err);
   }
 }
@@ -543,7 +494,6 @@ export async function isSourceBundleOverriden(addInId: string) {
     const res = await devSettings.isSourceBundleOverriden(formattedAddInId);
     console.log(res);
   } catch (err: any) {
-    usageDataObject.reportException("isSourceBundleOverriden", err);
     logErrorMessage(err);
   }
 }
@@ -559,9 +509,7 @@ export async function diskManifests(options: OptionValues) {
     } else {
       await areDiskManifestsEnabled();
     }
-    usageDataObject.reportSuccess("diskManifests");
   } catch (err: any) {
-    usageDataObject.reportException("diskManifests", err);
     logErrorMessage(err);
   }
 }
@@ -569,17 +517,14 @@ export async function diskManifests(options: OptionValues) {
 export async function enableDiskManifests(path?: string) {
   const diskManifestsPath = await devSettings.enableDiskManifests(path);
   console.log(`Disk manifests have been enabled. Path: ${diskManifestsPath}`);
-  usageDataObject.reportSuccess("enableDiskManifests");
 }
 
 export async function disableDiskManifests() {
   await devSettings.disableDiskManifests();
   console.log("Disk manifests have been disabled.");
-  usageDataObject.reportSuccess("disableDiskManifests");
 }
 
 export async function areDiskManifestsEnabled() {
   const res = await devSettings.areDiskManifestsEnabled();
   console.log(res);
-  usageDataObject.reportSuccess("areDiskManifestsEnabled");
 }

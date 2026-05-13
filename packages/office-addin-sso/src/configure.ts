@@ -6,7 +6,6 @@
 import childProcess from "child_process";
 import * as defaults from "./defaults";
 import fs from "fs";
-import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console process require setTimeout */
@@ -63,10 +62,6 @@ export async function isAzureCliInstalled(): Promise<boolean> {
           }
           return false;
         });
-        // Send usage data
-        usageDataObject.reportSuccess("isAzureCliInstalled()", {
-          cliInstalled: cliInstalled,
-        });
         return cliInstalled;
       }
       case "darwin": {
@@ -76,10 +71,6 @@ export async function isAzureCliInstalled(): Promise<boolean> {
           false /* returnJson */
         );
         cliInstalled = appsMac.toString().includes("azure-cli");
-        // Send usage data
-        usageDataObject.reportSuccess("isAzureCliInstalled()", {
-          cliInstalled: cliInstalled,
-        });
         return cliInstalled;
       }
       default: {
@@ -137,11 +128,6 @@ export async function isUserTenantAdmin(userInfo: Object): Promise<boolean> {
       if (item.userPrincipalName === userInfo[0].user.name) {
         isTenantAdmin = true;
       }
-    });
-
-    // Send usage data
-    usageDataObject.reportSuccess("isUserTenantAdmin()", {
-      isUserTenantAdmin: isTenantAdmin,
     });
 
     return isTenantAdmin;
@@ -292,11 +278,6 @@ export async function setSharePointTenantReplyUrls(tenantName: string): Promise<
       await promiseExecuteCommand(azRestCommand);
     }
 
-    // Send usage data
-    usageDataObject.reportSuccess("setTenantReplyUrls()", {
-      isUserTenantAdmin: setReplyUrls,
-      isServicePrincipal: !!servicePrinicipalObjectlId,
-    });
     return setReplyUrls;
   } catch (err) {
     const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
@@ -339,15 +320,9 @@ export async function setOutlookTenantReplyUrl(): Promise<boolean> {
       await promiseExecuteCommand(azRestCommand);
     }
 
-    // Send usage data
-    usageDataObject.reportSuccess("setOutlookTenantReplyUrls()", {
-      tenantReplyUrlsSet: setReplyUrls,
-      isServicePrincipal: !!servicePrinicipalObjectlId,
-    });
     return setReplyUrls;
   } catch (err) {
     const errorMessage: string = `Unable to set tenant reply urls. \n${err}`;
-    usageDataObject.reportException("setOutlookTenantReplyUrls()", errorMessage);
     throw new Error(errorMessage);
   }
 }
