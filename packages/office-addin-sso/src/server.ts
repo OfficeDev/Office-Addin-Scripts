@@ -7,6 +7,7 @@ import * as devCerts from "office-addin-dev-certs";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import { App } from "./middle-tier/app";
 import { getSecretFromCredentialStore } from "./ssoDataSettings";
+import { usageDataObject } from "./defaults";
 
 /* global console process require */
 
@@ -33,9 +34,11 @@ export class SSOService {
       }
       await this.getSecret(isTest);
       this.ssoServiceStarted = await this.startServer(this.app.appInstance, this.port);
+      usageDataObject.reportSuccess("startSsoService()");
       return Promise.resolve(this.ssoServiceStarted);
     } catch (err) {
       console.error(`Failed to start SSO server. ${err}`);
+      usageDataObject.reportException("startSsoService()", err);
       return Promise.reject(false);
     }
   }

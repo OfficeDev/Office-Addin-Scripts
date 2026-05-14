@@ -6,6 +6,7 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import * as defaults from "./defaults";
+import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global Buffer process __dirname */
@@ -97,11 +98,18 @@ export function verifyCertificates(
   certificatePath: string = defaults.localhostCertificatePath,
   keyPath: string = defaults.localhostKeyPath
 ): boolean {
-  let isCertificateValid: boolean = true;
   try {
-    validateCertificateAndKey(certificatePath, keyPath);
-  } catch {
-    isCertificateValid = false;
+    let isCertificateValid: boolean = true;
+    try {
+      validateCertificateAndKey(certificatePath, keyPath);
+    } catch {
+      isCertificateValid = false;
+    }
+    let output = isCertificateValid && isCaCertificateInstalled();
+    usageDataObject.reportSuccess("verifyCertificates()");
+    return output;
+  } catch (err: any) {
+    usageDataObject.reportException("verifyCertificates()", err);
+    throw err;
   }
-  return isCertificateValid && isCaCertificateInstalled();
 }

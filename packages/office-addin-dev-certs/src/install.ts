@@ -7,6 +7,7 @@ import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
 import { isCaCertificateInstalled, verifyCertificates } from "./verify";
+import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
 /* global console process __dirname */
@@ -41,7 +42,8 @@ export async function ensureCertificatesAreInstalled(
   domains: string[] = defaults.domain,
   machine: boolean = false
 ) {
-  const areCertificatesValid = verifyCertificates();
+  try {
+    const areCertificatesValid = verifyCertificates();
 
     if (areCertificatesValid) {
       console.log(
@@ -59,6 +61,12 @@ export async function ensureCertificatesAreInstalled(
       );
       await installCaCertificate(defaults.caCertificatePath, machine);
     }
+
+    usageDataObject.reportSuccess("ensureCertificatesAreInstalled()");
+  } catch (err: any) {
+    usageDataObject.reportException("ensureCertificatesAreInstalled()", err);
+    throw err;
+  }
 }
 
 export async function installCaCertificate(

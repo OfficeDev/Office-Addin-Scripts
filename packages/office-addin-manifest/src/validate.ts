@@ -5,6 +5,7 @@ import { createReadStream } from "fs";
 import { AppManifestUtils, DevPreviewSchema } from "@microsoft/app-manifest";
 import fetch from "node-fetch";
 import { OfficeAddinManifest } from "./manifestOperations";
+import { usageDataObject } from "./defaults";
 
 export class ManifestValidationDetails {
   public adminInstallOnly?: boolean;
@@ -66,79 +67,84 @@ export async function validateManifest(
   manifestPath: string,
   verifyProduction: boolean = false
 ): Promise<ManifestValidation> {
-  const validation: ManifestValidation = new ManifestValidation();
+  try {
+    const validation: ManifestValidation = new ManifestValidation();
 
-  // read the manifest file to ensure the file path is valid
-  await OfficeAddinManifest.readManifestFile(manifestPath);
+    // read the manifest file to ensure the file path is valid
+    await OfficeAddinManifest.readManifestFile(manifestPath);
 
-  if (manifestPath.endsWith(".json")) {
-    const manifest: DevPreviewSchema = (await AppManifestUtils.readTeamsManifest(
-      manifestPath
-    )) as DevPreviewSchema;
-    const validationResult: string[] = await AppManifestUtils.validateAgainstSchema(manifest);
-    if (validationResult.length !== 0) {
-      // There are errors
-      validation.isValid = false;
-      validation.report = new ManifestValidationReport();
-      validation.report.errors = [];
-      validationResult.forEach((error: string) => {
-        let issue: ManifestValidationIssue = new ManifestValidationIssue();
-        issue.content = error;
-        issue.title = "Error";
+    if (manifestPath.endsWith(".json")) {
+      const manifest: DevPreviewSchema = (await AppManifestUtils.readTeamsManifest(
+        manifestPath
+      )) as DevPreviewSchema;
+      const validationResult: string[] = await AppManifestUtils.validateAgainstSchema(manifest);
+      if (validationResult.length !== 0) {
+        // There are errors
+        validation.isValid = false;
+        validation.report = new ManifestValidationReport();
+        validation.report.errors = [];
+        validationResult.forEach((error: string) => {
+          let issue: ManifestValidationIssue = new ManifestValidationIssue();
+          issue.content = error;
+          issue.title = "Error";
 
-        validation.report?.errors?.push(issue);
-      });
+          validation.report?.errors?.push(issue);
+        });
+      } else {
+        validation.isValid = true;
+      }
     } else {
-      validation.isValid = true;
-    }
-  } else {
-    const stream = await createReadStream(manifestPath);
-    const clientId: string = verifyProduction ? "Default" : "devx";
-    let response;
+      const stream = await createReadStream(manifestPath);
+      const clientId: string = verifyProduction ? "Default" : "devx";
+      let response;
 
-    try {
-      response = await fetch(
-        `https://validationgateway.omex.office.net/package/api/check?clientId=${clientId}`,
-        {
-          body: stream,
-          headers: {
-            "Content-Type": "application/xml",
-          },
-          method: "POST",
-        }
-      );
-    } catch (err) {
-      throw new Error(`Unable to contact the manifest validation service.\n${err}`);
-    }
-
-    validation.status = response.status;
-    validation.statusText = response.statusText;
-
-    if (!response.ok) {
-      validation.isValid = false;
-      return validation;
-    }
-
-    const text = await response.text();
-
-    try {
-      const json = JSON.parse(text.trim());
-      if (json) {
-        validation.report = json;
+      try {
+        response = await fetch(
+          `https://validationgateway.omex.office.net/package/api/check?clientId=${clientId}`,
+          {
+            body: stream,
+            headers: {
+              "Content-Type": "application/xml",
+            },
+            method: "POST",
+          }
+        );
+      } catch (err) {
+        throw new Error(`Unable to contact the manifest validation service.\n${err}`);
       }
-    } catch {} // eslint-disable-line no-empty
 
-    if (validation.report) {
-      const result = validation.report.status;
+      validation.status = response.status;
+      validation.statusText = response.statusText;
 
-      if (result) {
-        switch (result.toLowerCase()) {
-          case "accepted":
-            validation.isValid = true;
-            break;
+      if (!response.ok) {
+        validation.isValid = false;
+        return validation;
+      }
+
+      const text = await response.text();
+
+      try {
+        const json = JSON.parse(text.trim());
+        if (json) {
+          validation.report = json;
+        }
+      } catch {} // eslint-disable-line no-empty
+
+      if (validation.report) {
+        const result = validation.report.status;
+
+        if (result) {
+          switch (result.toLowerCase()) {
+            case "accepted":
+              validation.isValid = true;
+              break;
+          }
         }
       }
     }
+    return validation;
+  } catch (err: any) {
+    usageDataObject.reportException("validateManifest()", err);
+    throw err;
   }
-  return validation;
 }

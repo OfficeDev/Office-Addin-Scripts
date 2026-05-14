@@ -4,6 +4,7 @@
 import { OptionValues } from "commander";
 import inquirer from "inquirer";
 import { logErrorMessage } from "office-addin-usage-data";
+import { usageDataObject } from "./defaults";
 import { convertProject } from "./convert";
 
 export async function convert(options: OptionValues) {
@@ -16,8 +17,14 @@ export async function convert(options: OptionValues) {
 
     if (shouldContinue) {
       await convertProject(manifestPath, backupPath, projectPath, devPreview);
+      usageDataObject.reportSuccess("convert", { result: "Project converted" });
+    } else {
+      usageDataObject.reportSuccess("convert", {
+        result: "Conversion cancelled",
+      });
     }
   } catch (err: any) {
+    usageDataObject.reportException("convert", err);
     logErrorMessage(err);
   }
 }

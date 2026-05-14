@@ -5,6 +5,7 @@ import { OptionValues } from "commander";
 import { logErrorMessage } from "office-addin-usage-data";
 import * as defaults from "./defaults";
 import { makeFilesPrettier, performLintCheck, performLintFix } from "./lint";
+import { usageDataObject } from "./defaults";
 
 /* global process */
 
@@ -27,11 +28,13 @@ export async function lint(options: OptionValues) {
     const pathToFiles: string = getPathToFiles(options);
     const useTestConfig: boolean = options.test;
     await performLintCheck(pathToFiles, useTestConfig);
+    usageDataObject.reportSuccess("lint");
   } catch (err: any) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
       process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      usageDataObject.reportException("lint", err);
       logErrorMessage(err);
     }
   }
@@ -42,11 +45,13 @@ export async function lintFix(options: OptionValues) {
     const pathToFiles: string = getPathToFiles(options);
     const useTestConfig: boolean = options.test;
     await performLintFix(pathToFiles, useTestConfig);
+    usageDataObject.reportSuccess("lintFix");
   } catch (err: any) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
       process.exitCode = defaults.ESLintExitCode.CommandFailed;
+      usageDataObject.reportException("lintFix", err);
       logErrorMessage(err);
     }
   }
@@ -56,11 +61,13 @@ export async function prettier(options: OptionValues) {
   try {
     const pathToFiles: string = getPathToFiles(options);
     await makeFilesPrettier(pathToFiles);
+    usageDataObject.reportSuccess("prettier");
   } catch (err: any) {
     if (typeof err.status == "number") {
       process.exitCode = err.status;
     } else {
       process.exitCode = defaults.PrettierExitCode.CommandFailed;
+      usageDataObject.reportException("prettier", err);
       logErrorMessage(err);
     }
   }

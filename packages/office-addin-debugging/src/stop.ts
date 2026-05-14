@@ -5,6 +5,7 @@ import { clearDevSettings, unregisterAddIn } from "office-addin-dev-settings";
 import { OfficeAddinManifest } from "office-addin-manifest";
 import * as debugInfo from "./debugInfo";
 import { stopProcess } from "./process";
+import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 import { getDiskManifestDir } from "./shared";
 import fs from "fs";
@@ -12,7 +13,8 @@ import fs from "fs";
 /* global console process */
 
 export async function stopDebugging(manifestPath: string) {
-  console.log("Debugging is being stopped...");
+  try {
+    console.log("Debugging is being stopped...");
 
     const isWindowsPlatform = process.platform === "win32";
     const manifestInfo = await OfficeAddinManifest.readManifestFile(manifestPath);
@@ -46,4 +48,9 @@ export async function stopDebugging(manifestPath: string) {
     }
 
     console.log("Debugging has been stopped.");
+    usageDataObject.reportSuccess("stopDebugging");
+  } catch (err: any) {
+    usageDataObject.reportException("stopDebugging", err);
+    throw err;
+  }
 }

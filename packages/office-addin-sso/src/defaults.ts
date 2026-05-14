@@ -2,6 +2,10 @@
 // Licensed under the MIT license.
 
 import path from "path";
+import {
+  connectionStringForOfficeAddinCLITools,
+  OfficeAddinUsageData,
+} from "office-addin-usage-data";
 
 /* global process __dirname */
 
@@ -52,3 +56,10 @@ export const testFallbackAuthDialogFilePath: string = path.resolve(
   `${process.cwd()}/test/test-fallbackauthdialog`
 );
 export const testManifestFilePath = path.resolve(`${process.cwd()}/test/test-manifest.xml`);
+
+// Usage data defaults
+export const usageDataObject: OfficeAddinUsageData = new OfficeAddinUsageData({
+  projectName: "office-addin-sso",
+  connectionString: connectionStringForOfficeAddinCLITools,
+  raisePrompt: false,
+});

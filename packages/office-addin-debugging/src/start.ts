@@ -14,6 +14,7 @@ import * as nodeDebugger from "office-addin-node-debugger";
 import * as debugInfo from "./debugInfo";
 import { getProcessIdsForPort } from "./port";
 import { startDetachedProcess } from "./process";
+import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 import { getDiskManifestDir } from "./shared";
 
@@ -294,7 +295,8 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     enableLiveReload: options.enableLiveReload ?? true,
   };
 
-  if (appType === undefined) {
+  try {
+    if (appType === undefined) {
       throw new ExpectedError("Please specify the application type to debug.");
     }
 
@@ -433,6 +435,20 @@ export async function startDebugging(manifestPath: string, options: StartDebuggi
     }
 
     console.log(enableDebugging ? "Debugging started." : "Started.");
+
+    usageDataObject.reportSuccess("startDebugging()", {
+      app: app,
+      document: document,
+      appType: appType,
+    });
+  } catch (err: any) {
+    usageDataObject.reportException("startDebugging()", err, {
+      app: app,
+      document: document,
+      appType: appType,
+    });
+    throw err;
+  }
 }
 
 export async function waitUntil(

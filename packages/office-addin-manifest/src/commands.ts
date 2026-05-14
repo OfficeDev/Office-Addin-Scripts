@@ -12,6 +12,7 @@ import {
   ManifestValidationProduct,
   validateManifest,
 } from "./validate";
+import { usageDataObject } from "./defaults";
 import { exportMetadataPackage } from "./export";
 
 /* global console process */
@@ -30,8 +31,10 @@ export async function info(manifestPath: string) {
   try {
     const manifest = await OfficeAddinManifest.readManifestFile(manifestPath);
     logManifestInfo(manifestPath, manifest);
+    usageDataObject.reportSuccess("info");
   } catch (err: any) {
     process.exitCode = 1;
+    usageDataObject.reportException("info", err);
     logErrorMessage(err);
   }
 }
@@ -144,8 +147,10 @@ export async function modify(manifestPath: string, options: OptionValues) {
 
     const manifest = await OfficeAddinManifest.modifyManifestFile(manifestPath, guid, displayName);
     logManifestInfo(manifestPath, manifest);
+    usageDataObject.reportSuccess("modify");
   } catch (err: any) {
     process.exitCode = 1;
+    usageDataObject.reportException("modify", err);
     logErrorMessage(err);
   }
 }
@@ -175,8 +180,10 @@ export async function validate(manifestPath: string, options: OptionValues) {
     }
 
     process.exitCode = validation.isValid ? 0 : 1;
+    usageDataObject.reportSuccess("validate");
   } catch (err: any) {
     process.exitCode = 1;
+    usageDataObject.reportException("validate", err);
     logErrorMessage(err);
   }
 }
@@ -187,8 +194,10 @@ export async function exportManifest(options: OptionValues) {
     const manifestPath: string = options.manifest ?? "./manifest.json";
 
     await exportMetadataPackage(outputPath, manifestPath);
+    usageDataObject.reportSuccess("export");
   } catch (err: any) {
     process.exitCode = 1;
+    usageDataObject.reportException("export", err);
     logErrorMessage(err);
   }
 }

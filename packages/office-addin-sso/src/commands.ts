@@ -4,6 +4,7 @@
 import chalk from "chalk";
 import { parseNumber } from "office-addin-cli";
 import { ManifestInfo, OfficeAddinManifest } from "office-addin-manifest";
+import { usageDataObject } from "./defaults";
 import * as configure from "./configure";
 import { SSOService } from "./server";
 import {
@@ -135,6 +136,7 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
       addSecretToCredentialStore(manifestInfo.displayName, secret);
     } else {
       const errorMessage = "Failed to register application";
+      usageDataObject.reportException("createNewApplication", errorMessage);
       console.log(chalk.red(errorMessage));
       return;
     }
@@ -165,25 +167,35 @@ export async function configureSSO(manifestPath: string, secretTTL?: string) {
     // Log end time for configuration process and compute in seconds
     const ssoConfigEndTime = new Date().getTime();
     const ssoConfigDuration = (ssoConfigEndTime - ssoConfigStartTime) / 1000;
-    console.log(`SSO configuration completed in ${ssoConfigDuration} seconds`);
+
+    // Send usage data
+    usageDataObject.reportSuccess("configureSSO", {
+      configDuration: ssoConfigDuration,
+    });
   } else {
     const errorMessage: string = "Login to Azure did not succeed";
+    usageDataObject.reportException("configureSSO", errorMessage);
     throw new Error(errorMessage);
   }
 }
 
 export async function startSSOService(manifestPath: string) {
-  // Check platform and return if not Windows or Mac
-  if (process.platform !== "win32" && process.platform !== "darwin") {
-    console.log(
-      chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`)
-    );
-    throw new ExpectedError(
-      `${process.platform} is not supported. Only Windows and Mac are supported`
-    );
+  try {
+    // Check platform and return if not Windows or Mac
+    if (process.platform !== "win32" && process.platform !== "darwin") {
+      console.log(
+        chalk.yellow(`${process.platform} is not supported. Only Windows and Mac are supported`)
+      );
+      throw new ExpectedError(
+        `${process.platform} is not supported. Only Windows and Mac are supported`
+      );
+    }
+    const sso = new SSOService(manifestPath);
+    sso.startSsoService();
+    usageDataObject.reportSuccess("startSSOService");
+  } catch (err) {
+    usageDataObject.reportException("startSSOService", err);
   }
-  const sso = new SSOService(manifestPath);
-  sso.startSsoService();
 }
 
 function parseDevServerPort(optionValue: any): number | undefined {

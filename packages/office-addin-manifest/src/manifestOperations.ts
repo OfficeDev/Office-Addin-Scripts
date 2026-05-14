@@ -1,6 +1,7 @@
 // copyright (c) Microsoft Corporation. All rights reserved.
 // licensed under the MIT license.
 
+import { usageDataObject } from "./defaults";
 import { ManifestHandler } from "./manifestHandler/manifestHandler";
 import { ManifestInfo } from "./manifestInfo";
 import { ManifestHandlerJson } from "./manifestHandler/manifestHandlerJson";
@@ -16,11 +17,17 @@ export namespace OfficeAddinManifest {
       if (guid === undefined && displayName === undefined) {
         throw new Error("You need to specify something to change in the manifest.");
       } else {
-        const manifestHandler: ManifestHandler = await getManifestHandler(manifestPath);
-        const manifestData = await manifestHandler.modifyManifest(guid, displayName);
-        await manifestHandler.writeManifestData(manifestData);
-        const manifestInfo: ManifestInfo = await manifestHandler.parseManifest();
-        return manifestInfo;
+        try {
+          const manifestHandler: ManifestHandler = await getManifestHandler(manifestPath);
+          const manifestData = await manifestHandler.modifyManifest(guid, displayName);
+          await manifestHandler.writeManifestData(manifestData);
+          const manifestInfo: ManifestInfo = await manifestHandler.parseManifest();
+          usageDataObject.reportSuccess("modifyManifestFile()");
+          return manifestInfo;
+        } catch (err: any) {
+          usageDataObject.reportException("modifyManifestFile()", err);
+          throw err;
+        }
       }
     } else {
       throw new Error(`Please provide the path to the manifest file.`);
