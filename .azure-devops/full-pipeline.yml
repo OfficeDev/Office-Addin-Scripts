@@ -31,6 +31,10 @@ extends:
       jobs:
       - job: Windows_Latest
         steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '24.x'
+          displayName: 'Use Node.js 24.x'
         - template: /.azure-devops/steps/npm-install.yaml@self
         - template: /.azure-devops/steps/build-individually.yaml@self
         - template: /.azure-devops/steps/devcerts.yml@self
@@ -41,6 +45,10 @@ extends:
           image: ubuntu-latest
           os: linux
         steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '24.x'
+          displayName: 'Use Node.js 24.x'
         - template: /.azure-devops/steps/npm-install.yaml@self
         - template: /.azure-devops/steps/build.yaml@self
         - template: /.azure-devops/steps/test.yml@self
