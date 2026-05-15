@@ -6,6 +6,6 @@ pipelines:
     retail:
       source:
         eslint:
-          lastModifiedDate: 2025-11-09
+          lastModifiedDate: 2026-05-15
         armory:
-          lastModifiedDate: 2025-11-09
+          lastModifiedDate: 2026-05-15
