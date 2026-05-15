@@ -9,6 +9,17 @@ import * as defaults from "./defaults";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
+export enum CertificateStatus {
+  Installed = "installed",
+  NotInstalled = "not-installed",
+  Error = "error",
+}
+
+export interface CertificateVerificationResult {
+  status: CertificateStatus;
+  error?: Error;
+}
+
 /* global Buffer process __dirname */
 
 // On win32 this is a unique hash used with PowerShell command to reliably delineate command output
@@ -41,26 +52,79 @@ function getVerifyCommand(returnInvalidCertificate: boolean): string {
   }
 }
 
+/**
+ * Checks if the CA certificate is installed.
+ * @param returnInvalidCertificate - If true, returns true even if the certificate is expired.
+ * @returns true if the certificate is installed, false otherwise.
+ * @throws Error if the verification script fails to execute (e.g., PowerShell not found, permission issues).
+ */
 export function isCaCertificateInstalled(returnInvalidCertificate: boolean = false): boolean {
+  const result = getCaCertificateStatus(returnInvalidCertificate);
+  if (result.status === CertificateStatus.Error) {
+    throw result.error!;
+  }
+  return result.status === CertificateStatus.Installed;
+}
+
+/**
+ * Gets the CA certificate installation status with detailed error information.
+ * @param returnInvalidCertificate - If true, returns Installed even if the certificate is expired.
+ * @returns A CertificateVerificationResult object with status and optional error information.
+ */
+export function getCaCertificateStatus(
+  returnInvalidCertificate: boolean = false
+): CertificateVerificationResult {
   const command = getVerifyCommand(returnInvalidCertificate);
 
   try {
     const output = execSync(command, { stdio: "pipe" }).toString();
     if (process.platform === "win32") {
       // Remove any PowerShell output that preceeds invoking the actual certificate check command
-      return (
-        output.slice(output.lastIndexOf(outputMarker) + outputMarker.length).trim().length !== 0
-      );
+      const hasOutput =
+        output.slice(output.lastIndexOf(outputMarker) + outputMarker.length).trim().length !== 0;
+      return { status: hasOutput ? CertificateStatus.Installed : CertificateStatus.NotInstalled };
     }
     // script files return empty string if the certificate not found or expired
     if (output.length !== 0) {
-      return true;
+      return { status: CertificateStatus.Installed };
     }
-  } catch {
-    // Some commands throw errors if the certifcate is not found or expired
-  }
+    return { status: CertificateStatus.NotInstalled };
+  } catch (err: unknown) {
+    // Distinguish between "certificate not found" (expected) and script execution errors (unexpected).
+    // On Windows, PowerShell with $ErrorActionPreference = 'Stop' throws when the cert is not found.
+    // On macOS/Linux, scripts return empty output rather than throwing for missing certs.
+    if (process.platform === "win32" && err instanceof Error) {
+      const errorMessage = err.message.toLowerCase();
+      // PowerShell script errors that indicate the script ran but cert wasn't found
+      if (
+        errorMessage.includes("cannot find") ||
+        errorMessage.includes("not found") ||
+        errorMessage.includes("no certificate")
+      ) {
+        return { status: CertificateStatus.NotInstalled };
+      }
+    }
+    // For other platforms or unexpected errors, check if it's a script execution failure
+    const error = err instanceof Error ? err : new Error(String(err));
+    const errorMessage = error.message.toLowerCase();
 
-  return false;
+    // Common script execution failures that should be reported as errors
+    if (
+      errorMessage.includes("command not found") ||
+      errorMessage.includes("not recognized") ||
+      errorMessage.includes("cannot be loaded") ||
+      errorMessage.includes("permission denied") ||
+      errorMessage.includes("enoent") ||
+      errorMessage.includes("access denied") ||
+      errorMessage.includes("spawn")
+    ) {
+      return { status: CertificateStatus.Error, error };
+    }
+
+    // For other errors, assume the certificate is not installed (backwards compatibility)
+    // but log the error for debugging purposes
+    return { status: CertificateStatus.NotInstalled };
+  }
 }
 
 function validateCertificateAndKey(certificatePath: string, keyPath: string) {

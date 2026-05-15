@@ -5,7 +5,7 @@ import { execSync } from "child_process";
 import fsExtra from "fs-extra";
 import path from "path";
 import * as defaults from "./defaults";
-import { isCaCertificateInstalled } from "./verify";
+import { getCaCertificateStatus, CertificateStatus } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
@@ -49,7 +49,13 @@ export function deleteCertificateFiles(
 }
 
 export async function uninstallCaCertificate(machine: boolean = false, verbose: boolean = true) {
-  if (isCaCertificateInstalled(/* returnInvalidCertificate */ true)) {
+  const certStatus = getCaCertificateStatus(/* returnInvalidCertificate */ true);
+
+  if (certStatus.status === CertificateStatus.Error) {
+    throw new Error(`Unable to verify certificate status.\n${certStatus.error?.message}`);
+  }
+
+  if (certStatus.status === CertificateStatus.Installed) {
     const command = getUninstallCommand(machine);
 
     try {
