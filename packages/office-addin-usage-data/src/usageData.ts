@@ -1,16 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as appInsights from "applicationinsights";
-import readLine from "readline-sync";
-import * as jsonData from "./usageDataSettings";
-import * as defaults from "./defaults";
-
-/* global process */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
  * Specifies the usage data infrastructure the user wishes to use
  * @enum Application Insights: Microsoft Azure service used to collect and query through data
+ * @deprecated Usage data reporting has been removed
  */
 export enum UsageDataReportingMethod {
   applicationInsights = "applicationInsights",
@@ -19,6 +15,7 @@ export enum UsageDataReportingMethod {
  * Level controlling what type of usage data is being sent
  * @enum off: off level of usage data, sends no usage data
  * @enum on: on level of usage data, sends errors and events
+ * @deprecated Usage data reporting has been removed
  */
 export enum UsageDataLevel {
   off = "off",
@@ -41,15 +38,7 @@ export class ExpectedError extends Error {
 
 /**
  * UpdateData options
- * @member groupName Group name for usage data settings (Optional)
- * @member projectName The name of the project that is using the usage data package.
- * @member connectionString Application Insights connection string (Optional, takes precedence over instrumentationKey and one is required)
- * @member instrumentationKey Instrumentation key for usage data resource (Optional, used if connectionString is not provided and one is required)
- * @member promptQuestion Question displayed to user over opt-in for usage data (Optional)
- * @member raisePrompt Specifies whether to raise usage data prompt (this allows for using a custom prompt) (Optional)
- * @member usageDataLevel User's response to the prompt for usage data (Optional)
- * @member method The desired method to use for reporting usage data. (Optional)
- * @member isForTesting True if the data is just for testing, false for actual data that should be reported. (Optional)
+ * @deprecated Usage data reporting has been removed
  */
 export interface IUsageDataOptions {
   groupName?: string;
@@ -65,465 +54,88 @@ export interface IUsageDataOptions {
 }
 
 /**
- * Creates and initializes member variables while prompting user for usage data collection when necessary
- * @param usageDataObject
+ * Usage data class - all methods are now no-ops since telemetry has been removed
+ * @deprecated Usage data reporting has been removed. This class is retained for API compatibility only.
  */
 export class OfficeAddinUsageData {
-  private usageDataClient = appInsights.defaultClient;
-  private eventsSent: number = 0;
-  private exceptionsSent: number = 0;
   private options: IUsageDataOptions;
-  private defaultData = {
-    Platform: process.platform,
-    NodeVersion: process.version,
-  };
 
   constructor(usageDataOptions: IUsageDataOptions) {
-    try {
-      this.options = {
-        groupName: defaults.groupName,
-        promptQuestion: "",
-        raisePrompt: true,
-        usageDataLevel: UsageDataLevel.off,
-        method: UsageDataReportingMethod.applicationInsights,
-        isForTesting: false,
-        ...usageDataOptions,
-      };
-
-      // Validate that either connectionString or instrumentationKey is provided
-      if (!this.options.connectionString && !this.options.instrumentationKey) {
-        throw new Error(
-          "Either connectionString or instrumentationKey must be provided - cannot create usage data object"
-        );
-      }
-
-      if (this.options.groupName === undefined) {
-        throw new Error("Group Name not defined - cannot create usage data object");
-      }
-
-      if (jsonData.groupNameExists(this.options.groupName)) {
-        this.options.usageDataLevel = jsonData.readUsageDataLevel(this.options.groupName);
-      }
-
-      // Generator-office will not raise a prompt because the yeoman generator creates the prompt.  If the projectName
-      // is defaults.generatorOffice and a office-addin-usage-data file hasn't been written yet, write one out.
-      if (
-        this.options.projectName === defaults.generatorOffice &&
-        this.options.connectionString === defaults.connectionStringForOfficeAddinCLITools &&
-        jsonData.needToPromptForUsageData(this.options.groupName)
-      ) {
-        jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
-      }
-
-      if (
-        !this.options.isForTesting &&
-        this.options.raisePrompt &&
-        jsonData.needToPromptForUsageData(this.options.groupName)
-      ) {
-        this.usageDataOptIn();
-      }
-      this.options.deviceID = jsonData.readDeviceID();
-      if (this.options.usageDataLevel === UsageDataLevel.on) {
-        // Application Insights v3 requires connection string format
-        // Use connectionString if provided, otherwise convert instrumentationKey to connection string format
-        let connectionString: string;
-
-        if (this.options.connectionString) {
-          connectionString = this.options.connectionString;
-        } else if (this.options.instrumentationKey) {
-          // Convert instrumentation key to connection string if needed
-          connectionString = this.options.instrumentationKey.includes("InstrumentationKey=")
-            ? this.options.instrumentationKey
-            : `InstrumentationKey=${this.options.instrumentationKey}`;
-        } else {
-          throw new Error("No connection string or instrumentation key available");
-        }
-
-        // Only call setup if Application Insights hasn't been initialized yet
-        // This prevents warnings about duplicate API registrations in tests
-        if (!appInsights.defaultClient) {
-          appInsights
-            .setup(connectionString)
-            .setAutoDependencyCorrelation(false)
-            .setAutoCollectConsole(false)
-            .setAutoCollectDependencies(false)
-            .setAutoCollectExceptions(false)
-            .setAutoCollectHeartbeat(false)
-            .setAutoCollectIncomingRequestAzureFunctions(false)
-            .setAutoCollectPerformance(false, false)
-            .setAutoCollectPreAggregatedMetrics(false)
-            .setAutoCollectRequests(false)
-            .start();
-        }
-        this.usageDataClient = appInsights.defaultClient;
-        this.removeApplicationInsightsSensitiveInformation();
-      }
-    } catch (err) {
-      throw new Error(err);
-    }
+    this.options = {
+      usageDataLevel: UsageDataLevel.off,
+      ...usageDataOptions,
+    };
   }
 
-  /**
-   * Reports custom event object to usage data structure
-   * @param eventName Event name sent to usage data structure
-   * @param data Data object sent to usage data structure
-   */
-  public async reportEvent(eventName: string, data: object): Promise<void> {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      this.reportEventApplicationInsights(eventName, data);
-    }
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public async reportEvent(_eventName: string, _data: object): Promise<void> {}
 
-  /**
-   * Reports custom event object to Application Insights
-   * @param eventName Event name sent to Application Insights
-   * @param data Data object sent to Application Insights
-   */
-  public async reportEventApplicationInsights(eventName: string, data: object): Promise<void> {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      const name = this.options.isForTesting ? `${eventName}-test` : eventName;
-      try {
-        const properties: { [key: string]: string } = {};
-        const measurements: { [key: string]: number } = {};
+  /** @deprecated No-op - usage data reporting has been removed */
+  public async reportEventApplicationInsights(_eventName: string, _data: object): Promise<void> {}
 
-        for (const [key, [value, elapsedTime]] of Object.entries(data)) {
-          properties[key] = value;
-          measurements[key + " durationElapsed"] = elapsedTime;
-        }
-        properties["deviceID"] = this.options.deviceID;
+  /** @deprecated No-op - usage data reporting has been removed */
+  public async reportError(_errorName: string, _err: Error): Promise<void> {}
 
-        this.usageDataClient.trackEvent({
-          name,
-          properties,
-          measurements,
-        });
-        this.eventsSent++;
-      } catch (err) {
-        this.reportError("sendUsageDataEvents", err);
-        throw new Error(err);
-      }
-    }
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public async reportErrorApplicationInsights(_errorName: string, _err: Error): Promise<void> {}
 
-  /**
-   * Reports error to usage data structure
-   * @param errorName Error name sent to usage data structure
-   * @param err Error sent to usage data structure
-   */
-  public async reportError(errorName: string, err: Error): Promise<void> {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      this.reportErrorApplicationInsights(errorName, err);
-    }
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public usageDataOptIn(_testData?: boolean, _testResponse?: string): void {}
 
-  /**
-   * Reports error to Application Insights
-   * @param errorName Error name sent to Application Insights
-   * @param err Error sent to Application Insights
-   */
-  public async reportErrorApplicationInsights(errorName: string, err: Error): Promise<void> {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      let error = Object.create(err);
+  /** @deprecated No-op - usage data reporting has been removed */
+  public setUsageDataOff(): void {}
 
-      error.name = this.options.isForTesting ? `${errorName}-test` : errorName;
-      this.usageDataClient.trackException({
-        exception: this.maskFilePaths(error),
-      });
-      this.exceptionsSent++;
-    }
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public setUsageDataOn(): void {}
 
-  /**
-   * Prompts user for usage data participation once and records response
-   * @param testData Specifies whether test code is calling this method
-   * @param testReponse Specifies test response
-   */
-  public usageDataOptIn(
-    testData: boolean = this.options.isForTesting,
-    testResponse: string = ""
-  ): void {
-    try {
-      let response: string = "";
-      if (testData) {
-        response = testResponse;
-      } else {
-        response = readLine.question(`${this.options.promptQuestion}\n`);
-      }
-      if (response.toLowerCase() === "y") {
-        this.options.usageDataLevel = UsageDataLevel.on;
-      } else {
-        this.options.usageDataLevel = UsageDataLevel.off;
-      }
-      jsonData.writeUsageDataJsonData(this.options.groupName, this.options.usageDataLevel);
-    } catch (err) {
-      this.reportError("UsageDataOptIn", err);
-      throw new Error(err);
-    }
-  }
-
-  /**
-   * Stops usage data from being sent, by default usage data will be on
-   */
-  public setUsageDataOff() {
-    appInsights.defaultClient.config.samplingPercentage = 0;
-  }
-
-  /**
-   * Starts sending usage data, by default usage data will be on
-   */
-  public setUsageDataOn() {
-    appInsights.defaultClient.config.samplingPercentage = 100;
-  }
-
-  /**
-   * Returns whether the usage data is currently on or off
-   * @returns Whether usage data is turned on or off
-   */
+  /** @deprecated Always returns false - usage data reporting has been removed */
   public isUsageDataOn(): boolean {
-    return appInsights.defaultClient.config.samplingPercentage === 100;
+    return false;
   }
 
-  /**
-   * Returns the connection string or instrumentation key associated with the resource
-   * @returns The usage data connection string or instrumentation key
-   */
+  /** @deprecated Returns empty string - usage data reporting has been removed */
   public getUsageDataKey(): string {
-    return this.options.connectionString || this.options.instrumentationKey || "";
+    return "";
   }
 
-  /**
-   * Transform the project name by adddin '-test' suffix to it if necessary
-   */
-  private getEventName() {
-    return this.options.isForTesting
-      ? `${this.options.projectName}-test`
-      : this.options.projectName;
+  /** @deprecated Always returns 0 - usage data reporting has been removed */
+  public getEventsSent(): number {
+    return 0;
   }
 
-  /**
-   * Returns the amount of events that have been sent
-   * @returns The count of events sent
-   */
-  public getEventsSent(): any {
-    return this.eventsSent;
+  /** @deprecated Always returns 0 - usage data reporting has been removed */
+  public getExceptionsSent(): number {
+    return 0;
   }
 
-  /**
-   * Returns the amount of exceptions that have been sent
-   * @returns The count of exceptions sent
-   */
-  public getExceptionsSent(): any {
-    return this.exceptionsSent;
-  }
-
-  /**
-   * Get the usage data level
-   * @returns the usage data level
-   */
+  /** @deprecated Always returns "off" - usage data reporting has been removed */
   public getUsageDataLevel(): string {
-    return this.options.usageDataLevel;
+    return UsageDataLevel.off;
   }
 
-  /**
-   * Returns parsed file path, scrubbing file names and sensitive information
-   * @returns Error after removing PII
-   */
+  /** @deprecated Returns error unchanged - usage data reporting has been removed */
   public maskFilePaths(err: Error): Error {
-    try {
-      const regexRemoveUserFilePaths = /(\w:)*[/\\](.*[/\\]+)*(.+\.)+[a-zA-Z]+/gim;
-      const maskToken: string = "<filepath>";
-
-      err.message = err.message.replace(regexRemoveUserFilePaths, maskToken);
-      err.stack = err.stack.replace(regexRemoveUserFilePaths, maskToken);
-
-      return err;
-    } catch (err) {
-      this.reportError("maskFilePaths", err);
-      throw new Error(err);
-    }
+    return err;
   }
 
-  /**
-   * Removes sensitive information fields from ApplicationInsights data
-   */
-  private removeApplicationInsightsSensitiveInformation() {
-    delete this.usageDataClient.context.tags["ai.cloud.roleInstance"]; // cloud name
-    delete this.usageDataClient.context.tags["ai.device.id"]; // machine name
-    delete this.usageDataClient.context.tags["ai.user.accountId"]; // subscription
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public reportException(_method: string, _err: Error | string, _data?: object): void {}
 
-  /**
-   * Reports custom exception event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param err Error or message about error sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   */
-  public reportException(method: string, err: Error | string, data: object = {}) {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      try {
-        if (err instanceof ExpectedError) {
-          this.reportExpectedException(method, err, data);
-          return;
-        }
-        let error =
-          err instanceof Error
-            ? Object.create(err)
-            : new Error(`${this.options.projectName} error: ${err}`);
-        error.name = this.getEventName();
-        const properties: { [key: string]: string } = {};
+  /** @deprecated No-op - usage data reporting has been removed */
+  public reportExpectedException(_method: string, _err: Error | string, _data?: object): void {}
 
-        Object.entries({
-          Succeeded: false,
-          Method: method,
-          ExpectedError: false,
-          ...this.defaultData,
-          ...data,
-          deviceID: this.options.deviceID,
-        }).forEach((entry) => {
-          properties[entry[0]] = JSON.stringify(entry[1]);
-        });
+  /** @deprecated No-op - usage data reporting has been removed */
+  public reportSuccess(_method: string, _data?: object): void {}
 
-        this.usageDataClient.trackException({
-          exception: this.maskFilePaths(error),
-          properties,
-        });
-        this.exceptionsSent++;
-      } catch (e) {
-        this.reportError("reportException", e);
-        throw e;
-      }
-    }
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public sendUsageDataException(_method: string, _err: Error | string, _data?: object): void {}
 
-  /**
-   * Reports custom expected exception event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param err Error or message about error sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   */
-  public reportExpectedException(method: string, err: Error | string, data: object = {}) {
-    let error =
-      err instanceof Error
-        ? Object.create(err)
-        : new Error(`${this.options.projectName} error: ${err}`);
-    error.name = this.getEventName();
-    this.maskFilePaths(error);
-    const errorMessage = error instanceof Error ? error.message : error;
+  /** @deprecated No-op - usage data reporting has been removed */
+  public sendUsageDataSuccessEvent(_method: string, _data?: object): void {}
 
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      ExpectedError: true,
-      Error: errorMessage,
-      ...data,
-    });
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public sendUsageDataSuccessfulFailEvent(_method: string, _data?: object): void {}
 
-  /**
-   * Reports custom success event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   */
-  public reportSuccess(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      ExpectedError: false,
-      ...data,
-    });
-  }
-
-  /**
-   * Reports custom exception event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param err Error or message about error sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportUnexpectedError` instead.
-   */
-  public sendUsageDataException(method: string, err: Error | string, data: object = {}) {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      try {
-        let error =
-          err instanceof Error
-            ? Object.create(err)
-            : new Error(`${this.options.projectName} error: ${err}`);
-        error.name = this.getEventName();
-        const properties: { [key: string]: string } = {};
-
-        Object.entries({
-          Succeeded: false,
-          Method: method,
-          ...this.defaultData,
-          ...data,
-        }).forEach((entry) => {
-          properties[entry[0]] = JSON.stringify(entry[1]);
-        });
-
-        this.usageDataClient.trackException({
-          exception: this.maskFilePaths(error),
-          properties,
-        });
-        this.exceptionsSent++;
-      } catch (e) {
-        this.reportError("sendUsageDataException", e);
-        throw e;
-      }
-    }
-  }
-
-  /**
-   * Reports custom success event object to Application Insights
-   * @param method Method name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportSuccess` instead.
-   */
-  public sendUsageDataSuccessEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      Pass: true,
-      ...data,
-    });
-  }
-
-  /**
-   * Reports custom successful fail event object to Application Insights
-   * "Successful fail" means that there was an error as a result of user error, but our code worked properly
-   * @param method Method name sent to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   * @deprecated Use `reportExpectedError` instead.
-   */
-  public sendUsageDataSuccessfulFailEvent(method: string, data: object = {}) {
-    this.sendUsageDataEvent({
-      Succeeded: true,
-      Method: method,
-      Pass: false,
-      ...data,
-    });
-  }
-
-  /**
-   * Reports custom event object to Application Insights
-   * @param data Data object(s) sent to Application Insights
-   */
-  public sendUsageDataEvent(data: object = {}) {
-    if (this.getUsageDataLevel() === UsageDataLevel.on) {
-      try {
-        const name = this.getEventName();
-        const properties = {
-          ...this.defaultData,
-          ...data,
-          deviceID: this.options.deviceID,
-        };
-
-        this.usageDataClient.trackEvent({
-          name,
-          properties,
-        });
-        this.eventsSent++;
-      } catch (e) {
-        this.reportError("sendUsageDataEvent", e);
-      }
-    }
-  }
+  /** @deprecated No-op - usage data reporting has been removed */
+  public sendUsageDataEvent(_data?: object): void {}
 }
