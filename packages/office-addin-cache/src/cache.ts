@@ -175,7 +175,7 @@ async function forceCloseOfficeApps(
         if (verbose) console.log(`Force-closing: ${proc.name}`);
         await execFileAsync("taskkill", ["/F", "/IM", proc.name, "/T"]);
       } catch {
-        /* ignore */
+        if (verbose) console.log(`Failed to force-close: ${proc.name}`);
       }
     }
     return;
@@ -187,7 +187,7 @@ async function forceCloseOfficeApps(
         if (verbose) console.log(`Force-killing: ${proc.name}`);
         await execFileAsync("pkill", ["-9", "-f", proc.name]);
       } catch {
-        /* ignore */
+        if (verbose) console.log(`Failed to force-kill: ${proc.name}`);
       }
     }
   }
