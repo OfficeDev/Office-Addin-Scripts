@@ -1,0 +1,50 @@
+{
+  "name": "office-addin-cache",
+  "version": "1.0.0",
+  "description": "Clear the Office Add-in cache folders.",
+  "main": "./lib/main.js",
+  "scripts": {
+    "build": "rimraf lib && concurrently \"tsc -p tsconfig.json\"",
+    "cli": "node lib/cli.js",
+    "lint": "office-addin-lint check",
+    "lint:fix": "office-addin-lint fix",
+    "prettier": "office-addin-lint prettier",
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "watch": "rimraf lib && concurrently \"tsc -p tsconfig.json -w\"",
+    "clear": "office-addin-cache clear",
+    "clear:verbose": "office-addin-cache clear --verbose",
+    "clear:force": "office-addin-cache clear --force-close",
+    "clear:force:verbose": "office-addin-cache clear --force-close --verbose"
+  },
+  "author": "Office Dev",
+  "license": "MIT",
+  "bin": {
+    "office-addin-cache": "./cli.js"
+  },
+  "keywords": [
+    "Office",
+    "Office Add-in"
+  ],
+  "dependencies": {
+    "commander": "^13.0.0",
+    "office-addin-usage-data": "^2.0.8"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^22.10.10",
+    "concurrently": "^9.0.0",
+    "mocha": "^11.0.1",
+    "office-addin-lint": "^3.0.8",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/OfficeDev/Office-Addin-Scripts/issues"
+  },
+  "prettier": "office-addin-prettier-config"
+}

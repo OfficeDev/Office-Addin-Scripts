@@ -20,6 +20,10 @@ The [Excel Custom Functions](https://github.com/OfficeDev/Excel-Custom-Functions
 
   A WebPack plugin which generates the metadata for custom functions.
 
+* [office-addin-cache](packages/office-addin-cache/README.md)
+
+  This package can be used to clear the Office add-ins cache.
+
 * [office-addin-cli](packages/office-addin-cli/README.md)
 
   A command-line interface for Office Add-ins.
