@@ -8,7 +8,7 @@ steps:
     
     Write-Host "==== Level 0: No internal dependencies ===="
     Write-Host "Building office-addin-prettier-config..."
-    Set-Location "$root/packages/eslint-plugin-office-addins"
+    Set-Location "$root/packages/office-addin-prettier-config"
     npm run build
     
     Write-Host "==== Level 1: Depends only on Level 0 ===="
@@ -42,6 +42,10 @@ steps:
     Set-Location "$root/packages/office-addin-manifest"
     npm run build
     
+    Write-Host "Building office-addin-cache..."
+    Set-Location "$root/packages/office-addin-cache"
+    npm run build
+
     Write-Host "Building custom-functions-metadata..."
     Set-Location "$root/packages/custom-functions-metadata"
     npm run build
