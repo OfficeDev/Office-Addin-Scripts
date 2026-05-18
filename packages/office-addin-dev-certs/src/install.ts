@@ -6,7 +6,7 @@ import path from "path";
 import * as defaults from "./defaults";
 import { generateCertificates } from "./generate";
 import { deleteCertificateFiles, uninstallCaCertificate } from "./uninstall";
-import { isCaCertificateInstalled, verifyCertificates } from "./verify";
+import { verifyCertificates, getCaCertificateStatus, CertificateStatus } from "./verify";
 import { usageDataObject } from "./defaults";
 import { ExpectedError } from "office-addin-usage-data";
 
@@ -77,14 +77,23 @@ export async function installCaCertificate(
 
   try {
     console.log(`Installing CA certificate "Developer CA for Microsoft Office Add-ins"...`);
+    // Check certificate status with detailed error information
+    const certStatus = getCaCertificateStatus();
+
+    if (certStatus.status === CertificateStatus.Error) {
+      throw new Error(`Unable to verify certificate status. ${certStatus.error?.message}`);
+    }
+
     // If the certificate is already installed by another instance skip it.
-    if (!isCaCertificateInstalled()) {
+    if (certStatus.status !== CertificateStatus.Installed) {
       execSync(command, { stdio: "pipe" });
     }
     console.log(
       `You now have trusted access to https://localhost.\nCertificate: ${defaults.localhostCertificatePath}\nKey: ${defaults.localhostKeyPath}`
     );
   } catch (error: any) {
-    throw new Error(`Unable to install the CA certificate. ${error.stderr.toString()}`);
+    throw new Error(
+      `Unable to install the CA certificate. ${error.stderr?.toString() ?? error.message}`
+    );
   }
 }
