@@ -42,7 +42,7 @@ steps:
     Set-Location "$root/packages/office-addin-manifest"
     npm run test
     
-    Write-Host "Building office-addin-cache..."
+    Write-Host "Testing office-addin-cache..."
     Set-Location "$root/packages/office-addin-cache"
     npm run test
 
