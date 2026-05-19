@@ -41,5 +41,6 @@
   },
   "prettier": "office-addin-prettier-config",
   "author": "Office Dev",
-  "license": "MIT"
+  "license": "MIT",
+  "gitHead": "b14f560e2c2b0318b5d2dab3706e4c55c62d85da"
 }
