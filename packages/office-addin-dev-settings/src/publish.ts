@@ -71,7 +71,7 @@ export async function uninstallWithTeams(id: string): Promise<boolean> {
       }
     }
 
-    const uninstallCommand = `npx -p @microsoft/m365agentstoolkit-cli atk uninstall --mode manifest-id --manifest-id ${uninstallId} --interactive false`;
+    const uninstallCommand = `npx -p @microsoft/m365agentstoolkit-cli atk uninstall --mode manifest-id --manifest-id ${uninstallId} --options m365-app --interactive false`;
     console.log(`running: ${uninstallCommand}`);
     childProcess.exec(uninstallCommand, (error, stdout, stderr) => {
       if (error || stderr.match('"error"')) {
