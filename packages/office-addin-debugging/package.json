@@ -34,7 +34,6 @@
     "office-addin-usage-data": "^2.1.1"
   },
   "devDependencies": {
-    "@types/adm-zip": "^0.5.5",
     "@types/express": "^5.0.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "^14.17.2",
