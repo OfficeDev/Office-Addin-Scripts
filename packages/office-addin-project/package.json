@@ -18,7 +18,7 @@
     "office-js"
   ],
   "dependencies": {
-    "adm-zip": "0.5.12",
+    "adm-zip": "^0.6.0",
     "commander": "^13.0.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^12.10.0",

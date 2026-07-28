@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "@microsoft/app-manifest": "^1.0.2",
-    "adm-zip": "0.5.16",
+    "adm-zip": "0.6.0",
     "chalk": "^2.4.2",
     "commander": "^13.0.0",
     "fs-extra": "^7.0.1",
