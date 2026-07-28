@@ -37,7 +37,6 @@
     "@microsoft/m365agentstoolkit-cli": "^1.1.11"
   },
   "devDependencies": {
-    "@microsoft/eslint-plugin-sdl": "^1.0.1",
     "@types/adm-zip": "^0.5.5",
     "@types/fs-extra": "^11.0.4",
     "@types/mocha": "^10.0.6",

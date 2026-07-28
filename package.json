@@ -22,7 +22,6 @@
     "update-packages": "npm run exec -- npm update --dev"
   },
   "devDependencies": {
-    "@microsoft/eslint-plugin-sdl": "^1.0.1",
     "@types/node": "^22.10.10",
     "eslint": "^9.0.0",
     "lerna": "^9.0.3",

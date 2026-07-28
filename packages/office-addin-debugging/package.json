@@ -34,7 +34,6 @@
     "office-addin-usage-data": "^2.1.1"
   },
   "devDependencies": {
-    "@microsoft/eslint-plugin-sdl": "^1.0.1",
     "@types/adm-zip": "^0.5.5",
     "@types/express": "^5.0.0",
     "@types/mocha": "^10.0.6",
