@@ -1,1 +1,0 @@
-{"root":["./src/index.ts","./src/rules/index.ts","./src/rules/no-office-read-calls.ts","./src/rules/no-office-write-calls.ts","./src/rules/utils.ts"],"version":"5.9.3"}
