@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": ">=18 <25",
+    "node": "^20.19.0 || ^22.13.0 || >=24",
     "npm": ">=8 <=11"
   },
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.10",
-    "eslint": "^9.0.0",
+    "eslint": "^10.0.0",
     "lerna": "^9.0.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.8.1"

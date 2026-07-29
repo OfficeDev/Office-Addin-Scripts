@@ -14,7 +14,7 @@
     "eslint"
   ],
   "dependencies": {
-    "eslint": "^9.0.0",
+    "eslint": "^10.0.0",
     "eslint-plugin-office-addins": "^4.0.10"
   },
   "peerDependencies": {
