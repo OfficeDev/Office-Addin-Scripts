@@ -7,12 +7,13 @@ type Options = unknown[];
 type MessageIds = 'officeWriteCall';
 
 const ruleTester = new RuleTester({
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
-    tsconfigRootDir: path.resolve(__dirname, '..'),
-    project: './tsconfig.test.json', // relative to tsconfigRootDir
+  languageOptions: {
+    parserOptions: {
+      ecmaVersion: 2018,
+      sourceType: 'module',
+      tsconfigRootDir: path.resolve(__dirname, '..'),
+      project: './tsconfig.test.json', // relative to tsconfigRootDir
+    },
   },
 });
 

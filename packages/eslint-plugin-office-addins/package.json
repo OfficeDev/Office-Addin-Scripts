@@ -16,7 +16,8 @@
     "test": "jest"
   },
   "peerDependencies": {
-    "eslint": "^9.0.0"
+    "eslint": "^9.0.0",
+    "typescript": "^5.4.3"
   },
   "dependencies": {
     "eslint-config-prettier": "^9.1.0",
@@ -26,7 +27,6 @@
     "office-addin-prettier-config": "^2.0.5",
     "prettier": "^3.2.5",
     "requireindex": "~1.2.0",
-    "typescript": "^5.4.3",
     "typescript-eslint": "~8.8.0"
   },
   "devDependencies": {

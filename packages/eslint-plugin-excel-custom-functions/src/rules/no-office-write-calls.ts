@@ -1,4 +1,4 @@
-import { TSESTree, ESLintUtils, ParserServices } from "@typescript-eslint/utils";
+import { TSESTree, ESLintUtils } from "@typescript-eslint/utils";
 import { REPO_URL, callExpressionAnalysis, assignmentExpressionAnalysis } from "./utils";
 import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 import ts from "typescript";
@@ -20,8 +20,6 @@ export default ESLintUtils.RuleCreator(() => REPO_URL)({
   meta: {
     docs: {
       description: "Prevents office write api calls",
-      recommended: "recommended",
-      requiresTypeChecking: true,
     },
     type: "problem",
     messages: <Record<MessageIds, string>>{
@@ -34,7 +32,7 @@ export default ESLintUtils.RuleCreator(() => REPO_URL)({
     CallExpression: (node: TSESTree.CallExpression) => void;
     AssignmentExpression: (node: TSESTree.AssignmentExpression) => void;
   } {
-    const services: ParserServices = ESLintUtils.getParserServices(ruleContext);
+    const services = ESLintUtils.getParserServices(ruleContext);
     const typeChecker: ts.TypeChecker = services.program.getTypeChecker();
 
     //Registry of all functions that use Office API calls (regardless if CF or not)
