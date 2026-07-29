@@ -90,8 +90,8 @@ async function saveZip(zip: AdmZip, outputPath: string): Promise<void> {
   fsExtra.ensureDirSync(path.dirname(outputPath));
   try {
     await zip.writeZipPromise(outputPath);
-  } catch {
-    throw new Error(`Error writing zip file to ${outputPath}`);
+  } catch (err) {
+    throw new Error(`Error writing zip file to ${outputPath}: ${err instanceof Error ? err.message : String(err)}`);
   }
   console.log(`Manifest package saved to ${outputPath}`);
 }

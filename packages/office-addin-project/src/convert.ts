@@ -84,8 +84,8 @@ async function backupProject(backupPath: string) {
   fsExtra.ensureDirSync(path.dirname(outputPath));
   try {
     await zip.writeZipPromise(outputPath);
-  } catch {
-    throw new Error(`Error writing zip file to ${outputPath}`);
+  } catch (err) {
+    throw new Error(`Error writing zip file to ${outputPath}: ${err instanceof Error ? err.message : String(err)}`);
   }
   console.log(`A backup of your project was created to ${outputPath}`);
 }
