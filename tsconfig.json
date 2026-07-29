@@ -3,13 +3,13 @@
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "newLine": "lf",
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es6",
+    "target": "es2020",
     "types": ["node"]
   },
 }

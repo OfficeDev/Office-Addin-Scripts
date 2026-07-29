@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "lib",
-    "skipLibCheck": true,
-    "target": "es5"
+    "rootDir": "src",
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["lib", "node_modules"],
