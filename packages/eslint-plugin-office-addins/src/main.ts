@@ -39,6 +39,16 @@ const recommended = [
           jsx: true,
         },
       },
+      globals: {
+        Excel: "readonly",
+        Office: "readonly",
+        OfficeExtension: "readonly",
+        OfficeRuntime: "readonly",
+        Word: "readonly",
+        PowerPoint: "readonly",
+        OneNote: "readonly",
+        Visio: "readonly",
+      },
     },
     rules: {
       "@typescript-eslint/no-unused-vars": "error",

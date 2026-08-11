@@ -140,3 +140,6 @@ project.xcworkspace
 
 # Local AI helper files
 CLAUDE.md
+
+# temporary build file
+*.tsbuildinfo

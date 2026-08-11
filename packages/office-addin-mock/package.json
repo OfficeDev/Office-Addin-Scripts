@@ -27,8 +27,7 @@
     "office-addin-lint": "^3.0.10",
     "office-addin-prettier-config": "^2.0.5",
     "rimraf": "^6.0.1",
-    "ts-node": "^10.2.1",
-    "typescript": "^4.4.3"
+    "ts-node": "^10.2.1"
   },
   "homepage": "https://github.com/OfficeDev/Office-Addin-Scripts",
   "repository": {
