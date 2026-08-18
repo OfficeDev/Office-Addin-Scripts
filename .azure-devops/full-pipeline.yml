@@ -13,7 +13,7 @@ extends:
   parameters:
     settings:
       skipBuildTagsForGitHubPullRequest: true
-      networkIsolationPolicy: Good,CFSClean,CFSClean2
+      networkIsolationPolicy: Preferred,CFSClean,CFSClean2
     pool:
       name: OE-OfficeClientApps
     featureFlags:
@@ -32,10 +32,6 @@ extends:
       jobs:
       - job: Windows_Latest
         steps:
-        - task: UseNode@1
-          inputs:
-            version: '24.x'
-          displayName: 'Use Node.js 24.x'
         - template: /.azure-devops/steps/npm-install.yaml@self
         - template: /.azure-devops/steps/build-individually.yaml@self
         - template: /.azure-devops/steps/devcerts.yml@self
