@@ -34,7 +34,7 @@
     "winreg": "1.2.4"
   },
   "peerDependencies": {
-    "@microsoft/m365agentstoolkit-cli": "^1.1.11"
+    "@microsoft/m365agentstoolkit-cli": "^1.1.15"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
