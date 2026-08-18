@@ -12,8 +12,8 @@ extends:
   template: /v1/Office.Unofficial.PipelineTemplate.yml@OfficePipelineTemplates
   parameters:
     settings:
-      networkIsolationPolicy: OKay,CFSClean,CFSClean2
       skipBuildTagsForGitHubPullRequest: true
+      networkIsolationPolicy: Good,AzureStorage,CFSClean,CFSClean2
     pool:
       name: OE-OfficeClientApps
     featureFlags:
