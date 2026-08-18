@@ -12,7 +12,7 @@ extends:
   template: /v1/Office.Unofficial.PipelineTemplate.yml@OfficePipelineTemplates
   parameters:
     settings:
-      networkIsolationPolicy: Good,CFSClean,CFSClean2
+      networkIsolationPolicy: OKay,CFSClean,CFSClean2
       skipBuildTagsForGitHubPullRequest: true
     pool:
       name: OE-OfficeClientApps
