@@ -13,7 +13,7 @@ extends:
   parameters:
     settings:
       skipBuildTagsForGitHubPullRequest: true
-      networkIsolationPolicy: Good,AzureStorage,CFSClean,CFSClean2
+      networkIsolationPolicy: Good,CFSClean,CFSClean2
     pool:
       name: OE-OfficeClientApps
     featureFlags:
