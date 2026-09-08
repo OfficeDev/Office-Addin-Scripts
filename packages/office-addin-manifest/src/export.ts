@@ -74,8 +74,13 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
 
 function addZipFile(filePath: string, baseDir: string, zip: AdmZip) {
   if (filePath && !filePath.startsWith("https://")) {
-    const fullPath: string = path.join(baseDir, filePath);
-    const fileDir: string = path.dirname(filePath);
+    const fullPath: string = path.resolve(baseDir, filePath);
+    const relative: string = path.relative(baseDir, fullPath);
+    if (relative.startsWith("..") || path.isAbsolute(relative)) {
+      throw new Error(`File to zip "${filePath}" is outside of the manifest directory`);
+    }
+
+    const fileDir: string = path.dirname(relative);
     if (fs.existsSync(fullPath)) {
       zip.addLocalFile(fullPath, fileDir === "." ? "" : fileDir);
     } else {
