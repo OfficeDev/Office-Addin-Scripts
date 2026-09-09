@@ -39,15 +39,18 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
     manifestPath
   )) as DevPreviewSchema;
 
+
+  const allowedRoots: string[] = [manifestDir, process.cwd()];
+
   // Add icons
-  addZipFile(manifest.icons?.color, manifestDir, zip);
-  addZipFile(manifest.icons?.outline, manifestDir, zip);
+  addZipFile(manifest.icons?.color, manifestDir, allowedRoots, zip);
+  addZipFile(manifest.icons?.outline, manifestDir, allowedRoots, zip);
 
   // Add localization files
   const languages = manifest.localizationInfo?.additionalLanguages;
   if (languages) {
     languages.forEach((language) => {
-      addZipFile(language?.file, manifestDir, zip);
+      addZipFile(language?.file, manifestDir, allowedRoots, zip);
     });
   }
 
@@ -56,14 +59,16 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
   if (agents) {
     for (const agent of agents) {
       const agentFile: string = agent?.file;
-      addZipFile(agentFile, manifestDir, zip);
+      addZipFile(agentFile, manifestDir, allowedRoots, zip);
 
       const agentRelDir: string = path.dirname(agentFile);
       const agentManifest: DeclarativeAgentManifest =
-        await AppManifestUtils.readDeclarativeAgentManifest(path.join(manifestDir, agentFile));
+        await AppManifestUtils.readDeclarativeAgentManifest(
+          resolveWithinRoots(path.resolve(manifestDir, agentFile), allowedRoots)
+        );
       agentManifest?.actions?.forEach((action) => {
         if (action?.file) {
-          addZipFile(path.join(agentRelDir, action.file), manifestDir, zip);
+          addZipFile(path.join(agentRelDir, action.file), manifestDir, allowedRoots, zip);
         }
       });
     }
@@ -72,10 +77,22 @@ async function createZip(manifestPath: string): Promise<AdmZip> {
   return Promise.resolve(zip);
 }
 
-function addZipFile(filePath: string, baseDir: string, zip: AdmZip) {
+function resolveWithinRoots(targetPath: string, allowedRoots: string[]): string {
+  const fullPath: string = path.resolve(targetPath);
+  const isContained: boolean = allowedRoots.some((root) => {
+    const relative: string = path.relative(path.resolve(root), fullPath);
+    return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
+  });
+  if (!isContained) {
+    throw new Error(`File to zip "${targetPath}" is outside of the allowed directories`);
+  }
+  return fullPath;
+}
+
+function addZipFile(filePath: string, baseDir: string, allowedRoots: string[], zip: AdmZip) {
   if (filePath && !filePath.startsWith("https://")) {
-    const fullPath: string = path.join(baseDir, filePath);
-    const fileDir: string = path.dirname(filePath);
+    const fullPath: string = resolveWithinRoots(path.resolve(baseDir, filePath), allowedRoots);
+    const fileDir: string = path.dirname(path.relative(baseDir, fullPath));
     if (fs.existsSync(fullPath)) {
       zip.addLocalFile(fullPath, fileDir === "." ? "" : fileDir);
     } else {
