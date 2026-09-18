@@ -9,6 +9,7 @@
     "audit": "npm audit & npm run exec -- npm audit",
     "audit:fix": "npm audit fix & npm run exec -- npm audit fix",
     "build": "lerna run build",
+    "bump-versions": "lerna version",
     "clean-install-packages": "npm run exec -- npm ci & npm ci",
     "dist-tags": "npm run exec -- npm dist-tag ls",
     "install-packages": "npm run exec -- npm install & npm install",
@@ -16,9 +17,7 @@
     "lint": "lerna run lint --parallel",
     "lint:fix": "lerna run lint:fix --parallel",
     "prettier": "lerna run prettier --parallel",
-    "publish:next": "lerna publish --dist-tag next",
     "test": "lerna run test",
-    "update-latest-dist-tags": "npm run exec for /f \"usebackq\" %a in (`npm view . name`) do @for /f \"usebackq\" %b in (`npm view . dist-tags.next`) do @npm dist-tag add %a@%b",
     "update-packages": "npm run exec -- npm update --dev"
   },
   "devDependencies": {

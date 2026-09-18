@@ -1,0 +1,69 @@
+trigger: none
+pr: none
+
+parameters:
+- name: versionCommitSha
+  displayName: Version commit SHA
+  type: string
+  default: HEAD
+
+resources:
+  repositories:
+  - repository: OfficePipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/OfficePipelineTemplates
+    ref: refs/tags/release
+extends:
+  template: /v1/Office.Unofficial.PipelineTemplate.yml@OfficePipelineTemplates
+  parameters:
+    settings:
+      skipBuildTagsForGitHubPullRequest: true
+    pool:
+      name: OE-OfficeClientApps
+    featureFlags:
+      scanAllEslintScriptExtensions: true
+    sdl:
+      eslint:
+        configuration: required
+        parser: '@typescript-eslint/parser'
+        parserOptions: sourceType:module
+        targetsESLint: $(Build.SourcesDirectory)/packages/**/*.ts
+        plugins: '@typescript-eslint'
+        enableExclusions: true
+        exclusionPatterns: 'test/'
+    stages:
+    - stage: Publish to npm
+      jobs:
+      - job: Publish to npm
+        steps:
+        - template: /.azure-devops/install.yml@self
+        - template: /.azure-devops/build.yml@self
+        - powershell: New-Item -ItemType Directory -Force -Path '$(npmPackagesDir)'
+          displayName: Create npm packages directory
+        - powershell: |
+            $since = "$env:VERSION_COMMIT_SHA^"
+            npx lerna exec --since $since --no-private -- npm pack --pack-destination "$(npmPackagesDir)"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          displayName: Create changed packages
+          env:
+            VERSION_COMMIT_SHA: ${{ parameters.versionCommitSha }}
+        - task: EsrpRelease@12
+          displayName: Publish npm packages through ESRP
+          inputs:
+            connectedservicename: 'ESRP-Addin-DevX-Publish'
+            # The service connection uses a federated credential to let the
+            # onboarded managed identity authenticate without stored secrets.
+            usemanagedidentity: true
+            keyvaultname: 'ATK-ESRP-KEY-VAULT'
+            signcertname: 'ATK-ESRP-CERT'
+            clientid: '62d1b680-312a-4484-9737-fc13f2f7e6f3'
+            intent: 'PackageDistribution'
+            contenttype: 'PyPi' # testing with other case . . . should be 'npm'
+            contentsource: 'Folder'
+            folderlocation: '$(npmPackagesDir)'
+            waitforreleasecompletion: true
+            owners: 'darrmill@microsoft.com'
+            approvers: 'darrmill@microsoft.com'
+            serviceendpointurl: 'https://api.esrp.microsoft.com'
+            mainpublisher: 'ESRPRELPACMAN'
+            domaintenantid: '975f013f-7f24-47e8-a7d3-abc4752bf346'
