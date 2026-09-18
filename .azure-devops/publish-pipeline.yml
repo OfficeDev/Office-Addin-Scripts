@@ -32,9 +32,9 @@ extends:
         enableExclusions: true
         exclusionPatterns: 'test/'
     stages:
-    - stage: Publish to npm
+    - stage: PublishToNpm
       jobs:
-      - job: Publish to npm
+      - job: Publish
         steps:
         - template: /.azure-devops/steps/npm-install.yaml@self
         - template: /.azure-devops/steps/build-individually.yaml@self
