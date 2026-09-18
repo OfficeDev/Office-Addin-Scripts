@@ -1,12 +1,6 @@
 trigger: none
 pr: none
 
-parameters:
-- name: versionCommitSha
-  displayName: Version commit SHA
-  type: string
-  default: HEAD
-
 resources:
   repositories:
   - repository: OfficePipelineTemplates
@@ -41,12 +35,9 @@ extends:
         - powershell: New-Item -ItemType Directory -Force -Path '$(npmPackagesDir)'
           displayName: Create npm packages directory
         - powershell: |
-            $since = "$env:VERSION_COMMIT_SHA^"
-            npx lerna exec --since $since --no-private -- npm pack --pack-destination "$(npmPackagesDir)"
+            npx lerna exec --since "HEAD^" --no-private -- npm pack --pack-destination "$(npmPackagesDir)"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           displayName: Create changed packages
-          env:
-            VERSION_COMMIT_SHA: ${{ parameters.versionCommitSha }}
         - task: EsrpRelease@12
           displayName: Publish npm packages through ESRP
           inputs:
