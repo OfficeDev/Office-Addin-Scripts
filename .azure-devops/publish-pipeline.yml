@@ -36,8 +36,8 @@ extends:
       jobs:
       - job: Publish to npm
         steps:
-        - template: /.azure-devops/install.yml@self
-        - template: /.azure-devops/build.yml@self
+        - template: /.azure-devops/steps/npm-install.yaml@self
+        - template: /.azure-devops/steps/build-individually.yaml@self
         - powershell: New-Item -ItemType Directory -Force -Path '$(npmPackagesDir)'
           displayName: Create npm packages directory
         - powershell: |
