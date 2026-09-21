@@ -54,7 +54,7 @@ extends:
           isProduction: true
           inputs:
           - input: pipelineArtifact
-            artifact: npm-packages
+            artifactName: npm-packages
             targetPath: $(npmPackagesDir)
         steps:
         - task: EsrpRelease@12
