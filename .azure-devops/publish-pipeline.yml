@@ -32,6 +32,11 @@ extends:
     - stage: PublishToNpm
       jobs:
       - job: BuildPackages # Produce npm packages
+        templateContext:
+          outputs: 
+            - output: pipelineArtifact
+              targetPath: $(npmPackagesDir)
+              artifactName: npm-packages
         steps:
         - template: /.azure-devops/steps/npm-install.yaml@self
         - template: /.azure-devops/steps/build-individually.yaml@self
@@ -41,20 +46,17 @@ extends:
             npx lerna exec --since "HEAD^" --no-private -- npm pack --pack-destination $(npmPackagesDir)
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           displayName: Create changed packages
-        - task: PublishPipelineArtifact@1
-          inputs:
-            targetPath: $(npmPackagesDir)
-            artifact: npm-packages
 
       - job: PublishThroughESRP # Publish to npm
         dependsOn: BuildPackages
         templateContext:
           type: releaseJob
-        steps:
-        - task: DownloadPipelineArtifact@2
+          isProduction: true
           inputs:
+          - input: pipelineArtifact
             artifact: npm-packages
-            path: $(npmPackagesDir)
+            targetPath: $(npmPackagesDir)
+        steps:
         - task: EsrpRelease@12
           displayName: Publish npm packages through ESRP
           inputs:
