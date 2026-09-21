@@ -29,7 +29,7 @@ extends:
         enableExclusions: true
         exclusionPatterns: 'test/'
     stages:
-    - stage: PublishToNpm
+    - stage: BuildPackages
       jobs:
       - job: BuildPackages # Produce npm packages
         templateContext:
@@ -47,8 +47,10 @@ extends:
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           displayName: Create changed packages
 
+    - stage: PublishToNpm
+      dependsOn: BuildPackages
+      jobs:
       - job: PublishThroughESRP # Publish to npm
-        dependsOn: BuildPackages
         templateContext:
           type: releaseJob
           isProduction: true
