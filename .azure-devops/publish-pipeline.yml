@@ -11,7 +11,7 @@ variables:
   - name: npmPackagesDir
     value: '$(Build.SourcesDirectory)/npm-packages'
 extends:
-  template: /v1/Office.Unofficial.PipelineTemplate.yml@OfficePipelineTemplates
+  template: /v1/Office.Official.PipelineTemplate.yml@OfficePipelineTemplates
   parameters:
     settings:
       skipBuildTagsForGitHubPullRequest: true
