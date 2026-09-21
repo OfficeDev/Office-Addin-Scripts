@@ -31,7 +31,7 @@ extends:
     stages:
     - stage: PublishToNpm
       jobs:
-      - job: Publish
+      - job: BuildPackages # Produce npm packages
         steps:
         - template: /.azure-devops/steps/npm-install.yaml@self
         - template: /.azure-devops/steps/build-individually.yaml@self
@@ -41,6 +41,20 @@ extends:
             npx lerna exec --since "HEAD^" --no-private -- npm pack --pack-destination $(npmPackagesDir)
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           displayName: Create changed packages
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(npmPackagesDir)
+            artifact: npm-packages
+
+      - job: PublishThroughESRP # Publish to npm
+        dependsOn: BuildPackages
+        templateContext:
+          type: releaseJob
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: npm-packages
+            path: $(npmPackagesDir)
         - task: EsrpRelease@12
           displayName: Publish npm packages through ESRP
           inputs:
@@ -52,7 +66,7 @@ extends:
             signcertname: 'ATK-ESRP-CERT'
             clientid: '62d1b680-312a-4484-9737-fc13f2f7e6f3'
             intent: 'PackageDistribution'
-            contenttype: 'npm'
+            contenttype: 'PyPi' # testing with other case . . . should be 'npm'
             contentsource: 'Folder'
             folderlocation: '$(npmPackagesDir)'
             waitforreleasecompletion: true
