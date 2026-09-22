@@ -23,7 +23,7 @@ extends:
         configuration: required
         parser: '@typescript-eslint/parser'
         parserOptions: sourceType:module
-        targetsESLint: $(Build.SourcesDirectory)/packages
+        targetsESLint: $(Build.Repository.LocalPath)/packages
         plugins: '@typescript-eslint'
         enableExclusions: true
         exclusionPatterns: 'test/'
