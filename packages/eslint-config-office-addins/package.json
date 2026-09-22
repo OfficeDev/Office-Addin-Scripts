@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-office-addins",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Provides an eslint configuration for Office Add-ins.",
   "main": "./lib/main.js",
   "scripts": {
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "eslint": "^10.0.0",
-    "eslint-plugin-office-addins": "^5.0.0"
+    "eslint-plugin-office-addins": "^5.0.1"
   },
   "peerDependencies": {
     "prettier": "^3.5.3"
@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/node": "^14.17.2",
     "concurrently": "^9.0.0",
-    "office-addin-lint": "^4.0.0",
+    "office-addin-lint": "^4.0.1",
     "rimraf": "^6.0.1"
   },
   "repository": {
