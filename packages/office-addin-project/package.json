@@ -1,6 +1,6 @@
 {
   "name": "office-addin-project",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Provides project wide commands to an Office Addin Project",
   "main": "./lib/main.js",
   "scripts": {
@@ -18,13 +18,13 @@
     "office-js"
   ],
   "dependencies": {
-    "adm-zip": "^0.6.0",
+    "adm-zip": "^0.6.1",
     "commander": "^13.0.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^12.10.0",
-    "office-addin-manifest": "^3.0.0",
+    "office-addin-manifest": "^3.0.1",
     "office-addin-manifest-converter": "^0.4.1",
-    "office-addin-usage-data": "^3.0.0"
+    "office-addin-usage-data": "^3.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
@@ -34,7 +34,7 @@
     "assert": "^2.0.0",
     "concurrently": "^9.0.0",
     "mocha": "^11.0.0",
-    "office-addin-lint": "^4.0.0",
+    "office-addin-lint": "^4.0.1",
     "rimraf": "^6.0.1",
     "semver": "^7.3.5",
     "ts-node": "^10.9.1"
