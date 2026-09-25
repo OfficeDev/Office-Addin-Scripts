@@ -33,7 +33,7 @@
     "@types/semver": "^7.3.9",
     "assert": "^2.0.0",
     "concurrently": "^9.0.0",
-    "mocha": "^11.0.0",
+    "mocha": "^12.0.2",
     "office-addin-lint": "^4.0.1",
     "rimraf": "^6.0.1",
     "semver": "^7.3.5",
