@@ -1,5 +1,5 @@
 import rules from "./rules";
-import tsParser from "@typescript-eslint/parser";
+import * as tsParser from "@typescript-eslint/parser";
 import typescriptplugin from "@typescript-eslint/eslint-plugin";
 import prettierplugin from "eslint-plugin-prettier";
 import eslintjs from "@eslint/js";
@@ -24,7 +24,7 @@ const recommended = [
   eslintjs.configs.recommended,
   eslintConfigPrettier,
   {
-    files: ["**/*.{js,mjs,cjs,ts,cts,mts}"],
+    files: ["**/*.{js,mjs,cjs,jsx,ts,cts,mts,tsx}"],
     plugins: {
       "@typescript-eslint": typescriptplugin,
       "office-addins": plugin,
