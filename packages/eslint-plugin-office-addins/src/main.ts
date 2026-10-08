@@ -56,6 +56,7 @@ const recommended = [
       "no-eval": "error",
       "no-inner-declarations": "warn",
       "no-octal": "warn",
+      "no-redeclare": ["error", { builtinGlobals: false }],
       "no-unused-vars": "off",
       "office-addins/call-sync-after-load": "error",
       "office-addins/call-sync-before-read": "error",
