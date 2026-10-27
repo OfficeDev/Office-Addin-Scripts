@@ -23,4 +23,38 @@ describe("recommended config", () => {
       ]);
     });
   }
+
+  it("accepts a /* global */ comment for the Office globals it declares", async () => {
+    const eslint = new ESLint({
+      overrideConfigFile: true,
+      overrideConfig: plugin.configs.recommended,
+    });
+    const [result] = await eslint.lintText(
+      `/* global Office console */
+
+Office.onReady(() => {
+  console.log("ready");
+});
+`,
+      { filePath: "src/taskpane.ts" },
+    );
+    expect(result.messages).toEqual([]);
+  });
+
+  it("still reports a variable declared twice", async () => {
+    const eslint = new ESLint({
+      overrideConfigFile: true,
+      overrideConfig: plugin.configs.recommended,
+    });
+    const [result] = await eslint.lintText(
+      `var count = 1;
+var count = 2;
+export { count };
+`,
+      { filePath: "src/file.js" },
+    );
+    expect(result.messages.map((message) => message.ruleId)).toEqual([
+      "no-redeclare",
+    ]);
+  });
 });
