@@ -1087,7 +1087,7 @@ function getDescription(node: ts.Node): string {
   // @ts-ignore
   if (node.jsDoc[0]) {
     // @ts-ignore
-    description = node.jsDoc[0].comment;
+    description = ts.getTextOfJSDocComment(node.jsDoc[0].comment);
   }
 
   return normalizeLineEndings(description);
@@ -1107,7 +1107,7 @@ function findTag(node: ts.Node, tagName: string): ts.JSDocTag | undefined {
  */
 function getTagComment(node: ts.Node, tagName: string): string {
   const tag = findTag(node, tagName);
-  return tag?.comment?.toString() || "";
+  return ts.getTextOfJSDocComment(tag?.comment) || "";
 }
 
 /**
@@ -1246,7 +1246,7 @@ function getJSDocParams(node: ts.Node): { [key: string]: string } {
 
   ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach((tag: ts.JSDocTag) => {
     if (tag.comment) {
-      const tagComment = tag.comment.toString();
+      const tagComment = ts.getTextOfJSDocComment(tag.comment) || "";
       const comment = (tagComment.startsWith("-") ? tagComment.slice(1) : tagComment).trim();
       // @ts-ignore
       jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = comment;

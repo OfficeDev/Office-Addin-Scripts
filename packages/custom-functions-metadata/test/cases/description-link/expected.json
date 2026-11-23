@@ -1,0 +1,45 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Adds two numbers. See {@link https://example.com/add} for details.",
+            "id": "ADDWITHLINK",
+            "name": "ADDWITHLINK",
+            "parameters": [
+                {
+                    "description": "First number, see {@link https://example.com/first}",
+                    "name": "first",
+                    "type": "number"
+                },
+                {
+                    "description": "Second number",
+                    "name": "second",
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "description": "Multiplies two numbers.",
+            "id": "MULTIPLYWITHPARAMLINK",
+            "name": "MULTIPLYWITHPARAMLINK",
+            "parameters": [
+                {
+                    "description": "First number, see {@link https://example.com/first | the docs}",
+                    "name": "first",
+                    "type": "number"
+                },
+                {
+                    "description": "Second number",
+                    "name": "second",
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        }
+    ]
+}
